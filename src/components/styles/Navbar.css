@@ -23,7 +23,10 @@
   color: #0c0c0c;
   text-decoration: none;
 }
-
+.logo-img {
+  height: 50px;
+  object-fit: contain;
+}
 .nav-links {
   display: flex;
   list-style: none;
