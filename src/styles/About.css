@@ -1,0 +1,36 @@
+.about-section {
+  background-color: #f9f9fc;
+  padding: 4rem 2rem;
+  text-align: center;
+}
+
+.about-title {
+  font-size: 2.2rem;
+  color: #0d213f;
+  margin-bottom: 1.5rem;
+}
+
+.about-text {
+  max-width: 800px;
+  margin: 0 auto;
+  font-size: 1.1rem;
+  line-height: 1.8;
+  color: #333;
+}
+
+.highlight {
+  color: #e6b800;
+  font-weight: 600;
+}
+
+/* Responsive */
+@media screen and (max-width: 768px) {
+  .about-title {
+    font-size: 1.8rem;
+  }
+
+  .about-text {
+    font-size: 1rem;
+    padding: 0 1rem;
+  }
+}

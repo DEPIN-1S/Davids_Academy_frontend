@@ -1,5 +1,5 @@
 import React from 'react';
-import './styles/Hero.css';
+import '../styles/Hero.css';
 
 const Hero = () => {
   return (
@@ -37,7 +37,7 @@ const Hero = () => {
       </div>
 
       <div className="hero-image">
-        <img src="/hero-nurse.png" alt="Nurse illustration" />
+        <img src="/images/doctor.png" alt="Nurse illustration" />
       </div>
     </section>
   );

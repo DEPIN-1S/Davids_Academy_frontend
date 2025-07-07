@@ -1,0 +1,135 @@
+.our-courses {
+  background: #f9f9fc;
+  padding: 4rem 2rem;
+  border-radius: 30px;
+  max-width: 1200px;
+  margin: auto;
+  box-shadow: inset 0 0 100px rgba(255, 204, 0, 0.1);
+  text-align: center;
+}
+
+.courses-title {
+  font-size: 2rem;
+  font-weight: bold;
+  color: #0d213f;
+  margin-bottom: 2rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 0.6rem;
+}
+
+.cap-icon {
+  width: 30px;
+  height: 30px;
+}
+
+.courses-list {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 2rem;
+}
+
+.course-card {
+  background: #fff;
+  border-radius: 16px;
+  padding: 2rem;
+  width: 100%;
+  max-width: 300px;
+  text-align: left;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+  transition: transform 0.2s ease;
+}
+
+.course-card:hover {
+  transform: translateY(-5px);
+}
+
+.course-card h3 {
+  font-size: 1.2rem;
+  font-weight: bold;
+  color: #0d213f;
+  margin-bottom: 0.8rem;
+}
+
+.course-card p {
+  color: #444;
+  font-size: 0.95rem;
+  margin-bottom: 0.8rem;
+  line-height: 1.5;
+}
+
+.duration {
+  color: #213866;
+  font-weight: 500;
+  margin-bottom: 1.2rem;
+}
+
+.learn-more {
+  background-color: #f3c623;
+  border: none;
+  padding: 0.6rem 1.2rem;
+  font-weight: 500;
+  border-radius: 6px;
+  cursor: pointer;
+  color: #000;
+  transition: background 0.3s ease;
+}
+
+.learn-more:hover {
+  background-color: #e0b800;
+}
+
+.courses-footer {
+  margin-top: 2rem;
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 1rem;
+}
+
+.arrows {
+  display: flex;
+  gap: 1rem;
+}
+
+.circle-btn {
+  width: 36px;
+  height: 36px;
+  border: 1px solid #333;
+  border-radius: 50%;
+  background: white;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.view-all {
+  border: 1px solid #000;
+  background: transparent;
+  padding: 0.6rem 1.2rem;
+  border-radius: 8px;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.view-all:hover {
+  background: #000;
+  color: white;
+}
+
+/* Responsive */
+@media screen and (max-width: 768px) {
+  .courses-footer {
+    flex-direction: column;
+  }
+
+  .courses-title {
+    font-size: 1.5rem;
+  }
+
+  .course-card {
+    max-width: 90%;
+  }
+}

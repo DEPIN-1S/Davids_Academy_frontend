@@ -2,7 +2,6 @@ import React from "react";
 import Navbar from "./components/Navbar";
 import Hero from "./components/Hero";
 import Stats from "./components/Stats";
-import About from "./components/About";
 import Courses from "./components/Courses";
 import SampleQuestionnaire from "./components/SampleQuestionnaire";
 import WhyChoose from "./components/WhyChoose";
@@ -17,7 +16,6 @@ function App() {
        <main className="page-layout">
         <Hero />
         <Stats />
-        <About />
         <Courses />
         <SampleQuestionnaire />
         <WhyChoose />

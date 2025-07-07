@@ -1,34 +1,20 @@
 import React from 'react';
-// import './HeroSection.css'; // Don't forget to create a CSS file for styling
-
-const Stats= () => {
+import '../styles/Stats.css';
+const Stats = () => {
   return (
-    <div className="hero-container">
-      <h1 className="hero-title">Achieve Your International Nursing Goals with Confidence</h1>
-      <p className="hero-subtitle">Achieve top ranks in entrance exams</p>
-      <div className="hero-stats">
-        <div className="stat-item">
-          <h2>4.9/5</h2>
-          <p>Positive Reviews</p>
+    <section className="stats-section">
+      <div className="stats-content">
+        <div className="stats-image-wrapper">
+          <img src="/images/logo.png" alt="David Academy Logo" className="stats-logo" />
+          <img src="/images/woman.png" alt="Mentor" className="mentor-photo" />
         </div>
-        <div className="stat-item">
-          <h2>30+</h2>
-          <p>Courses Count</p>
-        </div>
-        <div className="stat-item">
-          <h2>10+ Years</h2>
-          <p>Experienced Mentors</p>
-        </div>
-        <div className="stat-item">
-          <h2>15+</h2>
-          <p>Countries Placement Assistance</p>
+        <div className="stats-text">
+          <p>
+            At <span className="highlight">David Academy</span>, we empower students to reach their highest potential through expert coaching, a strong curriculum, and personalized mentoring, building confident, skilled candidates who excel in <span className="highlight-yellow">competitive exams</span> and <span className="highlight-yellow">global opportunities</span>.
+          </p>
         </div>
       </div>
-      <p className="hero-description">
-        At David Academy, we empower students to reach their highest potential through expert coaching, a strong curriculum, and personalized mentoring, building confident, skilled candidates who excel in global opportunities.
-      </p>
-      <button className="hero-button">Explore Courses</button>
-    </div>
+    </section>
   );
 };
 
