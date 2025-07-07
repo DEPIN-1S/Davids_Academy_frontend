@@ -1,0 +1,10 @@
+.page-layout {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 2rem;
+  padding-top: 80px; /* to offset fixed navbar */
+  padding-left: 1rem;
+  padding-right: 1rem;
+  max-width: 1200px;
+  margin: auto;
+}
