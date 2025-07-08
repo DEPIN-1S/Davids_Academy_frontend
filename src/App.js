@@ -10,6 +10,7 @@ import CoursesPage from './pages/CoursesPage';
 import TestimonialsPage from './pages/TestimonialsPage';
 import ContactPage from './pages/ContactPage';
 import SampleQuestionnaire from './pages/SampleQuestionnaire';
+import LoginPage from './pages/LoginPage';
 import './styles/Layout.css';
 
 const App = () => {
@@ -24,6 +25,7 @@ const App = () => {
         <Route path="/testimonials" element={<TestimonialsPage />} />
         <Route path="/contact-us" element={<ContactPage />} />
         <Route path="/sample-questionnaire" element={<SampleQuestionnaire />} />
+         <Route path="/login" element={<LoginPage />} />
       </Routes>
       </div>
       <Footer />

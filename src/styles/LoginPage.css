@@ -1,0 +1,122 @@
+.login-section {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 5rem 1rem;
+  position: relative;
+  background:  linear-gradient(135deg, #1f2d5a, #2c3e75);;
+}
+
+.login-card {
+  background: linear-gradient(135deg, #1f2d5a, #2c3e75);
+  color: #fff;
+  border-radius: 16px;
+  padding: 2rem 2.5rem;
+  max-width: 480px;
+  width: 100%;
+  z-index: 2;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.2);
+}
+
+.login-card h2 {
+  font-size: 1.6rem;
+  font-weight: 700;
+  margin-bottom: 0.5rem;
+}
+
+.login-card p {
+  font-size: 0.95rem;
+  margin-bottom: 1.5rem;
+  line-height: 1.4;
+}
+
+.login-form label {
+  display: block;
+  margin: 0.75rem 0 0.25rem;
+  font-weight: 500;
+}
+
+.input-wrapper {
+    position: relative;
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+}
+
+.input-wrapper input {
+  width: 100%;
+  padding: 0.8rem 2.5rem 0.8rem 2rem;
+  border: none;
+  border-radius: 8px;
+  font-size: 1rem;
+  color: #333;
+  outline: none;
+}
+
+.input-icon {
+  position: absolute;
+  top: 50%;
+  left: 0.75rem;
+  transform: translateY(-50%);
+  color: #777;
+}
+
+.input-icon.right {
+  left: auto;
+  right: 0.75rem;
+  cursor: pointer;
+}
+
+.forgot-link {
+  text-align: right;
+  margin-top: 0.5rem;
+}
+
+.forgot-link a {
+  color: #fff;
+  font-size: 0.9rem;
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.login-form button {
+  margin-top: 1.5rem;
+  width: 100%;
+  padding: 0.9rem;
+  background-color: #67b8c6;
+  border: none;
+  border-radius: 8px;
+  color: #fff;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.login-form button:hover {
+  background-color: #4fa8b9;
+}
+
+.wave-bg {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  z-index: 1;
+  pointer-events: none;
+}
+
+/* Responsive */
+@media (max-width: 480px) {
+  .login-card {
+    padding: 1.5rem;
+  }
+
+  .login-card h2 {
+    font-size: 1.4rem;
+  }
+
+  .input-wrapper input {
+    padding: 0.75rem 2.25rem 0.75rem 1.8rem;
+  }
+}

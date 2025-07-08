@@ -23,7 +23,7 @@ const ContactPage = () => {
           <button type="submit">Submit</button>
         </form>
       </div>
-      <img className="background-wave" src="/images/wave.png" alt="Background wave" />
+      <img className="background-wave" src="/images/wave.svg" alt="Background wave" />
     </section>
   );
 };
