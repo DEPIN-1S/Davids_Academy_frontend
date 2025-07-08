@@ -1,0 +1,32 @@
+.course-header {
+  width: 100vw;
+  background-color: #1c274c;
+  color: white;
+  padding: 60px 20px 40px;
+  margin: 0;
+  box-sizing: border-box;
+}
+
+.course-header-container {
+  max-width: 1440px;
+  margin: 0 auto;
+  padding: 0 1rem;
+  text-align: center;
+}
+
+.breadcrumb {
+  font-size: 14px;
+  color: #d1d5db;
+  margin-bottom: 10px;
+}
+
+.breadcrumb span {
+  font-weight: 600;
+  color: #ffffff;
+}
+
+.header-title {
+  font-size: 32px;
+  font-weight: 700;
+  margin: 0;
+}

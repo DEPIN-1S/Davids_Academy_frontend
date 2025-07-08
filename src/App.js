@@ -1,32 +1,34 @@
-import React from "react";
-import Navbar from "./components/Navbar";
-import Hero from "./components/Hero";
-import Stats from "./components/Stats";
-import Courses from "./components/Courses";
-import SampleQuestionnaire from "./components/SampleQuestionnaire";
-import WhyChoose from "./components/WhyChoose";
-import SuccessStories from "./components/SuccessStories";
-import Classes from "./components/Classes";
-import NewsletterFooter from "./components/NewsletterFooter";
+import React from 'react';
+import { Routes, Route } from 'react-router-dom';
 
-function App() {
+import Navbar from './components/Navbar';
+import Footer from './components/NewsletterFooter';
+
+import Home from './pages/Home';
+import AboutPage from './pages/AboutPage';
+import CoursesPage from './pages/CoursesPage';
+import TestimonialsPage from './pages/TestimonialsPage';
+import ContactPage from './pages/ContactPage';
+import SampleQuestionnaire from './pages/SampleQuestionnaire';
+import './styles/Layout.css';
+
+const App = () => {
   return (
     <>
       <Navbar />
-       <main className="page-layout">
-        <Hero />
-        <Stats />
-        <Courses />
-        <SampleQuestionnaire />
-        <WhyChoose />
-        <SuccessStories />
-        <Classes />
-      </main>
-      <NewsletterFooter />
-     
+      <div class="page-layout">
+     <Routes>
+        <Route path="/" element={<Home />} />
+        <Route path="/about" element={<AboutPage />} />
+        <Route path="/courses" element={<CoursesPage />} />
+        <Route path="/testimonials" element={<TestimonialsPage />} />
+        <Route path="/contact-us" element={<ContactPage />} />
+        <Route path="/sample-questionnaire" element={<SampleQuestionnaire />} />
+      </Routes>
+      </div>
+      <Footer />
     </>
   );
-}
+};
 
 export default App;
-

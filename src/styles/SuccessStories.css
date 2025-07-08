@@ -1,0 +1,126 @@
+.success-section {
+  padding: 4rem 2rem;
+  background: #f9f9fc;
+  text-align: center;
+  position: relative;
+}
+
+.success-title {
+  font-size: 2rem;
+  font-weight: bold;
+  color: #0d213f;
+  margin-bottom: 2.5rem;
+}
+
+.testimonial-container {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 2rem;
+}
+
+.testimonial-card {
+  background: #fff9ee;
+  border: 1px solid #f7d563;
+  border-radius: 16px;
+  padding: 2rem;
+  width: 300px;
+  position: relative;
+  text-align: left;
+  box-shadow: 0 5px 20px rgba(0, 0, 0, 0.05);
+}
+
+.quote-icon {
+  font-size: 2rem;
+  color: #333;
+  margin-bottom: 1rem;
+}
+
+.testimonial-text {
+  font-size: 1rem;
+  color: #333;
+  line-height: 1.6;
+  margin-bottom: 1.5rem;
+}
+
+.testimonial-footer {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.student-name {
+  font-weight: 600;
+  font-size: 1rem;
+  color: #1d1d1f;
+}
+
+.student-role {
+  font-size: 0.85rem;
+  color: #777;
+}
+
+/* Dots */
+.testimonial-dots {
+  margin-top: 1.5rem;
+}
+
+.dot {
+  height: 8px;
+  width: 8px;
+  margin: 0 5px;
+  background-color: #ccc;
+  border-radius: 50%;
+  display: inline-block;
+}
+
+.dot.active {
+  background-color: #213866;
+}
+
+/* Arrows */
+.testimonial-nav {
+  position: absolute;
+  top: 1.2rem;
+  right: 2rem;
+  display: flex;
+  gap: 0.5rem;
+}
+
+.nav-btn {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  border: 1px solid #ccc;
+  background: white;
+  font-size: 1.2rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.nav-btn:hover {
+  background: #213866;
+  color: #fff;
+  border-color: #213866;
+}
+
+/* Responsive */
+@media screen and (max-width: 768px) {
+  .testimonial-container {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .testimonial-nav {
+    position: static;
+    margin-top: 1rem;
+    justify-content: center;
+  }
+}

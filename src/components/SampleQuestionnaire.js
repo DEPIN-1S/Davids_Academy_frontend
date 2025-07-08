@@ -1,13 +1,18 @@
 import React from 'react';
-// import './HeroSection.css'; // Don't forget to create a CSS file for styling
+import '../styles/SampleQuestionnaire.css'
 
-const SampleQuestionnaire= () => {
+const SampleQuestionnaire = () => {
   return (
-   <section id="questionnaire">
-            <h2>Try Our Sample Questionnaire</h2>
-            <p>Practice with real-world sample questions covering nursing entrance exams, management concepts, and competitive tests to equip you with confidence.</p>
-            <button>Execute Sample Questions</button>
-        </section>
+    <section className="questionnaire-section">
+      <div className="questionnaire-container">
+        <h2 className="questionnaire-title">Try Our Sample Questionnaire</h2>
+        <p className="questionnaire-description">
+          Practice with real-world sample questions covering nursing entrance exams, international certifications,
+          and competitive tests. See how our training helps you answer them with confidence.
+        </p>
+        <button className="questionnaire-button">Explore Sample Questions →</button>
+      </div>
+    </section>
   );
 };
 

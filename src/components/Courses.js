@@ -23,7 +23,7 @@ const Courses = () => {
   return (
     <section className="our-courses">
       <h2 className="courses-title">
-        <img src="/hat-icon.png" alt="cap icon" className="cap-icon" />
+        <img src="/images/studentIcon.png" alt="cap icon" className="cap-icon" />
         Our Courses
       </h2>
 
