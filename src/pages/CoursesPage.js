@@ -6,7 +6,7 @@ import coursesData from '../data/coursesData.json'; // import JSON file
 
 const CoursesPage = () => {
   return (
-     <section className="course-header">
+     <section >
       <CourseHeader />
 
       {coursesData.map((course, idx) => (
