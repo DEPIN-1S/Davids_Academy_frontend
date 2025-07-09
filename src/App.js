@@ -15,6 +15,7 @@ import QuestionBankPage from './pages/DashboardPages/QuestionBankPage';
 import StatisticsPage from './pages/DashboardPages/StatisticsPage';
 import RecordedClassesPage from './pages/DashboardPages/RecordedClassesPage';
 import NotesPage from './pages/DashboardPages/NotesPage';
+import MockTestPage from './pages/DashboardPages/MockTestPage';
 import './styles/Layout.css';
 
 const App = () => {
@@ -34,6 +35,7 @@ const App = () => {
         <Route path="/my-statistics" element={<StatisticsPage />} />
         <Route path="/recorded-class" element={<RecordedClassesPage />} />
          <Route path="/notes" element={<NotesPage />} />
+          <Route path="/mock-test" element={<MockTestPage />} />
         {/* protected components end */}
          <Route path="/login" element={<LoginPage />} />
          

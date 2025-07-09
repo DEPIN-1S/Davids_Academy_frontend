@@ -2,7 +2,7 @@ import React from 'react';
 import AccessTimeIcon from '@mui/icons-material/AccessTime';
 import RadioButtonCheckedIcon from '@mui/icons-material/RadioButtonChecked';
 import QuizIcon from '@mui/icons-material/Quiz';
-import '../../styles/MockTestComponent.css';
+import '../../styles/DashboardStyles/MockTestComponent.css';
 
 const MockTestComponent = () => {
   return (
