@@ -1,19 +1,23 @@
 import React from 'react';
 import { Box, Button, Stack, useMediaQuery } from '@mui/material';
 import { useTheme } from '@mui/material/styles';
+import { useLocation, useNavigate } from 'react-router-dom';
 
 const navItems = [
-  'My Q-Bank',
-  'My Statistics',
-  'Recorded Classes',
-  'Notes',
-  'Mock Test',
-  'Previous Tests',
+  { label: 'My Q-Bank', path: '/question-bank' },
+  { label: 'My Statistics', path: '/my-statistics' },
+  { label: 'Recorded Classes', path: '/recorded-classes' },
+  { label: 'Notes', path: '/notes' },
+  { label: 'Mock Test', path: '/mock-test' },
+  { label: 'Previous Tests', path: '/previous-tests' },
 ];
 
-const DashboardNavbar = ({ active = 'My Q-Bank' }) => {
+const DashboardNavbar = () => {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
+
+  const location = useLocation();
+  const navigate = useNavigate();
 
   return (
     <Box
@@ -34,41 +38,33 @@ const DashboardNavbar = ({ active = 'My Q-Bank' }) => {
         alignItems={isMobile ? 'stretch' : 'center'}
         width={isMobile ? '100%' : 'auto'}
       >
-        {navItems.slice(0, -1).map((item) => (
-          <Button
-            key={item}
-            fullWidth={isMobile}
-            disableRipple
-            sx={{
-              textTransform: 'none',
-              backgroundColor: item === active ? '#ffffff' : 'transparent',
-              color: item === active ? '#2E3760' : '#fff',
-              borderRadius: '12px',
-              fontWeight: item === active ? 600 : 400,
-              padding: '8px 16px',
-              justifyContent: isMobile ? 'center' : 'initial',
-              '&:hover': {
-                backgroundColor: item === active ? '#ffffff' : '#3b4470',
-              },
-            }}
-          >
-            {item}
-          </Button>
-        ))}
+        {navItems.map(({ label, path }) => {
+          const isActive = location.pathname === path;
+
+          return (
+            <Button
+              key={label}
+              onClick={() => navigate(path)}
+              fullWidth={isMobile}
+              disableRipple
+              sx={{
+                textTransform: 'none',
+                backgroundColor: isActive ? '#ffffff' : 'transparent',
+                color: isActive ? '#2E3760' : '#fff',
+                borderRadius: '12px',
+                fontWeight: isActive ? 600 : 400,
+                padding: '8px 16px',
+                justifyContent: isMobile ? 'center' : 'initial',
+                '&:hover': {
+                  backgroundColor: isActive ? '#ffffff' : '#3b4470',
+                },
+              }}
+            >
+              {label}
+            </Button>
+          );
+        })}
       </Stack>
-      <Button
-        disableRipple
-        fullWidth={isMobile}
-        sx={{
-          textTransform: 'none',
-          color: '#fff',
-          fontWeight: 500,
-          marginTop: isMobile ? '8px' : 0,
-          '&:hover': { backgroundColor: '#3b4470' },
-        }}
-      >
-        {navItems[navItems.length - 1]}
-      </Button>
     </Box>
   );
 };

@@ -13,6 +13,8 @@ import SampleQuestionnaire from './pages/SampleQuestionnaire';
 import LoginPage from './pages/LoginPage';
 import QuestionBankPage from './pages/DashboardPages/QuestionBankPage';
 import StatisticsPage from './pages/DashboardPages/StatisticsPage';
+import RecordedClassesPage from './pages/DashboardPages/RecordedClassesPage';
+import NotesPage from './pages/DashboardPages/NotesPage';
 import './styles/Layout.css';
 
 const App = () => {
@@ -30,6 +32,9 @@ const App = () => {
         {/* protected components */}
         <Route path="/question-bank" element={<QuestionBankPage />} />
         <Route path="/my-statistics" element={<StatisticsPage />} />
+        <Route path="/recorded-class" element={<RecordedClassesPage />} />
+         <Route path="/notes" element={<NotesPage />} />
+        {/* protected components end */}
          <Route path="/login" element={<LoginPage />} />
          
       </Routes>
