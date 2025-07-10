@@ -1,15 +1,15 @@
 import React from 'react';
 import QuestionHeaderComponent from '../../components/DasboardComponents/QuestionHeaderComponent';
 import QuestionFooterComponent from '../../components/DasboardComponents/QuestionFooterComponent';
-import RadioButtonQuestionComponent from '../../components/DasboardComponents/RadioButtonQuestionComponent';
-const RadioButtonQuestionPage = () => {
+import RevealAnswerRadioComponent from '../../components/DasboardComponents/RevealAnswerRadioComponent';
+const RevealAnswerRadioPage = () => {
   return (
    <>
       <QuestionHeaderComponent />
-      <RadioButtonQuestionComponent />
+      <RevealAnswerRadioComponent />
      <QuestionFooterComponent />
   </>
   );
 };
 
-export default RadioButtonQuestionPage;
+export default RevealAnswerRadioPage;

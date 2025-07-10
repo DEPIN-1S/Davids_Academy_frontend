@@ -17,6 +17,9 @@ import RecordedClassesPage from './pages/DashboardPages/RecordedClassesPage';
 import NotesPage from './pages/DashboardPages/NotesPage';
 import MockTestPage from './pages/DashboardPages/MockTestPage';
 import PreviousTestPage from './pages/DashboardPages/PreviousTestPage';
+import RadioButtonQuestionPage from './pages/DashboardPages/RadioButtonQuestionPage';
+import RevealAnswerRadioPage from './pages/DashboardPages/RevealAnswerRadioPage';
+import DropdownQuestionPage from './pages/DashboardPages/DropdownQuestionPage';
 import './styles/Layout.css';
 
 const App = () => {
@@ -38,6 +41,9 @@ const App = () => {
         <Route path="/notes" element={<NotesPage />} />
         <Route path="/mock-test" element={<MockTestPage />} />
         <Route path="/previous-tests" element={<PreviousTestPage />} />
+        <Route path="/radio-question" element={<RadioButtonQuestionPage />} />
+        <Route path="/reveal-answer-radio" element={<RevealAnswerRadioPage />} />
+        <Route path="/dropdown-question" element={<DropdownQuestionPage />} />
         {/* protected components end */}
          <Route path="/login" element={<LoginPage />} />
          
