@@ -2,6 +2,10 @@ import React, { useState } from 'react';
 import {
   Box,
   Typography,
+  FormControl,
+  InputLabel,
+  Select,
+  MenuItem,
   Button,
   Tabs,
   Tab,
@@ -9,11 +13,14 @@ import {
   useTheme,
 } from '@mui/material';
 
-const DragDropQuestionComponent = () => {
+const MultiRadioQuestionComponent = () => {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
 
   const [activeTab, setActiveTab] = useState(0);
+  const [first, setFirst] = useState('');
+  const [second, setSecond] = useState('');
+  const [risk, setRisk] = useState('');
   const [showAnswer, setShowAnswer] = useState(false);
 
   const explanations = [
@@ -29,6 +36,10 @@ const DragDropQuestionComponent = () => {
   const handleReveal = () => {
     setShowAnswer(true);
   };
+
+  const subjectOptions = ['Age', 'Vital Signs', 'Medications'];
+  const secondaryOptions = ['Lab Values', 'Cognition', 'Medical History'];
+  const riskOptions = ['Fall Risk', 'Dehydration', 'Infection'];
 
   return (
     <Box
@@ -88,77 +99,67 @@ const DragDropQuestionComponent = () => {
         </Typography>
       </Box>
 
-      {/* Action and Parameter Section */}
+      {/* Dropdowns */}
+      <Typography
+        variant="body1"
+        fontWeight={500}
+        textAlign="center"
+        mb={2}
+        sx={{ fontSize: isMobile ? '0.95rem' : '1.05rem', color: '#333' }}
+      >
+        Based on the client&apos;s
+      </Typography>
+
       <Box
         sx={{
           display: 'flex',
-          justifyContent: 'space-between',
+          flexDirection: isMobile ? 'column' : 'row',
+          gap: '1rem',
+          justifyContent: 'center',
+          alignItems: 'center',
           mb: 4,
-          flexWrap: 'wrap',
         }}
       >
-        {/* Most likely experiencing */}
-        <Box
-          sx={{
-            textAlign: 'center',
-            mx: 2,
-            flex: '1 1 30%',
-          }}
-        >
-          <Typography>Most likely experiencing</Typography>
-          <Box
-            sx={{
-              backgroundColor: '#2e3760',
-              color: '#fff',
-              borderRadius: '8px',
-              padding: '1rem',
-            }}
-          >
-            <Typography fontWeight={600}>[Condition Here]</Typography>
-          </Box>
-        </Box>
+        <FormControl sx={{ minWidth: 160 }} size="small">
+          <InputLabel>Select</InputLabel>
+          <Select value={first} label="Select" onChange={(e) => setFirst(e.target.value)}>
+            {subjectOptions.map((opt) => (
+              <MenuItem key={opt} value={opt}>{opt}</MenuItem>
+            ))}
+          </Select>
+        </FormControl>
 
-        {/* Parameter to Monitor */}
-        <Box
-          sx={{
-            textAlign: 'center',
-            mx: 2,
-            flex: '1 1 30%',
-          }}
-        >
-          <Typography>Parameter to Monitor</Typography>
-          <Box
-            sx={{
-              border: '1px solid #ccc',
-              borderRadius: '8px',
-              padding: '1rem',
-            }}
-          >
-            <Typography>Vital Signs</Typography>
-            <Typography>Lab Values</Typography>
-            <Typography>Cognition</Typography>
-          </Box>
-        </Box>
+        <Typography>And</Typography>
 
-        {/* Action to take */}
-        <Box
-          sx={{
-            textAlign: 'center',
-            mx: 2,
-            flex: '1 1 30%',
-          }}
-        >
-          <Typography>Action to take</Typography>
-          <Box
-            sx={{
-              border: '1px solid #ccc',
-              borderRadius: '8px',
-              padding: '1rem',
-            }}
-          >
-            <Typography>Administer high-flow oxygen via a non-rebreather mask.</Typography>
-          </Box>
-        </Box>
+        <FormControl sx={{ minWidth: 160 }} size="small">
+          <InputLabel>Select</InputLabel>
+          <Select value={second} label="Select" onChange={(e) => setSecond(e.target.value)}>
+            {secondaryOptions.map((opt) => (
+              <MenuItem key={opt} value={opt}>{opt}</MenuItem>
+            ))}
+          </Select>
+        </FormControl>
+      </Box>
+
+      <Typography
+        variant="body1"
+        fontWeight={500}
+        textAlign="center"
+        mb={2}
+        sx={{ fontSize: isMobile ? '0.95rem' : '1.05rem', color: '#333' }}
+      >
+        this client is at highest risk for
+      </Typography>
+
+      <Box textAlign="center" mb={4}>
+        <FormControl sx={{ minWidth: 250 }} size="small">
+          <InputLabel>Select</InputLabel>
+          <Select value={risk} label="Select" onChange={(e) => setRisk(e.target.value)}>
+            {riskOptions.map((opt) => (
+              <MenuItem key={opt} value={opt}>{opt}</MenuItem>
+            ))}
+          </Select>
+        </FormControl>
       </Box>
 
       <Box textAlign="center">
@@ -200,4 +201,4 @@ const DragDropQuestionComponent = () => {
   );
 };
 
-export default DragDropQuestionComponent;
+export default MultiRadioQuestionComponent;

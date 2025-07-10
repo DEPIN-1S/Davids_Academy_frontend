@@ -13,7 +13,7 @@ import {
   useTheme,
 } from '@mui/material';
 
-const DropdownQuestion = () => {
+const DropdownQuestionComponent = () => {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
 
@@ -201,4 +201,4 @@ const DropdownQuestion = () => {
   );
 };
 
-export default DropdownQuestion;
+export default DropdownQuestionComponent;

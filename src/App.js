@@ -19,6 +19,10 @@ import RadioButtonQuestionPage from './pages/DashboardPages/RadioButtonQuestionP
 import RevealAnswerRadioPage from './pages/DashboardPages/RevealAnswerRadioPage';
 import DropdownQuestionPage from './pages/DashboardPages/DropdownQuestionPage';
 import DragDropQuestionPage from './pages/DashboardPages/DragDropQuestionPage';
+import MultiRadioQuestionPage from './pages/DashboardPages/MultiRadioQuestionPage';
+import SortQuestionPage from './pages/DashboardPages/SortQuestionPage';
+import SentenceQuestionPage from './pages/DashboardPages/SentenceQuestionPage';
+import DropSortQuestionPage from './pages/DashboardPages/DropSortQuestionPage';
 import './styles/Layout.css';
 
 const App = () => {
@@ -43,7 +47,11 @@ const App = () => {
         <Route path="/radio-question" element={<RadioButtonQuestionPage />} />
         <Route path="/reveal-answer-radio" element={<RevealAnswerRadioPage />} />
         <Route path="/dropdown-question" element={<DropdownQuestionPage />} />
-         <Route path="/dropdrop-question" element={<DragDropQuestionPage />} />
+        <Route path="/dragdrop-question" element={<DragDropQuestionPage />} />
+        <Route path="/multi-radio-question" element={<MultiRadioQuestionPage />} />
+        <Route path="/sort-question" element={<SortQuestionPage />} />
+        <Route path="/sentence-question" element={<SentenceQuestionPage />} />
+        <Route path="/drop-sort-question" element={<DropSortQuestionPage />} />
         {/* protected components end */}
          <Route path="/login" element={<LoginPage />} />
          
