@@ -1,9 +1,7 @@
 import React from 'react';
 import { Routes, Route } from 'react-router-dom';
-
 import Navbar from './components/Navbar';
 import Footer from './components/NewsletterFooter';
-
 import Home from './pages/Home';
 import AboutPage from './pages/AboutPage';
 import CoursesPage from './pages/CoursesPage';
@@ -20,6 +18,7 @@ import PreviousTestPage from './pages/DashboardPages/PreviousTestPage';
 import RadioButtonQuestionPage from './pages/DashboardPages/RadioButtonQuestionPage';
 import RevealAnswerRadioPage from './pages/DashboardPages/RevealAnswerRadioPage';
 import DropdownQuestionPage from './pages/DashboardPages/DropdownQuestionPage';
+import DragDropQuestionPage from './pages/DashboardPages/DragDropQuestionPage';
 import './styles/Layout.css';
 
 const App = () => {
@@ -44,6 +43,7 @@ const App = () => {
         <Route path="/radio-question" element={<RadioButtonQuestionPage />} />
         <Route path="/reveal-answer-radio" element={<RevealAnswerRadioPage />} />
         <Route path="/dropdown-question" element={<DropdownQuestionPage />} />
+         <Route path="/dropdrop-question" element={<DragDropQuestionPage />} />
         {/* protected components end */}
          <Route path="/login" element={<LoginPage />} />
          
