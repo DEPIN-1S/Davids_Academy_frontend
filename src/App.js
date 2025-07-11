@@ -24,6 +24,7 @@ import SortQuestionPage from './pages/DashboardPages/SortQuestionPage';
 import SentenceQuestionPage from './pages/DashboardPages/SentenceQuestionPage';
 import DropSortQuestionPage from './pages/DashboardPages/DropSortQuestionPage';
 import './styles/Layout.css';
+import ScorePage from './pages/DashboardPages/ScorePage';
 
 const App = () => {
   return (
@@ -52,6 +53,7 @@ const App = () => {
         <Route path="/sort-question" element={<SortQuestionPage />} />
         <Route path="/sentence-question" element={<SentenceQuestionPage />} />
         <Route path="/drop-sort-question" element={<DropSortQuestionPage />} />
+         <Route path="/score" element={<ScorePage />} />
         {/* protected components end */}
          <Route path="/login" element={<LoginPage />} />
          
