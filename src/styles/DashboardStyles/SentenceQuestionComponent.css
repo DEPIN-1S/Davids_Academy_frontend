@@ -1,0 +1,88 @@
+/* SentenceHighlightQuestion.css */
+
+.sentence-highlight-container {
+  padding: 1.5rem;
+  background-color: #fafafa;
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+.sentence-heading {
+  font-size: 1.2rem;
+  font-weight: 600;
+  text-align: center;
+  color: #333;
+}
+
+.highlight-scroll-box {
+  max-height: 300px;
+  overflow-y: auto;
+  background: #fff;
+  padding: 1rem;
+  border-radius: 12px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.06);
+  line-height: 1.6;
+  font-size: 1rem;
+}
+
+.highlight-sentence {
+  cursor: pointer;
+  padding: 0.2rem 0.3rem;
+  display: inline-block;
+  transition: background-color 0.3s ease;
+  border-radius: 4px;
+}
+
+.highlight-sentence.highlighted {
+  background-color: #f6e58d;
+  font-weight: 500;
+}
+
+.reveal-btn {
+  margin: 0 auto;
+  padding: 10px 20px;
+  font-size: 1rem;
+  background-color: #f4c542;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: background-color 0.3s ease;
+}
+
+.reveal-btn:hover {
+  background-color: #e4b732;
+}
+
+.reveal-explanation-box {
+  padding: 1rem;
+  background-color: #ffffff;
+  border-left: 4px solid #2e3760;
+  box-shadow: 0 0 6px rgba(0, 0, 0, 0.05);
+  border-radius: 0.5rem;
+  font-size: 0.95rem;
+  color: #333;
+}
+
+/* Responsive tweaks */
+@media (max-width: 768px) {
+  .sentence-highlight-container {
+    padding: 1rem;
+  }
+
+  .sentence-heading {
+    font-size: 1rem;
+  }
+
+  .highlight-scroll-box {
+    max-height: 250px;
+    font-size: 0.95rem;
+  }
+
+  .reveal-btn {
+    width: 100%;
+    padding: 12px;
+  }
+}

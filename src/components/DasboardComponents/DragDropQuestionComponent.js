@@ -1,201 +1,148 @@
 import React, { useState } from 'react';
+import { Box, Typography, Button, Paper, Grid } from '@mui/material';
+import { styled } from '@mui/material/styles';
 import {
-  Box,
-  Typography,
-  Button,
-  Tabs,
-  Tab,
-  useMediaQuery,
-  useTheme,
-} from '@mui/material';
+  DragDropContext,
+  Droppable,
+  Draggable
+} from '@hello-pangea/dnd';
+
+
+const dragItems = [
+  { id: 'item-1', content: 'Administer high-flow oxygen via a non-rebreather mask.' },
+  { id: 'item-2', content: 'Administer high-flow oxygen via a non-rebreather mask.' },
+  { id: 'item-3', content: 'Administer high-flow oxygen via a non-rebreather mask.' },
+  { id: 'item-4', content: 'Administer high-flow oxygen via a non-rebreather mask.' },
+];
+
+const targetZones = [
+  { id: 'drop-1', label: 'Action to take' },
+  { id: 'drop-2', label: 'Parameter to Monitor' },
+  { id: 'drop-3', label: 'Most likely experiencing' },
+];
+
+const StyledDropZone = styled(Paper)(({ theme }) => ({
+  minHeight: 120,
+  padding: theme.spacing(2),
+  borderRadius: theme.spacing(1),
+  border: '2px dashed #ccc',
+  background: '#f9f9f9',
+}));
 
 const DragDropQuestionComponent = () => {
-  const theme = useTheme();
-  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
+  const [items, setItems] = useState(dragItems);
+  const [zones, setZones] = useState({
+    'drop-1': [],
+    'drop-2': [],
+    'drop-3': [],
+  });
 
-  const [activeTab, setActiveTab] = useState(0);
-  const [showAnswer, setShowAnswer] = useState(false);
+  const onDragEnd = (result) => {
+    const { source, destination } = result;
+    if (!destination) return;
 
-  const explanations = [
-    "Nurses' Note explanation: Includes general observations and nurse's documentation.",
-    'Laboratory explanation: Blood pressure medication and electrolyte changes are important.',
-    'Orders explanation: Review of medical orders including recent prescriptions.',
-  ];
-
-  const handleTabChange = (event, newValue) => {
-    setActiveTab(newValue);
-  };
-
-  const handleReveal = () => {
-    setShowAnswer(true);
+    // dragging from items to zone
+    if (source.droppableId === 'source' && destination.droppableId !== 'source') {
+      const dragged = items[source.index];
+      const newZone = [...zones[destination.droppableId], dragged];
+      setZones({ ...zones, [destination.droppableId]: newZone });
+    }
   };
 
   return (
-    <Box
-      sx={{
-        backgroundColor: '#fff',
-        borderRadius: '1.5rem',
-        padding: '2rem',
-        margin: '2rem auto',
-        maxWidth: '950px',
-        boxShadow: '0 4px 12px rgba(0,0,0,0.06)',
-      }}
-    >
-      {/* Heading */}
-      <Typography
-        variant="h6"
-        fontWeight={700}
-        mb={2}
-        sx={{ textAlign: 'center', color: '#2e3760' }}
-      >
-        The following scenario applies to the next 1 items
-      </Typography>
-      <Typography
-        variant="subtitle1"
-        textAlign="center"
-        mb={3}
-        sx={{ color: '#555' }}
-      >
-        The nurse in the emergency department (ED) is caring for a 78-year-old female client
+    <Box p={3}>
+      <Typography variant="h6" fontWeight={700} textAlign="center" mb={3}>
+        Drag the actions into the appropriate categories
       </Typography>
 
-      {/* Tabs */}
-      <Tabs
-        value={activeTab}
-        onChange={handleTabChange}
-        centered={!isMobile}
-        variant={isMobile ? 'scrollable' : 'standard'}
-        scrollButtons={isMobile ? 'auto' : false}
-        sx={{ mb: 2 }}
-      >
-        <Tab label="Nurses' Note" />
-        <Tab label="Laboratory" />
-        <Tab label="Orders" />
-      </Tabs>
+      <DragDropContext onDragEnd={onDragEnd}>
+        <Grid container spacing={3} justifyContent="center" mb={4}>
+          {targetZones.map((zone) => (
+            <Grid item xs={12} sm={6} md={3} key={zone.id}>
+              <Typography fontWeight={600} mb={1} textAlign="center">
+                {zone.label}
+              </Typography>
+              <Droppable droppableId={zone.id}>
+                {(provided) => (
+                  <StyledDropZone ref={provided.innerRef} {...provided.droppableProps}>
+                    {zones[zone.id].map((item, index) => (
+                      <Draggable key={item.id} draggableId={item.id} index={index}>
+                        {(provided) => (
+                          <Box
+                            ref={provided.innerRef}
+                            {...provided.draggableProps}
+                            {...provided.dragHandleProps}
+                            sx={{
+                              backgroundColor: '#fff',
+                              borderRadius: 1,
+                              p: 1,
+                              mb: 1,
+                              boxShadow: 1,
+                              fontSize: '0.9rem',
+                            }}
+                          >
+                            {item.content}
+                          </Box>
+                        )}
+                      </Draggable>
+                    ))}
+                    {provided.placeholder}
+                  </StyledDropZone>
+                )}
+              </Droppable>
+            </Grid>
+          ))}
+        </Grid>
 
-      {/* Explanation */}
-      <Box
-        sx={{
-          backgroundColor: '#f8f9ff',
-          borderRadius: '10px',
-          padding: '1rem',
-          mb: 4,
-          minHeight: '100px',
-        }}
-      >
-        <Typography variant="body1" sx={{ color: '#333' }}>
-          {explanations[activeTab]}
-        </Typography>
-      </Box>
-
-      {/* Action and Parameter Section */}
-      <Box
-        sx={{
-          display: 'flex',
-          justifyContent: 'space-between',
-          mb: 4,
-          flexWrap: 'wrap',
-        }}
-      >
-        {/* Most likely experiencing */}
-        <Box
-          sx={{
-            textAlign: 'center',
-            mx: 2,
-            flex: '1 1 30%',
-          }}
-        >
-          <Typography>Most likely experiencing</Typography>
-          <Box
-            sx={{
-              backgroundColor: '#2e3760',
-              color: '#fff',
-              borderRadius: '8px',
-              padding: '1rem',
-            }}
-          >
-            <Typography fontWeight={600}>[Condition Here]</Typography>
-          </Box>
+        <Box textAlign="center" mb={4}>
+          <Typography variant="h6" fontWeight={600} mb={2}>
+            Options
+          </Typography>
+          <Droppable droppableId="source" direction="horizontal">
+            {(provided) => (
+              <Box
+                ref={provided.innerRef}
+                {...provided.droppableProps}
+                display="flex"
+                justifyContent="center"
+                flexWrap="wrap"
+                gap={2}
+              >
+                {items.map((item, index) => (
+                  <Draggable key={item.id} draggableId={item.id} index={index}>
+                    {(provided) => (
+                      <Box
+                        ref={provided.innerRef}
+                        {...provided.draggableProps}
+                        {...provided.dragHandleProps}
+                        sx={{
+                          backgroundColor: '#fff',
+                          border: '1px solid #ccc',
+                          borderRadius: 1,
+                          p: 1,
+                          minWidth: 250,
+                          textAlign: 'center',
+                          fontSize: '0.9rem',
+                          boxShadow: 1,
+                        }}
+                      >
+                        {item.content}
+                      </Box>
+                    )}
+                  </Draggable>
+                ))}
+                {provided.placeholder}
+              </Box>
+            )}
+          </Droppable>
         </Box>
-
-        {/* Parameter to Monitor */}
-        <Box
-          sx={{
-            textAlign: 'center',
-            mx: 2,
-            flex: '1 1 30%',
-          }}
-        >
-          <Typography>Parameter to Monitor</Typography>
-          <Box
-            sx={{
-              border: '1px solid #ccc',
-              borderRadius: '8px',
-              padding: '1rem',
-            }}
-          >
-            <Typography>Vital Signs</Typography>
-            <Typography>Lab Values</Typography>
-            <Typography>Cognition</Typography>
-          </Box>
-        </Box>
-
-        {/* Action to take */}
-        <Box
-          sx={{
-            textAlign: 'center',
-            mx: 2,
-            flex: '1 1 30%',
-          }}
-        >
-          <Typography>Action to take</Typography>
-          <Box
-            sx={{
-              border: '1px solid #ccc',
-              borderRadius: '8px',
-              padding: '1rem',
-            }}
-          >
-            <Typography>Administer high-flow oxygen via a non-rebreather mask.</Typography>
-          </Box>
-        </Box>
-      </Box>
+      </DragDropContext>
 
       <Box textAlign="center">
-        <Button
-          variant="contained"
-          onClick={handleReveal}
-          sx={{
-            backgroundColor: '#f4c300',
-            color: '#000',
-            fontWeight: 600,
-            padding: '0.6rem 2.5rem',
-            borderRadius: '10px',
-            '&:hover': {
-              backgroundColor: '#e0b000',
-            },
-          }}
-        >
+        <Button variant="contained" sx={{ backgroundColor: '#f7c948', color: '#000' }}>
           Reveal Answer
         </Button>
       </Box>
-
-      {showAnswer && (
-        <Box
-          mt={4}
-          p={2}
-          sx={{
-            backgroundColor: '#eafbea',
-            borderRadius: '10px',
-            border: '1px solid #cde8cd',
-            textAlign: 'center',
-          }}
-        >
-          <Typography variant="body1" fontWeight={500}>
-            ✅ Correct Answer: Based on the client&apos;s <b>Vital Signs</b> and <b>Cognition</b>, the highest risk is <b>Fall Risk</b>.
-          </Typography>
-        </Box>
-      )}
     </Box>
   );
 };
