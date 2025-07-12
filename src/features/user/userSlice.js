@@ -6,7 +6,7 @@ import { loginUser } from './userAPI';
 export const login = createAsyncThunk('user/login', async (credentials, thunkAPI) => {
   try {
     const data = await loginUser(credentials);
-    return data;
+    return data; // data = { user: { ... }, token: ... }
   } catch (error) {
     return thunkAPI.rejectWithValue(error.message);
   }
@@ -17,6 +17,7 @@ const userSlice = createSlice({
   initialState: {
     user: null,
     token: null,
+    role: null,
     loading: false,
     error: null,
   },
@@ -24,6 +25,7 @@ const userSlice = createSlice({
     logout: (state) => {
       state.user = null;
       state.token = null;
+      state.role = null;
     },
   },
   extraReducers: (builder) => {
@@ -36,6 +38,7 @@ const userSlice = createSlice({
         state.loading = false;
         state.user = action.payload.user;
         state.token = action.payload.token;
+        state.role = action.payload.user?.role || null; // <- ✅ fixed role assignment
       })
       .addCase(login.rejected, (state, action) => {
         state.loading = false;
