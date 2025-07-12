@@ -1,4 +1,4 @@
-// src/features/user/userAPI.js
+// login user
 export const loginUser = async (credentials) => {
   const res = await fetch('http://localhost:6040/davidacademy/admin/user/login', {
     method: 'POST',
@@ -21,4 +21,51 @@ export const loginUser = async (credentials) => {
     },
     token: json.data.token,
   };
+};
+//create user
+export const createUserAPI = async (userData) => {
+  const response = await fetch('http://localhost:6040/davidacademy/admin/user/create', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(userData),
+  });
+
+  if (!response.ok) {
+    const errorData = await response.json();
+    throw new Error(errorData.message || 'Failed to create user');
+  }
+
+  return await response.json();
+};
+// verify otp
+
+export const verifyOtpAPI = async (payload) => {
+  const response = await fetch('https://your-api.com/api/verify-otp', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(payload),
+  });
+
+  if (!response.ok) {
+    const errorData = await response.json();
+    throw new Error(errorData.message || 'OTP verification failed');
+  }
+
+  return await response.json(); // expected { user, token }
+};
+// forgot password
+
+export const forgotPasswordAPI = async (emailPayload) => {
+  const response = await fetch('https://your-api.com/api/forgot-password', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(emailPayload),
+  });
+
+  if (!response.ok) {
+    const errorData = await response.json();
+    throw new Error(errorData.message || 'Failed to send reset email');
+  }
+
+  return await response.json(); // Expected: { message: 'OTP sent to email' }
 };
