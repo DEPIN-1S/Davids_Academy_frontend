@@ -26,7 +26,15 @@ import DropSortQuestionPage from './pages/DashboardPages/DropSortQuestionPage';
 import ScorePage from './pages/DashboardPages/ScorePage';
 import './styles/Layout.css';
 import ProtectedRoutes from './routes/ProtectedRoutes';
+import { hydrateUser } from './features/user/userSlice';
+import { useDispatch } from 'react-redux'; // for Redux
+import { useEffect } from 'react'; // for lifecycle logic
 const App = () => {
+  const dispatch = useDispatch();
+  useEffect(() => {
+    dispatch(hydrateUser()); // 👈 this sets user/token from localStorage to redux
+  }, [dispatch]);
+
   return (
     <>
       <Navbar />

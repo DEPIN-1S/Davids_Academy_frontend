@@ -26,7 +26,19 @@ const userSlice = createSlice({
       state.user = null;
       state.token = null;
       state.role = null;
+      localStorage.removeItem('user');
+      localStorage.removeItem('token');
     },
+    hydrateUser: (state) => {
+      const user = localStorage.getItem('user');
+      const token = localStorage.getItem('token');
+      console.log('user', user, token)
+      if (user && token) {
+        state.user = user;
+        state.token = token;
+        state.role = user.role;
+      }
+    }
   },
   extraReducers: (builder) => {
     builder
@@ -39,13 +51,19 @@ const userSlice = createSlice({
         state.user = action.payload.user;
         state.token = action.payload.token;
         state.role = action.payload.user?.role || null; // <- ✅ fixed role assignment
+        // Save to localStorage
+        localStorage.setItem('user', JSON.stringify(action.payload.user));
+        localStorage.setItem('token', action.payload.token);
       })
       .addCase(login.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
       });
+
   },
+
+
 });
 
-export const { logout } = userSlice.actions;
+export const { logout, hydrateUser, } = userSlice.actions;
 export default userSlice.reducer;
