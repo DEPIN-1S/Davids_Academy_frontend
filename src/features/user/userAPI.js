@@ -40,7 +40,7 @@ export const createUserAPI = async (userData) => {
 // verify otp
 
 export const verifyOtpAPI = async (payload) => {
-  const response = await fetch('https://your-api.com/api/verify-otp', {
+  const response = await fetch('http://localhost:6040/davidacademy/admin/user/verify-otp', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(payload),
@@ -56,7 +56,7 @@ export const verifyOtpAPI = async (payload) => {
 // forgot password
 
 export const forgotPasswordAPI = async (emailPayload) => {
-  const response = await fetch('https://your-api.com/api/forgot-password', {
+  const response = await fetch('http://localhost:6040/davidacademy/admin/user/forgot-password', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(emailPayload),

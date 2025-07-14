@@ -99,65 +99,65 @@ const App = () => {
           <Route
             path="/radio-question"
             element={
-              <ProtectedRoutes allowedRoles={['student']}>
-                <RadioButtonQuestionPage />
-              </ProtectedRoutes>
+              // <ProtectedRoutes allowedRoles={['student']}>
+              <RadioButtonQuestionPage />
+              // </ProtectedRoutes>
             }
           />
           <Route
             path="/reveal-answer-radio"
             element={
-              <ProtectedRoutes allowedRoles={['student']}>
-                <RevealAnswerRadioPage />
-              </ProtectedRoutes>
+              // <ProtectedRoutes allowedRoles={['student']}>
+              <RevealAnswerRadioPage />
+              // </ProtectedRoutes>
             }
           />
           <Route
             path="/dropdown-question"
             element={
-              <ProtectedRoutes allowedRoles={['student']}>
-                <DropdownQuestionPage />
-              </ProtectedRoutes>
+              // <ProtectedRoutes allowedRoles={['student']}>
+              <DropdownQuestionPage />
+              // </ProtectedRoutes>
             }
           />
           <Route
             path="/dragdrop-question"
             element={
-              <ProtectedRoutes allowedRoles={['student']}>
-                <DragDropQuestionPage />
-              </ProtectedRoutes>
+              // <ProtectedRoutes allowedRoles={['student']}>
+              <DragDropQuestionPage />
+              // </ProtectedRoutes>
             }
           />
           <Route
             path="/multi-radio-question"
             element={
-              <ProtectedRoutes allowedRoles={['student']}>
-                <MultiRadioQuestionPage />
-              </ProtectedRoutes>
+              // <ProtectedRoutes allowedRoles={['student']}>
+              <MultiRadioQuestionPage />
+              // </ProtectedRoutes>
             }
           />
           <Route
             path="/sort-question"
             element={
-              <ProtectedRoutes allowedRoles={['student']}>
-                <SortQuestionPage />
-              </ProtectedRoutes>
+              // <ProtectedRoutes allowedRoles={['student']}>
+              <SortQuestionPage />
+              // </ProtectedRoutes>
             }
           />
           <Route
             path="/sentence-question"
             element={
-              <ProtectedRoutes allowedRoles={['student']}>
-                <SentenceQuestionPage />
-              </ProtectedRoutes>
+              // <ProtectedRoutes allowedRoles={['student']}>
+              <SentenceQuestionPage />
+              // </ProtectedRoutes>
             }
           />
           <Route
             path="/drop-sort-question"
             element={
-              <ProtectedRoutes allowedRoles={['student']}>
-                <DropSortQuestionPage />
-              </ProtectedRoutes>
+              // <ProtectedRoutes allowedRoles={['student']}>
+              <DropSortQuestionPage />
+              // </ProtectedRoutes>
             }
           />
           <Route
@@ -173,7 +173,7 @@ const App = () => {
 
 
         </Routes>
-      </div>
+      </div >
       <Footer />
     </>
   );
