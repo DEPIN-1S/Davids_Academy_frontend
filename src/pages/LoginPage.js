@@ -33,7 +33,7 @@ const LoginPage = () => {
         if (userRole === 'student') {
           navigate('/question-bank');
         } else if (userRole === 'admin') {
-          navigate('/admin/adminHome');
+          navigate('/admin/dashboard');
         } else {
           toast.info('Logged in, but no matching role redirect.');
         }

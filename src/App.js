@@ -175,7 +175,7 @@ const App = () => {
         {/*student protected components end */}
         {/* admin components start */}
         <Route element={<MainLayout />}>
-          <Route path="/dashboard" element={<AdminDashboardPage />} />
+          <Route path="/admin/dashboard" element={<AdminDashboardPage />} />
           <Route path="/student-manage" element={<StudentManage />} />
           <Route path="/question-management" element={<QManagementPage />} />
         </Route>
