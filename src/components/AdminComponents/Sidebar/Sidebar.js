@@ -17,13 +17,19 @@ const Sidebar = () => {
 
   const menuItems = [
     { name: "Dashboard", icon: <FaThLarge />, path: "/dashboard" },
-    { name: "Student Management", icon: <FaUserGraduate />, path: "/students" },
-    { name: "Course Management", icon: <FaBook />, path: "/courses" },
+    { name: "Student Management", icon: <FaUserGraduate />, path: "/student-manage" },
+    { name: "Course Management", icon: <FaBook />, path: "/course-management" },
     {
       name: "Test & Q-bank Management",
-      icon: <FaClipboardList />,
-      path: "/tests",
-    },
+      icon: (
+        <>
+          <FaUserGraduate style={{ marginRight: "4px" }} />
+          <FaClipboardList />
+        </>
+      ),
+      path: "/question-management",
+    }
+    ,
     { name: "Recorded Classes", icon: <FaVideo />, path: "/classes" },
     { name: "Enquiries & Leads", icon: <FaPhone />, path: "/enquiries" },
   ];

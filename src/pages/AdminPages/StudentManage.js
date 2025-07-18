@@ -1,6 +1,6 @@
 import React from "react";
 import { FaTrash, FaEdit } from "react-icons/fa";
-import "../../../styles/AdminStyles/StudentManage.css";
+import "../../styles/AdminStyles/StudentManage.css";
 
 const StudentManage = () => {
   const students = [

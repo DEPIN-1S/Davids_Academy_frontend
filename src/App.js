@@ -24,9 +24,9 @@ import SentenceQuestionPage from './pages/DashboardPages/SentenceQuestionPage';
 import DropSortQuestionPage from './pages/DashboardPages/DropSortQuestionPage';
 import ScorePage from './pages/DashboardPages/ScorePage';
 import MainLayout from './components/AdminComponents/MainLayout';
-import AdminDashboardPage from './pages/AdminPages/Dashboard/AdminDashboardPage';
-import StudentManage from './pages/AdminPages/StudentManage/StudentManage'
-
+import AdminDashboardPage from './pages/AdminPages/AdminDashboardPage';
+import StudentManage from './pages/AdminPages/StudentManage'
+import QManagementPage from './pages/AdminPages/QManagementPage';
 import './styles/Layout.css';
 import ProtectedRoutes from './routes/ProtectedRoutes';
 import { hydrateUser } from './features/user/userSlice';
@@ -177,6 +177,7 @@ const App = () => {
         <Route element={<MainLayout />}>
           <Route path="/dashboard" element={<AdminDashboardPage />} />
           <Route path="/student-manage" element={<StudentManage />} />
+          <Route path="/question-management" element={<QManagementPage />} />
         </Route>
         {/* admin components end */}
       </Routes>

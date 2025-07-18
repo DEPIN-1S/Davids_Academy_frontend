@@ -1,5 +1,5 @@
 import React from "react";
-import "../../../styles/AdminStyles/AdminDashboardPage.css";
+import "../../styles/AdminStyles/AdminDashboardPage.css";
 
 const DashboardPage = () => {
   const stats = [
