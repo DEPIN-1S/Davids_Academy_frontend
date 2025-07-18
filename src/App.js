@@ -25,6 +25,8 @@ import DropSortQuestionPage from './pages/DashboardPages/DropSortQuestionPage';
 import ScorePage from './pages/DashboardPages/ScorePage';
 import MainLayout from './components/AdminComponents/MainLayout';
 import AdminDashboardPage from './pages/AdminPages/Dashboard/AdminDashboardPage';
+import StudentManage from './pages/AdminPages/StudentManage/StudentManage'
+
 import './styles/Layout.css';
 import ProtectedRoutes from './routes/ProtectedRoutes';
 import { hydrateUser } from './features/user/userSlice';
@@ -174,6 +176,7 @@ const App = () => {
         {/* admin components start */}
         <Route element={<MainLayout />}>
           <Route path="/dashboard" element={<AdminDashboardPage />} />
+          <Route path="/student-manage" element={<StudentManage />} />
         </Route>
         {/* admin components end */}
       </Routes>
