@@ -1,0 +1,29 @@
+.welcome-header {
+  background: #fff;
+  border-bottom: 1px solid #e5e5e5;
+}
+
+.profile-box {
+  border: 1px solid #ddd;
+  border-radius: 30px;
+  background: #fff;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.profile-box:hover {
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+}
+
+.profile-icon {
+  font-size: 20px;
+  color: #333;
+}
+
+.profile-info span {
+  font-size: 14px;
+}
+
+.profile-info small {
+  font-size: 12px;
+}

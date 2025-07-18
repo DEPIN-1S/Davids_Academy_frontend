@@ -1,0 +1,73 @@
+.table-container {
+  padding: 20px;
+  font-family: Arial, sans-serif;
+}
+
+.student-table {
+  width: 100%;
+  border-collapse: collapse;
+  box-shadow: 0px 2px 6px rgba(0, 0, 0, 0.1);
+  text-align: center;
+}
+
+.student-table th {
+  background-color: #253d73;
+  color: #fff;
+  padding: 12px;
+}
+
+.student-table td {
+  padding: 12px;
+}
+
+.striped {
+  background-color: #f7f7f7;
+}
+
+/* Action Buttons */
+.action-buttons {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+}
+
+.progress-btn {
+  background-color: #253d73;
+  color: #fff;
+  border: none;
+  padding: 6px 12px;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.delete-btn {
+  background-color: #fff;
+  color: red;
+  border: 1px solid red;
+  padding: 6px 8px;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.edit-btn {
+  background-color: #fff;
+  color: #253d73;
+  border: 1px solid #253d73;
+  padding: 6px 8px;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+/* Hover effects */
+.progress-btn:hover {
+  background-color: #1e2f5b;
+}
+
+.delete-btn:hover {
+  background-color: #ffe6e6;
+}
+
+.edit-btn:hover {
+  background-color: #e6ebf7;
+}

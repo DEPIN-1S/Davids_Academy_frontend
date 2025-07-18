@@ -1,7 +1,6 @@
 import React from 'react';
 import { Routes, Route } from 'react-router-dom';
-import Navbar from './components/Navbar';
-import Footer from './components/NewsletterFooter';
+import LandingLayout from './layouts/LandingLayout';
 import Home from './pages/Home';
 import AboutPage from './pages/AboutPage';
 import CoursesPage from './pages/CoursesPage';
@@ -24,11 +23,14 @@ import SortQuestionPage from './pages/DashboardPages/SortQuestionPage';
 import SentenceQuestionPage from './pages/DashboardPages/SentenceQuestionPage';
 import DropSortQuestionPage from './pages/DashboardPages/DropSortQuestionPage';
 import ScorePage from './pages/DashboardPages/ScorePage';
+import MainLayout from './components/AdminComponents/MainLayout';
+import AdminDashboardPage from './pages/AdminPages/Dashboard/AdminDashboardPage';
 import './styles/Layout.css';
 import ProtectedRoutes from './routes/ProtectedRoutes';
 import { hydrateUser } from './features/user/userSlice';
 import { useDispatch } from 'react-redux'; // for Redux
 import { useEffect } from 'react'; // for lifecycle logic
+import "bootstrap/dist/css/bootstrap.min.css";
 const App = () => {
   const dispatch = useDispatch();
   useEffect(() => {
@@ -37,9 +39,8 @@ const App = () => {
 
   return (
     <>
-      <Navbar />
-      <div class="page-layout">
-        <Routes>
+      <Routes>
+        <Route element={<LandingLayout />}>
           <Route path="/" element={<Home />} />
           <Route path="/about" element={<AboutPage />} />
           <Route path="/courses" element={<CoursesPage />} />
@@ -47,134 +48,135 @@ const App = () => {
           <Route path="/contact-us" element={<ContactPage />} />
           <Route path="/sample-questionnaire" element={<SampleQuestionnaire />} />
           <Route path="/login" element={<LoginPage />} />
-          {/*student protected components */}
-          <Route
-            path="/question-bank"
-            element={
-              <ProtectedRoutes allowedRoles={['student']}>
-                <QuestionBankPage />
-              </ProtectedRoutes>
-            }
-          />
-          <Route
-            path="/my-statistics"
-            element={
-              <ProtectedRoutes allowedRoles={['student']}>
-                <StatisticsPage />
-              </ProtectedRoutes>
-            }
-          />
-          <Route
-            path="/recorded-class"
-            element={
-              <ProtectedRoutes allowedRoles={['student']}>
-                <RecordedClassesPage />
-              </ProtectedRoutes>
-            }
-          />
-          <Route
-            path="/notes"
-            element={
-              <ProtectedRoutes allowedRoles={['student']}>
-                <NotesPage />
-              </ProtectedRoutes>
-            }
-          />
-          <Route
-            path="/mock-test"
-            element={
-              <ProtectedRoutes allowedRoles={['student']}>
-                <MockTestPage />
-              </ProtectedRoutes>
-            }
-          />
-          <Route
-            path="/previous-tests"
-            element={
-              <ProtectedRoutes allowedRoles={['student']}>
-                <PreviousTestPage />
-              </ProtectedRoutes>
-            }
-          />
-          <Route
-            path="/radio-question"
-            element={
-              // <ProtectedRoutes allowedRoles={['student']}>
-              <RadioButtonQuestionPage />
-              // </ProtectedRoutes>
-            }
-          />
-          <Route
-            path="/reveal-answer-radio"
-            element={
-              // <ProtectedRoutes allowedRoles={['student']}>
-              <RevealAnswerRadioPage />
-              // </ProtectedRoutes>
-            }
-          />
-          <Route
-            path="/dropdown-question"
-            element={
-              // <ProtectedRoutes allowedRoles={['student']}>
-              <DropdownQuestionPage />
-              // </ProtectedRoutes>
-            }
-          />
-          <Route
-            path="/dragdrop-question"
-            element={
-              // <ProtectedRoutes allowedRoles={['student']}>
-              <DragDropQuestionPage />
-              // </ProtectedRoutes>
-            }
-          />
-          <Route
-            path="/multi-radio-question"
-            element={
-              // <ProtectedRoutes allowedRoles={['student']}>
-              <MultiRadioQuestionPage />
-              // </ProtectedRoutes>
-            }
-          />
-          <Route
-            path="/sort-question"
-            element={
-              // <ProtectedRoutes allowedRoles={['student']}>
-              <SortQuestionPage />
-              // </ProtectedRoutes>
-            }
-          />
-          <Route
-            path="/sentence-question"
-            element={
-              // <ProtectedRoutes allowedRoles={['student']}>
-              <SentenceQuestionPage />
-              // </ProtectedRoutes>
-            }
-          />
-          <Route
-            path="/drop-sort-question"
-            element={
-              // <ProtectedRoutes allowedRoles={['student']}>
-              <DropSortQuestionPage />
-              // </ProtectedRoutes>
-            }
-          />
-          <Route
-            path="/score"
-            element={
-              <ProtectedRoutes allowedRoles={['student']}>
-                <ScorePage />
-              </ProtectedRoutes>
-            }
-          />
-
-          {/*student protected components end */}
-
-
-        </Routes>
-      </div >
-      <Footer />
+        </Route>
+        {/*student protected components */}
+        <Route
+          path="/question-bank"
+          element={
+            <ProtectedRoutes allowedRoles={['student']}>
+              <QuestionBankPage />
+            </ProtectedRoutes>
+          }
+        />
+        <Route
+          path="/my-statistics"
+          element={
+            <ProtectedRoutes allowedRoles={['student']}>
+              <StatisticsPage />
+            </ProtectedRoutes>
+          }
+        />
+        <Route
+          path="/recorded-class"
+          element={
+            <ProtectedRoutes allowedRoles={['student']}>
+              <RecordedClassesPage />
+            </ProtectedRoutes>
+          }
+        />
+        <Route
+          path="/notes"
+          element={
+            <ProtectedRoutes allowedRoles={['student']}>
+              <NotesPage />
+            </ProtectedRoutes>
+          }
+        />
+        <Route
+          path="/mock-test"
+          element={
+            <ProtectedRoutes allowedRoles={['student']}>
+              <MockTestPage />
+            </ProtectedRoutes>
+          }
+        />
+        <Route
+          path="/previous-tests"
+          element={
+            <ProtectedRoutes allowedRoles={['student']}>
+              <PreviousTestPage />
+            </ProtectedRoutes>
+          }
+        />
+        <Route
+          path="/radio-question"
+          element={
+            // <ProtectedRoutes allowedRoles={['student']}>
+            <RadioButtonQuestionPage />
+            // </ProtectedRoutes>
+          }
+        />
+        <Route
+          path="/reveal-answer-radio"
+          element={
+            // <ProtectedRoutes allowedRoles={['student']}>
+            <RevealAnswerRadioPage />
+            // </ProtectedRoutes>
+          }
+        />
+        <Route
+          path="/dropdown-question"
+          element={
+            // <ProtectedRoutes allowedRoles={['student']}>
+            <DropdownQuestionPage />
+            // </ProtectedRoutes>
+          }
+        />
+        <Route
+          path="/dragdrop-question"
+          element={
+            // <ProtectedRoutes allowedRoles={['student']}>
+            <DragDropQuestionPage />
+            // </ProtectedRoutes>
+          }
+        />
+        <Route
+          path="/multi-radio-question"
+          element={
+            // <ProtectedRoutes allowedRoles={['student']}>
+            <MultiRadioQuestionPage />
+            // </ProtectedRoutes>
+          }
+        />
+        <Route
+          path="/sort-question"
+          element={
+            // <ProtectedRoutes allowedRoles={['student']}>
+            <SortQuestionPage />
+            // </ProtectedRoutes>
+          }
+        />
+        <Route
+          path="/sentence-question"
+          element={
+            // <ProtectedRoutes allowedRoles={['student']}>
+            <SentenceQuestionPage />
+            // </ProtectedRoutes>
+          }
+        />
+        <Route
+          path="/drop-sort-question"
+          element={
+            // <ProtectedRoutes allowedRoles={['student']}>
+            <DropSortQuestionPage />
+            // </ProtectedRoutes>
+          }
+        />
+        <Route
+          path="/score"
+          element={
+            <ProtectedRoutes allowedRoles={['student']}>
+              <ScorePage />
+            </ProtectedRoutes>
+          }
+        />
+        {/*student protected components end */}
+        {/* admin components start */}
+        <Route element={<MainLayout />}>
+          <Route path="/dashboard" element={<AdminDashboardPage />} />
+        </Route>
+        {/* admin components end */}
+      </Routes>
     </>
   );
 };
