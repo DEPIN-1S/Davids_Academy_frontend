@@ -2,14 +2,13 @@ import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import '../styles/Navbar.css';
 import { useSelector } from 'react-redux';
-import UserDropdown from '../components/DasboardComponents/UserDropdownComponent';
 const Navbar = () => {
   const [menuOpen, setMenuOpen] = useState(false);
   const toggleMenu = () => setMenuOpen(prev => !prev);
   const closeMenu = () => setMenuOpen(false);
-  const { user } = useSelector((state) => state.user); //  gets user from redux
+  // const { user } = useSelector((state) => state.user); //  gets user from redux
   return (
-    <nav className="navbar">
+    <nav className="landing-navbar">
       <div className="navbar-container">
         <div className="logo">
           <Link to="/" onClick={closeMenu}>
@@ -32,12 +31,12 @@ const Navbar = () => {
           <li><Link to="/contact-us" onClick={closeMenu}>Contact Us</Link></li>
           {/* Mobile view: show user or login */}
           <li className="mobile-login" onClick={closeMenu}>
-            {user ? <UserDropdown /> : <Link to="/login">Login</Link>}
+            <Link to="/login">Login</Link>
           </li>
         </ul>
         {/* Desktop view: show user or login */}
         <div className="login-button desktop-only">
-          {user ? <UserDropdown /> : <Link to="/login">Login</Link>}
+          <Link to="/login">Login</Link>
         </div>
       </div>
     </nav >

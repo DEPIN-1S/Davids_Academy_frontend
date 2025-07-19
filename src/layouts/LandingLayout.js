@@ -2,14 +2,12 @@
 import Navbar from '../components/Navbar';
 import Footer from '../components/NewsletterFooter';
 import { Outlet } from 'react-router-dom';
-
+import '../styles/Layout.css'
 const LandingLayout = () => {
     return (
         <>
             <Navbar />
-            <main class="page-layout">
-                <Outlet />
-            </main>
+            <Outlet className="page-layout" />
             <Footer />
         </>
     );

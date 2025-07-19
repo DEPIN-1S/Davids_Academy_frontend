@@ -31,7 +31,7 @@ const LoginPage = () => {
         console.log('userRole', userRole);
         // ✅ Only one navigate call based on role
         if (userRole === 'student') {
-          navigate('/question-bank');
+          navigate('/student/question-bank');
         } else if (userRole === 'admin') {
           navigate('/admin/dashboard');
         } else {

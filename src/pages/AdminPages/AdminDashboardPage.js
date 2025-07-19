@@ -31,7 +31,7 @@ const DashboardPage = () => {
   ];
 
   const enquiries = [
-    { name: "Aisha Khan", course: "DHA", status: "NEW" },
+    { name: "Aisha Khan", course: "DHA", status: "NEW" }, 
     { name: "Aisha Khan", course: "DHA", status: "NEW" },
     { name: "Aisha Khan", course: "DHA", status: "NEW" },
     { name: "Aisha Khan", course: "DHA", status: "NEW" },

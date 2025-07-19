@@ -53,7 +53,7 @@ const App = () => {
         </Route>
         {/*student protected components */}
         <Route
-          path="/question-bank"
+          path="student/question-bank"
           element={
             <ProtectedRoutes allowedRoles={['student']}>
               <QuestionBankPage />

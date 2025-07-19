@@ -62,7 +62,7 @@ const userSlice = createSlice({
       localStorage.removeItem('user');
       localStorage.removeItem('token');
     },
-    hydrateUser: (state) => {
+      hydrateUser: (state) => {
       const userStr = localStorage.getItem('user');
       const token = localStorage.getItem('token');
 
