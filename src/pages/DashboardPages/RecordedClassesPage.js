@@ -1,18 +1,18 @@
 import React from 'react';
-import DashboardNavbar from '../../components/DasboardComponents/DashboardNavbar';
-import RecordClassStats from '../../components/DasboardComponents/RecordClassStats';
-import NewVideoComponent from '../../components/DasboardComponents/NewVideoComponent';
-import ContinueWatchingComponent from '../../components/DasboardComponents/ContinueWatchingComponent';
-import PlaylistComponent from '../../components/DasboardComponents/PlaylistComponent';
+import DashboardNavbar from '../../components/StudentComponents/DashboardNavbar';
+import RecordClassStats from '../../components/StudentComponents/RecordClassStats';
+import NewVideoComponent from '../../components/StudentComponents/NewVideoComponent';
+import ContinueWatchingComponent from '../../components/StudentComponents/ContinueWatchingComponent';
+import PlaylistComponent from '../../components/StudentComponents/PlaylistComponent';
 const RecordClassesPage = () => {
   return (
-       <section className='record-class-section'>
-        <DashboardNavbar/>
+    <section className='record-class-section'>
+      <DashboardNavbar />
       <RecordClassStats />
-       <NewVideoComponent />
-         <ContinueWatchingComponent />
-         <PlaylistComponent />
-     </section>
+      <NewVideoComponent />
+      <ContinueWatchingComponent />
+      <PlaylistComponent />
+    </section>
   );
 };
 

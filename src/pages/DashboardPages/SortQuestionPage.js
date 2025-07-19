@@ -1,15 +1,15 @@
 import React from 'react';
-import QuestionHeaderComponent from '../../components/DasboardComponents/QuestionHeaderComponent';
-import QuestionFooterComponent from '../../components/DasboardComponents/QuestionFooterComponent';
-import SortQuestionComponent from '../../components/DasboardComponents/SortQuestionComponent';
+import QuestionHeaderComponent from '../../components/StudentComponents/QuestionHeaderComponent';
+import QuestionFooterComponent from '../../components/StudentComponents/QuestionFooterComponent';
+import SortQuestionComponent from '../../components/StudentComponents/SortQuestionComponent';
 const SortQuestionPage = () => {
   return (
-      <>
-        <QuestionHeaderComponent/>
-        <SortQuestionComponent/>
-        <QuestionFooterComponent />
+    <>
+      <QuestionHeaderComponent />
+      <SortQuestionComponent />
+      <QuestionFooterComponent />
     </>
   );
 };
 
-export default  SortQuestionPage;
+export default SortQuestionPage;

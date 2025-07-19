@@ -1,10 +1,10 @@
 import React, { useState } from "react";
 import { Outlet } from "react-router-dom";
-import Sidebar from "../AdminComponents/Sidebar/Sidebar";
-import NavBar from "../AdminComponents/NavBar/NavBar";
-import "../../styles/AdminStyles/MainLayout.css";
+import Sidebar from "./Sidebar/Sidebar";
+import NavBar from "./NavBar/NavBar";
+import "../../styles/AdminStyles/AdminLayout.css";
 
-const MainLayout = () => {
+const AdminLayout = () => {
   const [isOpen, setIsOpen] = useState(false);
 
   const toggleSidebar = () => setIsOpen(!isOpen);
@@ -22,4 +22,4 @@ const MainLayout = () => {
   );
 };
 
-export default MainLayout;
+export default AdminLayout;

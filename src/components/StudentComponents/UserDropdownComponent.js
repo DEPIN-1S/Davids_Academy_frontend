@@ -2,38 +2,40 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { logout } from '../../features/user/userSlice';
-import '../../styles/DashboardStyles/UserDropdownComponent.css'; // ✅ Make sure this path is correct
+import '../../styles/DashboardStyles/UserDropdownComponent.css';
 
 const UserDropdownComponent = () => {
     const dispatch = useDispatch();
-    const user = useSelector((state) => state.user.user); // ✅ Correct path to user object
+    const user = useSelector((state) => state.user.user);
     const [open, setOpen] = useState(false);
     const dropdownRef = useRef(null);
 
     const handleLogout = () => {
         dispatch(logout());
-        window.location.href = '/login'; // or use navigate('/login')
+        window.location.href = '/login';
     };
-    // Close dropdown on outside click
+
+    // Close dropdown if click is outside
     useEffect(() => {
         const handleClickOutside = (event) => {
             if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
                 setOpen(false);
             }
         };
+
         document.addEventListener('mousedown', handleClickOutside);
         return () => document.removeEventListener('mousedown', handleClickOutside);
     }, []);
 
     return (
-        <div className={`user-dropdown ${open ? 'open' : ''}`} ref={dropdownRef}>
-            <div className="user-display" onClick={() => setOpen((prev) => !prev)}>
+        <div className="user-dropdown-wrapper" ref={dropdownRef}>
+            <div className="user-display" onClick={() => setOpen(prev => !prev)}>
                 <div className="avatar-circle">
-                    <img src="/images/loginAvatar.png" alt="avatar" />
+                    <img src="/images/loginAvatar.png" alt="Avatar" />
                 </div>
                 <div className="user-meta">
-                    <span className="name">{user?.name}</span>
-                    <span className="email">{user?.email}</span>
+                    <span className="name">{user?.name || 'Admin'}</span>
+                    <span className="email">{user?.email || 'admin@email.com'}</span>
                 </div>
                 <span className="arrow">▾</span>
             </div>

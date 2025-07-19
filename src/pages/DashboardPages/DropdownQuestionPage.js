@@ -1,15 +1,15 @@
 import React from 'react';
-import DropdownQuestionComponent from '../../components/DasboardComponents/DropdownQuestionComponent';
-import QuestionHeaderComponent from '../../components/DasboardComponents/QuestionHeaderComponent';
-import QuestionFooterComponent from '../../components/DasboardComponents/QuestionFooterComponent';
+import DropdownQuestionComponent from '../../components/StudentComponents/DropdownQuestionComponent';
+import QuestionHeaderComponent from '../../components/StudentComponents/QuestionHeaderComponent';
+import QuestionFooterComponent from '../../components/StudentComponents/QuestionFooterComponent';
 const DropdownQuestionPage = () => {
   return (
-      <>
-       <QuestionHeaderComponent/>
-        <DropdownQuestionComponent/>
-       <QuestionFooterComponent/>
-      </>
-    
+    <>
+      <QuestionHeaderComponent />
+      <DropdownQuestionComponent />
+      <QuestionFooterComponent />
+    </>
+
   );
 };
 

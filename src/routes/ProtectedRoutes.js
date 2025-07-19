@@ -4,9 +4,8 @@ import { useSelector } from 'react-redux';
 import { Navigate } from 'react-router-dom';
 
 const ProtectedRoutes = ({ children, allowedRoles = [] }) => {
-  const { token, user } = useSelector((state) => state.user);
-
-  if (!token || !user) {
+  const { accessToken, user } = useSelector((state) => state.user);
+  if (!accessToken || !user) {
     return <Navigate to="/login" />;
   }
 

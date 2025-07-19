@@ -1,14 +1,14 @@
 import React from 'react';
-import QuestionHeaderComponent from '../../components/DasboardComponents/QuestionHeaderComponent';
-import QuestionFooterComponent from '../../components/DasboardComponents/QuestionFooterComponent';
-import RevealAnswerRadioComponent from '../../components/DasboardComponents/RevealAnswerRadioComponent';
+import QuestionHeaderComponent from '../../components/StudentComponents/QuestionHeaderComponent';
+import QuestionFooterComponent from '../../components/StudentComponents/QuestionFooterComponent';
+import RevealAnswerRadioComponent from '../../components/StudentComponents/RevealAnswerRadioComponent';
 const RevealAnswerRadioPage = () => {
   return (
-   <>
+    <>
       <QuestionHeaderComponent />
       <RevealAnswerRadioComponent />
-     <QuestionFooterComponent />
-  </>
+      <QuestionFooterComponent />
+    </>
   );
 };
 

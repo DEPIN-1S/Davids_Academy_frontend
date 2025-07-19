@@ -1,6 +1,7 @@
 .user-dropdown {
   position: relative;
   display: inline-block;
+  z-index: 1000;
 }
 
 .user-display {
@@ -12,12 +13,18 @@
   background: #fff;
   cursor: pointer;
   min-width: 220px;
+  transition: box-shadow 0.3s ease;
+}
+
+.user-display:hover {
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
 .avatar-circle img {
   width: 32px;
   height: 32px;
   border-radius: 50%;
+  object-fit: cover;
 }
 
 .user-meta {
@@ -25,21 +32,29 @@
   flex-direction: column;
   margin-left: 8px;
   flex-grow: 1;
+  overflow: hidden;
 }
 
 .name {
   font-size: 14px;
   font-weight: 600;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .email {
   font-size: 12px;
   color: gray;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .arrow {
   font-size: 14px;
   margin-left: 8px;
+  color: #666;
 }
 
 .dropdown-menu {
@@ -48,10 +63,11 @@
   right: 0;
   background: white;
   border: 1px solid #ccc;
-  padding: 8px 12px;
+  padding: 8px 0;
   border-radius: 6px;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
-  z-index: 10;
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+  min-width: 180px;
+  animation: dropdownFade 0.25s ease;
 }
 
 .dropdown-menu button {
@@ -60,4 +76,39 @@
   color: #333;
   font-size: 14px;
   cursor: pointer;
+  padding: 10px 16px;
+  width: 100%;
+  text-align: left;
+  transition: background-color 0.2s ease;
+}
+
+.dropdown-menu button:hover {
+  background-color: #f4f4f4;
+}
+
+@keyframes dropdownFade {
+  from {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Optional: make dropdown responsive */
+@media (max-width: 480px) {
+  .user-display {
+    min-width: unset;
+    padding: 6px 10px;
+  }
+
+  .user-meta {
+    display: none;
+  }
+
+  .arrow {
+    margin-left: auto;
+  }
 }

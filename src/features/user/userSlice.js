@@ -44,7 +44,8 @@ export const forgotPassword = createAsyncThunk(
 // INITIAL STATE
 const initialState = {
   user: null,
-  token: null,
+  refreshToken: null,
+  accessToken: null,
   role: null,
   loading: false,
   error: null,
@@ -57,27 +58,30 @@ const userSlice = createSlice({
   reducers: {
     logout: (state) => {
       state.user = null;
-      state.token = null;
+      state.refreshToken = null;
+      state.accessToken = null;
       state.role = null;
       localStorage.removeItem('user');
-      localStorage.removeItem('token');
     },
-      hydrateUser: (state) => {
+    hydrateUser: (state) => {
       const userStr = localStorage.getItem('user');
-      const token = localStorage.getItem('token');
-
-      if (userStr && userStr !== 'undefined' && token) {
+      const accessToken = localStorage.getItem('accessToken');
+      const refreshToken = localStorage.getItem('refreshToken');
+      if (userStr && userStr !== 'undefined' && accessToken) {
         try {
           const user = JSON.parse(userStr);
           state.user = user;
-          state.token = token;
+          state.accessToken = accessToken;
+          state.refreshToken = refreshToken;
           state.role = user.role || null;
         } catch (err) {
           state.user = null;
-          state.token = null;
+          state.accessToken = null;
+          state.refreshToken = null;
           state.role = null;
           localStorage.removeItem('user');
-          localStorage.removeItem('token');
+          localStorage.removeItem('accessToken');
+          localStorage.removeItem('refreshToken');
         }
       }
     },
@@ -92,10 +96,12 @@ const userSlice = createSlice({
       .addCase(login.fulfilled, (state, action) => {
         state.loading = false;
         state.user = action.payload.user;
-        state.token = action.payload.token;
+        state.accessToken = action.payload.accessToken;
+        state.refreshToken = action.payload.refreshToken;
         state.role = action.payload.user?.role || null;
         localStorage.setItem('user', JSON.stringify(action.payload.user));
-        localStorage.setItem('token', action.payload.token);
+        localStorage.setItem('accessToken', action.payload.accessToken);
+        localStorage.setItem('refreshToken', action.payload.refreshToken);
       })
       .addCase(login.rejected, (state, action) => {
         state.loading = false;
@@ -110,10 +116,12 @@ const userSlice = createSlice({
       .addCase(createUser.fulfilled, (state, action) => {
         state.loading = false;
         state.user = action.payload.user;
-        state.token = action.payload.token;
+        state.accessToken = action.payload.accessToken;
+        state.refreshToken = action.payload.refreshToken;
         state.role = action.payload.user?.role || null;
         localStorage.setItem('user', JSON.stringify(action.payload.user));
-        localStorage.setItem('token', action.payload.token);
+        localStorage.setItem('accessToken', action.payload.accessToken);
+        localStorage.setItem('refreshToken', action.payload.refreshToken);
       })
       .addCase(createUser.rejected, (state, action) => {
         state.loading = false;
@@ -126,11 +134,13 @@ const userSlice = createSlice({
       .addCase(verifyOtp.fulfilled, (state, action) => {
         state.loading = false;
         state.user = action.payload.user;
-        state.token = action.payload.token;
+        state.accessToken = action.payload.accessToken;
+        state.refreshToken = action.payload.refreshToken;
         state.role = action.payload.user?.role || null;
 
         localStorage.setItem('user', JSON.stringify(action.payload.user));
-        localStorage.setItem('token', action.payload.token);
+        localStorage.setItem('accessToken', action.payload.accessToken);
+        localStorage.setItem('refreshToken', action.payload.refreshToken);
       })
       .addCase(verifyOtp.rejected, (state, action) => {
         state.loading = false;

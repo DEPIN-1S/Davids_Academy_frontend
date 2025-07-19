@@ -1,9 +1,8 @@
 import React from "react";
-import { FaUser } from "react-icons/fa";
-import { IoChevronDownOutline } from "react-icons/io5";
 import "../../../styles/AdminStyles/NavBar.css";
+import UserDropdownComponent from "../../StudentComponents/UserDropdownComponent"; // ✅ Path is correct if user dropdown is shared
 
-function NavBar() {
+const NavBar = () => {
   return (
     <div className="welcome-header d-flex justify-content-between align-items-center p-3">
       <div>
@@ -15,16 +14,12 @@ function NavBar() {
         </p>
       </div>
 
-      <div className="profile-box d-flex align-items-center px-3 py-2">
-        <FaUser className="profile-icon me-2" />
-        <div className="profile-info me-2">
-          <span className="fw-semibold d-block">Admin</span>
-          <small className="text-muted">Adminexample@gmail.com</small>
-        </div>
-        <IoChevronDownOutline />
+      {/* ✅ Ensure dropdown has enough space and z-index */}
+      <div className="dropdown-container">
+        <UserDropdownComponent />
       </div>
     </div>
   );
-}
+};
 
 export default NavBar;

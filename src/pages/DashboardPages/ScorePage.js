@@ -1,15 +1,15 @@
 import React from 'react';
-import RevealAnswerRadioComponent from '../../components/DasboardComponents/RevealAnswerRadioComponent';
-import ScoreNavbar from '../../components/DasboardComponents/ScoreNavbar';
-import ScoreStatisticsComponent from '../../components/DasboardComponents/ScoreStatisticsComponent';
-import ScoreTableComponent from '../../components/DasboardComponents/ScoreTableComponent';
+import RevealAnswerRadioComponent from '../../components/StudentComponents/RevealAnswerRadioComponent';
+import ScoreNavbar from '../../components/StudentComponents/ScoreNavbar';
+import ScoreStatisticsComponent from '../../components/StudentComponents/ScoreStatisticsComponent';
+import ScoreTableComponent from '../../components/StudentComponents/ScoreTableComponent';
 const ScorePage = () => {
   return (
-   <>
-     <ScoreNavbar />
-     <ScoreStatisticsComponent/>
-     <ScoreTableComponent/>
-  </>
+    <>
+      <ScoreNavbar />
+      <ScoreStatisticsComponent />
+      <ScoreTableComponent />
+    </>
   );
 };
 

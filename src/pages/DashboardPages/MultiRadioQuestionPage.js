@@ -1,15 +1,15 @@
 import React from 'react';
-import QuestionHeaderComponent from '../../components/DasboardComponents/QuestionHeaderComponent';
-import QuestionFooterComponent from '../../components/DasboardComponents/QuestionFooterComponent';
-import MultiRadioQuestionComponent from '../../components/DasboardComponents/MultiRadioQuestionComponent';
+import QuestionHeaderComponent from '../../components/StudentComponents/QuestionHeaderComponent';
+import QuestionFooterComponent from '../../components/StudentComponents/QuestionFooterComponent';
+import MultiRadioQuestionComponent from '../../components/StudentComponents/MultiRadioQuestionComponent';
 const MultiRadioQuestionPage = () => {
   return (
-      <>
-        <QuestionHeaderComponent/>
-        <MultiRadioQuestionComponent/>
-        <QuestionFooterComponent />
+    <>
+      <QuestionHeaderComponent />
+      <MultiRadioQuestionComponent />
+      <QuestionFooterComponent />
     </>
   );
 };
 
-export default  MultiRadioQuestionPage;
+export default MultiRadioQuestionPage;

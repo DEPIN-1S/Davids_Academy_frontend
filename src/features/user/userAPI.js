@@ -19,7 +19,8 @@ export const loginUser = async (credentials) => {
       email: json.data.email,
       role: json.data.role,
     },
-    token: json.data.token,
+    accessToken: json.data.accessToken,
+    refreshToken: json.data.refreshToken
   };
 };
 //create user
