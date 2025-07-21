@@ -1,4 +1,5 @@
-import React, { useState } from "react";
+// src/components/admin/QuestionTypeComponent.js
+import React, { useEffect, useState } from "react";
 import {
     Box,
     Typography,
@@ -6,24 +7,43 @@ import {
     Select,
     MenuItem,
     Button,
-    IconButton,
-    useMediaQuery
+    useMediaQuery,
 } from "@mui/material";
-import ArrowBackIcon from '@mui/icons-material/ArrowBack';
-import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
-import { useNavigate } from 'react-router-dom';
-const QuestionTypeComponent = ({ onBack, onNext }) => {
-    const [questionType, setQuestionType] = useState("MCQ");
-    const isMobile = useMediaQuery("(max-width: 600px)");
+import ArrowBackIcon from "@mui/icons-material/ArrowBack";
+import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
+import { useDispatch, useSelector } from "react-redux";
+// ✅ Import from the correct slice path
+import { listQuestionTypes } from "../../features/exam/examSlice";
+import { useNavigate } from "react-router-dom";
+
+const QuestionTypeComponent = () => {
+    const dispatch = useDispatch();
     const navigate = useNavigate();
+    const isMobile = useMediaQuery("(max-width:600px)");
+
+    const [questionType, setQuestionType] = useState("");
+
+    // ✅ Access the correct state key - your store has 'exam' not 'questions'
+    const {
+        questionTypes = [],
+        questionTypesLoading = false,
+        questionTypesError = null
+    } = useSelector((state) => state.exam || {});
+
+    useEffect(() => {
+        dispatch(listQuestionTypes());
+    }, [dispatch]);
+
     const handleNextClick = () => {
-        navigate('/admin/mcq-content');
-
+        if (!questionType) return;
+        const path = `/admin/${questionType.toLowerCase().replace(/\s+/g, "-")}-content`;
+        navigate(path, { state: { questionType } });
     };
-    onBack = () => {
-        navigate('/admin/create-question');
 
+    const handleBackClick = () => {
+        navigate("/admin/create-question");
     };
+
     return (
         <Box
             sx={{
@@ -33,12 +53,12 @@ const QuestionTypeComponent = ({ onBack, onNext }) => {
                 py: 4,
                 display: "flex",
                 flexDirection: "column",
-                gap: 3
+                gap: 3,
             }}
         >
             {/* Breadcrumb */}
             <Typography variant="subtitle2" color="text.secondary">
-                Test type &nbsp;&gt;&nbsp; Question Type &nbsp;&gt;
+                Test Type &nbsp;&gt;&nbsp; Question Type
             </Typography>
 
             {/* Title */}
@@ -56,6 +76,7 @@ const QuestionTypeComponent = ({ onBack, onNext }) => {
                 <Select
                     value={questionType}
                     onChange={(e) => setQuestionType(e.target.value)}
+                    displayEmpty
                     sx={{
                         borderRadius: 2,
                         fontWeight: 500,
@@ -63,37 +84,51 @@ const QuestionTypeComponent = ({ onBack, onNext }) => {
                         "& .MuiSelect-select": { padding: 2 },
                     }}
                 >
-                    <MenuItem value="MCQ">Multiple Choice (MCQ)</MenuItem>
-                    <MenuItem value="Dropdown">Dropdown</MenuItem>
-                    <MenuItem value="Sort">Sort Order</MenuItem>
-                    <MenuItem value="CaseStudy">Case Study</MenuItem>
+                    <MenuItem value="" disabled>
+                        Select a Question Type
+                    </MenuItem>
+
+                    {questionTypesLoading && (
+                        <MenuItem disabled>Loading...</MenuItem>
+                    )}
+
+                    {questionTypesError && (
+                        <MenuItem disabled>Error loading question types</MenuItem>
+                    )}
+
+                    {questionTypes.map((type) => (
+                        <MenuItem key={type.id} value={type.type}>
+                            {type.type}
+                        </MenuItem>
+                    ))}
                 </Select>
             </FormControl>
 
-            {/* Buttons */}
+            {/* Navigation Buttons */}
             <Box
                 sx={{
                     mt: 4,
                     display: "flex",
                     justifyContent: "space-between",
                     flexDirection: isMobile ? "column" : "row",
-                    gap: 2
+                    gap: 2,
                 }}
             >
                 <Button
                     variant="outlined"
-                    onClick={onBack}
                     startIcon={<ArrowBackIcon />}
+                    onClick={handleBackClick}
                     fullWidth={isMobile}
                 >
                     Back
                 </Button>
                 <Button
                     variant="contained"
-                    onClick={handleNextClick}
                     endIcon={<ArrowForwardIcon />}
-                    fullWidth={isMobile}
+                    onClick={handleNextClick}
+                    disabled={!questionType}
                     sx={{ backgroundColor: "#FFD700", color: "#000" }}
+                    fullWidth={isMobile}
                 >
                     Next
                 </Button>
