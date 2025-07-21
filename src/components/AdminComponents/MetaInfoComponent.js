@@ -11,8 +11,8 @@ import {
 } from "@mui/material";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import LibraryAddCheckIcon from "@mui/icons-material/LibraryAddCheck";
-
-const MetaInfoComponent = ({ onBack, onSubmit }) => {
+import { useNavigate } from 'react-router-dom';
+const MetaInfoComponent = ({ onSubmit }) => {
     const [form, setForm] = useState({
         difficulty: "",
         subject: "",
@@ -20,15 +20,16 @@ const MetaInfoComponent = ({ onBack, onSubmit }) => {
         clientNeedArea: "",
         clientNeedTopic: ""
     });
-
     const handleChange = (field) => (event) => {
         setForm({ ...form, [field]: event.target.value });
     };
-
     const handleSubmit = () => {
         onSubmit(form);
     };
-
+    const navigate = useNavigate();
+    const onBack = () => {
+        navigate('/admin/answer-explain');
+    };
     return (
         <Box p={3}>
             {/* Breadcrumb */}

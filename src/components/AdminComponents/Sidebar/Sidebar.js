@@ -16,22 +16,16 @@ const Sidebar = () => {
   const navigate = useNavigate();
 
   const menuItems = [
-    { name: "Dashboard", icon: <FaThLarge />, path: "/dashboard" },
-    { name: "Student Management", icon: <FaUserGraduate />, path: "/student-manage" },
-    { name: "Course Management", icon: <FaBook />, path: "/course-management" },
+    { name: "Dashboard", icon: <FaThLarge />, path: "/admin/dashboard" },
+    { name: "Student Management", icon: <FaUserGraduate />, path: "/admin/student-manage" },
+    { name: "Course Management", icon: <FaBook />, path: "/admin/course-management" },
     {
       name: "Test & Q-bank Management",
-      icon: (
-        <>
-          <FaUserGraduate style={{ marginRight: "4px" }} />
-          <FaClipboardList />
-        </>
-      ),
-      path: "/question-management",
+      icon: <FaClipboardList />, path: "/admin/question-management",
     }
     ,
-    { name: "Recorded Classes", icon: <FaVideo />, path: "/classes" },
-    { name: "Enquiries & Leads", icon: <FaPhone />, path: "/enquiries" },
+    { name: "Recorded Classes", icon: <FaVideo />, path: "/admin/classes" },
+    { name: "Enquiries & Leads", icon: <FaPhone />, path: "/admin/enquiries" },
   ];
 
   return (

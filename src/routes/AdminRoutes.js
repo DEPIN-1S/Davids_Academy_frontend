@@ -5,18 +5,56 @@ import AdminLayout from "../components/AdminComponents/AdminLayout";
 import AdminDashboardPage from "../pages/AdminPages/AdminDashboardPage";
 import StudentManage from "../pages/AdminPages/StudentManage";
 import QManagementPage from "../pages/AdminPages/QManagementPage";
-
+import QuestionTypeComponent from "../components/AdminComponents/QuestionTypeComponent";
+import McqQuestionContent from "../components/AdminComponents/McqQuestionContent";
+import McqAnswerExplanation from "../components/AdminComponents/McqAnswerExplanation";
+import MetaInfoComponent from '../components/AdminComponents/MetaInfoComponent';
+import TestCreateComponent from "../components/AdminComponents/TestCreateComponent";
 const AdminRoutes = () => (
     <>
         <Route element={<AdminLayout />}>
             <Route path="/admin/dashboard" element={
-                <ProtectedRoutes allowedRoles={[1]}>
-                    <AdminDashboardPage />
-                </ProtectedRoutes>
+                // <ProtectedRoutes allowedRoles={[1]}>
+                <AdminDashboardPage />
+                // </ProtectedRoutes>
             } />
-            <Route path="/student-manage" element={<ProtectedRoutes allowedRoles={[1]}><StudentManage /></ProtectedRoutes>} />
-            <Route path="/question-management" element={<ProtectedRoutes allowedRoles={[1]}><QManagementPage /></ProtectedRoutes>} />
+            <Route path="/admin/student-manage" element={
+                // <ProtectedRoutes allowedRoles={[1]}>
+                <StudentManage />
+                // </ProtectedRoutes>
+            } />
+            <Route path="/admin/question-management" element={
+                // <ProtectedRoutes allowedRoles={[1]}>
+                <QManagementPage />
+                // </ProtectedRoutes>
+            } />
+            <Route path="/admin/question-type" element={
+                // <ProtectedRoutes allowedRoles={[1]}>
+                <QuestionTypeComponent />
+                // </ProtectedRoutes>
+            } />
+            <Route path="/admin/mcq-content" element={
+                // <ProtectedRoutes allowedRoles={[1]}>
+                <McqQuestionContent />
+                // </ProtectedRoutes>
+            } />
+            <Route path="/admin/answer-explain" element={
+                // <ProtectedRoutes allowedRoles={[1]}>
+                <McqAnswerExplanation />
+                // </ProtectedRoutes>
+            } />
+            <Route path="/admin/meta-info" element={
+                // <ProtectedRoutes allowedRoles={[1]}>
+                <MetaInfoComponent />
+                // </ProtectedRoutes>
+            } />
+            <Route path="/admin/create-question" element={
+                // <ProtectedRoutes allowedRoles={[1]}>
+                <TestCreateComponent />
+                // </ProtectedRoutes>
+            } />
         </Route>
+
     </>
 );
 

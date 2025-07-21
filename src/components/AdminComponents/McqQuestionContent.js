@@ -16,12 +16,12 @@ import {
 import AddIcon from "@mui/icons-material/Add";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
-
+import { useNavigate } from 'react-router-dom';
 const McqQuestionContent = ({ onBack, onNext }) => {
     const [question, setQuestion] = useState("");
     const [options, setOptions] = useState([""]);
     const [correctAnswer, setCorrectAnswer] = useState("");
-
+    const navigate = useNavigate()
     const handleOptionChange = (index, value) => {
         const newOptions = [...options];
         newOptions[index] = value;
@@ -38,9 +38,12 @@ const McqQuestionContent = ({ onBack, onNext }) => {
             options,
             correctAnswer,
         };
-        onNext(data);
+        // onNext(data);
+        navigate('/admin/answer-explain');
     };
-
+    onBack = () => {
+        navigate('/admin/question-type');
+    };
     return (
         <Box p={3}>
             {/* Breadcrumb */}
@@ -117,7 +120,7 @@ const McqQuestionContent = ({ onBack, onNext }) => {
                     variant="contained"
                     endIcon={<ArrowForwardIcon />}
                     onClick={handleNext}
-                    disabled={!question || options.length < 2 || !correctAnswer}
+                // disabled={!question || options.length < 2 || !correctAnswer}
                 >
                     Next
                 </Button>

@@ -11,11 +11,19 @@ import {
 } from "@mui/material";
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
-
+import { useNavigate } from 'react-router-dom';
 const QuestionTypeComponent = ({ onBack, onNext }) => {
     const [questionType, setQuestionType] = useState("MCQ");
     const isMobile = useMediaQuery("(max-width: 600px)");
+    const navigate = useNavigate();
+    const handleNextClick = () => {
+        navigate('/admin/mcq-content');
 
+    };
+    onBack = () => {
+        navigate('/admin/create-question');
+
+    };
     return (
         <Box
             sx={{
@@ -82,7 +90,7 @@ const QuestionTypeComponent = ({ onBack, onNext }) => {
                 </Button>
                 <Button
                     variant="contained"
-                    onClick={() => onNext(questionType)}
+                    onClick={handleNextClick}
                     endIcon={<ArrowForwardIcon />}
                     fullWidth={isMobile}
                     sx={{ backgroundColor: "#FFD700", color: "#000" }}

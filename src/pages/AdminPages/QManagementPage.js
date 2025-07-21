@@ -12,7 +12,7 @@ import {
     Typography,
 } from "@mui/material";
 import "../../styles/AdminStyles/QManagement.css";
-
+import { useNavigate } from 'react-router-dom';
 const QManagementPage = () => {
     const [activeTab, setActiveTab] = useState("Q-bank");
     const [showModal, setShowModal] = useState(false);
@@ -45,18 +45,18 @@ const QManagementPage = () => {
     ];
 
     const questions = activeTab === "Q-bank" ? qBankData : mockTestData;
-
+    const navigate = useNavigate();
     const handleAddQuestionClick = () => {
-        setShowModal(true);
+        navigate('/admin/create-question');
     };
 
     const handleModalClose = () => {
         setShowModal(false);
     };
-
     const handleNextClick = () => {
         console.log("Selected type:", selectedType);
         setShowModal(false);
+        navigate('/admin/question-type');
         // You can redirect or update state based on selectedType
     };
 
@@ -126,36 +126,6 @@ const QManagementPage = () => {
                     </table>
                 </div>
             )}
-            {/* MUI Dialog */}
-            <Dialog open={showModal} onClose={handleModalClose} maxWidth="sm" fullWidth>
-                <DialogTitle>Start Your Test Creation</DialogTitle>
-                <DialogContent>
-                    <Typography variant="subtitle1" gutterBottom>
-                        Choose whether you want to build a Classic Test or an NGN Scenario-Based Assessment.
-                    </Typography>
-                    <RadioGroup
-                        value={selectedType}
-                        onChange={(e) => setSelectedType(e.target.value)}
-                    >
-                        <FormControlLabel
-                            value="classic"
-                            control={<Radio />}
-                            label="Classic Question"
-                        />
-                        <FormControlLabel
-                            value="ngn"
-                            control={<Radio />}
-                            label="NGN Case Scenario"
-                        />
-                    </RadioGroup>
-                    <div style={{ display: "flex", justifyContent: "space-between", marginTop: "24px" }}>
-                        <Button onClick={handleModalClose}>Back</Button>
-                        <Button variant="contained" onClick={handleNextClick}>
-                            Next
-                        </Button>
-                    </div>
-                </DialogContent>
-            </Dialog>
         </div>
     );
 };

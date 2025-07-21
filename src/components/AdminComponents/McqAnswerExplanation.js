@@ -10,15 +10,20 @@ import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
 import AddPhotoAlternateIcon from "@mui/icons-material/AddPhotoAlternate";
 import InfoIcon from "@mui/icons-material/Info";
-
-const McqAnswerExplanation = ({ onBack, onNext }) => {
+import { useNavigate } from 'react-router-dom';
+const McqAnswerExplanation = ({ onNext }) => {
     const [explanation, setExplanation] = useState("");
-
+    const navigate = useNavigate();
     const handleNextClick = () => {
         const data = {
             explanation,
         };
-        onNext(data);
+        navigate('/admin/meta-info');
+        // onNext(data);
+
+    };
+    const onBack = () => {
+        navigate('/admin/mcq-content');
     };
 
     return (
@@ -27,7 +32,6 @@ const McqAnswerExplanation = ({ onBack, onNext }) => {
             <Typography variant="caption" color="textSecondary">
                 Test type &gt; Question Type &gt; Question Content &gt; <strong>Explanation</strong>
             </Typography>
-
             {/* Title */}
             <Typography variant="h5" mt={2} mb={1}>
                 Answer Explanation
@@ -83,7 +87,7 @@ const McqAnswerExplanation = ({ onBack, onNext }) => {
                     variant="contained"
                     endIcon={<ArrowForwardIcon />}
                     onClick={handleNextClick}
-                    disabled={!explanation}
+                // disabled={!explanation}
                 >
                     Next
                 </Button>
