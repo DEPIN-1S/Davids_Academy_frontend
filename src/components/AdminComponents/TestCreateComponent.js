@@ -6,10 +6,17 @@ const TestCreateComponent = ({ onBack, onNext }) => {
     const [selected, setSelected] = useState("classic");
     const navigate = useNavigate();
     const handleNextClick = () => {
-        // onNext(selected);
-        navigate('/admin/question-type');
-    };
+        if (selected === "ngn") {
+            navigate('/admin/question-type');
+        }
+        if (selected === "classic") {
+            navigate('/admin/mcq-content');
+        }
 
+    };
+    onBack = () => {
+        navigate('/admin/question-management');
+    };
     return (
         <Box
             sx={{
