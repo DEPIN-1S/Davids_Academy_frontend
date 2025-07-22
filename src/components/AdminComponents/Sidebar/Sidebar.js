@@ -1,5 +1,4 @@
 import React from "react";
-import { Nav } from "react-bootstrap";
 import {
   FaThLarge,
   FaUserGraduate,
@@ -8,12 +7,16 @@ import {
   FaVideo,
   FaPhone,
   FaSignOutAlt,
+  FaTimes,
+  FaChevronLeft,
+  FaChevronRight,
 } from "react-icons/fa";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import "../../../styles/AdminStyles/Sidebar.css";
 
-const Sidebar = () => {
+const Sidebar = ({ isOpen, isCollapsed, toggleSidebar, toggleCollapse }) => {
   const navigate = useNavigate();
+  const location = useLocation();
 
   const menuItems = [
     { name: "Dashboard", icon: <FaThLarge />, path: "/admin/dashboard" },
@@ -21,36 +24,107 @@ const Sidebar = () => {
     { name: "Course Management", icon: <FaBook />, path: "/admin/course-management" },
     {
       name: "Test & Q-bank Management",
-      icon: <FaClipboardList />, path: "/admin/question-management",
-    }
-    ,
+      icon: <FaClipboardList />,
+      path: "/admin/question-management",
+    },
     { name: "Recorded Classes", icon: <FaVideo />, path: "/admin/classes" },
     { name: "Enquiries & Leads", icon: <FaPhone />, path: "/admin/enquiries" },
   ];
 
+  const handleNavigation = (path) => {
+    navigate(path);
+    // Close mobile sidebar after navigation
+    if (window.innerWidth <= 767) {
+      toggleSidebar();
+    }
+  };
+
+  const handleLogout = () => {
+    if (window.innerWidth <= 767) {
+      toggleSidebar();
+    }
+    navigate("/");
+  };
+
+  const handleKeyDown = (e, action) => {
+    if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault();
+      action();
+    }
+  };
+
   return (
-    <div className="academy-sidebar">
-      <div className="sidebar-header">
-        <img src={"/images/logo.png"} alt="Logo" className="sidebar-logo" />
-        <h4 className="sidebar-title">David’s Academy</h4>
-      </div>
+    <aside
+      className={`admin-sidebar ${isOpen ? "mobile-open" : ""} ${isCollapsed ? "collapsed" : ""}`}
+      role="complementary"
+      aria-label="Main navigation sidebar"
+    >
+      {/* Sidebar Header */}
+      <header className="sidebar-header">
+        <div className="sidebar-brand">
+          <img src="/images/logo.png" alt="David's Academy Logo" className="sidebar-logo" />
+          <h1 className="sidebar-title">David's Academy</h1>
+        </div>
 
-      <Nav className="flex-column sidebar-menu">
-        {menuItems.map((item, index) => (
-          <Nav.Link key={index} href={item.path} className={`sidebar-item`}>
-            <span className="sidebar-icon">{item.icon}</span>
-            <span className="sidebar-text">{item.name}</span>
-          </Nav.Link>
-        ))}
-      </Nav>
+        {/* Mobile Close Button */}
+        <button
+          className="sidebar-close-btn mobile-only"
+          onClick={toggleSidebar}
+          aria-label="Close sidebar"
+          type="button"
+        >
+          <FaTimes />
+        </button>
 
-      <div className="sidebar-logout">
-        <Nav.Link onClick={() => navigate("/")} className="logout-btn">
-          <FaSignOutAlt className="logout-icon" />
-          <span>Logout</span>
-        </Nav.Link>
-      </div>
-    </div>
+        {/* Desktop Collapse Toggle */}
+        <button
+          className="sidebar-collapse-btn desktop-only"
+          onClick={toggleCollapse}
+          aria-label={isCollapsed ? "Expand sidebar" : "Collapse sidebar"}
+          type="button"
+        >
+          {isCollapsed ? <FaChevronRight /> : <FaChevronLeft />}
+        </button>
+      </header>
+
+      {/* Navigation Menu */}
+      <nav className="sidebar-menu" role="navigation" aria-label="Main navigation">
+        <ul className="sidebar-menu-list">
+          {menuItems.map((item, index) => (
+            <li key={index} className="sidebar-menu-item">
+              <button
+                onClick={() => handleNavigation(item.path)}
+                onKeyDown={(e) => handleKeyDown(e, () => handleNavigation(item.path))}
+                className={`sidebar-item ${location.pathname === item.path ? "active" : ""}`}
+                title={isCollapsed ? item.name : ""}
+                type="button"
+                aria-current={location.pathname === item.path ? "page" : undefined}
+              >
+                <span className="sidebar-icon" aria-hidden="true">
+                  {item.icon}
+                </span>
+                <span className="sidebar-text">{item.name}</span>
+              </button>
+            </li>
+          ))}
+        </ul>
+      </nav>
+
+      {/* Logout Section */}
+      <footer className="sidebar-logout">
+        <button
+          onClick={handleLogout}
+          onKeyDown={(e) => handleKeyDown(e, handleLogout)}
+          className="logout-btn"
+          title={isCollapsed ? "Logout" : ""}
+          type="button"
+          aria-label="Logout from admin panel"
+        >
+          <FaSignOutAlt className="logout-icon" aria-hidden="true" />
+          <span className="logout-text">Logout</span>
+        </button>
+      </footer>
+    </aside>
   );
 };
 
