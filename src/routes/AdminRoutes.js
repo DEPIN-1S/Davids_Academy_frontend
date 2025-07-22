@@ -10,6 +10,8 @@ import McqQuestionContent from "../components/AdminComponents/McqQuestionContent
 import McqAnswerExplanation from "../components/AdminComponents/McqAnswerExplanation";
 import MetaInfoComponent from '../components/AdminComponents/MetaInfoComponent';
 import TestCreateComponent from "../components/AdminComponents/TestCreateComponent";
+import CourseManagement from '../components/AdminComponents/CourseManagement'
+import UploadThumbnailComponent from "../components/AdminComponents/UploadThumbnailComponent";
 const AdminRoutes = () => (
     <>
         <Route element={<AdminLayout />}>
@@ -51,6 +53,16 @@ const AdminRoutes = () => (
             <Route path="/admin/create-question" element={
                 // <ProtectedRoutes allowedRoles={[1]}>
                 <TestCreateComponent />
+                // </ProtectedRoutes>
+            } />
+            <Route path="/admin/course-management" element={
+                // <ProtectedRoutes allowedRoles={[1]}>
+                <CourseManagement />
+                // </ProtectedRoutes>
+            } />
+            <Route path="/admin/upload-thumbnail" element={
+                // <ProtectedRoutes allowedRoles={[1]}>
+                <UploadThumbnailComponent />
                 // </ProtectedRoutes>
             } />
         </Route>
