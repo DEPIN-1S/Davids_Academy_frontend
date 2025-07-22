@@ -2,7 +2,7 @@ import React, { useState, useRef } from "react";
 import { FaUpload, FaTimes, FaImage, FaCheck } from "react-icons/fa";
 import "../../styles/AdminStyles/UploadThumbnailComponent.css";
 
-const UploadThumbnailComponent = ({ onUpload, onNext, onBack }) => {
+const UploadThumbnail = ({ onUpload, onNext, onBack }) => {
     const [dragActive, setDragActive] = useState(false);
     const [uploadedFile, setUploadedFile] = useState(null);
     const [uploadProgress, setUploadProgress] = useState(0);
@@ -92,137 +92,142 @@ const UploadThumbnailComponent = ({ onUpload, onNext, onBack }) => {
     };
 
     return (
-        <div className="upload-thumbnail-container">
-            {/* Breadcrumb */}
-            <div className="breadcrumb">
-                <span className="breadcrumb-item">Attach Recorded Video</span>
-                <span className="breadcrumb-separator">›</span>
-                <span className="breadcrumb-item active">Thumbnail Upload</span>
-            </div>
-
-            {/* Header */}
-            <div className="upload-header">
-                <h1 className="upload-title">Thumbnail Upload</h1>
-                <p className="upload-subtitle">
-                    Upload a cover image for your recorded session.
-                </p>
-            </div>
-
-            {/* Upload Area */}
-            <div className="upload-content">
-                {!uploadedFile ? (
-                    <div
-                        className={`upload-zone ${dragActive ? 'drag-active' : ''}`}
-                        onDragEnter={handleDrag}
-                        onDragLeave={handleDrag}
-                        onDragOver={handleDrag}
-                        onDrop={handleDrop}
-                    >
-                        <div className="upload-icon">
-                            <FaImage />
-                        </div>
-
-                        <div className="upload-text">
-                            <p className="drag-text">Drag and drop image file</p>
-                            <p className="or-text">or</p>
-                        </div>
-
-                        <button
-                            className="browse-btn"
-                            onClick={handleBrowseClick}
-                            type="button"
-                        >
-                            Browse
-                        </button>
-
-                        <p className="upload-hint">
-                            Supported formats: JPG, PNG, GIF (Max 5MB)
-                        </p>
-
-                        <input
-                            ref={fileInputRef}
-                            type="file"
-                            accept="image/*"
-                            onChange={handleFileInputChange}
-                            className="file-input"
-                            hidden
-                        />
+        <div className="upload-thumbnail-page">
+            {/* Page Header */}
+            <div className="upload-page-header">
+                <div className="header-content">
+                    <div className="breadcrumb">
+                        <span className="breadcrumb-item">Attach Recorded Video</span>
+                        <span className="breadcrumb-separator">›</span>
+                        <span className="breadcrumb-item active">Thumbnail Upload</span>
                     </div>
-                ) : (
-                    <div className="upload-preview">
-                        <div className="preview-header">
-                            <h3>Selected Thumbnail</h3>
-                            <button
-                                className="remove-btn"
-                                onClick={handleRemoveFile}
-                                type="button"
+                    <h1 className="page-title">Thumbnail Upload</h1>
+                    <p className="page-subtitle">
+                        Upload a cover image for your recorded session.
+                    </p>
+                </div>
+            </div>
+
+            {/* Content Area */}
+            <div className="upload-content-area">
+                <div className="upload-container">
+                    {/* Upload Section */}
+                    <div className="upload-section">
+                        {!uploadedFile ? (
+                            <div
+                                className={`upload-zone ${dragActive ? 'drag-active' : ''}`}
+                                onDragEnter={handleDrag}
+                                onDragLeave={handleDrag}
+                                onDragOver={handleDrag}
+                                onDrop={handleDrop}
                             >
-                                <FaTimes />
-                            </button>
-                        </div>
+                                <div className="upload-icon">
+                                    <FaImage />
+                                </div>
 
-                        <div className="preview-container">
-                            <img
-                                src={getFilePreview(uploadedFile)}
-                                alt="Thumbnail preview"
-                                className="preview-image"
-                            />
+                                <div className="upload-text">
+                                    <p className="drag-text">Drag and drop image file</p>
+                                    <p className="or-text">or</p>
+                                </div>
 
-                            {isUploading && (
-                                <div className="upload-overlay">
-                                    <div className="progress-circle">
-                                        <div className="progress-text">{uploadProgress}%</div>
+                                <button
+                                    className="browse-btn"
+                                    onClick={handleBrowseClick}
+                                    type="button"
+                                >
+                                    Browse
+                                </button>
+
+                                <p className="upload-hint">
+                                    Supported formats: JPG, PNG, GIF (Max 5MB)
+                                </p>
+
+                                <input
+                                    ref={fileInputRef}
+                                    type="file"
+                                    accept="image/*"
+                                    onChange={handleFileInputChange}
+                                    className="file-input"
+                                    hidden
+                                />
+                            </div>
+                        ) : (
+                            <div className="upload-preview">
+                                <div className="preview-header">
+                                    <h3>Selected Thumbnail</h3>
+                                    <button
+                                        className="remove-btn"
+                                        onClick={handleRemoveFile}
+                                        type="button"
+                                    >
+                                        <FaTimes />
+                                    </button>
+                                </div>
+
+                                <div className="preview-container">
+                                    <img
+                                        src={getFilePreview(uploadedFile)}
+                                        alt="Thumbnail preview"
+                                        className="preview-image"
+                                    />
+
+                                    {isUploading && (
+                                        <div className="upload-overlay">
+                                            <div className="progress-circle">
+                                                <div className="progress-text">{uploadProgress}%</div>
+                                            </div>
+                                        </div>
+                                    )}
+
+                                    {uploadProgress === 100 && !isUploading && (
+                                        <div className="success-overlay">
+                                            <FaCheck className="success-icon" />
+                                        </div>
+                                    )}
+                                </div>
+
+                                <div className="file-info">
+                                    <p className="file-name">{uploadedFile.name}</p>
+                                    <p className="file-size">
+                                        {(uploadedFile.size / 1024 / 1024).toFixed(2)} MB
+                                    </p>
+                                </div>
+
+                                {isUploading && (
+                                    <div className="progress-bar">
+                                        <div
+                                            className="progress-fill"
+                                            style={{ width: `${uploadProgress}%` }}
+                                        ></div>
                                     </div>
-                                </div>
-                            )}
-
-                            {uploadProgress === 100 && !isUploading && (
-                                <div className="success-overlay">
-                                    <FaCheck className="success-icon" />
-                                </div>
-                            )}
-                        </div>
-
-                        <div className="file-info">
-                            <p className="file-name">{uploadedFile.name}</p>
-                            <p className="file-size">
-                                {(uploadedFile.size / 1024 / 1024).toFixed(2)} MB
-                            </p>
-                        </div>
-
-                        {isUploading && (
-                            <div className="progress-bar">
-                                <div
-                                    className="progress-fill"
-                                    style={{ width: `${uploadProgress}%` }}
-                                ></div>
+                                )}
                             </div>
                         )}
                     </div>
-                )}
-            </div>
 
-            {/* Navigation Buttons */}
-            <div className="navigation-buttons">
-                <button
-                    className="nav-btn back-btn"
-                    onClick={onBack}
-                    type="button"
-                >
-                    ← Back
-                </button>
+                    {/* Navigation Buttons */}
+                    <div className="navigation-buttons">
+                        <button
+                            className="nav-btn back-btn"
+                            onClick={onBack}
+                            type="button"
+                        >
+                            <span className="btn-text">← Back</span>
+                        </button>
 
-                <button
-                    className={`nav-btn next-btn ${!uploadedFile || isUploading ? 'disabled' : ''}`}
-                    onClick={onNext}
-                    disabled={!uploadedFile || isUploading}
-                    type="button"
-                >
-                    Next →
-                </button>
+                        <button
+                            className={`nav-btn next-btn ${!uploadedFile || isUploading ? 'disabled' : ''}`}
+                            onClick={onNext}
+                            disabled={!uploadedFile || isUploading}
+                            type="button"
+                        >
+                            <span className="btn-text">Next →</span>
+                        </button>
+                    </div>
+                </div>
             </div>
         </div>
     );
 };
 
-export default UploadThumbnailComponent;
+export default UploadThumbnail;

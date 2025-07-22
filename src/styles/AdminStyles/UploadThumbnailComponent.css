@@ -1,10 +1,21 @@
-/* Container */
-.upload-thumbnail-container {
-  min-height: 100vh;
+/* Main Container - Fits inside admin layout */
+.upload-thumbnail-page {
+  width: 100%;
+  min-height: calc(100vh - 70px); /* Account for header height */
   background: #f8f9fa;
-  padding: 2rem;
   display: flex;
   flex-direction: column;
+}
+
+/* Page Header */
+.upload-page-header {
+  background: white;
+  border-bottom: 1px solid #e9ecef;
+  padding: 1.5rem 2rem;
+  flex-shrink: 0;
+}
+
+.header-content {
   max-width: 800px;
   margin: 0 auto;
 }
@@ -13,8 +24,8 @@
 .breadcrumb {
   display: flex;
   align-items: center;
-  margin-bottom: 2rem;
-  font-size: 0.9rem;
+  margin-bottom: 0.75rem;
+  font-size: 0.875rem;
   color: #6c757d;
 }
 
@@ -29,44 +40,57 @@
 }
 
 .breadcrumb-separator {
-  margin: 0 0.75rem;
+  margin: 0 0.5rem;
   color: #adb5bd;
 }
 
-/* Header */
-.upload-header {
-  text-align: center;
-  margin-bottom: 3rem;
-}
-
-.upload-title {
-  font-size: 2rem;
+/* Page Title */
+.page-title {
+  font-size: 1.75rem;
   font-weight: 700;
   color: #343a40;
-  margin: 0 0 0.75rem 0;
+  margin: 0 0 0.5rem 0;
+  line-height: 1.2;
 }
 
-.upload-subtitle {
-  font-size: 1.1rem;
+.page-subtitle {
+  font-size: 1rem;
   color: #6c757d;
   margin: 0;
   line-height: 1.5;
 }
 
-/* Upload Content */
-.upload-content {
+/* Content Area */
+.upload-content-area {
+  flex: 1;
+  padding: 2rem;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+}
+
+.upload-container {
+  width: 100%;
+  max-width: 600px;
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+/* Upload Section */
+.upload-section {
   flex: 1;
   display: flex;
   justify-content: center;
   align-items: center;
-  margin-bottom: 3rem;
+  min-height: 400px;
 }
 
 /* Upload Zone */
 .upload-zone {
   width: 100%;
   max-width: 500px;
-  min-height: 300px;
+  min-height: 350px;
   border: 2px dashed #dee2e6;
   border-radius: 12px;
   background: white;
@@ -133,6 +157,9 @@
   cursor: pointer;
   transition: all 0.3s ease;
   margin-bottom: 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .browse-btn:hover {
@@ -326,71 +353,110 @@
   border-radius: 2px;
 }
 
-/* Navigation Buttons */
+/* Navigation Buttons - Fixed Alignment */
 .navigation-buttons {
   display: flex;
   justify-content: space-between;
   gap: 1rem;
+  padding: 1.5rem 0 0 0;
+  border-top: 1px solid #e9ecef;
   margin-top: auto;
 }
 
 .nav-btn {
-  padding: 0.875rem 2rem;
+  flex: 1;
+  max-width: 180px;
+  height: 44px;
   border-radius: 6px;
   font-weight: 600;
   font-size: 0.95rem;
   cursor: pointer;
   transition: all 0.3s ease;
-  min-width: 120px;
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+}
+
+.btn-text {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+  white-space: nowrap;
 }
 
 .back-btn {
   background: #6c757d;
   color: white;
-  border: 1px solid #6c757d;
 }
 
 .back-btn:hover {
   background: #5a6268;
-  border-color: #5a6268;
   transform: translateY(-1px);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 .next-btn {
   background: #007bff;
   color: white;
-  border: 1px solid #007bff;
 }
 
 .next-btn:hover:not(.disabled) {
   background: #0056b3;
-  border-color: #0056b3;
   transform: translateY(-1px);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 .next-btn.disabled {
   background: #e9ecef;
   color: #6c757d;
-  border-color: #e9ecef;
   cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
 }
 
-/* Responsive Design */
-@media (max-width: 768px) {
-  .upload-thumbnail-container {
+/* Responsive Design for Admin Layout */
+@media (max-width: 1199px) {
+  .upload-content-area {
+    padding: 1.5rem;
+  }
+
+  .upload-page-header {
+    padding: 1.25rem 1.5rem;
+  }
+}
+
+@media (max-width: 991px) {
+  .upload-content-area {
     padding: 1rem;
   }
 
-  .upload-title {
-    font-size: 1.75rem;
+  .upload-page-header {
+    padding: 1rem;
   }
 
-  .upload-subtitle {
-    font-size: 1rem;
+  .page-title {
+    font-size: 1.5rem;
+  }
+}
+
+@media (max-width: 767px) {
+  .upload-content-area {
+    padding: 0.75rem;
+  }
+
+  .upload-page-header {
+    padding: 0.75rem;
+  }
+
+  .page-title {
+    font-size: 1.375rem;
   }
 
   .upload-zone {
-    min-height: 250px;
+    min-height: 300px;
     padding: 1.5rem;
   }
 
@@ -401,20 +467,34 @@
 
   .navigation-buttons {
     flex-direction: column;
+    gap: 0.75rem;
   }
 
   .nav-btn {
-    width: 100%;
+    max-width: none;
+  }
+
+  .breadcrumb {
+    flex-wrap: wrap;
+    gap: 0.25rem;
   }
 }
 
-@media (max-width: 480px) {
-  .upload-thumbnail-container {
-    padding: 0.75rem;
+@media (max-width: 575px) {
+  .upload-content-area {
+    padding: 0.5rem;
+  }
+
+  .upload-page-header {
+    padding: 0.5rem;
+  }
+
+  .upload-container {
+    gap: 1.5rem;
   }
 
   .upload-zone {
-    min-height: 200px;
+    min-height: 250px;
     padding: 1rem;
   }
 
@@ -426,7 +506,22 @@
     font-size: 0.8rem;
   }
 
-  .breadcrumb-separator {
-    margin: 0 0.5rem;
+  .page-subtitle {
+    font-size: 0.9rem;
+  }
+}
+
+/* Ensure component fits within admin layout constraints */
+@media (min-width: 768px) {
+  .upload-thumbnail-page {
+    margin-left: 0; /* No additional margin needed */
+    width: 100%;
+  }
+}
+
+/* Desktop with collapsed sidebar */
+@media (min-width: 768px) {
+  .admin-main-content.sidebar-collapsed .upload-thumbnail-page {
+    transition: all 0.3s ease;
   }
 }
