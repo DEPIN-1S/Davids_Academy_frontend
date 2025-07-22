@@ -27,8 +27,8 @@ const Sidebar = ({ isOpen, isCollapsed, toggleSidebar, toggleCollapse }) => {
       icon: <FaClipboardList />,
       path: "/admin/question-management",
     },
-    { name: "Recorded Classes", icon: <FaVideo />, path: "/admin/classes" },
-    { name: "Enquiries & Leads", icon: <FaPhone />, path: "/admin/enquiries" },
+    { name: "Recorded Classes", icon: <FaVideo />, path: "/admin/course-management" },
+    { name: "Enquiries & Leads", icon: <FaPhone />, path: "/admin/enquire-lead" },
   ];
 
   const handleNavigation = (path) => {

@@ -12,6 +12,8 @@ import MetaInfoComponent from '../components/AdminComponents/MetaInfoComponent';
 import TestCreateComponent from "../components/AdminComponents/TestCreateComponent";
 import CourseManagement from '../components/AdminComponents/CourseManagement'
 import UploadThumbnailComponent from "../components/AdminComponents/UploadThumbnailComponent";
+import RecordedClassInfoComponent from "../components/AdminComponents/RecordClassComponent";
+import EnquireLeadComponent from "../components/AdminComponents/EnquireLeadComponent";
 const AdminRoutes = () => (
     <>
         <Route element={<AdminLayout />}>
@@ -63,6 +65,16 @@ const AdminRoutes = () => (
             <Route path="/admin/upload-thumbnail" element={
                 // <ProtectedRoutes allowedRoles={[1]}>
                 <UploadThumbnailComponent />
+                // </ProtectedRoutes>
+            } />
+            <Route path="/admin/record-class-info" element={
+                // <ProtectedRoutes allowedRoles={[1]}>
+                <RecordedClassInfoComponent />
+                // </ProtectedRoutes>
+            } />
+            <Route path="/admin/enquire-lead" element={
+                // <ProtectedRoutes allowedRoles={[1]}>
+                <EnquireLeadComponent />
                 // </ProtectedRoutes>
             } />
         </Route>
