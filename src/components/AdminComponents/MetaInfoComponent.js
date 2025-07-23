@@ -84,26 +84,42 @@ const MetaInfoComponent = ({ questionData }) => {
 
         // Prepare the complete question data
         const completeQuestionData = {
-            questionType: "MCQ",
-            question: questionData?.question || "Which of the following is the primary treatment for anaphylaxis?",
-            answer: questionData?.answer || "Epinephrine",
-            difficulty: form.difficulty,
-            subject: parseInt(form.subject) || 1,
-            lesson: parseInt(form.lesson) || 3,
-            clientNeedArea: parseInt(form.clientNeedArea) || 2,
-            clientNeedTopic: parseInt(form.clientNeedTopic) || 5,
-            exhibit: questionData?.exhibit || "https://example.com/exhibits/anaphylaxis-chart.png",
-            options: questionData?.options || [
-                "Epinephrine",
-                "Diphenhydramine",
-                "Hydrocortisone",
-                "Albuterol"
+            "questionType": "Sorting",
+            "question_type_id": 13,
+            "question": "Arrange the steps in the correct order for performing tracheostomy suctioning.",
+            "difficulty": "Medium",
+            "subject": 1,
+            "lesson": 3,
+            "clientNeedArea": 2,
+            "clientNeedTopic": 5,
+            "sortItems": [
+                {
+                    "sortItem": "Turn on the suction device and set appropriate pressure.",
+                    "itemOrder": 1
+                },
+                {
+                    "sortItem": "Don sterile gloves and prepare catheter.",
+                    "itemOrder": 2
+                },
+                {
+                    "sortItem": "Insert catheter without applying suction.",
+                    "itemOrder": 3
+                },
+                {
+                    "sortItem": "Apply suction while withdrawing the catheter slowly.",
+                    "itemOrder": 4
+                },
+                {
+                    "sortItem": "Reassess client's respiratory status.",
+                    "itemOrder": 5
+                }
             ],
-            explanationHeading: questionData?.explanationHeading || "Explanation",
-            explanationText: questionData?.explanationText || "Epinephrine is the first-line treatment for anaphylaxis due to its rapid action in reversing severe allergic symptoms.",
-            info: questionData?.info || "Patients with a history of severe allergies should carry an epinephrine auto-injector at all times.",
-            infoImage: questionData?.infoImage || "https://example.com/images/epipen-instruction.png"
-        };
+            "explanationHeading": "Explanation",
+            "explanationText": "Proper tracheostomy suctioning follows a systematic approach to ensure patient safety and effectiveness. The correct sequence maintains sterility, prevents hypoxia, and ensures adequate airway clearance.",
+            "info": "Tracheostomy suctioning should be performed using sterile technique with appropriate pressure settings (80-120 mmHg for adults) to prevent tissue trauma.",
+            "infoImage": "https://example.com/images/tracheostomy-suctioning.png"
+        }
+            ;
 
         try {
             await dispatch(submitQuestion(completeQuestionData)).unwrap();
