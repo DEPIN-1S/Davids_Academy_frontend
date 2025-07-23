@@ -1,5 +1,6 @@
 // src/api/examApi.js
 export const postQuestion = async (questionData) => {
+    console.log('questionData', questionData);
     try {
         const response = await fetch("https://lunarsenterprises.com:6040/davidsacademy/exam/question", {
             method: "POST",

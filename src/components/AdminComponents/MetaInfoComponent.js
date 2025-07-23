@@ -1,4 +1,7 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { toast, ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 import {
     Box,
     Typography,
@@ -7,12 +10,19 @@ import {
     Select,
     MenuItem,
     Button,
-    Grid
+    Grid,
+    CircularProgress
 } from "@mui/material";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import LibraryAddCheckIcon from "@mui/icons-material/LibraryAddCheck";
 import { useNavigate } from 'react-router-dom';
-const MetaInfoComponent = ({ onSubmit }) => {
+import { submitQuestion, resetStatus } from "../../features/exam/examSlice";
+
+const MetaInfoComponent = ({ questionData }) => {
+    const dispatch = useDispatch();
+    const navigate = useNavigate();
+    const { loading, success, error } = useSelector(state => state.exam);
+
     const [form, setForm] = useState({
         difficulty: "",
         subject: "",
@@ -20,18 +30,174 @@ const MetaInfoComponent = ({ onSubmit }) => {
         clientNeedArea: "",
         clientNeedTopic: ""
     });
+
+    // Handle toast notifications based on Redux state
+    useEffect(() => {
+        if (success) {
+            toast.success(' Question successfully added to Q-Bank!', {
+                position: "top-right",
+                autoClose: 3000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+                theme: "colored",
+            });
+
+            // Redirect after showing success toast
+            setTimeout(() => {
+                dispatch(resetStatus());
+                navigate('/admin/question-management');
+            }, 2000);
+        }
+
+        if (error) {
+            toast.error(` Failed to add question: ${error}`, {
+                position: "top-right",
+                autoClose: 5000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+                theme: "colored",
+            });
+        }
+    }, [success, error, dispatch, navigate]);
+
     const handleChange = (field) => (event) => {
         setForm({ ...form, [field]: event.target.value });
     };
-    const handleSubmit = () => {
-        onSubmit(form);
+
+    const handleSubmit = async () => {
+        // Show loading toast
+        const loadingToastId = toast.loading(' Adding question to Q-Bank...', {
+            position: "top-right",
+            hideProgressBar: false,
+            closeOnClick: false,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+            theme: "colored",
+        });
+
+        // Prepare the complete question data
+        const completeQuestionData = {
+            questionType: "MCQ",
+            question: questionData?.question || "Which of the following is the primary treatment for anaphylaxis?",
+            answer: questionData?.answer || "Epinephrine",
+            difficulty: form.difficulty,
+            subject: parseInt(form.subject) || 1,
+            lesson: parseInt(form.lesson) || 3,
+            clientNeedArea: parseInt(form.clientNeedArea) || 2,
+            clientNeedTopic: parseInt(form.clientNeedTopic) || 5,
+            exhibit: questionData?.exhibit || "https://example.com/exhibits/anaphylaxis-chart.png",
+            options: questionData?.options || [
+                "Epinephrine",
+                "Diphenhydramine",
+                "Hydrocortisone",
+                "Albuterol"
+            ],
+            explanationHeading: questionData?.explanationHeading || "Explanation",
+            explanationText: questionData?.explanationText || "Epinephrine is the first-line treatment for anaphylaxis due to its rapid action in reversing severe allergic symptoms.",
+            info: questionData?.info || "Patients with a history of severe allergies should carry an epinephrine auto-injector at all times.",
+            infoImage: questionData?.infoImage || "https://example.com/images/epipen-instruction.png"
+        };
+
+        try {
+            await dispatch(submitQuestion(completeQuestionData)).unwrap();
+            toast.dismiss(loadingToastId); // Dismiss loading toast
+        } catch (err) {
+            toast.dismiss(loadingToastId); // Dismiss loading toast
+            console.error('Failed to submit question:', err);
+        }
     };
-    const navigate = useNavigate();
+
     const onBack = () => {
+        // Show info toast for navigation
+        toast.info('⬅️ Navigating back to explanation step', {
+            position: "top-right",
+            autoClose: 2000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+            theme: "colored",
+        });
+
+        dispatch(resetStatus());
         navigate('/admin/answer-explain');
     };
+
+    // Validation function
+    const isFormValid = () => {
+        return form.difficulty && form.subject && form.lesson && form.clientNeedArea && form.clientNeedTopic;
+    };
+
+    // Show warning if trying to submit incomplete form
+    const handleIncompleteSubmit = () => {
+        toast.warning('⚠️ Please fill in all required fields before submitting', {
+            position: "top-right",
+            autoClose: 4000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+            theme: "colored",
+        });
+    };
+
+    // Subject/Lesson mapping
+    const subjectOptions = [
+        { value: 1, label: "Fundamentals" },
+        { value: 2, label: "Pharmacology" },
+        { value: 3, label: "Adult Health" },
+        { value: 4, label: "Medical Surgical" },
+        { value: 5, label: "Critical Care" }
+    ];
+
+    const lessonOptions = [
+        { value: 1, label: "Skills / Procedures" },
+        { value: 2, label: "Dosage Calculation" },
+        { value: 3, label: "Patient Assessment" },
+        { value: 4, label: "Emergency Procedures" }
+    ];
+
+    const clientNeedAreaOptions = [
+        { value: 1, label: "Safety & Infection Control" },
+        { value: 2, label: "Physiological Integrity" },
+        { value: 3, label: "Pharmacological Therapies" },
+        { value: 4, label: "Management of Care" }
+    ];
+
+    const clientNeedTopicOptions = [
+        { value: 1, label: "Complications of Diagnostic Procedures" },
+        { value: 2, label: "Infection Prevention" },
+        { value: 3, label: "Dosage Admin" },
+        { value: 4, label: "Priority Setting" },
+        { value: 5, label: "Reduction of Risk" }
+    ];
+
     return (
         <Box p={3}>
+            {/* Toast Container */}
+            <ToastContainer
+                position="top-right"
+                autoClose={4000}
+                hideProgressBar={false}
+                newestOnTop={false}
+                closeOnClick
+                rtl={false}
+                pauseOnFocusLoss
+                draggable
+                pauseOnHover
+                theme="colored"
+                style={{ zIndex: 9999 }}
+            />
+
             {/* Breadcrumb */}
             <Typography variant="caption" color="textSecondary" mb={2}>
                 Test type &gt; Question Type &gt; Question Content &gt; Explanation &gt; <strong>Add Tags</strong>
@@ -49,11 +215,12 @@ const MetaInfoComponent = ({ onSubmit }) => {
             <Grid container spacing={2}>
                 <Grid item xs={12} sm={4}>
                     <FormControl fullWidth>
-                        <InputLabel>Difficulty</InputLabel>
+                        <InputLabel>Difficulty *</InputLabel>
                         <Select
                             value={form.difficulty}
                             onChange={handleChange("difficulty")}
-                            label="Difficulty"
+                            label="Difficulty *"
+                            disabled={loading}
                         >
                             <MenuItem value="Easy">Easy</MenuItem>
                             <MenuItem value="Medium">Medium</MenuItem>
@@ -64,60 +231,72 @@ const MetaInfoComponent = ({ onSubmit }) => {
 
                 <Grid item xs={12} sm={4}>
                     <FormControl fullWidth>
-                        <InputLabel>Subject</InputLabel>
+                        <InputLabel>Subject *</InputLabel>
                         <Select
                             value={form.subject}
                             onChange={handleChange("subject")}
-                            label="Subject"
+                            label="Subject *"
+                            disabled={loading}
                         >
-                            <MenuItem value="Fundamentals">Fundamentals</MenuItem>
-                            <MenuItem value="Pharmacology">Pharmacology</MenuItem>
-                            <MenuItem value="Adult Health">Adult Health</MenuItem>
+                            {subjectOptions.map((option) => (
+                                <MenuItem key={option.value} value={option.value}>
+                                    {option.label}
+                                </MenuItem>
+                            ))}
                         </Select>
                     </FormControl>
                 </Grid>
 
                 <Grid item xs={12} sm={4}>
                     <FormControl fullWidth>
-                        <InputLabel>Lesson</InputLabel>
+                        <InputLabel>Lesson *</InputLabel>
                         <Select
                             value={form.lesson}
                             onChange={handleChange("lesson")}
-                            label="Lesson"
+                            label="Lesson *"
+                            disabled={loading}
                         >
-                            <MenuItem value="Skills / Procedures">Skills / Procedures</MenuItem>
-                            <MenuItem value="Dosage Calculation">Dosage Calculation</MenuItem>
+                            {lessonOptions.map((option) => (
+                                <MenuItem key={option.value} value={option.value}>
+                                    {option.label}
+                                </MenuItem>
+                            ))}
                         </Select>
                     </FormControl>
                 </Grid>
 
                 <Grid item xs={12} sm={6}>
                     <FormControl fullWidth>
-                        <InputLabel>Client Need Area</InputLabel>
+                        <InputLabel>Client Need Area *</InputLabel>
                         <Select
                             value={form.clientNeedArea}
                             onChange={handleChange("clientNeedArea")}
-                            label="Client Need Area"
+                            label="Client Need Area *"
+                            disabled={loading}
                         >
-                            <MenuItem value="Safety & Infection Control">Safety & Infection Control</MenuItem>
-                            <MenuItem value="Skills / Procedures">Skills / Procedures</MenuItem>
+                            {clientNeedAreaOptions.map((option) => (
+                                <MenuItem key={option.value} value={option.value}>
+                                    {option.label}
+                                </MenuItem>
+                            ))}
                         </Select>
                     </FormControl>
                 </Grid>
 
                 <Grid item xs={12} sm={6}>
                     <FormControl fullWidth>
-                        <InputLabel>Client Need Topic</InputLabel>
+                        <InputLabel>Client Need Topic *</InputLabel>
                         <Select
                             value={form.clientNeedTopic}
                             onChange={handleChange("clientNeedTopic")}
-                            label="Client Need Topic"
+                            label="Client Need Topic *"
+                            disabled={loading}
                         >
-                            <MenuItem value="Complications of Diagnostic Procedures">
-                                Complications of Diagnostic Procedures
-                            </MenuItem>
-                            <MenuItem value="Infection Prevention">Infection Prevention</MenuItem>
-                            <MenuItem value="Dosage Admin">Dosage Admin</MenuItem>
+                            {clientNeedTopicOptions.map((option) => (
+                                <MenuItem key={option.value} value={option.value}>
+                                    {option.label}
+                                </MenuItem>
+                            ))}
                         </Select>
                     </FormControl>
                 </Grid>
@@ -125,19 +304,22 @@ const MetaInfoComponent = ({ onSubmit }) => {
 
             {/* Action Buttons */}
             <Box mt={4} display="flex" justifyContent="space-between">
-                <Button startIcon={<ArrowBackIcon />} onClick={onBack}>
+                <Button
+                    startIcon={<ArrowBackIcon />}
+                    onClick={onBack}
+                    disabled={loading}
+                    variant="outlined"
+                >
                     Back
                 </Button>
                 <Button
                     variant="contained"
                     color="primary"
-                    endIcon={<LibraryAddCheckIcon />}
-                    onClick={handleSubmit}
-                    disabled={
-                        !form.difficulty || !form.subject || !form.lesson || !form.clientNeedArea || !form.clientNeedTopic
-                    }
+                    endIcon={loading ? <CircularProgress size={20} color="inherit" /> : <LibraryAddCheckIcon />}
+                    onClick={isFormValid() ? handleSubmit : handleIncompleteSubmit}
+                    disabled={loading}
                 >
-                    Add to Q-Bank
+                    {loading ? 'Adding...' : 'Add to Q-Bank'}
                 </Button>
             </Box>
         </Box>
