@@ -84,7 +84,7 @@ const MetaInfoComponent = ({ questionData }) => {
 
         // Prepare the complete question data
         const completeQuestionData = {
-            "questionType": "Sorting",
+            "questionType": "test",
             "question_type_id": 13,
             "question": "Arrange the steps in the correct order for performing tracheostomy suctioning.",
             "difficulty": "Medium",

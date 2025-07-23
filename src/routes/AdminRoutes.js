@@ -7,6 +7,12 @@ import StudentManage from "../pages/AdminPages/StudentManage";
 import QManagementPage from "../pages/AdminPages/QManagementPage";
 import QuestionTypeComponent from "../components/AdminComponents/QuestionTypeComponent";
 import McqQuestionContent from "../components/AdminComponents/McqQuestionContent";
+import DropdownQuestionContent from "../components/AdminComponents/DropdownQuestionContent";
+import DragdropQuestionContent from "../components/AdminComponents/DragdropQuestionContent";
+import MultiradioQuestionContent from "../components/AdminComponents/MultiradioQuestionContent";
+import SortQuestionContent from "../components/AdminComponents/SortQuestionContent";
+import SentenceHiglightContent from "../components/AdminComponents/SentenceHiglightContent";
+import FillinQuestionContent from "../components/AdminComponents/FillinQuestionContent";
 import McqAnswerExplanation from "../components/AdminComponents/McqAnswerExplanation";
 import MetaInfoComponent from '../components/AdminComponents/MetaInfoComponent';
 import TestCreateComponent from "../components/AdminComponents/TestCreateComponent";
@@ -40,6 +46,36 @@ const AdminRoutes = () => (
             <Route path="/admin/mcq-content" element={
                 // <ProtectedRoutes allowedRoles={[1]}>
                 <McqQuestionContent />
+                // </ProtectedRoutes>
+            } />
+            <Route path="/admin/dropdown-content" element={
+                // <ProtectedRoutes allowedRoles={[1]}>
+                <DropdownQuestionContent />
+                // </ProtectedRoutes>
+            } />
+            <Route path="/admin/dragdrop-content" element={
+                // <ProtectedRoutes allowedRoles={[1]}>
+                <DragdropQuestionContent />
+                // </ProtectedRoutes>
+            } />
+            <Route path="/admin/multiradio-content" element={
+                // <ProtectedRoutes allowedRoles={[1]}>
+                <MultiradioQuestionContent />
+                // </ProtectedRoutes>
+            } />
+            <Route path="/admin/sort-content" element={
+                // <ProtectedRoutes allowedRoles={[1]}>
+                <SortQuestionContent />
+                // </ProtectedRoutes>
+            } />
+            <Route path="/admin/sentence-content" element={
+                // <ProtectedRoutes allowedRoles={[1]}>
+                <SentenceHiglightContent />
+                // </ProtectedRoutes>
+            } />
+            <Route path="/admin/fill-content" element={
+                // <ProtectedRoutes allowedRoles={[1]}>
+                <FillinQuestionContent />
                 // </ProtectedRoutes>
             } />
             <Route path="/admin/answer-explain" element={
