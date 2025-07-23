@@ -1,128 +1,605 @@
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 import {
     Box,
     Button,
     Typography,
     TextField,
     IconButton,
-    RadioGroup,
     Radio,
-    FormControlLabel,
-    MenuItem,
     Select,
-    InputLabel,
+    MenuItem,
     FormControl,
+    InputLabel,
+    Card,
+    CardContent,
+    Chip,
+    Alert,
+    Accordion,
+    AccordionSummary,
+    AccordionDetails,
+    Paper,
+    Divider
 } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
-import { useNavigate } from 'react-router-dom';
-const MultiradioQuestionContent = ({ onBack, onNext }) => {
-    const [question, setQuestion] = useState("");
-    const [options, setOptions] = useState([""]);
-    const [correctAnswer, setCorrectAnswer] = useState("");
-    const navigate = useNavigate()
-    const handleOptionChange = (index, value) => {
-        const newOptions = [...options];
-        newOptions[index] = value;
-        setOptions(newOptions);
+import { CloudUpload, Delete, Image, PictureAsPdf, Description, ExpandMore } from '@mui/icons-material';
+import { useNavigate, useLocation } from 'react-router-dom';
+
+const MultiradioQuestionContent = () => {
+    const navigate = useNavigate();
+    const location = useLocation();
+
+    // Get any existing data from previous steps
+    const existingData = location.state?.questionData || {};
+    const questionType = location.state?.questionType || existingData.questionType || "Multiple Radio";
+
+    // Form state
+    const [question, setQuestion] = useState(existingData.question || "");
+    const [tabs, setTabs] = useState(existingData.tabs || [
+        { tabKey: "", tabValue: "" }
+    ]);
+    const [questionContent, setQuestionContent] = useState(existingData.question_content || [
+        { question_text: "", question_answer: "" }
+    ]);
+    const [radioOptions, setRadioOptions] = useState(existingData.radio_options || [
+        { option_value: "" }
+    ]);
+    const [selectedFile, setSelectedFile] = useState(existingData.exhibit || null);
+    const [errors, setErrors] = useState({});
+
+    const fileInputRef = useRef(null);
+
+    // File upload handlers
+    const handleFileSelect = (event) => {
+        const file = event.target.files[0];
+        if (file) {
+            if (file.size > 10 * 1024 * 1024) {
+                setErrors(prev => ({ ...prev, file: 'File size must be less than 10MB' }));
+                return;
+            }
+
+            const allowedTypes = ['image/jpeg', 'image/png', 'image/gif', 'application/pdf', 'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'];
+            if (!allowedTypes.includes(file.type)) {
+                setErrors(prev => ({ ...prev, file: 'Only images, PDF, and Word documents are allowed' }));
+                return;
+            }
+
+            const fileData = {
+                file: file,
+                name: file.name,
+                size: file.size,
+                type: file.type,
+                url: URL.createObjectURL(file),
+                uploadedAt: new Date().toISOString()
+            };
+
+            setSelectedFile(fileData);
+            setErrors(prev => ({ ...prev, file: null }));
+        }
+        event.target.value = '';
     };
 
-    const handleAddOption = () => {
-        setOptions([...options, ""]);
+    const handleButtonClick = () => {
+        fileInputRef.current?.click();
     };
 
+    const handleRemoveFile = () => {
+        if (selectedFile) {
+            URL.revokeObjectURL(selectedFile.url);
+            setSelectedFile(null);
+            setErrors(prev => ({ ...prev, file: null }));
+        }
+    };
+
+    // Tab handlers
+    const handleTabChange = (index, field, value) => {
+        const newTabs = [...tabs];
+        newTabs[index][field] = value;
+        setTabs(newTabs);
+        setErrors(prev => ({ ...prev, tabs: null }));
+    };
+
+    const handleAddTab = () => {
+        setTabs([...tabs, { tabKey: "", tabValue: "" }]);
+    };
+
+    const handleRemoveTab = (index) => {
+        if (tabs.length > 1) {
+            const newTabs = tabs.filter((_, i) => i !== index);
+            setTabs(newTabs);
+        }
+    };
+
+    // Question content handlers (sentences)
+    const handleQuestionTextChange = (index, value) => {
+        const newQuestionContent = [...questionContent];
+        newQuestionContent[index].question_text = value;
+        setQuestionContent(newQuestionContent);
+        setErrors(prev => ({ ...prev, questionContent: null }));
+    };
+
+    const handleQuestionAnswerChange = (index, value) => {
+        const newQuestionContent = [...questionContent];
+        newQuestionContent[index].question_answer = value;
+        setQuestionContent(newQuestionContent);
+    };
+
+    const handleAddQuestion = () => {
+        setQuestionContent([...questionContent, { question_text: "", question_answer: "" }]);
+    };
+
+    const handleRemoveQuestion = (index) => {
+        if (questionContent.length > 1) {
+            const newQuestionContent = questionContent.filter((_, i) => i !== index);
+            setQuestionContent(newQuestionContent);
+        }
+    };
+
+    // Radio options handlers
+    const handleRadioOptionChange = (index, value) => {
+        const newRadioOptions = [...radioOptions];
+        newRadioOptions[index].option_value = value;
+        setRadioOptions(newRadioOptions);
+        setErrors(prev => ({ ...prev, radioOptions: null }));
+    };
+
+    const handleAddRadioOption = () => {
+        setRadioOptions([...radioOptions, { option_value: "" }]);
+    };
+
+    const handleRemoveRadioOption = (index) => {
+        if (radioOptions.length > 2) {
+            const newRadioOptions = radioOptions.filter((_, i) => i !== index);
+            setRadioOptions(newRadioOptions);
+        }
+    };
+
+    // Validation
+    const validateForm = () => {
+        const newErrors = {};
+
+        if (!question.trim()) {
+            newErrors.question = 'Question is required';
+        }
+
+        const validTabs = tabs.filter(tab => tab.tabKey.trim() && tab.tabValue.trim());
+        if (validTabs.length === 0) {
+            newErrors.tabs = 'At least one tab with key and value is required';
+        }
+
+        const validQuestions = questionContent.filter(q => q.question_text.trim() && q.question_answer.trim());
+        if (validQuestions.length === 0) {
+            newErrors.questionContent = 'At least one sentence with answer is required';
+        }
+
+        const validRadioOptions = radioOptions.filter(option => option.option_value.trim());
+        if (validRadioOptions.length < 2) {
+            newErrors.radioOptions = 'At least two radio options are required';
+        }
+
+        setErrors(newErrors);
+        return Object.keys(newErrors).length === 0;
+    };
+
+    // Navigation handlers
     const handleNext = () => {
-        const data = {
-            question,
-            options,
-            correctAnswer,
+        if (!validateForm()) {
+            return;
+        }
+
+        const questionData = {
+            questionType: questionType,
+            question: question.trim(),
+            tabs: tabs.filter(tab => tab.tabKey.trim() && tab.tabValue.trim()),
+            question_content: questionContent.filter(q => q.question_text.trim() && q.question_answer.trim()),
+            radio_options: radioOptions.filter(option => option.option_value.trim()),
+            exhibit: selectedFile,
+            createdAt: existingData.createdAt || new Date().toISOString(),
+            updatedAt: new Date().toISOString(),
+            questionId: existingData.questionId || `${questionType}_${Date.now()}`,
+            currentStep: 'content',
+            completedSteps: ['type', 'content']
         };
-        // onNext(data);
-        navigate('/admin/answer-explain');
+
+        console.log('Sending multiple radio question data:', questionData);
+
+        navigate('/admin/answer-explain', {
+            state: {
+                questionData: questionData,
+                fromStep: 'content'
+            }
+        });
     };
-    onBack = () => {
-        navigate('/admin/question-type');
+
+    const handleBack = () => {
+        const currentData = {
+            question: question.trim(),
+            tabs: tabs,
+            question_content: questionContent,
+            radio_options: radioOptions,
+            exhibit: selectedFile
+        };
+
+        navigate('/admin/question-type', {
+            state: {
+                questionData: currentData,
+                fromStep: 'content'
+            }
+        });
     };
+
+    // Helper functions
+    const getFileIcon = (fileType) => {
+        if (fileType?.startsWith('image/')) return <Image />;
+        if (fileType === 'application/pdf') return <PictureAsPdf />;
+        return <Description />;
+    };
+
+    const formatFileSize = (bytes) => {
+        if (bytes === 0) return '0 Bytes';
+        const k = 1024;
+        const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+        const i = Math.floor(Math.log(bytes) / Math.log(k));
+        return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+    };
+
+    const isFormValid = () => {
+        const hasValidQuestion = question.trim() !== "";
+        const hasValidTabs = tabs.some(tab => tab.tabKey.trim() && tab.tabValue.trim());
+        const hasValidQuestions = questionContent.some(q => q.question_text.trim() && q.question_answer.trim());
+        const hasValidRadioOptions = radioOptions.filter(option => option.option_value.trim()).length >= 2;
+
+        return hasValidQuestion && hasValidTabs && hasValidQuestions && hasValidRadioOptions;
+    };
+
+    // Cleanup on unmount
+    React.useEffect(() => {
+        return () => {
+            if (selectedFile && selectedFile.url) {
+                URL.revokeObjectURL(selectedFile.url);
+            }
+        };
+    }, [selectedFile]);
+
     return (
-        <Box p={3}>
+        <Box p={3} maxWidth="900px" mx="auto">
             {/* Breadcrumb */}
-            <Typography variant="caption" color="textSecondary">
+            <Typography variant="caption" color="textSecondary" mb={2} display="block">
                 Test type &gt; Question Type &gt; <strong>Question Content</strong>
             </Typography>
 
             {/* Title */}
             <Typography variant="h5" mt={2} mb={1}>
-                Enter Question Content
+                Enter Multiple Radio Question Content
             </Typography>
             <Typography variant="body2" color="textSecondary" mb={3}>
-                Write the question your students will answer — be clear, concise, and clinically relevant.
+                Create a multiple radio question with tabs and sentence-based radio selections.
             </Typography>
 
             {/* Question Input */}
+            <Typography variant="h6" mb={1} color="primary">
+                Question Text *
+            </Typography>
             <TextField
                 fullWidth
                 label="Enter your question"
                 multiline
                 minRows={3}
+                maxRows={6}
                 value={question}
-                onChange={(e) => setQuestion(e.target.value)}
+                onChange={(e) => {
+                    setQuestion(e.target.value);
+                    setErrors(prev => ({ ...prev, question: null }));
+                }}
                 variant="outlined"
+                placeholder="Type your multiple radio question here..."
+                error={!!errors.question}
+                helperText={errors.question}
+                sx={{ mb: 3 }}
             />
 
-            {/* Image & Exhibit Buttons */}
+            {/* File Upload Section */}
             <Box display="flex" justifyContent="flex-end" mt={1} mb={3} gap={1}>
-                <Button variant="outlined">+ Add Image</Button>
-                <Button variant="outlined">+ Add Exhibit</Button>
+                <input
+                    type="file"
+                    ref={fileInputRef}
+                    onChange={handleFileSelect}
+                    accept="image/*,.pdf,.doc,.docx"
+                    style={{ display: 'none' }}
+                />
+                <Button
+                    variant="outlined"
+                    onClick={handleButtonClick}
+                    startIcon={<CloudUpload />}
+                    size="small"
+                >
+                    + Add Exhibit
+                </Button>
             </Box>
 
-            {/* Options List */}
-            <Typography variant="subtitle1">Answers</Typography>
-            {options.map((opt, index) => (
-                <Box key={index} display="flex" alignItems="center" gap={1} mt={1}>
-                    <Radio disabled />
-                    <TextField
-                        fullWidth
-                        placeholder={`Option ${index + 1}`}
-                        value={opt}
-                        onChange={(e) => handleOptionChange(index, e.target.value)}
-                    />
-                </Box>
-            ))}
+            {/* File Error Display */}
+            {errors.file && (
+                <Alert severity="error" sx={{ mb: 2 }}>
+                    {errors.file}
+                </Alert>
+            )}
 
-            {/* Add Option Button */}
-            <Button startIcon={<AddIcon />} onClick={handleAddOption} sx={{ mt: 2 }}>
-                Add Option
-            </Button>
+            {/* Display Uploaded File */}
+            {selectedFile && (
+                <Card sx={{ mb: 3 }}>
+                    <CardContent sx={{ p: 2, '&:last-child': { pb: 2 } }}>
+                        <Box display="flex" alignItems="center" gap={2}>
+                            {getFileIcon(selectedFile.type)}
+                            <Box flex={1}>
+                                <Typography variant="body2" fontWeight={500}>
+                                    {selectedFile.name}
+                                </Typography>
+                                <Chip
+                                    label={formatFileSize(selectedFile.size)}
+                                    size="small"
+                                    variant="outlined"
+                                />
+                            </Box>
+                            {selectedFile.type.startsWith('image/') && (
+                                <Box
+                                    component="img"
+                                    src={selectedFile.url}
+                                    alt={selectedFile.name}
+                                    sx={{ width: 60, height: 60, objectFit: 'cover', borderRadius: 1 }}
+                                />
+                            )}
+                            <IconButton onClick={handleRemoveFile} color="error" size="small">
+                                <Delete />
+                            </IconButton>
+                        </Box>
+                    </CardContent>
+                </Card>
+            )}
 
-            {/* Correct Answer Selector */}
-            <FormControl fullWidth margin="normal">
-                <InputLabel>Correct Answer</InputLabel>
-                <Select
-                    value={correctAnswer}
-                    onChange={(e) => setCorrectAnswer(e.target.value)}
-                    label="Correct Answer"
-                >
-                    {options.map((opt, idx) => (
-                        <MenuItem key={idx} value={opt}>
-                            {opt || `Option ${idx + 1}`}
-                        </MenuItem>
+            {/* Tabs Section */}
+            <Accordion defaultExpanded sx={{ mb: 3 }}>
+                <AccordionSummary expandIcon={<ExpandMore />}>
+                    <Typography variant="h6" color="primary">
+                        Question Tabs * ({tabs.length})
+                    </Typography>
+                </AccordionSummary>
+                <AccordionDetails>
+                    {tabs.map((tab, index) => (
+                        <Card key={index} sx={{ mb: 2, p: 2 }}>
+                            <Box display="flex" justifyContent="space-between" alignItems="center" mb={2}>
+                                <Typography variant="subtitle1">Tab {index + 1}</Typography>
+                                {tabs.length > 1 && (
+                                    <IconButton
+                                        onClick={() => handleRemoveTab(index)}
+                                        color="error"
+                                        size="small"
+                                    >
+                                        <Delete />
+                                    </IconButton>
+                                )}
+                            </Box>
+
+                            <TextField
+                                fullWidth
+                                label="Tab Key/Title"
+                                value={tab.tabKey}
+                                onChange={(e) => handleTabChange(index, 'tabKey', e.target.value)}
+                                placeholder="e.g., Triage Note, Vital Signs"
+                                sx={{ mb: 2 }}
+                                size="small"
+                            />
+
+                            <TextField
+                                fullWidth
+                                label="Tab Content"
+                                multiline
+                                minRows={3}
+                                value={tab.tabValue}
+                                onChange={(e) => handleTabChange(index, 'tabValue', e.target.value)}
+                                placeholder="Enter the content that will be displayed in this tab..."
+                            />
+                        </Card>
                     ))}
-                </Select>
-            </FormControl>
+
+                    <Button
+                        startIcon={<AddIcon />}
+                        onClick={handleAddTab}
+                        variant="outlined"
+                        size="small"
+                    >
+                        Add Tab
+                    </Button>
+
+                    {errors.tabs && (
+                        <Typography color="error" variant="caption" sx={{ display: 'block', mt: 1 }}>
+                            {errors.tabs}
+                        </Typography>
+                    )}
+                </AccordionDetails>
+            </Accordion>
+
+            {/* Radio Options Section */}
+            <Accordion defaultExpanded sx={{ mb: 3 }}>
+                <AccordionSummary expandIcon={<ExpandMore />}>
+                    <Typography variant="h6" color="primary">
+                        Radio Button Options * ({radioOptions.length})
+                    </Typography>
+                </AccordionSummary>
+                <AccordionDetails>
+                    <Typography variant="body2" color="textSecondary" mb={2}>
+                        These are the answer choices that will be available for each sentence.
+                    </Typography>
+
+                    {radioOptions.map((option, index) => (
+                        <Box key={index} display="flex" alignItems="center" gap={1} mb={1}>
+                            <Typography variant="body2" sx={{ minWidth: 80 }}>
+                                Option {index + 1}:
+                            </Typography>
+                            <TextField
+                                fullWidth
+                                placeholder={`Radio option ${index + 1}`}
+                                value={option.option_value}
+                                onChange={(e) => handleRadioOptionChange(index, e.target.value)}
+                                size="small"
+                            />
+                            {radioOptions.length > 2 && (
+                                <IconButton
+                                    onClick={() => handleRemoveRadioOption(index)}
+                                    color="error"
+                                    size="small"
+                                >
+                                    <Delete />
+                                </IconButton>
+                            )}
+                        </Box>
+                    ))}
+
+                    <Button
+                        startIcon={<AddIcon />}
+                        onClick={handleAddRadioOption}
+                        variant="outlined"
+                        size="small"
+                        sx={{ mt: 1 }}
+                    >
+                        Add Radio Option
+                    </Button>
+
+                    {errors.radioOptions && (
+                        <Typography color="error" variant="caption" sx={{ display: 'block', mt: 1 }}>
+                            {errors.radioOptions}
+                        </Typography>
+                    )}
+                </AccordionDetails>
+            </Accordion>
+
+            {/* Question Content/Sentences Section */}
+            <Accordion defaultExpanded sx={{ mb: 3 }}>
+                <AccordionSummary expandIcon={<ExpandMore />}>
+                    <Typography variant="h6" color="primary">
+                        Sentences & Answers * ({questionContent.length})
+                    </Typography>
+                </AccordionSummary>
+                <AccordionDetails>
+                    <Typography variant="body2" color="textSecondary" mb={2}>
+                        Add sentences and select the correct answer for each from the radio options above.
+                    </Typography>
+
+                    {questionContent.map((content, index) => (
+                        <Paper key={index} variant="outlined" sx={{ p: 2, mb: 2 }}>
+                            <Box display="flex" justifyContent="space-between" alignItems="center" mb={2}>
+                                <Typography variant="subtitle1">Sentence {index + 1}</Typography>
+                                {questionContent.length > 1 && (
+                                    <IconButton
+                                        onClick={() => handleRemoveQuestion(index)}
+                                        color="error"
+                                        size="small"
+                                    >
+                                        <Delete />
+                                    </IconButton>
+                                )}
+                            </Box>
+
+                            <TextField
+                                fullWidth
+                                label="Sentence Text"
+                                multiline
+                                minRows={2}
+                                value={content.question_text}
+                                onChange={(e) => handleQuestionTextChange(index, e.target.value)}
+                                placeholder="Enter the sentence or statement..."
+                                sx={{ mb: 2 }}
+                            />
+
+                            <FormControl fullWidth>
+                                <InputLabel>Correct Answer</InputLabel>
+                                <Select
+                                    value={content.question_answer}
+                                    onChange={(e) => handleQuestionAnswerChange(index, e.target.value)}
+                                    label="Correct Answer"
+                                >
+                                    {radioOptions.filter(opt => opt.option_value.trim()).map((option, optIdx) => (
+                                        <MenuItem key={optIdx} value={option.option_value}>
+                                            {option.option_value}
+                                        </MenuItem>
+                                    ))}
+                                </Select>
+                            </FormControl>
+
+                            {/* Visual Preview */}
+                            <Box sx={{ mt: 2, p: 1, bgcolor: 'grey.50', borderRadius: 1 }}>
+                                <Typography variant="caption" color="textSecondary">Preview:</Typography>
+                                <Typography variant="body2" sx={{ mb: 1 }}>
+                                    {content.question_text || "Sentence text will appear here..."}
+                                </Typography>
+                                {radioOptions.filter(opt => opt.option_value.trim()).map((option, optIdx) => (
+                                    <Box key={optIdx} display="flex" alignItems="center" gap={1}>
+                                        <Radio
+                                            checked={content.question_answer === option.option_value}
+                                            size="small"
+                                            disabled
+                                        />
+                                        <Typography variant="body2">{option.option_value}</Typography>
+                                    </Box>
+                                ))}
+                            </Box>
+                        </Paper>
+                    ))}
+
+                    <Button
+                        startIcon={<AddIcon />}
+                        onClick={handleAddQuestion}
+                        variant="outlined"
+                        size="small"
+                    >
+                        Add Sentence
+                    </Button>
+
+                    {errors.questionContent && (
+                        <Typography color="error" variant="caption" sx={{ display: 'block', mt: 1 }}>
+                            {errors.questionContent}
+                        </Typography>
+                    )}
+                </AccordionDetails>
+            </Accordion>
+
+            {/* Form Summary */}
+            <Card sx={{ mt: 3, bgcolor: 'grey.50' }}>
+                <CardContent>
+                    <Typography variant="subtitle2" gutterBottom>
+                        Multiple Radio Question Summary:
+                    </Typography>
+                    <Typography variant="body2" color="textSecondary">
+                        • Question: {question ? '✓ Complete' : '✗ Required'}
+                    </Typography>
+                    <Typography variant="body2" color="textSecondary">
+                        • Tabs: {tabs.filter(tab => tab.tabKey.trim() && tab.tabValue.trim()).length} valid tabs
+                    </Typography>
+                    <Typography variant="body2" color="textSecondary">
+                        • Radio Options: {radioOptions.filter(opt => opt.option_value.trim()).length} options
+                    </Typography>
+                    <Typography variant="body2" color="textSecondary">
+                        • Sentences: {questionContent.filter(q => q.question_text.trim() && q.question_answer.trim()).length} complete sentences
+                    </Typography>
+                </CardContent>
+            </Card>
 
             {/* Navigation Buttons */}
             <Box mt={4} display="flex" justifyContent="space-between">
-                <Button variant="text" startIcon={<ArrowBackIcon />} onClick={onBack}>
+                <Button
+                    variant="outlined"
+                    startIcon={<ArrowBackIcon />}
+                    onClick={handleBack}
+                >
                     Back
                 </Button>
                 <Button
                     variant="contained"
                     endIcon={<ArrowForwardIcon />}
                     onClick={handleNext}
-                // disabled={!question || options.length < 2 || !correctAnswer}
+                    disabled={!isFormValid()}
                 >
-                    Next
+                    Next: Add Explanation
                 </Button>
             </Box>
         </Box>

@@ -1,132 +1,583 @@
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 import {
     Box,
     Button,
     Typography,
     TextField,
     IconButton,
-    RadioGroup,
-    Radio,
-    FormControlLabel,
-    MenuItem,
-    Select,
-    InputLabel,
-    FormControl,
+    Card,
+    CardContent,
+    Chip,
+    Alert,
+    Accordion,
+    AccordionSummary,
+    AccordionDetails,
+    Paper
 } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
-import { useNavigate } from 'react-router-dom';
-const SentenceHiglightContent = ({ onBack, onNext }) => {
-    const [question, setQuestion] = useState("");
-    const [options, setOptions] = useState([""]);
-    const [correctAnswer, setCorrectAnswer] = useState("");
-    const navigate = useNavigate()
-    const handleOptionChange = (index, value) => {
-        const newOptions = [...options];
-        newOptions[index] = value;
-        setOptions(newOptions);
+import { CloudUpload, Delete, Image, PictureAsPdf, Description, ExpandMore, Highlight } from '@mui/icons-material';
+import { useNavigate, useLocation } from 'react-router-dom';
+
+const SentenceHighlightContent = () => {
+    const navigate = useNavigate();
+    const location = useLocation();
+
+    // Get any existing data from previous steps
+    const existingData = location.state?.questionData || {};
+    const questionType = location.state?.questionType || existingData.questionType || "Sentence Highlight";
+
+    // Form state
+    const [question, setQuestion] = useState(existingData.question || "");
+    const [tabs, setTabs] = useState(existingData.tabs || [
+        { tabKey: "", tabValue: "" }
+    ]);
+    const [passage, setPassage] = useState(existingData.passage || "");
+    const [highlightInstructions, setHighlightInstructions] = useState(existingData.highlightInstructions || "");
+    const [correctHighlights, setCorrectHighlights] = useState(existingData.correctHighlights || [""]);
+    const [selectedFile, setSelectedFile] = useState(existingData.exhibit || null);
+    const [errors, setErrors] = useState({});
+
+    const fileInputRef = useRef(null);
+
+    // File upload handlers
+    const handleFileSelect = (event) => {
+        const file = event.target.files[0];
+        if (file) {
+            if (file.size > 10 * 1024 * 1024) {
+                setErrors(prev => ({ ...prev, file: 'File size must be less than 10MB' }));
+                return;
+            }
+
+            const allowedTypes = ['image/jpeg', 'image/png', 'image/gif', 'application/pdf', 'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'];
+            if (!allowedTypes.includes(file.type)) {
+                setErrors(prev => ({ ...prev, file: 'Only images, PDF, and Word documents are allowed' }));
+                return;
+            }
+
+            const fileData = {
+                file: file,
+                name: file.name,
+                size: file.size,
+                type: file.type,
+                url: URL.createObjectURL(file),
+                uploadedAt: new Date().toISOString()
+            };
+
+            setSelectedFile(fileData);
+            setErrors(prev => ({ ...prev, file: null }));
+        }
+        event.target.value = '';
     };
 
-    const handleAddOption = () => {
-        setOptions([...options, ""]);
+    const handleButtonClick = () => {
+        fileInputRef.current?.click();
     };
 
+    const handleRemoveFile = () => {
+        if (selectedFile) {
+            URL.revokeObjectURL(selectedFile.url);
+            setSelectedFile(null);
+            setErrors(prev => ({ ...prev, file: null }));
+        }
+    };
+
+    // Tab handlers
+    const handleTabChange = (index, field, value) => {
+        const newTabs = [...tabs];
+        newTabs[index][field] = value;
+        setTabs(newTabs);
+        setErrors(prev => ({ ...prev, tabs: null }));
+    };
+
+    const handleAddTab = () => {
+        setTabs([...tabs, { tabKey: "", tabValue: "" }]);
+    };
+
+    const handleRemoveTab = (index) => {
+        if (tabs.length > 1) {
+            const newTabs = tabs.filter((_, i) => i !== index);
+            setTabs(newTabs);
+        }
+    };
+
+    // Highlight handlers
+    const handleCorrectHighlightChange = (index, value) => {
+        const newHighlights = [...correctHighlights];
+        newHighlights[index] = value;
+        setCorrectHighlights(newHighlights);
+        setErrors(prev => ({ ...prev, correctHighlights: null }));
+    };
+
+    const handleAddCorrectHighlight = () => {
+        setCorrectHighlights([...correctHighlights, ""]);
+    };
+
+    const handleRemoveCorrectHighlight = (index) => {
+        if (correctHighlights.length > 1) {
+            const newHighlights = correctHighlights.filter((_, i) => i !== index);
+            setCorrectHighlights(newHighlights);
+        }
+    };
+
+    // Validation
+    const validateForm = () => {
+        const newErrors = {};
+
+        if (!question.trim()) {
+            newErrors.question = 'Question is required';
+        }
+
+        const validTabs = tabs.filter(tab => tab.tabKey.trim() && tab.tabValue.trim());
+        if (validTabs.length === 0) {
+            newErrors.tabs = 'At least one tab with key and value is required';
+        }
+
+        if (!passage.trim()) {
+            newErrors.passage = 'Passage text is required';
+        }
+
+        if (!highlightInstructions.trim()) {
+            newErrors.highlightInstructions = 'Highlight instructions are required';
+        }
+
+        const validHighlights = correctHighlights.filter(highlight => highlight.trim());
+        if (validHighlights.length === 0) {
+            newErrors.correctHighlights = 'At least one correct highlight text is required';
+        }
+
+        setErrors(newErrors);
+        return Object.keys(newErrors).length === 0;
+    };
+
+    // Navigation handlers
     const handleNext = () => {
-        const data = {
-            question,
-            options,
-            correctAnswer,
+        if (!validateForm()) {
+            return;
+        }
+
+        const questionData = {
+            questionType: questionType,
+            question: question.trim(),
+            tabs: tabs.filter(tab => tab.tabKey.trim() && tab.tabValue.trim()),
+            passage: passage.trim(),
+            highlightInstructions: highlightInstructions.trim(),
+            correctHighlights: correctHighlights.filter(highlight => highlight.trim()),
+            exhibit: selectedFile,
+            createdAt: existingData.createdAt || new Date().toISOString(),
+            updatedAt: new Date().toISOString(),
+            questionId: existingData.questionId || `${questionType}_${Date.now()}`,
+            currentStep: 'content',
+            completedSteps: ['type', 'content']
         };
-        // onNext(data);
-        navigate('/admin/answer-explain');
+
+        console.log('Sending sentence highlight question data:', questionData);
+
+        navigate('/admin/answer-explain', {
+            state: {
+                questionData: questionData,
+                fromStep: 'content'
+            }
+        });
     };
-    onBack = () => {
-        navigate('/admin/question-type');
+
+    const handleBack = () => {
+        const currentData = {
+            question: question.trim(),
+            tabs: tabs,
+            passage: passage.trim(),
+            highlightInstructions: highlightInstructions.trim(),
+            correctHighlights: correctHighlights,
+            exhibit: selectedFile
+        };
+
+        navigate('/admin/question-type', {
+            state: {
+                questionData: currentData,
+                fromStep: 'content'
+            }
+        });
     };
+
+    // Helper functions
+    const getFileIcon = (fileType) => {
+        if (fileType?.startsWith('image/')) return <Image />;
+        if (fileType === 'application/pdf') return <PictureAsPdf />;
+        return <Description />;
+    };
+
+    const formatFileSize = (bytes) => {
+        if (bytes === 0) return '0 Bytes';
+        const k = 1024;
+        const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+        const i = Math.floor(Math.log(bytes) / Math.log(k));
+        return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+    };
+
+    const isFormValid = () => {
+        const hasValidQuestion = question.trim() !== "";
+        const hasValidTabs = tabs.some(tab => tab.tabKey.trim() && tab.tabValue.trim());
+        const hasValidPassage = passage.trim() !== "";
+        const hasValidInstructions = highlightInstructions.trim() !== "";
+        const hasValidHighlights = correctHighlights.some(highlight => highlight.trim());
+
+        return hasValidQuestion && hasValidTabs && hasValidPassage && hasValidInstructions && hasValidHighlights;
+    };
+
+    // Helper function to create highlighted preview
+    const createHighlightPreview = () => {
+        if (!passage.trim()) return "Passage text will appear here...";
+
+        let previewText = passage;
+        correctHighlights.filter(h => h.trim()).forEach((highlight, index) => {
+            if (highlight.trim() && previewText.includes(highlight.trim())) {
+                previewText = previewText.replace(
+                    new RegExp(highlight.trim(), 'gi'),
+                    `<mark style="background-color: #ffeb3b; color: #000;">${highlight.trim()}</mark>`
+                );
+            }
+        });
+
+        return previewText;
+    };
+
+    // Cleanup on unmount
+    React.useEffect(() => {
+        return () => {
+            if (selectedFile && selectedFile.url) {
+                URL.revokeObjectURL(selectedFile.url);
+            }
+        };
+    }, [selectedFile]);
+
     return (
-        <Box p={3}>
+        <Box p={3} maxWidth="900px" mx="auto">
             {/* Breadcrumb */}
-            <Typography variant="caption" color="textSecondary">
+            <Typography variant="caption" color="textSecondary" mb={2} display="block">
                 Test type &gt; Question Type &gt; <strong>Question Content</strong>
             </Typography>
 
             {/* Title */}
             <Typography variant="h5" mt={2} mb={1}>
-                Enter Question Content
+                Enter Sentence Highlight Question Content
             </Typography>
             <Typography variant="body2" color="textSecondary" mb={3}>
-                Write the question your students will answer — be clear, concise, and clinically relevant.
+                Create a sentence highlighting question where students identify specific text in a passage.
             </Typography>
 
             {/* Question Input */}
+            <Typography variant="h6" mb={1} color="primary">
+                Question Text *
+            </Typography>
             <TextField
                 fullWidth
                 label="Enter your question"
                 multiline
                 minRows={3}
+                maxRows={6}
                 value={question}
-                onChange={(e) => setQuestion(e.target.value)}
+                onChange={(e) => {
+                    setQuestion(e.target.value);
+                    setErrors(prev => ({ ...prev, question: null }));
+                }}
                 variant="outlined"
+                placeholder="Type your sentence highlighting question here..."
+                error={!!errors.question}
+                helperText={errors.question}
+                sx={{ mb: 3 }}
             />
 
-            {/* Image & Exhibit Buttons */}
+            {/* File Upload Section */}
             <Box display="flex" justifyContent="flex-end" mt={1} mb={3} gap={1}>
-                <Button variant="outlined">+ Add Image</Button>
-                <Button variant="outlined">+ Add Exhibit</Button>
+                <input
+                    type="file"
+                    ref={fileInputRef}
+                    onChange={handleFileSelect}
+                    accept="image/*,.pdf,.doc,.docx"
+                    style={{ display: 'none' }}
+                />
+                <Button
+                    variant="outlined"
+                    onClick={handleButtonClick}
+                    startIcon={<CloudUpload />}
+                    size="small"
+                >
+                    + Add Exhibit
+                </Button>
             </Box>
 
-            {/* Options List */}
-            <Typography variant="subtitle1">Answers</Typography>
-            {options.map((opt, index) => (
-                <Box key={index} display="flex" alignItems="center" gap={1} mt={1}>
-                    <Radio disabled />
-                    <TextField
-                        fullWidth
-                        placeholder={`Option ${index + 1}`}
-                        value={opt}
-                        onChange={(e) => handleOptionChange(index, e.target.value)}
-                    />
-                </Box>
+            {/* File Error Display */}
+            {errors.file && (
+                <Alert severity="error" sx={{ mb: 2 }}>
+                    {errors.file}
+                </Alert>
+            )}
+
+            {/* Display Uploaded File */}
+            {selectedFile && (
+                <Card sx={{ mb: 3 }}>
+                    <CardContent sx={{ p: 2, '&:last-child': { pb: 2 } }}>
+                        <Box display="flex" alignItems="center" gap={2}>
+                            {getFileIcon(selectedFile.type)}
+                            <Box flex={1}>
+                                <Typography variant="body2" fontWeight={500}>
+                                    {selectedFile.name}
+                                </Typography>
+                                <Chip
+                                    label={formatFileSize(selectedFile.size)}
+                                    size="small"
+                                    variant="outlined"
+                                />
+                            </Box>
+                            {selectedFile.type.startsWith('image/') && (
+                                <Box
+                                    component="img"
+                                    src={selectedFile.url}
+                                    alt={selectedFile.name}
+                                    sx={{ width: 60, height: 60, objectFit: 'cover', borderRadius: 1 }}
+                                />
+                            )}
+                            <IconButton onClick={handleRemoveFile} color="error" size="small">
+                                <Delete />
+                            </IconButton>
+                        </Box>
+                    </CardContent>
+                </Card>
+            )}
+
+            {/* Tabs Section */}
+            <Accordion defaultExpanded sx={{ mb: 3 }}>
+                <AccordionSummary expandIcon={<ExpandMore />}>
+                    <Typography variant="h6" color="primary">
+                        Question Tabs * ({tabs.length})
+                    </Typography>
+                </AccordionSummary>
+                <AccordionDetails>
+                    {tabs.map((tab, index) => (
+                        <Card key={index} sx={{ mb: 2, p: 2 }}>
+                            <Box display="flex" justifyContent="space-between" alignItems="center" mb={2}>
+                                <Typography variant="subtitle1">Tab {index + 1}</Typography>
+                                {tabs.length > 1 && (
+                                    <IconButton
+                                        onClick={() => handleRemoveTab(index)}
+                                        color="error"
+                                        size="small"
+                                    >
+                                        <Delete />
+                                    </IconButton>
+                                )}
+                            </Box>
+
+                            <TextField
+                                fullWidth
+                                label="Tab Key/Title"
+                                value={tab.tabKey}
+                                onChange={(e) => handleTabChange(index, 'tabKey', e.target.value)}
+                                placeholder="e.g., Patient Chart, Nurse Notes"
+                                sx={{ mb: 2 }}
+                                size="small"
+                            />
+
+                            <TextField
+                                fullWidth
+                                label="Tab Content"
+                                multiline
+                                minRows={3}
+                                value={tab.tabValue}
+                                onChange={(e) => handleTabChange(index, 'tabValue', e.target.value)}
+                                placeholder="Enter the content that will be displayed in this tab..."
+                            />
+                        </Card>
+                    ))}
+
+                    <Button
+                        startIcon={<AddIcon />}
+                        onClick={handleAddTab}
+                        variant="outlined"
+                        size="small"
+                    >
+                        Add Tab
+                    </Button>
+
+                    {errors.tabs && (
+                        <Typography color="error" variant="caption" sx={{ display: 'block', mt: 1 }}>
+                            {errors.tabs}
+                        </Typography>
+                    )}
+                </AccordionDetails>
+            </Accordion>
+
+            {/* Passage Section */}
+            <Typography variant="h6" mb={1} color="primary">
+                Passage Text *
+            </Typography>
+            <Typography variant="body2" color="textSecondary" mb={2}>
+                Enter the passage that students will read and highlight from.
+            </Typography>
+            <TextField
+                fullWidth
+                label="Enter passage text"
+                multiline
+                minRows={6}
+                maxRows={12}
+                value={passage}
+                onChange={(e) => {
+                    setPassage(e.target.value);
+                    setErrors(prev => ({ ...prev, passage: null }));
+                }}
+                variant="outlined"
+                placeholder="Enter the passage text that students will read and highlight specific sentences or phrases from..."
+                error={!!errors.passage}
+                helperText={errors.passage || `${passage.length} characters`}
+                sx={{ mb: 3 }}
+            />
+
+            {/* Highlight Instructions */}
+            <Typography variant="h6" mb={1} color="primary">
+                Highlight Instructions *
+            </Typography>
+            <TextField
+                fullWidth
+                label="Highlighting instructions"
+                multiline
+                minRows={2}
+                value={highlightInstructions}
+                onChange={(e) => {
+                    setHighlightInstructions(e.target.value);
+                    setErrors(prev => ({ ...prev, highlightInstructions: null }));
+                }}
+                variant="outlined"
+                placeholder="e.g., Highlight the symptoms that indicate respiratory distress..."
+                error={!!errors.highlightInstructions}
+                helperText={errors.highlightInstructions || "Instructions telling students what to highlight"}
+                sx={{ mb: 3 }}
+            />
+
+            {/* Correct Highlights Section */}
+            <Typography variant="h6" mb={1} color="primary">
+                Correct Highlight Texts *
+            </Typography>
+            <Typography variant="body2" color="textSecondary" mb={2}>
+                Enter the exact text phrases that should be highlighted. These must match text in the passage above.
+            </Typography>
+
+            {correctHighlights.map((highlight, index) => (
+                <Paper key={index} sx={{ mb: 2, p: 2, border: '1px solid', borderColor: 'warning.main' }}>
+                    <Box display="flex" alignItems="center" gap={2}>
+                        <Highlight color="warning" />
+                        <Typography variant="body2" sx={{ minWidth: 100 }}>
+                            Highlight {index + 1}:
+                        </Typography>
+                        <TextField
+                            fullWidth
+                            label={`Correct highlight text ${index + 1}`}
+                            multiline
+                            minRows={2}
+                            value={highlight}
+                            onChange={(e) => handleCorrectHighlightChange(index, e.target.value)}
+                            placeholder="Enter the exact text that should be highlighted..."
+                        />
+                        {correctHighlights.length > 1 && (
+                            <IconButton
+                                onClick={() => handleRemoveCorrectHighlight(index)}
+                                color="error"
+                                size="small"
+                            >
+                                <Delete />
+                            </IconButton>
+                        )}
+                    </Box>
+                </Paper>
             ))}
 
-            {/* Add Option Button */}
-            <Button startIcon={<AddIcon />} onClick={handleAddOption} sx={{ mt: 2 }}>
-                Add Option
+            <Button
+                startIcon={<AddIcon />}
+                onClick={handleAddCorrectHighlight}
+                variant="outlined"
+                sx={{ mb: 3 }}
+                color="warning"
+            >
+                Add Correct Highlight
             </Button>
 
-            {/* Correct Answer Selector */}
-            <FormControl fullWidth margin="normal">
-                <InputLabel>Correct Answer</InputLabel>
-                <Select
-                    value={correctAnswer}
-                    onChange={(e) => setCorrectAnswer(e.target.value)}
-                    label="Correct Answer"
-                >
-                    {options.map((opt, idx) => (
-                        <MenuItem key={idx} value={opt}>
-                            {opt || `Option ${idx + 1}`}
-                        </MenuItem>
-                    ))}
-                </Select>
-            </FormControl>
+            {errors.correctHighlights && (
+                <Typography color="error" variant="caption" sx={{ display: 'block', mb: 2 }}>
+                    {errors.correctHighlights}
+                </Typography>
+            )}
+
+            {/* Preview Section */}
+            <Card sx={{ mb: 3, bgcolor: 'grey.50' }}>
+                <CardContent>
+                    <Typography variant="h6" gutterBottom color="primary">
+                        🔍 Highlight Preview
+                    </Typography>
+                    <Typography variant="body2" color="textSecondary" mb={2}>
+                        This is how the passage will look with correct highlights:
+                    </Typography>
+                    <Box
+                        sx={{
+                            p: 2,
+                            border: '1px solid',
+                            borderColor: 'divider',
+                            borderRadius: 1,
+                            bgcolor: 'white',
+                            maxHeight: 200,
+                            overflow: 'auto'
+                        }}
+                        dangerouslySetInnerHTML={{ __html: createHighlightPreview() }}
+                    />
+                    <Typography variant="caption" color="textSecondary" sx={{ mt: 1, display: 'block' }}>
+                        Yellow highlights show the correct answers students should select.
+                    </Typography>
+                </CardContent>
+            </Card>
+
+            {/* Form Summary */}
+            <Card sx={{ mb: 3, bgcolor: 'info.light', color: 'info.contrastText' }}>
+                <CardContent>
+                    <Typography variant="subtitle2" gutterBottom>
+                        Sentence Highlight Question Summary:
+                    </Typography>
+                    <Typography variant="body2">
+                        • Question: {question ? '✅ Complete' : '❌ Required'}
+                    </Typography>
+                    <Typography variant="body2">
+                        • Tabs: {tabs.filter(tab => tab.tabKey.trim() && tab.tabValue.trim()).length} valid tabs
+                    </Typography>
+                    <Typography variant="body2">
+                        • Passage: {passage ? `✅ ${passage.length} characters` : '❌ Required'}
+                    </Typography>
+                    <Typography variant="body2">
+                        • Instructions: {highlightInstructions ? '✅ Complete' : '❌ Required'}
+                    </Typography>
+                    <Typography variant="body2">
+                        • Correct Highlights: {correctHighlights.filter(h => h.trim()).length} defined
+                    </Typography>
+                </CardContent>
+            </Card>
 
             {/* Navigation Buttons */}
             <Box mt={4} display="flex" justifyContent="space-between">
-                <Button variant="text" startIcon={<ArrowBackIcon />} onClick={onBack}>
+                <Button
+                    variant="outlined"
+                    startIcon={<ArrowBackIcon />}
+                    onClick={handleBack}
+                >
                     Back
                 </Button>
                 <Button
                     variant="contained"
                     endIcon={<ArrowForwardIcon />}
                     onClick={handleNext}
-                // disabled={!question || options.length < 2 || !correctAnswer}
+                    disabled={!isFormValid()}
                 >
-                    Next
+                    Next: Add Explanation
                 </Button>
             </Box>
         </Box>
     );
 };
 
-export default SentenceHiglightContent;
+export default SentenceHighlightContent;

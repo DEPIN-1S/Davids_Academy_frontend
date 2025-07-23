@@ -13,10 +13,10 @@ import MultiradioQuestionContent from "../components/AdminComponents/MultiradioQ
 import SortQuestionContent from "../components/AdminComponents/SortQuestionContent";
 import SentenceHiglightContent from "../components/AdminComponents/SentenceHiglightContent";
 import FillinQuestionContent from "../components/AdminComponents/FillinQuestionContent";
-import McqAnswerExplanation from "../components/AdminComponents/McqAnswerExplanation";
+import McqAnswerExplanation from "../components/AdminComponents/AnswerExplain";
 import MetaInfoComponent from '../components/AdminComponents/MetaInfoComponent';
 import TestCreateComponent from "../components/AdminComponents/TestCreateComponent";
-import CourseManagement from '../components/AdminComponents/CourseManagement'
+import CourseManagement from '../components/AdminComponents/RecordedClass'
 import UploadThumbnailComponent from "../components/AdminComponents/UploadThumbnailComponent";
 import RecordedClassInfoComponent from "../components/AdminComponents/RecordClassComponent";
 import EnquireLeadComponent from "../components/AdminComponents/EnquireLeadComponent";

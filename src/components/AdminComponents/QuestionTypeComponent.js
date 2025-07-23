@@ -15,7 +15,7 @@ import { useDispatch, useSelector } from "react-redux";
 // ✅ Import from the correct slice path
 import { listQuestionTypes } from "../../features/exam/examSlice";
 import { useNavigate } from "react-router-dom";
-
+import { QUESTION_TYPE_TO_ROUTE } from './QuestionRoutes';
 const QuestionTypeComponent = () => {
     const dispatch = useDispatch();
     const navigate = useNavigate();
@@ -35,11 +35,16 @@ const QuestionTypeComponent = () => {
     }, [dispatch]);
 
     const handleNextClick = () => {
-        if (!questionType) return;
-        const path = `/admin/${questionType.toLowerCase().replace(/\s+/g, "-")}-content`;
-        navigate(path, { state: { questionType } });
-    };
+        if (!questionType) return;                     // nothing selected
 
+        const path = QUESTION_TYPE_TO_ROUTE[questionType];
+
+        if (path) {
+            navigate(path, { state: { questionType } }); // pass type as state if needed
+        } else {
+            console.error(`No route mapped for ${questionType}`);
+        }
+    };
     const handleBackClick = () => {
         navigate("/admin/create-question");
     };

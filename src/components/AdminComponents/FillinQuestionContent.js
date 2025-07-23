@@ -1,128 +1,495 @@
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 import {
     Box,
     Button,
     Typography,
     TextField,
     IconButton,
-    RadioGroup,
-    Radio,
+    Card,
+    CardContent,
+    Chip,
+    Alert,
+    Accordion,
+    AccordionSummary,
+    AccordionDetails,
     FormControlLabel,
-    MenuItem,
-    Select,
-    InputLabel,
-    FormControl,
+    Checkbox,
+    Divider
 } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
-import { useNavigate } from 'react-router-dom';
-const FillinQuestionContent = ({ onBack, onNext }) => {
-    const [question, setQuestion] = useState("");
-    const [options, setOptions] = useState([""]);
-    const [correctAnswer, setCorrectAnswer] = useState("");
-    const navigate = useNavigate()
-    const handleOptionChange = (index, value) => {
+import { CloudUpload, Delete, ExpandMore, Image, PictureAsPdf, Description } from '@mui/icons-material';
+import { useNavigate, useLocation } from 'react-router-dom';
+
+const FillinQuestionContent = () => {
+    const navigate = useNavigate();
+    const location = useLocation();
+
+    // Get any existing data from previous steps
+    const existingData = location.state?.questionData || {};
+    const questionType = "Fill in the Blanks";
+
+    // Form state
+    const [question, setQuestion] = useState(existingData.question || "");
+    const [tabs, setTabs] = useState(existingData.tabs || [
+        { tabKey: "", tabValue: "" }
+    ]);
+    const [questionContent, setQuestionContent] = useState(existingData.question_content || [
+        { question_text: "", fill_blanks_answer: "", blank_or_not: "false" }
+    ]);
+    const [options, setOptions] = useState(existingData.options || [
+        { option_heading: "", option_value: [""] }
+    ]);
+    const [selectedFile, setSelectedFile] = useState(existingData.exhibit || null);
+    const [errors, setErrors] = useState({});
+
+    const fileInputRef = useRef(null);
+
+    // File upload handlers
+    const handleFileSelect = (event) => {
+        const file = event.target.files[0];
+        if (file) {
+            if (file.size > 10 * 1024 * 1024) {
+                setErrors(prev => ({ ...prev, file: 'File size must be less than 10MB' }));
+                return;
+            }
+
+            const allowedTypes = ['image/jpeg', 'image/png', 'image/gif', 'application/pdf'];
+            if (!allowedTypes.includes(file.type)) {
+                setErrors(prev => ({ ...prev, file: 'Only images and PDF files are allowed' }));
+                return;
+            }
+
+            const fileData = {
+                file: file,
+                name: file.name,
+                size: file.size,
+                type: file.type,
+                url: URL.createObjectURL(file),
+                uploadedAt: new Date().toISOString()
+            };
+
+            setSelectedFile(fileData);
+            setErrors(prev => ({ ...prev, file: null }));
+        }
+        event.target.value = '';
+    };
+
+    const handleButtonClick = () => {
+        fileInputRef.current?.click();
+    };
+
+    const handleRemoveFile = () => {
+        if (selectedFile) {
+            URL.revokeObjectURL(selectedFile.url);
+            setSelectedFile(null);
+        }
+    };
+
+    // Tab handlers
+    const handleTabChange = (index, field, value) => {
+        const newTabs = [...tabs];
+        newTabs[index][field] = value;
+        setTabs(newTabs);
+    };
+
+    const handleAddTab = () => {
+        setTabs([...tabs, { tabKey: "", tabValue: "" }]);
+    };
+
+    const handleRemoveTab = (index) => {
+        if (tabs.length > 1) {
+            const newTabs = tabs.filter((_, i) => i !== index);
+            setTabs(newTabs);
+        }
+    };
+
+    // Question content handlers
+    const handleQuestionContentChange = (index, field, value) => {
+        const newContent = [...questionContent];
+        newContent[index][field] = value;
+        setQuestionContent(newContent);
+    };
+
+    const handleAddQuestionContent = () => {
+        setQuestionContent([...questionContent, { question_text: "", fill_blanks_answer: "", blank_or_not: "false" }]);
+    };
+
+    const handleRemoveQuestionContent = (index) => {
+        if (questionContent.length > 1) {
+            const newContent = questionContent.filter((_, i) => i !== index);
+            setQuestionContent(newContent);
+        }
+    };
+
+    // Options handlers
+    const handleOptionChange = (optionIndex, field, value) => {
         const newOptions = [...options];
-        newOptions[index] = value;
+        newOptions[optionIndex][field] = value;
         setOptions(newOptions);
     };
 
-    const handleAddOption = () => {
-        setOptions([...options, ""]);
+    const handleOptionValueChange = (optionIndex, valueIndex, value) => {
+        const newOptions = [...options];
+        newOptions[optionIndex].option_value[valueIndex] = value;
+        setOptions(newOptions);
     };
 
-    const handleNext = () => {
-        const data = {
-            question,
-            options,
-            correctAnswer,
-        };
-        // onNext(data);
-        navigate('/admin/answer-explain');
+    const handleAddOptionValue = (optionIndex) => {
+        const newOptions = [...options];
+        newOptions[optionIndex].option_value.push("");
+        setOptions(newOptions);
     };
-    onBack = () => {
+
+    const handleRemoveOptionValue = (optionIndex, valueIndex) => {
+        const newOptions = [...options];
+        if (newOptions[optionIndex].option_value.length > 1) {
+            newOptions[optionIndex].option_value.splice(valueIndex, 1);
+            setOptions(newOptions);
+        }
+    };
+
+    const handleAddOption = () => {
+        setOptions([...options, { option_heading: "", option_value: [""] }]);
+    };
+
+    const handleRemoveOption = (index) => {
+        if (options.length > 1) {
+            const newOptions = options.filter((_, i) => i !== index);
+            setOptions(newOptions);
+        }
+    };
+
+    // Navigation handlers
+    const handleNext = () => {
+        // Prepare question data for Fill in the Blanks
+        const questionData = {
+            questionType: questionType,
+            question: question.trim(),
+            tabs: tabs.filter(tab => tab.tabKey.trim() || tab.tabValue.trim()),
+            question_content: questionContent,
+            options: options.filter(opt => opt.option_heading.trim() || opt.option_value.some(val => val.trim())),
+            exhibit: selectedFile,
+
+            // Metadata
+            createdAt: existingData.createdAt || new Date().toISOString(),
+            updatedAt: new Date().toISOString(),
+            questionId: existingData.questionId || `FILLIN_${Date.now()}`,
+            currentStep: 'content',
+            completedSteps: ['type', 'content']
+        };
+
+        console.log('Sending Fill in Blanks data to explanation step:', questionData);
+
+        navigate('/admin/answer-explain', {
+            state: {
+                questionData: questionData,
+                fromStep: 'content'
+            }
+        });
+    };
+
+    const handleBack = () => {
         navigate('/admin/question-type');
     };
+
+    // Helper functions
+    const getFileIcon = (fileType) => {
+        if (fileType?.startsWith('image/')) return <Image />;
+        if (fileType === 'application/pdf') return <PictureAsPdf />;
+        return <Description />;
+    };
+
+    const formatFileSize = (bytes) => {
+        if (bytes === 0) return '0 Bytes';
+        const k = 1024;
+        const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+        const i = Math.floor(Math.log(bytes) / Math.log(k));
+        return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+    };
+
     return (
-        <Box p={3}>
+        <Box p={3} maxWidth="800px" mx="auto">
             {/* Breadcrumb */}
-            <Typography variant="caption" color="textSecondary">
+            <Typography variant="caption" color="textSecondary" mb={2} display="block">
                 Test type &gt; Question Type &gt; <strong>Question Content</strong>
             </Typography>
 
             {/* Title */}
             <Typography variant="h5" mt={2} mb={1}>
-                Enter Question Content
+                Fill in the Blanks Question Content
             </Typography>
             <Typography variant="body2" color="textSecondary" mb={3}>
-                Write the question your students will answer — be clear, concise, and clinically relevant.
+                Create fill-in-the-blank questions with multiple answer options for comprehensive assessment.
             </Typography>
 
-            {/* Question Input */}
+            {/* Main Question */}
+            <Typography variant="h6" mb={1} color="primary">
+                Main Question
+            </Typography>
             <TextField
                 fullWidth
-                label="Enter your question"
+                label="Enter your main question"
                 multiline
-                minRows={3}
+                minRows={2}
                 value={question}
                 onChange={(e) => setQuestion(e.target.value)}
                 variant="outlined"
+                placeholder="Enter the main question or instruction for students..."
+                sx={{ mb: 3 }}
             />
 
-            {/* Image & Exhibit Buttons */}
+            {/* File Upload Section */}
             <Box display="flex" justifyContent="flex-end" mt={1} mb={3} gap={1}>
-                <Button variant="outlined">+ Add Image</Button>
-                <Button variant="outlined">+ Add Exhibit</Button>
+                <input
+                    type="file"
+                    ref={fileInputRef}
+                    onChange={handleFileSelect}
+                    accept="image/*,.pdf"
+                    style={{ display: 'none' }}
+                />
+                <Button
+                    variant="outlined"
+                    onClick={handleButtonClick}
+                    startIcon={<CloudUpload />}
+                    size="small"
+                >
+                    + Add Exhibit
+                </Button>
             </Box>
 
-            {/* Options List */}
-            <Typography variant="subtitle1">Answers</Typography>
-            {options.map((opt, index) => (
-                <Box key={index} display="flex" alignItems="center" gap={1} mt={1}>
-                    <Radio disabled />
-                    <TextField
-                        fullWidth
-                        placeholder={`Option ${index + 1}`}
-                        value={opt}
-                        onChange={(e) => handleOptionChange(index, e.target.value)}
-                    />
-                </Box>
-            ))}
+            {/* Display Uploaded File */}
+            {selectedFile && (
+                <Card sx={{ mb: 3 }}>
+                    <CardContent sx={{ p: 2 }}>
+                        <Box display="flex" alignItems="center" gap={2}>
+                            {getFileIcon(selectedFile.type)}
+                            <Box flex={1}>
+                                <Typography variant="body2" fontWeight={500}>
+                                    {selectedFile.name}
+                                </Typography>
+                                <Chip
+                                    label={formatFileSize(selectedFile.size)}
+                                    size="small"
+                                    variant="outlined"
+                                />
+                            </Box>
+                            {selectedFile.type.startsWith('image/') && (
+                                <Box
+                                    component="img"
+                                    src={selectedFile.url}
+                                    alt={selectedFile.name}
+                                    sx={{ width: 60, height: 60, objectFit: 'cover', borderRadius: 1 }}
+                                />
+                            )}
+                            <IconButton onClick={handleRemoveFile} color="error" size="small">
+                                <Delete />
+                            </IconButton>
+                        </Box>
+                    </CardContent>
+                </Card>
+            )}
 
-            {/* Add Option Button */}
-            <Button startIcon={<AddIcon />} onClick={handleAddOption} sx={{ mt: 2 }}>
-                Add Option
-            </Button>
+            {/* Tabs Section */}
+            <Accordion defaultExpanded>
+                <AccordionSummary expandIcon={<ExpandMore />}>
+                    <Typography variant="h6" color="primary">
+                        Information Tabs ({tabs.length})
+                    </Typography>
+                </AccordionSummary>
+                <AccordionDetails>
+                    {tabs.map((tab, index) => (
+                        <Card key={index} sx={{ mb: 2, bgcolor: 'grey.50' }}>
+                            <CardContent>
+                                <Box display="flex" justifyContent="between" alignItems="center" mb={2}>
+                                    <Typography variant="subtitle1">Tab {index + 1}</Typography>
+                                    {tabs.length > 1 && (
+                                        <IconButton onClick={() => handleRemoveTab(index)} color="error" size="small">
+                                            <Delete />
+                                        </IconButton>
+                                    )}
+                                </Box>
 
-            {/* Correct Answer Selector */}
-            <FormControl fullWidth margin="normal">
-                <InputLabel>Correct Answer</InputLabel>
-                <Select
-                    value={correctAnswer}
-                    onChange={(e) => setCorrectAnswer(e.target.value)}
-                    label="Correct Answer"
-                >
-                    {options.map((opt, idx) => (
-                        <MenuItem key={idx} value={opt}>
-                            {opt || `Option ${idx + 1}`}
-                        </MenuItem>
+                                <TextField
+                                    fullWidth
+                                    label="Tab Title"
+                                    value={tab.tabKey}
+                                    onChange={(e) => handleTabChange(index, 'tabKey', e.target.value)}
+                                    variant="outlined"
+                                    placeholder="e.g., Patient History, Lab Results"
+                                    sx={{ mb: 2 }}
+                                />
+
+                                <TextField
+                                    fullWidth
+                                    label="Tab Content"
+                                    multiline
+                                    minRows={3}
+                                    value={tab.tabValue}
+                                    onChange={(e) => handleTabChange(index, 'tabValue', e.target.value)}
+                                    variant="outlined"
+                                    placeholder="Enter the detailed content for this tab..."
+                                />
+                            </CardContent>
+                        </Card>
                     ))}
-                </Select>
-            </FormControl>
+
+                    <Button startIcon={<AddIcon />} onClick={handleAddTab} variant="outlined" size="small">
+                        Add Tab
+                    </Button>
+                </AccordionDetails>
+            </Accordion>
+
+            {/* Question Content Section */}
+            <Accordion defaultExpanded sx={{ mt: 2 }}>
+                <AccordionSummary expandIcon={<ExpandMore />}>
+                    <Typography variant="h6" color="primary">
+                        Fill in the Blanks Content ({questionContent.length})
+                    </Typography>
+                </AccordionSummary>
+                <AccordionDetails>
+                    {questionContent.map((content, index) => (
+                        <Card key={index} sx={{ mb: 2, bgcolor: 'grey.50' }}>
+                            <CardContent>
+                                <Box display="flex" justifyContent="between" alignItems="center" mb={2}>
+                                    <Typography variant="subtitle1">Content {index + 1}</Typography>
+                                    {questionContent.length > 1 && (
+                                        <IconButton onClick={() => handleRemoveQuestionContent(index)} color="error" size="small">
+                                            <Delete />
+                                        </IconButton>
+                                    )}
+                                </Box>
+
+                                <TextField
+                                    fullWidth
+                                    label="Question Text"
+                                    value={content.question_text}
+                                    onChange={(e) => handleQuestionContentChange(index, 'question_text', e.target.value)}
+                                    variant="outlined"
+                                    placeholder="Enter text or use _____ for blanks"
+                                    sx={{ mb: 2 }}
+                                />
+
+                                <TextField
+                                    fullWidth
+                                    label="Fill Blank Answer (if this is a blank)"
+                                    value={content.fill_blanks_answer}
+                                    onChange={(e) => handleQuestionContentChange(index, 'fill_blanks_answer', e.target.value)}
+                                    variant="outlined"
+                                    placeholder="Correct answer for this blank"
+                                    sx={{ mb: 2 }}
+                                />
+
+                                <FormControlLabel
+                                    control={
+                                        <Checkbox
+                                            checked={content.blank_or_not === "true"}
+                                            onChange={(e) => handleQuestionContentChange(index, 'blank_or_not', e.target.checked ? "true" : "false")}
+                                        />
+                                    }
+                                    label="This is a blank to be filled"
+                                />
+                            </CardContent>
+                        </Card>
+                    ))}
+
+                    <Button startIcon={<AddIcon />} onClick={handleAddQuestionContent} variant="outlined" size="small">
+                        Add Content
+                    </Button>
+                </AccordionDetails>
+            </Accordion>
+
+            {/* Options Section */}
+            <Accordion defaultExpanded sx={{ mt: 2 }}>
+                <AccordionSummary expandIcon={<ExpandMore />}>
+                    <Typography variant="h6" color="primary">
+                        Answer Options ({options.length})
+                    </Typography>
+                </AccordionSummary>
+                <AccordionDetails>
+                    {options.map((option, optionIndex) => (
+                        <Card key={optionIndex} sx={{ mb: 2, bgcolor: 'grey.50' }}>
+                            <CardContent>
+                                <Box display="flex" justifyContent="between" alignItems="center" mb={2}>
+                                    <Typography variant="subtitle1">Option Group {optionIndex + 1}</Typography>
+                                    {options.length > 1 && (
+                                        <IconButton onClick={() => handleRemoveOption(optionIndex)} color="error" size="small">
+                                            <Delete />
+                                        </IconButton>
+                                    )}
+                                </Box>
+
+                                <TextField
+                                    fullWidth
+                                    label="Option Group Heading"
+                                    value={option.option_heading}
+                                    onChange={(e) => handleOptionChange(optionIndex, 'option_heading', e.target.value)}
+                                    variant="outlined"
+                                    placeholder="e.g., Available Medications, Nursing Actions"
+                                    sx={{ mb: 2 }}
+                                />
+
+                                <Typography variant="subtitle2" mb={1}>
+                                    Option Values:
+                                </Typography>
+
+                                {option.option_value.map((value, valueIndex) => (
+                                    <Box key={valueIndex} display="flex" alignItems="center" gap={1} mb={1}>
+                                        <TextField
+                                            fullWidth
+                                            placeholder={`Option ${valueIndex + 1}`}
+                                            value={value}
+                                            onChange={(e) => handleOptionValueChange(optionIndex, valueIndex, e.target.value)}
+                                            size="small"
+                                        />
+                                        {option.option_value.length > 1 && (
+                                            <IconButton
+                                                onClick={() => handleRemoveOptionValue(optionIndex, valueIndex)}
+                                                color="error"
+                                                size="small"
+                                            >
+                                                <Delete />
+                                            </IconButton>
+                                        )}
+                                    </Box>
+                                ))}
+
+                                <Button
+                                    startIcon={<AddIcon />}
+                                    onClick={() => handleAddOptionValue(optionIndex)}
+                                    variant="outlined"
+                                    size="small"
+                                    sx={{ mt: 1 }}
+                                >
+                                    Add Option Value
+                                </Button>
+                            </CardContent>
+                        </Card>
+                    ))}
+
+                    <Button startIcon={<AddIcon />} onClick={handleAddOption} variant="outlined" size="small">
+                        Add Option Group
+                    </Button>
+                </AccordionDetails>
+            </Accordion>
 
             {/* Navigation Buttons */}
             <Box mt={4} display="flex" justifyContent="space-between">
-                <Button variant="text" startIcon={<ArrowBackIcon />} onClick={onBack}>
+                <Button
+                    variant="outlined"
+                    startIcon={<ArrowBackIcon />}
+                    onClick={handleBack}
+                >
                     Back
                 </Button>
                 <Button
                     variant="contained"
                     endIcon={<ArrowForwardIcon />}
                     onClick={handleNext}
-                // disabled={!question || options.length < 2 || !correctAnswer}
+                    disabled={!question.trim()}
                 >
-                    Next
+                    Next: Add Explanation
                 </Button>
             </Box>
         </Box>
