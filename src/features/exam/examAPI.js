@@ -1,7 +1,9 @@
 // src/api/examApi.js
+const baseUrl = process.env.REACT_APP_API_URL;
+console.log(baseUrl);
 export const postQuestion = async (questionData) => {
     try {
-        const response = await fetch("https://lunarsenterprises.com:6040/davidsacademy/exam/question", {
+        const response = await fetch(baseUrl + "/exam/question", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json"
@@ -21,12 +23,12 @@ export const postQuestion = async (questionData) => {
 // src/api/questionTypeApi.js
 export const fetchQuestionTypes = async () => {
     try {
-        const response = await fetch("https://lunarsenterprises.com:6040/davidsacademy/exam/list/question-types"); // replace with real URL
+        const response = await fetch(baseUrl + "/exam/list/question-types"); // replace with real URL
 
         if (!response.ok) {
             throw new Error("Failed to fetch question types");
         }
-
+        console.log(baseUrl + "/exam/list/question-types");
         const data = await response.json();
         return data.list; // ✅ return only the list array
     } catch (error) {

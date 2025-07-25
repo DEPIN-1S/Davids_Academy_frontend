@@ -12,16 +12,21 @@ import {
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
 import { useDispatch, useSelector } from "react-redux";
-// ✅ Import from the correct slice path
 import { listQuestionTypes } from "../../features/exam/examSlice";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { QUESTION_TYPE_TO_ROUTE } from './QuestionRoutes';
+
 const QuestionTypeComponent = () => {
     const dispatch = useDispatch();
     const navigate = useNavigate();
+    const location = useLocation();
     const isMobile = useMediaQuery("(max-width:600px)");
 
-    const [questionType, setQuestionType] = useState("");
+    // ✅ Store the complete question type object instead of just the type name
+    const [selectedQuestionType, setSelectedQuestionType] = useState(null);
+
+    // ✅ Receive examType from previous component
+    const { examType } = location.state || {};
 
     // ✅ Access the correct state key - your store has 'exam' not 'questions'
     const {
@@ -34,19 +39,51 @@ const QuestionTypeComponent = () => {
         dispatch(listQuestionTypes());
     }, [dispatch]);
 
-    const handleNextClick = () => {
-        if (!questionType) return;                     // nothing selected
+    // ✅ Redirect back if no examType is received
+    useEffect(() => {
+        if (!examType) {
+            navigate("/admin/exam-type");
+        }
+    }, [examType, navigate]);
 
-        const path = QUESTION_TYPE_TO_ROUTE[questionType];
+    const handleNextClick = () => {
+        if (!selectedQuestionType) return; // nothing selected
+
+        const path = QUESTION_TYPE_TO_ROUTE[selectedQuestionType.type];
 
         if (path) {
-            navigate(path, { state: { questionType } }); // pass type as state if needed
+            // ✅ Pass examType, questionType details, and combined data
+            navigate(path, {
+                state: {
+                    examType,
+                    questionType: {
+                        id: selectedQuestionType.id,
+                        type: selectedQuestionType.type,
+                        value: selectedQuestionType.type // alias for type if needed
+                    },
+                    // Combined object with all form data
+                    formData: {
+                        examType,
+                        questionTypeId: selectedQuestionType.id,
+                        questionTypeName: selectedQuestionType.type
+                    }
+                }
+            });
         } else {
-            console.error(`No route mapped for ${questionType}`);
+            console.error(`No route mapped for ${selectedQuestionType.type}`);
         }
     };
+
     const handleBackClick = () => {
-        navigate("/admin/create-question");
+        // ✅ Go back to exam type selection, preserving any state if needed
+        navigate("/admin/exam-type");
+    };
+
+    // ✅ Handle dropdown change to store complete question type object
+    const handleQuestionTypeChange = (event) => {
+        const selectedValue = event.target.value;
+        const questionTypeObj = questionTypes.find(type => type.type === selectedValue);
+        setSelectedQuestionType(questionTypeObj);
     };
 
     return (
@@ -63,7 +100,7 @@ const QuestionTypeComponent = () => {
         >
             {/* Breadcrumb */}
             <Typography variant="subtitle2" color="text.secondary">
-                Test Type &nbsp;&gt;&nbsp; Question Type
+                Test Type &nbsp;&gt;&nbsp; Exam Type ({examType}) &nbsp;&gt;&nbsp; Question Type
             </Typography>
 
             {/* Title */}
@@ -73,14 +110,24 @@ const QuestionTypeComponent = () => {
 
             {/* Subtitle */}
             <Typography color="text.secondary">
-                Choose the format best suited for your question.
+                Choose the format best suited for your {examType} question.
             </Typography>
+
+            {/* Display selected exam type */}
+            <Box sx={{ p: 2, bgcolor: "#f0f0f0", borderRadius: 1 }}>
+                <Typography variant="body2" color="text.secondary">
+                    Selected Exam Type:
+                </Typography>
+                <Typography variant="body1" fontWeight={500}>
+                    {examType}
+                </Typography>
+            </Box>
 
             {/* Dropdown */}
             <FormControl fullWidth>
                 <Select
-                    value={questionType}
-                    onChange={(e) => setQuestionType(e.target.value)}
+                    value={selectedQuestionType?.type || ""}
+                    onChange={handleQuestionTypeChange}
                     displayEmpty
                     sx={{
                         borderRadius: 2,
@@ -109,6 +156,18 @@ const QuestionTypeComponent = () => {
                 </Select>
             </FormControl>
 
+            {/* Display selected question type details (optional) */}
+            {selectedQuestionType && (
+                <Box sx={{ p: 2, bgcolor: "#e8f5e8", borderRadius: 1 }}>
+                    <Typography variant="body2" color="text.secondary">
+                        Selected Question Type:
+                    </Typography>
+                    <Typography variant="body1" fontWeight={500}>
+                        {selectedQuestionType.type} (ID: {selectedQuestionType.id})
+                    </Typography>
+                </Box>
+            )}
+
             {/* Navigation Buttons */}
             <Box
                 sx={{
@@ -131,7 +190,7 @@ const QuestionTypeComponent = () => {
                     variant="contained"
                     endIcon={<ArrowForwardIcon />}
                     onClick={handleNextClick}
-                    disabled={!questionType}
+                    disabled={!selectedQuestionType}
                     sx={{ backgroundColor: "#FFD700", color: "#000" }}
                     fullWidth={isMobile}
                 >

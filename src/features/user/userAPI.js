@@ -1,6 +1,7 @@
+const baseUrl = process.env.BASE_URL;
 // login user
 export const loginUser = async (credentials) => {
-  const res = await fetch('http://localhost:6040/api/login', {
+  const res = await fetch(baseUrl + '/login', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(credentials),
@@ -25,7 +26,7 @@ export const loginUser = async (credentials) => {
 };
 //create user
 export const createUserAPI = async (userData) => {
-  const response = await fetch('http://localhost:6040/davidacademy/admin/user/create', {
+  const response = await fetch(baseUrl + '/admin/user/create', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(userData),
@@ -41,7 +42,7 @@ export const createUserAPI = async (userData) => {
 // verify otp
 
 export const verifyOtpAPI = async (payload) => {
-  const response = await fetch('http://localhost:6040/davidacademy/admin/user/verify-otp', {
+  const response = await fetch(baseUrl + '/admin/user/verify-otp', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(payload),
@@ -57,7 +58,7 @@ export const verifyOtpAPI = async (payload) => {
 // forgot password
 
 export const forgotPasswordAPI = async (emailPayload) => {
-  const response = await fetch('http://localhost:6040/davidacademy/admin/user/forgot-password', {
+  const response = await fetch(baseUrl + '/admin/user/forgot-password', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(emailPayload),

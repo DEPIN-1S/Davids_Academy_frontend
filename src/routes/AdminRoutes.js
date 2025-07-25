@@ -20,6 +20,7 @@ import CourseManagement from '../components/AdminComponents/RecordedClass'
 import UploadThumbnailComponent from "../components/AdminComponents/UploadThumbnailComponent";
 import RecordedClassInfoComponent from "../components/AdminComponents/RecordClassComponent";
 import EnquireLeadComponent from "../components/AdminComponents/EnquireLeadComponent";
+import ExamTypeComponent from "../components/AdminComponents/ExamTypeComponent";
 const AdminRoutes = () => (
     <>
         <Route element={<AdminLayout />}>
@@ -91,6 +92,11 @@ const AdminRoutes = () => (
             <Route path="/admin/create-question" element={
                 // <ProtectedRoutes allowedRoles={[1]}>
                 <TestCreateComponent />
+                // </ProtectedRoutes>
+            } />
+            <Route path="/admin/exam-type" element={
+                // <ProtectedRoutes allowedRoles={[1]}>
+                <ExamTypeComponent />
                 // </ProtectedRoutes>
             } />
             <Route path="/admin/course-management" element={
