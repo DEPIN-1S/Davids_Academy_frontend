@@ -7,7 +7,7 @@ import StudentRoutes from "./routes/StudentRoutes";
 import AdminRoutes from "./routes/AdminRoutes";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "./styles/Layout.css";
-
+import { FileProvider } from "./context/FileContext";
 const App = () => {
   const dispatch = useDispatch();
 
@@ -16,11 +16,13 @@ const App = () => {
   }, [dispatch]);
 
   return (
-    <Routes>
-      {HomeRoutes()}
-      {StudentRoutes()}
-      {AdminRoutes()}
-    </Routes>
+    <FileProvider>
+      <Routes>
+        {HomeRoutes()}
+        {StudentRoutes()}
+        {AdminRoutes()}
+      </Routes>
+    </FileProvider >
   );
 };
 

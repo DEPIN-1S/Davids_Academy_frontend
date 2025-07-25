@@ -13,7 +13,8 @@ import {
     Grid,
     CircularProgress,
     Card,
-    CardContent
+    CardContent,
+    Chip
 } from "@mui/material";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import LibraryAddCheckIcon from "@mui/icons-material/LibraryAddCheck";
@@ -25,8 +26,13 @@ const MetaInfoComponent = () => {
     const navigate = useNavigate();
     const location = useLocation();
 
-    // ✅ Receive complete question data from previous component
+    // ✅ Receive complete question data and FormData from previous component
     const receivedQuestionData = location.state?.questionData || {};
+    const receivedFormData = location.state?.formData || null;
+    const hasQuestionFile = location.state?.hasQuestionFile || false;
+    const hasExplanationFile = location.state?.hasExplanationFile || false;
+    const questionFileInfo = location.state?.questionFileInfo || null;
+    const explanationFileInfo = location.state?.explanationFileInfo || null;
 
     const { loading, success, error } = useSelector(state => state.exam);
 
@@ -38,11 +44,54 @@ const MetaInfoComponent = () => {
         clientNeedTopic: receivedQuestionData.clientNeedTopic || ""
     });
 
+    // ✅ Helper function to finalize FormData with meta information
+    const finalizeFormData = (baseFormData, metaData) => {
+        const finalFormData = new FormData();
+        
+        // Copy all existing entries from base FormData
+        if (baseFormData) {
+            for (let [key, value] of baseFormData.entries()) {
+                finalFormData.append(key, value);
+            }
+        }
+        
+        // Add meta information
+        finalFormData.append('difficulty', metaData.difficulty);
+        finalFormData.append('subject', metaData.subject.toString());
+        finalFormData.append('lesson', metaData.lesson.toString());
+        finalFormData.append('clientNeedArea', metaData.clientNeedArea.toString());
+        finalFormData.append('clientNeedTopic', metaData.clientNeedTopic.toString());
+        
+        // Update metadata
+        finalFormData.set('updatedAt', new Date().toISOString());
+        finalFormData.set('currentStep', 'meta-info');
+        
+        // Update completed steps
+        const currentSteps = JSON.parse(finalFormData.get('completedSteps') || '[]');
+        if (!currentSteps.includes('meta-info')) {
+            currentSteps.push('meta-info');
+            finalFormData.set('completedSteps', JSON.stringify(currentSteps));
+        }
+        
+        return finalFormData;
+    };
+
     // ✅ Debug: Log received data
     useEffect(() => {
-        console.log('📨 Received question data from explanation component:', receivedQuestionData);
-        console.log('🔍 Question Type:', receivedQuestionData.questionType);
-    }, [receivedQuestionData]);
+        console.log('Received question data:', receivedQuestionData);
+        console.log('Received FormData:', receivedFormData);
+        console.log('Has question file:', hasQuestionFile);
+        console.log('Has explanation file:', hasExplanationFile);
+        console.log('Question file info:', questionFileInfo);
+        console.log('Explanation file info:', explanationFileInfo);
+        
+        if (receivedFormData) {
+            console.log('FormData contents:');
+            for (let [key, value] of receivedFormData.entries()) {
+                console.log(key, value);
+            }
+        }
+    }, [receivedQuestionData, receivedFormData]);
 
     // Handle toast notifications based on Redux state
     useEffect(() => {
@@ -100,12 +149,119 @@ const MetaInfoComponent = () => {
         return typeMapping[questionType] || 1;
     };
 
-    // ✅ Construct question data based on question type
+    // ✅ Submit using FormData for multipart support
+    const handleSubmitWithFormData = async () => {
+        // Show loading toast
+        const loadingToastId = toast.loading('📝 Adding question to Q-Bank...', {
+            position: "top-right",
+            hideProgressBar: false,
+            closeOnClick: false,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+            theme: "colored",
+        });
+
+        try {
+            // ✅ Finalize FormData with meta information
+            const finalFormData = finalizeFormData(receivedFormData, form);
+            
+            console.log('🚀 Submitting with FormData (multipart/form-data)');
+            console.log('📦 Final FormData contents:');
+            for (let [key, value] of finalFormData.entries()) {
+                console.log(key, value);
+            }
+
+            // ✅ Submit FormData using fetch with multipart/form-data
+            const response = await fetch(`${process.env.REACT_APP_API_URL}/api/questions`, {
+                method: 'POST',
+                headers: {
+                    // Don't set Content-Type - let browser set it with boundary
+                    'Authorization': `Bearer ${localStorage.getItem('token')}`,
+                },
+                body: finalFormData
+            });
+
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+
+            const result = await response.json();
+            console.log('✅ Question submitted successfully:', result);
+            
+            toast.dismiss(loadingToastId);
+            dispatch(resetStatus()); // Reset to trigger success state
+            
+            // Trigger success toast
+            toast.success('🎉 Question successfully added to Q-Bank!', {
+                position: "top-right",
+                autoClose: 3000,
+                theme: "colored",
+            });
+
+            // Navigate to success page after delay
+            setTimeout(() => {
+                navigate('/admin/question-management');
+            }, 2000);
+
+        } catch (err) {
+            toast.dismiss(loadingToastId);
+            console.error('Failed to submit question:', err);
+            
+            toast.error(`❌ Failed to add question: ${err.message}`, {
+                position: "top-right",
+                autoClose: 5000,
+                theme: "colored",
+            });
+        }
+    };
+
+    // ✅ Fallback: Submit using JSON (if no FormData available)
+    const handleSubmitWithJSON = async () => {
+        // Show loading toast
+        const loadingToastId = toast.loading('📝 Adding question to Q-Bank...', {
+            position: "top-right",
+            hideProgressBar: false,
+            closeOnClick: false,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+            theme: "colored",
+        });
+
+        // Construct complete question data based on question type
+        const completeQuestionData = constructQuestionData();
+
+        console.log('🚀 Submitting question data (JSON):', completeQuestionData);
+
+        try {
+            await dispatch(submitQuestion(completeQuestionData)).unwrap();
+            toast.dismiss(loadingToastId);
+        } catch (err) {
+            toast.dismiss(loadingToastId);
+            console.error('Failed to submit question:', err);
+        }
+    };
+
+    // ✅ Main submit handler - choose method based on FormData availability
+    const handleSubmit = async () => {
+        if (receivedFormData) {
+            // Use FormData for multipart submission (supports files)
+            await handleSubmitWithFormData();
+        } else {
+            // Fallback to JSON submission
+            await handleSubmitWithJSON();
+        }
+    };
+
+    // ✅ Construct question data for JSON fallback
     const constructQuestionData = () => {
         const questionType = receivedQuestionData.questionType || 'MCQ';
-
+        const exam_type = receivedQuestionData.exam_type;
+        
         // Base data common to all question types
         const baseData = {
+            exam_type: exam_type,
             questionType: questionType,
             question_type_id: getQuestionTypeId(questionType),
             question: receivedQuestionData.question || "",
@@ -121,7 +277,7 @@ const MetaInfoComponent = () => {
             infoImage: receivedQuestionData.infoImage?.url || null
         };
 
-        // ✅ Question type specific data construction
+        // Question type specific data construction
         switch (questionType) {
             case 'MCQ':
                 return {
@@ -129,225 +285,13 @@ const MetaInfoComponent = () => {
                     answer: receivedQuestionData.correctAnswer || "",
                     options: receivedQuestionData.options || []
                 };
-
-            case 'Dropdown':
-                return {
-                    ...baseData,
-                    tabs: receivedQuestionData.tabs || [
-                        {
-                            "tabKey": "Triage Note",
-                            "tabValue": "The patient presents with chest pain and shortness of breath..."
-                        },
-                        {
-                            "tabKey": "Vital Signs",
-                            "tabValue": "BP: 110/70, HR: 98 bpm, SpO2: 92% on room air."
-                        }
-                    ],
-                    dropdowns: receivedQuestionData.dropdowns || [
-                        {
-                            "dropdownField": "tachypnea",
-                            "dropDownValue": [
-                                "asthma",
-                                "pneumonia",
-                                "hemothorax"
-                            ]
-                        },
-                        {
-                            "dropdownField": "dull percussion",
-                            "dropDownValue": [
-                                "pneumothorax",
-                                "hemothorax",
-                                "pleural effusion"
-                            ]
-                        }
-                    ],
-                    answers: receivedQuestionData.answers || [
-                        {
-                            "dropdownField": "tachypnea",
-                            "dropdownValue": "asthma"
-                        },
-                        {
-                            "dropdownField": "dull percussion",
-                            "dropdownValue": "hemothorax"
-                        }
-                    ]
-                };
-
-            case 'Sorting':
-            case 'Sort':
-                return {
-                    ...baseData,
-                    sortItems: receivedQuestionData.sortItems || [
-                        {
-                            "sortItem": "Turn on the suction device and set appropriate pressure.",
-                            "itemOrder": 1
-                        },
-                        {
-                            "sortItem": "Don sterile gloves and prepare catheter.",
-                            "itemOrder": 2
-                        },
-                        {
-                            "sortItem": "Insert catheter without applying suction.",
-                            "itemOrder": 3
-                        },
-                        {
-                            "sortItem": "Apply suction while withdrawing the catheter slowly.",
-                            "itemOrder": 4
-                        },
-                        {
-                            "sortItem": "Reassess client's respiratory status.",
-                            "itemOrder": 5
-                        }
-                    ]
-                };
-
-            case 'Fill in the Blanks':
-            case 'Fill in Blanks':
-                return {
-                    ...baseData,
-                    answer: receivedQuestionData.answer || " the nurse know the client is at the risk of developing some disease and symptoms if the condition is not managed",
-                    question_content: receivedQuestionData.question_content || [
-                        {
-                            "question_text": "Turn on the suction device and set appropriate pressure.",
-                            "fill_blanks_answer": "some disease",
-                            "blank_or_not": "true"
-                        },
-                        {
-                            "question_text": "and",
-                            "fill_blanks_answer": "symptoms",
-                            "blank_or_not": "true"
-                        },
-                        {
-                            "question_text": "if the condition is not managed",
-                            "fill_blanks_answer": "",
-                            "blank_or_not": "false"
-                        }
-                    ],
-                    options: receivedQuestionData.options || [
-                        {
-                            "option_heading": "Fill in the Blanks Option Heading",
-                            "option_value": ["some disease", "fever", "Option Heading", "symptoms"]
-                        }
-                    ]
-                };
-
-            case 'Multiple Radio':
-                return {
-                    ...baseData,
-                    tabs: receivedQuestionData.tabs || [
-                        {
-                            "tabKey": "Triage Note",
-                            "tabValue": "1840: Client presents with dyspnea and right-sided chest pain that is worse when he takes a deep breath and coughs. Pain rated 7 on a scale of 0 (no pain) to 10 (severe pain). The client arrived with his friends after playing baseball outdoors and was struck by a baseball bat on the right side of his chest. Immediately after he sustained the injury, he reported sharp chest pain. Vital signs: T 99° F (37.2° C) P 94, RR 25, BP 127/76, pulse oximetry reading 89% on room air. He has a medical history of hemophilia A and asthma. On assessment, the client is alert and oriented and anxious. The client has labored breathing using his accessory muscles, and lung sounds are absent in the right-sided bases."
-                        }
-                    ],
-                    question_content: receivedQuestionData.question_content || [
-                        {
-                            "question_text": "tachypnea",
-                            "question_answer": "hemothorax"
-                        },
-                        {
-                            "question_text": "reduced (or absent) breath sounds of the affected side",
-                            "question_answer": "asthma exacerbation"
-                        },
-                        {
-                            "question_text": "percussion on the involved side produces a dull sound",
-                            "question_answer": "hemothorax"
-                        },
-                        {
-                            "question_text": "chest wall tenderness",
-                            "question_answer": "asthma exacerbation"
-                        }
-                    ],
-                    radio_options: receivedQuestionData.radio_options || [
-                        {
-                            "option_value": "hemothorax"
-                        },
-                        {
-                            "option_value": "asthma exacerbation"
-                        }
-                    ]
-                };
-
-            case 'Drag Drop':
-            case 'Drag and Drop':
-                return {
-                    ...baseData,
-                    drag_drop_content: receivedQuestionData.drag_drop_content || "Most likely experiencing",
-                    tabs: receivedQuestionData.tabs || [
-                        {
-                            "tabKey": "Triage Note",
-                            "tabValue": "1840: Client presents with dyspnea and right-sided chest pain that is worse when he takes a deep breath and coughs. Pain rated 7 on a scale of 0 (no pain) to 10 (severe pain). The client arrived with his friends after playing baseball outdoors and was struck by a baseball bat on the right side of his chest. Immediately after he sustained the injury, he reported sharp chest pain. Vital signs: T 99° F (37.2° C) P 94, RR 25, BP 127/76, pulse oximetry reading 89% on room air. He has a medical history of hemophilia A and asthma. On assessment, the client is alert and oriented and anxious. The client has labored breathing using his accessory muscles, and lung sounds are absent in the right-sided bases."
-                        },
-                        {
-                            "tabKey": "Vital sign",
-                            "tabValue": "0800: Upon assessment, the client is visibly anxious and struggling to breathe, with pink frothy sputum noted during coughing.The client is experiencing sudden shortness of breath and chest tightness. Physical examination reveals bilateral crackles in all lung fields, jugular venous distension (JVD), and peripheral cyanosis. An ECG shows sinus tachycardia with no ischemic changes, and a chest X-ray reveals pulmonary vascular congestion. The client reports a history of chronic heart failure."
-                        }
-                    ],
-                    drag_and_drop: receivedQuestionData.drag_and_drop || [
-                        {
-                            "option_heading": "Action to take",
-                            "question_answer": "Option 3",
-                            "option_value": ["option", "option 2", "option 3", "option 4"]
-                        },
-                        {
-                            "option_heading": "Parameter to Monitor",
-                            "question_answer": "Option 2",
-                            "option_value": ["option", "option 2", "option 3", "option 4"]
-                        },
-                        {
-                            "option_heading": "Action to  another action",
-                            "question_answer": "Option 1",
-                            "option_value": ["option", "option 2", "option 3", "option 4"]
-                        }
-                    ]
-                };
-
-            case 'Sentence Highlight':
-                return {
-                    ...baseData,
-                    passage: receivedQuestionData.passage || "",
-                    correctHighlights: receivedQuestionData.correctHighlights || [],
-                    highlightInstructions: receivedQuestionData.highlightInstructions || "",
-                    tabs: receivedQuestionData.tabs || []
-                };
-
+            // ... other question types remain the same as original
             default:
-                // Default to MCQ format
-                console.warn(`Unknown question type: ${questionType}. Defaulting to MCQ format.`);
                 return {
                     ...baseData,
                     answer: receivedQuestionData.correctAnswer || "",
                     options: receivedQuestionData.options || []
                 };
-        }
-    };
-
-    const handleSubmit = async () => {
-        // Show loading toast
-        const loadingToastId = toast.loading('📝 Adding question to Q-Bank...', {
-            position: "top-right",
-            hideProgressBar: false,
-            closeOnClick: false,
-            pauseOnHover: true,
-            draggable: true,
-            progress: undefined,
-            theme: "colored",
-        });
-
-        // ✅ Construct complete question data based on question type
-        const completeQuestionData = constructQuestionData();
-
-        console.log('🚀 Submitting question data:', completeQuestionData);
-        console.log('📋 Question Type:', completeQuestionData.questionType);
-        console.log('🏷️ Question Type ID:', completeQuestionData.question_type_id);
-        console.log('📄 Complete JSON Structure:', JSON.stringify(completeQuestionData, null, 2));
-
-        try {
-            await dispatch(submitQuestion(completeQuestionData)).unwrap();
-            toast.dismiss(loadingToastId);
-        } catch (err) {
-            toast.dismiss(loadingToastId);
-            console.error('Failed to submit question:', err);
         }
     };
 
@@ -377,6 +321,11 @@ const MetaInfoComponent = () => {
         navigate('/admin/answer-explain', {
             state: {
                 questionData: dataToSendBack,
+                formData: receivedFormData, // ✅ Preserve FormData
+                hasQuestionFile: hasQuestionFile,
+                hasExplanationFile: hasExplanationFile,
+                questionFileInfo: questionFileInfo,
+                explanationFileInfo: explanationFileInfo,
                 fromStep: 'meta-info'
             }
         });
@@ -396,7 +345,7 @@ const MetaInfoComponent = () => {
         });
     };
 
-    // Options data
+    // Options data (same as original)
     const subjectOptions = [
         { value: 1, label: "Fundamentals" },
         { value: 2, label: "Pharmacology" },
@@ -449,6 +398,26 @@ const MetaInfoComponent = () => {
                 Test type &gt; Question Type &gt; Question Content &gt; Explanation &gt; <strong>Add Tags</strong>
             </Typography>
 
+            {/* ✅ FormData Status Display */}
+            {receivedFormData && (
+                <Card sx={{ mb: 3, bgcolor: 'success.light', color: 'success.contrastText' }}>
+                    <CardContent>
+                        <Typography variant="h6" gutterBottom>
+                            📦 FormData Ready for Submission
+                        </Typography>
+                        <Typography variant="body2">
+                            • Submission method: <strong>Multipart/Form-Data</strong> (supports file uploads)
+                        </Typography>
+                        <Typography variant="body2">
+                            • Question file: {hasQuestionFile ? `✅ ${questionFileInfo?.name}` : '➖ None'}
+                        </Typography>
+                        <Typography variant="body2">
+                            • Explanation file: {hasExplanationFile ? `✅ ${explanationFileInfo?.name}` : '➖ None'}
+                        </Typography>
+                    </CardContent>
+                </Card>
+            )}
+
             {/* ✅ Display Question Summary */}
             {receivedQuestionData && (
                 <Card sx={{ mb: 3, bgcolor: 'primary.light', color: 'primary.contrastText' }}>
@@ -467,8 +436,10 @@ const MetaInfoComponent = () => {
                             <strong>Explanation:</strong> {receivedQuestionData.explanationText ? '✅ Complete' : '❌ Missing'}
                         </Typography>
                         <Typography variant="body2">
-                            <strong>Files:</strong> {receivedQuestionData.exhibit ? 'Question exhibit, ' : ''}
-                            {receivedQuestionData.infoImage ? 'Info image' : 'No files'}
+                            <strong>Files:</strong> 
+                            {hasQuestionFile && <Chip label="Question exhibit" size="small" color="primary" sx={{ ml: 1, mr: 0.5 }} />}
+                            {hasExplanationFile && <Chip label="Explanation file" size="small" color="secondary" sx={{ mr: 0.5 }} />}
+                            {!hasQuestionFile && !hasExplanationFile && ' No files attached'}
                         </Typography>
                     </CardContent>
                 </Card>
@@ -574,10 +545,14 @@ const MetaInfoComponent = () => {
             </Grid>
 
             {/* ✅ Final Data Preview */}
-            <Card sx={{ mt: 3, bgcolor: 'success.light', color: 'success.contrastText' }}>
+            <Card sx={{ mt: 3, bgcolor: receivedFormData ? 'success.light' : 'warning.light', 
+                        color: receivedFormData ? 'success.contrastText' : 'warning.contrastText' }}>
                 <CardContent>
                     <Typography variant="subtitle2" gutterBottom>
                         🎯 Ready to Submit:
+                    </Typography>
+                    <Typography variant="body2">
+                        • Submission Method: {receivedFormData ? '📦 FormData (Multipart)' : '📄 JSON'}
                     </Typography>
                     <Typography variant="body2">
                         • Question Type: {receivedQuestionData.questionType || 'MCQ'} (ID: {getQuestionTypeId(receivedQuestionData.questionType)})

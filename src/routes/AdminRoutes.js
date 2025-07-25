@@ -44,6 +44,7 @@ const AdminRoutes = () => (
                 <QuestionTypeComponent />
                 // </ProtectedRoutes>
             } />
+
             <Route path="/admin/mcq-content" element={
                 // <ProtectedRoutes allowedRoles={[1]}>
                 <McqQuestionContent />

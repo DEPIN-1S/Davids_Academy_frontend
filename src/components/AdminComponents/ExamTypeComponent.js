@@ -30,7 +30,7 @@ const ExamTypeComponent = () => {
         // Pass the selected exam type to the next component via state
         navigate("/admin/question-type", {
             state: {
-                examType: selectedExamType
+                exam_type: selectedExamType
             }
         });
     };

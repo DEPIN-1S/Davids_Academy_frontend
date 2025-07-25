@@ -4,7 +4,6 @@ import {
     Button,
     Typography,
     TextField,
-    Grid,
     Card,
     CardContent,
     Chip,
@@ -20,10 +19,12 @@ const AnswerExplain = () => {
     const navigate = useNavigate();
     const location = useLocation();
 
-    // ✅ Receive data from previous component
+    // ✅ Receive data including previous file information
     const previousQuestionData = location.state?.questionData || {};
+    const hasQuestionFile = location.state?.hasFile || false;
+    const questionFileInfo = location.state?.fileInfo || null;
 
-    // ✅ Initialize state with existing data or defaults
+    // Component state
     const [explanationHeading, setExplanationHeading] = useState(
         previousQuestionData.explanationHeading || ""
     );
@@ -36,24 +37,61 @@ const AnswerExplain = () => {
     const [additionalInfo, setAdditionalInfo] = useState(
         previousQuestionData.additionalInfo || ""
     );
-    const [selectedFile, setSelectedFile] = useState(
-        previousQuestionData.infoImage || null
-    );
+    const [selectedFile, setSelectedFile] = useState(null);
     const [errors, setErrors] = useState({});
 
     const fileInputRef = useRef(null);
 
-    // ✅ Debug: Log received data
+    // ✅ Restore previous question file if it exists
     useEffect(() => {
-        console.log('Received data from previous component:', previousQuestionData);
-        console.log('Question Type:', previousQuestionData.questionType);
-        console.log('Question:', previousQuestionData.question);
-        console.log('Options:', previousQuestionData.options);
-        console.log('Correct Answer:', previousQuestionData.correctAnswer);
-        console.log('Exhibit:', previousQuestionData.exhibit);
-    }, [previousQuestionData]);
+        if (hasQuestionFile && questionFileInfo && window.questionFileRef) {
+            console.log('✅ Previous question file available:', questionFileInfo);
+        }
+    }, [hasQuestionFile, questionFileInfo]);
 
-    // File upload handlers
+    // ✅ Create FormData factory function that includes BOTH files
+    const createFormDataFactory = () => {
+        return () => {
+            const formData = new FormData();
+
+            // Add basic question data
+            formData.append('exam_type', previousQuestionData.exam_type || '');
+            formData.append('question_type_id', previousQuestionData.question_type_id?.toString() || '');
+            formData.append('questionType', previousQuestionData.questionType || '');
+            formData.append('question', previousQuestionData.question || '');
+            formData.append('correctAnswer', previousQuestionData.correctAnswer || '');
+            formData.append('options', JSON.stringify(previousQuestionData.options || []));
+
+            // Add explanation data
+            formData.append('explanationHeading', explanationHeading.trim());
+            formData.append('explanationText', explanationText.trim());
+            formData.append('additionalInfoHeading', additionalInfoHeading.trim() || '');
+            formData.append('additionalInfo', additionalInfo.trim() || '');
+
+            // ✅ Add PREVIOUS question file (exhibit) if it exists
+            if (hasQuestionFile && window.questionFileRef) {
+                formData.append('exhibit', window.questionFileRef.file, window.questionFileRef.name);
+                console.log('📎 Added previous question file to FormData:', window.questionFileRef.name);
+            }
+
+            // ✅ Add CURRENT explanation file if it exists
+            if (selectedFile?.file) {
+                formData.append('infoImage', selectedFile.file, selectedFile.name);
+                console.log('📎 Added explanation file to FormData:', selectedFile.name);
+            }
+
+            // Add metadata
+            formData.append('createdAt', previousQuestionData.createdAt || new Date().toISOString());
+            formData.append('updatedAt', new Date().toISOString());
+            formData.append('questionId', previousQuestionData.questionId || `${previousQuestionData.questionType}_${Date.now()}`);
+            formData.append('currentStep', 'explanation');
+            formData.append('completedSteps', JSON.stringify(['exam-type', 'question-type', 'content', 'explanation']));
+
+            return formData;
+        };
+    };
+
+    // File upload handlers for explanation file
     const handleFileSelect = (event) => {
         const file = event.target.files[0];
         if (file) {
@@ -81,7 +119,6 @@ const AnswerExplain = () => {
 
             setSelectedFile(fileData);
             setErrors(prev => ({ ...prev, file: null }));
-            console.log('File selected for explanation:', fileData);
         }
         event.target.value = '';
     };
@@ -116,94 +153,120 @@ const AnswerExplain = () => {
         return Object.keys(newErrors).length === 0;
     };
 
-    // ✅ Navigation handlers with data merging
+    // ✅ Navigation handler with both files passed through
     const handleNext = () => {
         if (!validateForm()) {
             return;
         }
 
-        // ✅ Merge previous data with current explanation data
+        // Create serializable data
         const mergedQuestionData = {
-            // ===== DATA FROM PREVIOUS COMPONENT =====
-            ...previousQuestionData, // Spread all previous data first
+            // Previous step data
+            exam_type: previousQuestionData.exam_type,
+            question_type_id: previousQuestionData.question_type_id,
+            questionType: previousQuestionData.questionType,
+            question: previousQuestionData.question,
+            options: previousQuestionData.options,
+            correctAnswer: previousQuestionData.correctAnswer,
+            createdAt: previousQuestionData.createdAt,
+            questionId: previousQuestionData.questionId,
 
-            // ===== EXPLANATION DATA (current component) =====
+            // Current explanation data
             explanationHeading: explanationHeading.trim(),
             explanationText: explanationText.trim(),
             additionalInfoHeading: additionalInfoHeading.trim() || null,
             additionalInfo: additionalInfo.trim() || null,
-            infoImage: selectedFile,
 
-            // ===== METADATA UPDATES =====
+            // File metadata for both files
+            questionFileMeta: hasQuestionFile ? questionFileInfo : null,
+            explanationFileMeta: selectedFile ? {
+                name: selectedFile.name,
+                size: selectedFile.size,
+                type: selectedFile.type,
+                uploadedAt: selectedFile.uploadedAt
+            } : null,
+
+            // Metadata
             updatedAt: new Date().toISOString(),
             currentStep: 'explanation',
-            completedSteps: [
-                ...(previousQuestionData.completedSteps || ['content']),
-                'explanation'
-            ],
-
-            // ===== PROGRESS TRACKING =====
-            stepData: {
-                ...(previousQuestionData.stepData || {}),
-                explanation: {
-                    explanationHeading: explanationHeading.trim(),
-                    explanationText: explanationText.trim(),
-                    additionalInfoHeading: additionalInfoHeading.trim() || null,
-                    additionalInfo: additionalInfo.trim() || null,
-                    infoImage: selectedFile,
-                    completedAt: new Date().toISOString()
-                }
-            }
+            completedSteps: ['exam-type', 'question-type', 'content', 'explanation']
         };
 
-        console.log('✅ MERGED DATA - Sending to MetaInfo component:', mergedQuestionData);
-        console.log('📋 Complete question structure:', {
-            questionType: mergedQuestionData.questionType,
-            question: mergedQuestionData.question,
-            options: mergedQuestionData.options,
-            correctAnswer: mergedQuestionData.correctAnswer,
-            exhibit: mergedQuestionData.exhibit,
-            explanationHeading: mergedQuestionData.explanationHeading,
-            explanationText: mergedQuestionData.explanationText,
-            additionalInfo: mergedQuestionData.additionalInfo,
-            infoImage: mergedQuestionData.infoImage
-        });
+        // ✅ Store FormData creation function globally
+        window.createQuestionFormData = createFormDataFactory();
 
-        // Navigate to final step (MetaInfo) with merged data
+        // ✅ Store current explanation file reference globally
+        if (selectedFile?.file) {
+            window.explanationFileRef = {
+                file: selectedFile.file,
+                name: selectedFile.name
+            };
+        }
+
+        // ✅ Ensure previous question file is still available
+        // (This should already be set from the previous component, but we maintain it)
+        if (hasQuestionFile && !window.questionFileRef) {
+            console.warn('⚠️ Previous question file reference not found in global scope');
+        }
+
+        console.log('✅ Navigating with both files available:');
+        console.log('📎 Question file:', hasQuestionFile ? questionFileInfo?.name : 'None');
+        console.log('📎 Explanation file:', selectedFile?.name || 'None');
+
+        // Navigate with complete file information
         navigate('/admin/meta-info', {
             state: {
                 questionData: mergedQuestionData,
+
+                // ✅ Pass information about BOTH files
+                hasQuestionFile: hasQuestionFile,
+                hasExplanationFile: !!selectedFile,
+
+                // ✅ Pass metadata for BOTH files
+                questionFileInfo: questionFileInfo,
+                explanationFileInfo: selectedFile ? {
+                    name: selectedFile.name,
+                    type: selectedFile.type,
+                    size: selectedFile.size,
+                    uploadedAt: selectedFile.uploadedAt
+                } : null,
+
+                // ✅ File availability flags
+                bothFilesAvailable: hasQuestionFile && !!selectedFile,
+                formDataCreatorAvailable: true,
                 fromStep: 'explanation'
             }
         });
     };
 
     const handleBack = () => {
-        // ✅ Preserve current explanation data when going back
-        const currentExplanationData = {
+        // Preserve current explanation data
+        const dataToSendBack = {
+            // Previous data
+            exam_type: previousQuestionData.exam_type,
+            question_type_id: previousQuestionData.question_type_id,
+            questionType: previousQuestionData.questionType,
+            question: previousQuestionData.question,
+            options: previousQuestionData.options,
+            correctAnswer: previousQuestionData.correctAnswer,
+            createdAt: previousQuestionData.createdAt,
+            questionId: previousQuestionData.questionId,
+
+            // Current explanation data
             explanationHeading: explanationHeading.trim(),
             explanationText: explanationText.trim(),
             additionalInfoHeading: additionalInfoHeading.trim(),
             additionalInfo: additionalInfo.trim(),
-            infoImage: selectedFile
-        };
 
-        // Merge with previous data to preserve all changes
-        const dataToSendBack = {
-            ...previousQuestionData,
-            ...currentExplanationData,
+            // Metadata
             updatedAt: new Date().toISOString()
         };
 
-        console.log('🔙 Going back with preserved data:', dataToSendBack);
-
-        // Navigate back based on question type
-        const questionType = previousQuestionData.questionType || 'MCQ';
-        const backPath = `/admin/${questionType.toLowerCase().replace(/\s+/g, "-")}-content`;
-
-        navigate(backPath, {
+        navigate('/admin/mcq-content', {
             state: {
                 questionData: dataToSendBack,
+                hasFile: hasQuestionFile,
+                fileInfo: questionFileInfo,
                 fromStep: 'explanation'
             }
         });
@@ -243,10 +306,10 @@ const AnswerExplain = () => {
         <Box p={3} maxWidth="800px" mx="auto">
             {/* Breadcrumb */}
             <Typography variant="caption" color="textSecondary" mb={2} display="block">
-                Test type &gt; Question Type &gt; Question Content &gt; <strong>Explanation</strong>
+                Test type &gt; Exam Type ({previousQuestionData.exam_type}) &gt; Question Type ({previousQuestionData.questionType}) &gt; Question Content &gt; <strong>Explanation</strong>
             </Typography>
 
-            {/* ✅ Display Question Preview from Previous Component */}
+            {/* Question Preview with File Info */}
             {previousQuestionData.question && (
                 <Card sx={{ mb: 3, bgcolor: 'grey.50' }}>
                     <CardContent>
@@ -280,17 +343,42 @@ const AnswerExplain = () => {
                             </Box>
                         )}
 
-                        {/* Display Exhibit if exists */}
-                        {previousQuestionData.exhibit && (
-                            <Box>
-                                <Typography variant="subtitle2" color="primary">
-                                    📎 Question Exhibit: {previousQuestionData.exhibit.name}
+                        {/* ✅ Display Previous Question File Info */}
+                        {hasQuestionFile && questionFileInfo && (
+                            <Box sx={{ mt: 2, p: 1, bgcolor: 'primary.light', borderRadius: 1 }}>
+                                <Typography variant="subtitle2" color="primary.contrastText">
+                                    📎 Question Exhibit: {questionFileInfo.name}
+                                </Typography>
+                                <Typography variant="body2" color="primary.contrastText">
+                                    Size: {formatFileSize(questionFileInfo.size)} |
+                                    Type: {questionFileInfo.type} |
+                                    Status: Available for FormData
                                 </Typography>
                             </Box>
                         )}
                     </CardContent>
                 </Card>
             )}
+
+            {/* ✅ File Status Display */}
+            <Card sx={{ mb: 3, bgcolor: 'info.light', color: 'info.contrastText' }}>
+                <CardContent>
+                    <Typography variant="subtitle2" gutterBottom>
+                        📂 File Management Status:
+                    </Typography>
+                    <Typography variant="body2">
+                        • Previous question file: {hasQuestionFile ? `✅ ${questionFileInfo?.name}` : '➖ None'}
+                    </Typography>
+                    <Typography variant="body2">
+                        • Current explanation file: {selectedFile ? `✅ ${selectedFile.name}` : '➖ None'}
+                    </Typography>
+                    <Typography variant="body2">
+                        • FormData will include: {hasQuestionFile || selectedFile ?
+                            `${hasQuestionFile ? 'exhibit' : ''}${hasQuestionFile && selectedFile ? ' + ' : ''}${selectedFile ? 'infoImage' : ''}` :
+                            'text data only'}
+                    </Typography>
+                </CardContent>
+            </Card>
 
             {/* Title */}
             <Typography variant="h5" mt={2} mb={1}>
@@ -335,7 +423,7 @@ const AnswerExplain = () => {
                     setErrors(prev => ({ ...prev, explanationText: null }));
                 }}
                 variant="outlined"
-                placeholder="Provide a comprehensive explanation of why this answer is correct. Include relevant clinical reasoning, pathophysiology, or nursing principles..."
+                placeholder="Provide a comprehensive explanation of why this answer is correct..."
                 error={!!errors.explanationText}
                 helperText={errors.explanationText || `${explanationText.length} characters (minimum 20 required)`}
                 sx={{ mb: 3 }}
@@ -368,7 +456,7 @@ const AnswerExplain = () => {
                 value={additionalInfo}
                 onChange={(e) => setAdditionalInfo(e.target.value)}
                 variant="outlined"
-                placeholder="Any additional tips, warnings, or supplementary information that would help students understand the concept better..."
+                placeholder="Any additional tips, warnings, or supplementary information..."
                 sx={{ mb: 3 }}
             />
 
@@ -390,7 +478,7 @@ const AnswerExplain = () => {
                     startIcon={<CloudUpload />}
                     size="medium"
                 >
-                    Add Supporting File
+                    {selectedFile ? 'Change Supporting File' : 'Add Supporting File'}
                 </Button>
             </Box>
 
@@ -424,6 +512,12 @@ const AnswerExplain = () => {
                                         color="primary"
                                         variant="outlined"
                                     />
+                                    <Chip
+                                        label="Ready for FormData"
+                                        size="small"
+                                        color="success"
+                                        variant="outlined"
+                                    />
                                 </Box>
                             </Box>
 
@@ -455,32 +549,29 @@ const AnswerExplain = () => {
                 </Card>
             )}
 
-            {/* ✅ Form Summary - Shows merged data status */}
-            <Card sx={{ mt: 3, bgcolor: 'info.light', color: 'info.contrastText' }}>
+            {/* ✅ Enhanced Form Summary showing both files */}
+            <Card sx={{ mt: 3, bgcolor: 'success.light', color: 'success.contrastText' }}>
                 <CardContent>
                     <Typography variant="subtitle2" gutterBottom>
-                        📊 Complete Question Status:
+                        📊 Complete Form Status:
                     </Typography>
                     <Typography variant="body2">
                         • Question Content: {previousQuestionData.question ? '✅ Complete' : '❌ Missing'}
                     </Typography>
                     <Typography variant="body2">
-                        • Answer Options: {previousQuestionData.options?.length >= 2 ? '✅ Complete' : '❌ Missing'}
-                    </Typography>
-                    <Typography variant="body2">
-                        • Correct Answer: {previousQuestionData.correctAnswer ? '✅ Complete' : '❌ Missing'}
+                        • Previous Question File: {hasQuestionFile ? `✅ ${questionFileInfo?.name}` : '➖ None'}
                     </Typography>
                     <Typography variant="body2">
                         • Explanation Heading: {explanationHeading ? '✅ Complete' : '❌ Required'}
                     </Typography>
                     <Typography variant="body2">
-                        • Explanation Text: {explanationText && explanationText.length >= 20 ? '✅ Complete' : '❌ Required (min. 20 chars)'}
+                        • Explanation Text: {explanationText && explanationText.length >= 20 ? '✅ Complete' : '❌ Required'}
                     </Typography>
                     <Typography variant="body2">
-                        • Additional Info: {additionalInfo ? `✅ ${additionalInfo.length} characters` : '➖ Optional'}
+                        • Explanation File: {selectedFile ? `✅ ${selectedFile.name}` : '➖ Optional'}
                     </Typography>
                     <Typography variant="body2">
-                        • Supporting File: {selectedFile ? `✅ ${selectedFile.name}` : '➖ Optional'}
+                        • Total Files for FormData: {(hasQuestionFile ? 1 : 0) + (selectedFile ? 1 : 0)}
                     </Typography>
                 </CardContent>
             </Card>

@@ -25,8 +25,8 @@ const QuestionTypeComponent = () => {
     // ✅ Store the complete question type object instead of just the type name
     const [selectedQuestionType, setSelectedQuestionType] = useState(null);
 
-    // ✅ Receive examType from previous component
-    const { examType } = location.state || {};
+    // ✅ Receive exam_type from previous component
+    const { exam_type } = location.state || {};
 
     // ✅ Access the correct state key - your store has 'exam' not 'questions'
     const {
@@ -39,12 +39,12 @@ const QuestionTypeComponent = () => {
         dispatch(listQuestionTypes());
     }, [dispatch]);
 
-    // ✅ Redirect back if no examType is received
+    // ✅ Redirect back if no exam_type is received
     useEffect(() => {
-        if (!examType) {
+        if (!exam_type) {
             navigate("/admin/exam-type");
         }
-    }, [examType, navigate]);
+    }, [exam_type, navigate]);
 
     const handleNextClick = () => {
         if (!selectedQuestionType) return; // nothing selected
@@ -52,22 +52,13 @@ const QuestionTypeComponent = () => {
         const path = QUESTION_TYPE_TO_ROUTE[selectedQuestionType.type];
 
         if (path) {
-            // ✅ Pass examType, questionType details, and combined data
+            // ✅ Pass exam_type, questionType details, and combined data
             navigate(path, {
                 state: {
-                    examType,
-                    questionType: {
-                        id: selectedQuestionType.id,
-                        type: selectedQuestionType.type,
-                        value: selectedQuestionType.type // alias for type if needed
-                    },
-                    // Combined object with all form data
-                    formData: {
-                        examType,
-                        questionTypeId: selectedQuestionType.id,
-                        questionTypeName: selectedQuestionType.type
-                    }
-                }
+                    exam_type,
+                    question_type_id: selectedQuestionType.id,
+                    questionType: selectedQuestionType.type
+                },
             });
         } else {
             console.error(`No route mapped for ${selectedQuestionType.type}`);
@@ -100,7 +91,7 @@ const QuestionTypeComponent = () => {
         >
             {/* Breadcrumb */}
             <Typography variant="subtitle2" color="text.secondary">
-                Test Type &nbsp;&gt;&nbsp; Exam Type ({examType}) &nbsp;&gt;&nbsp; Question Type
+                Test Type &nbsp;&gt;&nbsp; Exam Type ({exam_type}) &nbsp;&gt;&nbsp; Question Type
             </Typography>
 
             {/* Title */}
@@ -110,7 +101,7 @@ const QuestionTypeComponent = () => {
 
             {/* Subtitle */}
             <Typography color="text.secondary">
-                Choose the format best suited for your {examType} question.
+                Choose the format best suited for your {exam_type} question.
             </Typography>
 
             {/* Display selected exam type */}
@@ -119,7 +110,7 @@ const QuestionTypeComponent = () => {
                     Selected Exam Type:
                 </Typography>
                 <Typography variant="body1" fontWeight={500}>
-                    {examType}
+                    {exam_type}
                 </Typography>
             </Box>
 

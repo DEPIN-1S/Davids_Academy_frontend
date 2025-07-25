@@ -20,25 +20,47 @@ import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
 import { CloudUpload, Delete, Image, PictureAsPdf, Description } from '@mui/icons-material';
 import { useNavigate, useLocation } from 'react-router-dom';
+import { useFileContext } from '../../context/FileContext'; // ✅ Import the Context
 
 const McqQuestionContent = () => {
     const navigate = useNavigate();
     const location = useLocation();
 
-    // Get any existing data from previous steps or question type
-    const existingData = location.state?.questionData || {};
-    const questionType = location.state?.questionType || existingData.questionType || "MCQ";
+    // ✅ Use File Context instead of passing files through navigation
+    const { addQuestionFile, questionFile, hasQuestionFile } = useFileContext();
 
-    // Form state
-    const [question, setQuestion] = useState(existingData.question || "");
-    const [options, setOptions] = useState(existingData.options || ["", ""]);
-    const [correctAnswer, setCorrectAnswer] = useState(existingData.correctAnswer || "");
-    const [selectedFile, setSelectedFile] = useState(existingData.exhibit || null);
+    // ✅ Get data from QuestionTypeComponent according to the new structure
+    const {
+        exam_type,
+        question_type_id,
+        questionType: questionTypeName,
+        questionData: existingQuestionData
+    } = location.state || {};
+
+    // ✅ Redirect back if required data is missing
+    React.useEffect(() => {
+        if (!exam_type || !question_type_id || !questionTypeName) {
+            navigate("/admin/question-type");
+        }
+    }, [exam_type, question_type_id, questionTypeName, navigate]);
+
+    // Form state - initialize with existing data if available
+    const [question, setQuestion] = useState(existingQuestionData?.question || "");
+    const [options, setOptions] = useState(existingQuestionData?.options || ["", ""]);
+    const [correctAnswer, setCorrectAnswer] = useState(existingQuestionData?.correctAnswer || "");
+    const [selectedFile, setSelectedFile] = useState(null); // ✅ Local state for UI, Context for persistence
     const [errors, setErrors] = useState({});
 
     const fileInputRef = useRef(null);
 
-    // File upload handlers
+    // ✅ Initialize with existing file from context if available
+    React.useEffect(() => {
+        if (questionFile) {
+            setSelectedFile(questionFile);
+        }
+    }, [questionFile]);
+
+    // ✅ File upload handlers - Store in Context instead of passing through navigation
     const handleFileSelect = (event) => {
         const file = event.target.files[0];
         if (file) {
@@ -64,9 +86,12 @@ const McqQuestionContent = () => {
                 uploadedAt: new Date().toISOString()
             };
 
+            // ✅ Store in both local state (for UI) and Context (for persistence)
             setSelectedFile(fileData);
+            addQuestionFile(fileData); // Store in Context
             setErrors(prev => ({ ...prev, file: null }));
-            console.log('File selected:', fileData);
+
+            console.log('File stored in Context:', fileData.name);
         }
         // Reset input value
         event.target.value = '';
@@ -80,11 +105,12 @@ const McqQuestionContent = () => {
         if (selectedFile) {
             URL.revokeObjectURL(selectedFile.url);
             setSelectedFile(null);
+            addQuestionFile(null); // ✅ Remove from Context as well
             setErrors(prev => ({ ...prev, file: null }));
         }
     };
 
-    // Option handlers
+    // Option handlers (unchanged)
     const handleOptionChange = (index, value) => {
         const newOptions = [...options];
         newOptions[index] = value;
@@ -119,7 +145,7 @@ const McqQuestionContent = () => {
         }
     };
 
-    // Validation
+    // Validation (unchanged)
     const validateForm = () => {
         const newErrors = {};
 
@@ -153,71 +179,75 @@ const McqQuestionContent = () => {
         return Object.keys(newErrors).length === 0;
     };
 
-    // Navigation handlers
+    // ✅ Updated Navigation handlers - NO FormData in navigation state
     const handleNext = () => {
         if (!validateForm()) {
             return;
         }
 
-        // Prepare complete question data
+        // ✅ Prepare ONLY serializable question data
         const questionData = {
-            // Basic information
-            questionType: questionType,
+            // Basic information from previous steps
+            exam_type,
+            question_type_id,
+            questionType: questionTypeName,
+
+            // Question content
             question: question.trim(),
 
             // MCQ specific data
             options: options.filter(opt => opt.trim() !== "").map(opt => opt.trim()),
             correctAnswer: correctAnswer.trim(),
 
-            // File attachment
-            exhibit: selectedFile ? {
-                name: selectedFile.name,
-                type: selectedFile.type,
-                size: selectedFile.size,
-                url: selectedFile.url,
-                file: selectedFile.file,
-                uploadedAt: selectedFile.uploadedAt
-            } : null,
-
-            // Metadata
-            createdAt: existingData.createdAt || new Date().toISOString(),
+            // Metadata (all serializable)
+            createdAt: existingQuestionData?.createdAt || new Date().toISOString(),
             updatedAt: new Date().toISOString(),
-            questionId: existingData.questionId || `${questionType}_${Date.now()}`,
+            questionId: existingQuestionData?.questionId || `${questionTypeName}_${Date.now()}`,
 
             // Step tracking
             currentStep: 'content',
-            completedSteps: ['type', 'content']
+            completedSteps: ['exam-type', 'question-type', 'content']
         };
 
-        console.log('Sending to explanation step:', questionData);
+        console.log('✅ Navigating with serializable data only:', questionData);
+        console.log('✅ File stored in Context:', hasQuestionFile ? 'Yes' : 'No');
 
-        // Navigate to next step with complete data
+        // ✅ Navigate with ONLY serializable data - NO FormData objects
         navigate('/admin/answer-explain', {
             state: {
                 questionData: questionData,
+                // ✅ Only pass file metadata for UI display, actual file is in Context
+                hasFile: hasQuestionFile,
+                fileInfo: selectedFile ? {
+                    name: selectedFile.name,
+                    type: selectedFile.type,
+                    size: selectedFile.size
+                    // ✅ No 'file' or 'url' properties to avoid serialization issues
+                } : null,
                 fromStep: 'content'
             }
         });
     };
 
     const handleBack = () => {
-        // Prepare current data for potential restoration
-        const currentData = {
+        // ✅ Prepare current data for potential restoration (all serializable)
+        const currentQuestionData = {
             question: question.trim(),
             options: options,
             correctAnswer: correctAnswer.trim(),
-            exhibit: selectedFile
+            // ✅ No file objects in navigation state
         };
 
         navigate('/admin/question-type', {
             state: {
-                questionData: currentData,
+                exam_type,
+                questionData: currentQuestionData,
                 fromStep: 'content'
             }
         });
     };
 
-    // Helper functions
+    // Helper functions (unchanged)
     const getFileIcon = (fileType) => {
         if (fileType?.startsWith('image/')) return <Image />;
         if (fileType === 'application/pdf') return <PictureAsPdf />;
@@ -241,7 +271,7 @@ const McqQuestionContent = () => {
             validOptions.includes(correctAnswer);
     };
 
-    // Cleanup on unmount
+    // Cleanup on unmount (unchanged)
     React.useEffect(() => {
         return () => {
             if (selectedFile && selectedFile.url) {
@@ -254,16 +284,64 @@ const McqQuestionContent = () => {
         <Box p={3} maxWidth="800px" mx="auto">
             {/* Breadcrumb */}
             <Typography variant="caption" color="textSecondary" mb={2} display="block">
-                Test type &gt; Question Type &gt; <strong>Question Content</strong>
+                Test type &gt; Exam Type ({exam_type}) &gt; Question Type ({questionTypeName}) &gt; <strong>Question Content</strong>
             </Typography>
 
             {/* Title */}
             <Typography variant="h5" mt={2} mb={1}>
-                Enter {questionType} Question Content
+                Enter {questionTypeName} Question Content
             </Typography>
             <Typography variant="body2" color="textSecondary" mb={3}>
                 Write the question your students will answer — be clear, concise, and clinically relevant.
             </Typography>
+
+            {/* ✅ Display selected types with Context status */}
+            <Card sx={{ mb: 3, bgcolor: "#f0f0f0" }}>
+                <CardContent>
+                    <Typography variant="subtitle2" gutterBottom>
+                        Selection Summary:
+                    </Typography>
+                    <Typography variant="body2" color="textSecondary">
+                        • Exam Type: {exam_type}
+                    </Typography>
+                    <Typography variant="body2" color="textSecondary">
+                        • Question Type: {questionTypeName} (ID: {question_type_id})
+                    </Typography>
+                    <Typography variant="body2" color="textSecondary">
+                        • File Management: ✅ Using React Context (Navigation Safe)
+                    </Typography>
+                    {selectedFile && (
+                        <Typography variant="body2" color="textSecondary">
+                            • File Ready: {selectedFile.name} ({formatFileSize(selectedFile.size)})
+                            <Chip
+                                label="Stored in Context"
+                                size="small"
+                                color="success"
+                                variant="outlined"
+                                sx={{ ml: 1 }}
+                            />
+                        </Typography>
+                    )}
+                </CardContent>
+            </Card>
+
+            {/* Context Status Display */}
+            <Card sx={{ mb: 3, bgcolor: 'primary.light', color: 'primary.contrastText' }}>
+                <CardContent>
+                    <Typography variant="subtitle2" gutterBottom>
+                        🗂️ File Context Status:
+                    </Typography>
+                    <Typography variant="body2">
+                        • Question file in Context: {hasQuestionFile ? '✅ Available' : '➖ None'}
+                    </Typography>
+                    <Typography variant="body2">
+                        • Navigation safety: ✅ No FormData objects in navigation state
+                    </Typography>
+                    <Typography variant="body2">
+                        • File persistence: ✅ Files maintained across component navigation
+                    </Typography>
+                </CardContent>
+            </Card>
 
             {/* Question Input */}
             <TextField
@@ -299,7 +377,7 @@ const McqQuestionContent = () => {
                     startIcon={<CloudUpload />}
                     size="small"
                 >
-                    + Add Exhibit
+                    {selectedFile ? 'Change Exhibit' : '+ Add Exhibit'}
                 </Button>
             </Box>
 
@@ -331,6 +409,12 @@ const McqQuestionContent = () => {
                                         label={selectedFile.type.split('/')[1]?.toUpperCase() || 'FILE'}
                                         size="small"
                                         color="primary"
+                                        variant="outlined"
+                                    />
+                                    <Chip
+                                        label="Context Managed"
+                                        size="small"
+                                        color="success"
                                         variant="outlined"
                                     />
                                 </Box>
@@ -444,7 +528,7 @@ const McqQuestionContent = () => {
                 )}
             </FormControl>
 
-            {/* Form Summary */}
+            {/* ✅ Enhanced Form Summary with Context information */}
             <Card sx={{ mt: 3, bgcolor: 'grey.50' }}>
                 <CardContent>
                     <Typography variant="subtitle2" gutterBottom>
@@ -460,7 +544,10 @@ const McqQuestionContent = () => {
                         • Correct Answer: {correctAnswer ? '✓ Selected' : '✗ Required'}
                     </Typography>
                     <Typography variant="body2" color="textSecondary">
-                        • Exhibit: {selectedFile ? `✓ ${selectedFile.name}` : '○ Optional'}
+                        • Exhibit: {selectedFile ? `✓ ${selectedFile.name} (Context Managed)` : '○ Optional'}
+                    </Typography>
+                    <Typography variant="body2" color="textSecondary">
+                        • Navigation: ✅ FormData-safe using React Context
                     </Typography>
                 </CardContent>
             </Card>
