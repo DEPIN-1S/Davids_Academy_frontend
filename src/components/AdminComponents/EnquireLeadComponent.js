@@ -38,16 +38,6 @@ const EnquireLeadComponent = () => {
 
     return (
         <div className="enquire-lead-page">
-            {/* Page Header */}
-            <div className="page-header">
-                <div className="header-content">
-                    <h1 className="page-title">Enquiries & Leads</h1>
-                    <p className="page-subtitle">
-                        View and manage all incoming student enquiries, course interests, and admission leads in one place.
-                    </p>
-                </div>
-            </div>
-
             {/* Content Area */}
             <div className="content-area">
                 {/* Filter Dropdown */}

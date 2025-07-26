@@ -85,7 +85,7 @@ const CourseManagement = () => {
             >
                 <Typography
                     variant="h4"
-                    component="h1"
+                    component="h4"
                     sx={{
                         fontWeight: 600,
                         fontSize: { xs: '1.5rem', sm: '2rem', md: '2.25rem' },

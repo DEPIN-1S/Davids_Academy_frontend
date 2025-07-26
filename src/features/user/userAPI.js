@@ -1,4 +1,4 @@
-const baseUrl = process.env.BASE_URL;
+const baseUrl = process.env.REACT_APP_API_URL;
 // login user
 export const loginUser = async (credentials) => {
   const res = await fetch(baseUrl + '/login', {

@@ -19,21 +19,24 @@ import ScorePage from "../pages/DashboardPages/ScorePage";
 
 const StudentRoutes = () => (
     <>
-        <Route path="/student/question-bank" element={<ProtectedRoutes allowedRoles={['2']}><QuestionBankPage /></ProtectedRoutes>} />
-        <Route path="/my-statistics" element={<ProtectedRoutes allowedRoles={['2']}><StatisticsPage /></ProtectedRoutes>} />
-        <Route path="/recorded-class" element={<ProtectedRoutes allowedRoles={['2']}><RecordedClassesPage /></ProtectedRoutes>} />
-        <Route path="/notes" element={<ProtectedRoutes allowedRoles={['2']}><NotesPage /></ProtectedRoutes>} />
-        <Route path="/mock-test" element={<ProtectedRoutes allowedRoles={['2']}><MockTestPage /></ProtectedRoutes>} />
-        <Route path="/previous-tests" element={<ProtectedRoutes allowedRoles={['2']}><PreviousTestPage /></ProtectedRoutes>} />
-        <Route path="/radio-question" element={<RadioButtonQuestionPage />} />
-        <Route path="/reveal-answer-radio" element={<RevealAnswerRadioPage />} />
-        <Route path="/dropdown-question" element={<DropdownQuestionPage />} />
-        <Route path="/dragdrop-question" element={<DragDropQuestionPage />} />
-        <Route path="/multi-radio-question" element={<MultiRadioQuestionPage />} />
-        <Route path="/sort-question" element={<SortQuestionPage />} />
-        <Route path="/sentence-question" element={<SentenceQuestionPage />} />
-        <Route path="/drop-sort-question" element={<DropSortQuestionPage />} />
-        <Route path="/score" element={<ProtectedRoutes allowedRoles={['2']}><ScorePage /></ProtectedRoutes>} />
+        <Route path="/student/question-bank" element={<ProtectedRoutes allowedRoles={['student']}><QuestionBankPage /></ProtectedRoutes>} />
+        <Route path="/my-statistics" element={<ProtectedRoutes allowedRoles={['student']}><StatisticsPage /></ProtectedRoutes>} />
+        <Route path="/recorded-class" element={<ProtectedRoutes allowedRoles={['student']}><RecordedClassesPage /></ProtectedRoutes>} />
+        <Route path="/notes" element={<ProtectedRoutes allowedRoles={['student']}><NotesPage /></ProtectedRoutes>} />
+        <Route path="/mock-test" element={<ProtectedRoutes allowedRoles={['student']}><MockTestPage /></ProtectedRoutes>} />
+        <Route path="/previous-tests" element={<ProtectedRoutes allowedRoles={['student']}><PreviousTestPage /></ProtectedRoutes>} />
+
+        {/* ✅ Added ProtectedRoutes to all question-related pages */}
+        <Route path="/radio-question" element={<ProtectedRoutes allowedRoles={['student']}><RadioButtonQuestionPage /></ProtectedRoutes>} />
+        <Route path="/reveal-answer-radio" element={<ProtectedRoutes allowedRoles={['student']}><RevealAnswerRadioPage /></ProtectedRoutes>} />
+        <Route path="/dropdown-question" element={<ProtectedRoutes allowedRoles={['student']}><DropdownQuestionPage /></ProtectedRoutes>} />
+        <Route path="/dragdrop-question" element={<ProtectedRoutes allowedRoles={['student']}><DragDropQuestionPage /></ProtectedRoutes>} />
+        <Route path="/multi-radio-question" element={<ProtectedRoutes allowedRoles={['student']}><MultiRadioQuestionPage /></ProtectedRoutes>} />
+        <Route path="/sort-question" element={<ProtectedRoutes allowedRoles={['student']}><SortQuestionPage /></ProtectedRoutes>} />
+        <Route path="/sentence-question" element={<ProtectedRoutes allowedRoles={['student']}><SentenceQuestionPage /></ProtectedRoutes>} />
+        <Route path="/drop-sort-question" element={<ProtectedRoutes allowedRoles={['student']}><DropSortQuestionPage /></ProtectedRoutes>} />
+
+        <Route path="/score" element={<ProtectedRoutes allowedRoles={['student']}><ScorePage /></ProtectedRoutes>} />
     </>
 );
 

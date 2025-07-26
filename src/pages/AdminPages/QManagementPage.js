@@ -115,15 +115,6 @@ const QManagementPage = () => {
 
     return (
         <div className="q-management-page">
-            {/* Page Header */}
-            <div className="page-header">
-                <div className="header-content">
-                    <h1 className="page-title">Question Management</h1>
-                    <p className="page-subtitle">
-                        Manage your question bank and mock test questions
-                    </p>
-                </div>
-            </div>
 
             {/* Content Area */}
             <div className="content-area">

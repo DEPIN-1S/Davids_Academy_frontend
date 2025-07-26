@@ -24,122 +24,131 @@ import UploadThumbnailComponent from "../components/AdminComponents/UploadThumbn
 import RecordedClassInfoComponent from "../components/AdminComponents/RecordClassComponent";
 import EnquireLeadComponent from "../components/AdminComponents/EnquireLeadComponent";
 import ExamTypeComponent from "../components/AdminComponents/ExamTypeComponent";
+
 const AdminRoutes = () => (
     <>
         <Route element={<AdminLayout />}>
             <Route path="/admin/dashboard" element={
-                // <ProtectedRoutes allowedRoles={[1]}>
-                <AdminDashboardPage />
-                // </ProtectedRoutes>
+                <ProtectedRoutes allowedRoles={['admin']}>
+                    <AdminDashboardPage />
+                </ProtectedRoutes>
             } />
             <Route path="/admin/student-manage" element={
-                // <ProtectedRoutes allowedRoles={[1]}>
-                <StudentManage />
-                // </ProtectedRoutes>
+                <ProtectedRoutes allowedRoles={['admin']}>
+                    <StudentManage />
+                </ProtectedRoutes>
             } />
             <Route path="/admin/student-form" element={
-                // <ProtectedRoutes allowedRoles={[1]}>
-                <AddStudentForm />
-                // </ProtectedRoutes>
+                <ProtectedRoutes allowedRoles={['admin']}>
+                    <AddStudentForm />
+                </ProtectedRoutes>
             } />
             <Route path="/admin/question-management" element={
-                // <ProtectedRoutes allowedRoles={[1]}>
-                <QManagementPage />
-                // </ProtectedRoutes>
+                <ProtectedRoutes allowedRoles={['admin']}>
+                    <QManagementPage />
+                </ProtectedRoutes>
             } />
             <Route path="/admin/question-type" element={
-                // <ProtectedRoutes allowedRoles={[1]}>
-                <QuestionTypeComponent />
-                // </ProtectedRoutes>
+                <ProtectedRoutes allowedRoles={['admin']}>
+                    <QuestionTypeComponent />
+                </ProtectedRoutes>
             } />
 
+            {/* ✅ Question Content Creation Routes */}
             <Route path="/admin/mcq-content" element={
-                // <ProtectedRoutes allowedRoles={[1]}>
-                <McqQuestionContent />
-                // </ProtectedRoutes>
+                <ProtectedRoutes allowedRoles={['admin']}>
+                    <McqQuestionContent />
+                </ProtectedRoutes>
             } />
             <Route path="/admin/dropdown-content" element={
-                // <ProtectedRoutes allowedRoles={[1]}>
-                <DropdownQuestionContent />
-                // </ProtectedRoutes>
+                <ProtectedRoutes allowedRoles={['admin']}>
+                    <DropdownQuestionContent />
+                </ProtectedRoutes>
             } />
             <Route path="/admin/dragdrop-content" element={
-                // <ProtectedRoutes allowedRoles={[1]}>
-                <DragdropQuestionContent />
-                // </ProtectedRoutes>
+                <ProtectedRoutes allowedRoles={['admin']}>
+                    <DragdropQuestionContent />
+                </ProtectedRoutes>
             } />
             <Route path="/admin/multiradio-content" element={
-                // <ProtectedRoutes allowedRoles={[1]}>
-                <MultiradioQuestionContent />
-                // </ProtectedRoutes>
+                <ProtectedRoutes allowedRoles={['admin']}>
+                    <MultiradioQuestionContent />
+                </ProtectedRoutes>
             } />
             <Route path="/admin/sort-content" element={
-                // <ProtectedRoutes allowedRoles={[1]}>
-                <SortQuestionContent />
-                // </ProtectedRoutes>
+                <ProtectedRoutes allowedRoles={['admin']}>
+                    <SortQuestionContent />
+                </ProtectedRoutes>
             } />
             <Route path="/admin/sentence-content" element={
-                // <ProtectedRoutes allowedRoles={[1]}>
-                <SentenceHiglightContent />
-                // </ProtectedRoutes>
+                <ProtectedRoutes allowedRoles={['admin']}>
+                    <SentenceHiglightContent />
+                </ProtectedRoutes>
             } />
             <Route path="/admin/fill-content" element={
-                // <ProtectedRoutes allowedRoles={[1]}>
-                <FillinQuestionContent />
-                // </ProtectedRoutes>
+                <ProtectedRoutes allowedRoles={['admin']}>
+                    <FillinQuestionContent />
+                </ProtectedRoutes>
             } />
+
+            {/* ✅ Question Management Flow Routes */}
             <Route path="/admin/answer-explain" element={
-                // <ProtectedRoutes allowedRoles={[1]}>
-                <McqAnswerExplanation />
-                // </ProtectedRoutes>
+                <ProtectedRoutes allowedRoles={['admin']}>
+                    <McqAnswerExplanation />
+                </ProtectedRoutes>
             } />
             <Route path="/admin/meta-info" element={
-                // <ProtectedRoutes allowedRoles={[1]}>
-                <MetaInfoComponent />
-                // </ProtectedRoutes>
+                <ProtectedRoutes allowedRoles={['admin']}>
+                    <MetaInfoComponent />
+                </ProtectedRoutes>
             } />
             <Route path="/admin/create-question" element={
-                // <ProtectedRoutes allowedRoles={[1]}>
-                <TestCreateComponent />
-                // </ProtectedRoutes>
+                <ProtectedRoutes allowedRoles={['admin']}>
+                    <TestCreateComponent />
+                </ProtectedRoutes>
             } />
             <Route path="/admin/exam-type" element={
-                // <ProtectedRoutes allowedRoles={[1]}>
-                <ExamTypeComponent />
-                // </ProtectedRoutes>
+                <ProtectedRoutes allowedRoles={['admin']}>
+                    <ExamTypeComponent />
+                </ProtectedRoutes>
             } />
+
+            {/* ✅ Course Management Routes */}
             <Route path="/admin/course-management" element={
-                // <ProtectedRoutes allowedRoles={[1]}>
-                <CourseManagement />
-                // </ProtectedRoutes>
+                <ProtectedRoutes allowedRoles={['admin']}>
+                    <CourseManagement />
+                </ProtectedRoutes>
             } />
             <Route path="/admin/course-form" element={
-                // <ProtectedRoutes allowedRoles={[1]}>
-                <AddCourseComponent />
-                // </ProtectedRoutes>
+                <ProtectedRoutes allowedRoles={['admin']}>
+                    <AddCourseComponent />
+                </ProtectedRoutes>
             } />
+
+            {/* ✅ Recorded Class Management Routes */}
             <Route path="/admin/recorded-class" element={
-                // <ProtectedRoutes allowedRoles={[1]}>
-                <RecordedClass />
-                // </ProtectedRoutes>
+                <ProtectedRoutes allowedRoles={['admin']}>
+                    <RecordedClass />
+                </ProtectedRoutes>
             } />
             <Route path="/admin/upload-thumbnail" element={
-                // <ProtectedRoutes allowedRoles={[1]}>
-                <UploadThumbnailComponent />
-                // </ProtectedRoutes>
+                <ProtectedRoutes allowedRoles={['admin']}>
+                    <UploadThumbnailComponent />
+                </ProtectedRoutes>
             } />
             <Route path="/admin/record-class-info" element={
-                // <ProtectedRoutes allowedRoles={[1]}>
-                <RecordedClassInfoComponent />
-                // </ProtectedRoutes>
+                <ProtectedRoutes allowedRoles={['admin']}>
+                    <RecordedClassInfoComponent />
+                </ProtectedRoutes>
             } />
+
+            {/* ✅ Enquiry Management Route */}
             <Route path="/admin/enquire-lead" element={
-                // <ProtectedRoutes allowedRoles={[1]}>
-                <EnquireLeadComponent />
-                // </ProtectedRoutes>
+                <ProtectedRoutes allowedRoles={['admin']}>
+                    <EnquireLeadComponent />
+                </ProtectedRoutes>
             } />
         </Route>
-
     </>
 );
 

@@ -28,9 +28,10 @@ const LoginPage = () => {
       if (login.fulfilled.match(resultAction)) {
         const userRole = resultAction.payload?.user?.role;
         // ✅ Only one navigate call based on role
-        if (userRole === 2) {
+        console.log('userRole', userRole);
+        if (userRole === 'user') {
           navigate('/student/question-bank');
-        } else if (userRole === 1) {
+        } else if (userRole === 'admin') {
           navigate('/admin/dashboard');
         } else {
           toast.info('Logged in, but no matching role redirect.');
