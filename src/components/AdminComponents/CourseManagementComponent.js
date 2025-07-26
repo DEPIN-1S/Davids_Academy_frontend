@@ -20,12 +20,12 @@ import {
     Delete as DeleteIcon,
     School as SchoolIcon
 } from '@mui/icons-material';
-
+import { useNavigate } from 'react-router-dom';
 const CourseManagement = () => {
     const theme = useTheme();
     const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
     const isTablet = useMediaQuery(theme.breakpoints.down('md'));
-
+    const navigate = useNavigate()
     const [courses] = useState([
         {
             id: 1,
@@ -36,28 +36,29 @@ const CourseManagement = () => {
         },
         {
             id: 2,
-            title: 'Prometric Coaching',
-            description: 'Prometric exams open doors for healthcare careers in Saudi Arabia, Qatar, Oman, Bahrain, and Kuwait.',
-            overview: 'This comprehensive program is designed to help nursing professionals succeed in the NCLEX-RN examination. Our expert-led training focuses on real-world questions, self-advanced study methods, and....',
+            title: 'NCLEX-RN Preparation',
+            description: 'Comprehensive NCLEX-RN preparation course for aspiring registered nurses.',
+            overview: 'This program provides extensive preparation for the NCLEX-RN examination with practice questions, study guides, and expert instruction to ensure success....',
             status: 'active'
         },
         {
             id: 3,
-            title: 'Prometric Coaching',
-            description: 'Prometric exams open doors for healthcare careers in Saudi Arabia, Qatar, Oman, Bahrain, and Kuwait.',
-            overview: 'This comprehensive program is designed to help nursing professionals succeed in the NCLEX-RN examination. Our expert-led training focuses on real-world questions, self-advanced study methods, and....',
+            title: 'Medical Terminology',
+            description: 'Essential medical terminology course for healthcare professionals.',
+            overview: 'Learn the fundamental medical terminology used in healthcare settings. This course covers anatomy, medical procedures, and clinical terminology....',
             status: 'active'
         },
         {
             id: 4,
-            title: 'Prometric Coaching',
-            description: 'Prometric exams open doors for healthcare careers in Saudi Arabia, Qatar, Oman, Bahrain, and Kuwait.',
-            overview: 'This comprehensive program is designed to help nursing professionals succeed in the NCLEX-RN examination. Our expert-led training focuses on real-world questions, self-advanced study methods, and....',
+            title: 'Pharmacology Basics',
+            description: 'Basic pharmacology course covering drug classifications and mechanisms.',
+            overview: 'Understanding drug interactions, classifications, and therapeutic uses. Essential knowledge for healthcare professionals working with medications....',
             status: 'active'
         }
     ]);
 
     const handleAddCourse = () => {
+        navigate('/admin/course-form');
         console.log('Add new course');
     };
 
@@ -118,15 +119,13 @@ const CourseManagement = () => {
                 </Button>
             </Box>
 
-            {/* Courses Grid */}
+            {/* Courses Grid - 2 Cards Per Row */}
             <Grid container spacing={{ xs: 2, sm: 3, md: 3 }}>
                 {courses.map((course) => (
                     <Grid
                         item
-                        xs={12}
-                        sm={6}
-                        lg={6}
-                        xl={6}
+                        xs={12}  // 1 card per row on mobile
+                        sm={6}   // 2 cards per row on tablet and up
                         key={course.id}
                     >
                         <Card
@@ -212,7 +211,11 @@ const CourseManagement = () => {
                                         sx={{
                                             color: 'text.secondary',
                                             fontSize: { xs: '0.875rem', sm: '0.9rem' },
-                                            lineHeight: 1.5
+                                            lineHeight: 1.5,
+                                            display: '-webkit-box',
+                                            WebkitLineClamp: 3,
+                                            WebkitBoxOrient: 'vertical',
+                                            overflow: 'hidden'
                                         }}
                                     >
                                         {course.overview}
@@ -358,3 +361,4 @@ const CourseManagement = () => {
 };
 
 export default CourseManagement;
+

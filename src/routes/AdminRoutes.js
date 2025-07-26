@@ -4,6 +4,7 @@ import ProtectedRoutes from "./ProtectedRoutes";
 import AdminLayout from "../components/AdminComponents/AdminLayout";
 import AdminDashboardPage from "../pages/AdminPages/AdminDashboardPage";
 import StudentManage from "../pages/AdminPages/StudentManage";
+import AddStudentForm from "../components/AdminComponents/AddStudentForm";
 import QManagementPage from "../pages/AdminPages/QManagementPage";
 import QuestionTypeComponent from "../components/AdminComponents/QuestionTypeComponent";
 import McqQuestionContent from "../components/AdminComponents/McqQuestionContent";
@@ -18,6 +19,7 @@ import MetaInfoComponent from '../components/AdminComponents/MetaInfoComponent';
 import TestCreateComponent from "../components/AdminComponents/TestCreateComponent";
 import RecordedClass from '../components/AdminComponents/RecordedClass'
 import CourseManagement from "../components/AdminComponents/CourseManagementComponent";
+import AddCourseComponent from "../components/AdminComponents/AddCourseComponent";
 import UploadThumbnailComponent from "../components/AdminComponents/UploadThumbnailComponent";
 import RecordedClassInfoComponent from "../components/AdminComponents/RecordClassComponent";
 import EnquireLeadComponent from "../components/AdminComponents/EnquireLeadComponent";
@@ -33,6 +35,11 @@ const AdminRoutes = () => (
             <Route path="/admin/student-manage" element={
                 // <ProtectedRoutes allowedRoles={[1]}>
                 <StudentManage />
+                // </ProtectedRoutes>
+            } />
+            <Route path="/admin/student-form" element={
+                // <ProtectedRoutes allowedRoles={[1]}>
+                <AddStudentForm />
                 // </ProtectedRoutes>
             } />
             <Route path="/admin/question-management" element={
@@ -104,6 +111,11 @@ const AdminRoutes = () => (
             <Route path="/admin/course-management" element={
                 // <ProtectedRoutes allowedRoles={[1]}>
                 <CourseManagement />
+                // </ProtectedRoutes>
+            } />
+            <Route path="/admin/course-form" element={
+                // <ProtectedRoutes allowedRoles={[1]}>
+                <AddCourseComponent />
                 // </ProtectedRoutes>
             } />
             <Route path="/admin/recorded-class" element={
