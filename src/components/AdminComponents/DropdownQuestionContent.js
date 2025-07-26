@@ -18,10 +18,14 @@ import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
 import { CloudUpload, Delete, Image, PictureAsPdf, Description, ExpandMore } from '@mui/icons-material';
 import { useNavigate, useLocation } from 'react-router-dom';
+import { useFileContext } from '../../context/FileContext'; // ✅ Import the Context
 
 const DropdownQuestionContent = () => {
     const navigate = useNavigate();
     const location = useLocation();
+
+    // ✅ Use File Context instead of passing files through navigation
+    const { addQuestionFile, questionFile, hasQuestionFile } = useFileContext();
 
     // Get any existing data from previous steps
     const existingData = location.state?.questionData || {};
@@ -33,17 +37,26 @@ const DropdownQuestionContent = () => {
         { tabKey: "", tabValue: "" }
     ]);
     const [dropdowns, setDropdowns] = useState(existingData.dropdowns || [
-        { dropdownField: "", dropDownValue: [""] }
+        {
+            dropdownField: "",
+            dropdownanswer: "",
+            blank_or_not: true,
+            dropDowneOption: [""]
+        }
     ]);
-    const [answers, setAnswers] = useState(existingData.answers || [
-        { dropdownField: "", dropdownValue: "" }
-    ]);
-    const [selectedFile, setSelectedFile] = useState(existingData.exhibit || null);
+    const [selectedFile, setSelectedFile] = useState(null); // ✅ Local state for UI, Context for persistence
     const [errors, setErrors] = useState({});
 
     const fileInputRef = useRef(null);
 
-    // File upload handlers
+    // ✅ Initialize with existing file from context if available
+    React.useEffect(() => {
+        if (questionFile) {
+            setSelectedFile(questionFile);
+        }
+    }, [questionFile]);
+
+    // ✅ File upload handlers - Store in Context instead of passing through navigation
     const handleFileSelect = (event) => {
         const file = event.target.files[0];
         if (file) {
@@ -67,8 +80,12 @@ const DropdownQuestionContent = () => {
                 uploadedAt: new Date().toISOString()
             };
 
+            // ✅ Store in both local state (for UI) and Context (for persistence)
             setSelectedFile(fileData);
+            addQuestionFile(fileData); // Store in Context
             setErrors(prev => ({ ...prev, file: null }));
+
+            console.log('File stored in Context:', fileData.name);
         }
         event.target.value = '';
     };
@@ -81,6 +98,7 @@ const DropdownQuestionContent = () => {
         if (selectedFile) {
             URL.revokeObjectURL(selectedFile.url);
             setSelectedFile(null);
+            addQuestionFile(null); // ✅ Remove from Context as well
             setErrors(prev => ({ ...prev, file: null }));
         }
     };
@@ -104,7 +122,7 @@ const DropdownQuestionContent = () => {
         }
     };
 
-    // Dropdown handlers
+    // ✅ Updated dropdown handlers to match the required data structure
     const handleDropdownFieldChange = (index, value) => {
         const newDropdowns = [...dropdowns];
         newDropdowns[index].dropdownField = value;
@@ -112,53 +130,54 @@ const DropdownQuestionContent = () => {
         setErrors(prev => ({ ...prev, dropdowns: null }));
     };
 
-    const handleDropdownValueChange = (dropdownIndex, valueIndex, value) => {
+    const handleDropdownAnswerChange = (index, value) => {
         const newDropdowns = [...dropdowns];
-        newDropdowns[dropdownIndex].dropDownValue[valueIndex] = value;
+        newDropdowns[index].dropdownanswer = value;
+        setDropdowns(newDropdowns);
+    };
+
+    const handleDropdownOptionChange = (dropdownIndex, optionIndex, value) => {
+        const newDropdowns = [...dropdowns];
+        newDropdowns[dropdownIndex].dropDowneOption[optionIndex] = value;
         setDropdowns(newDropdowns);
         setErrors(prev => ({ ...prev, dropdowns: null }));
     };
 
-    const handleAddDropdownValue = (dropdownIndex) => {
+    const handleAddDropdownOption = (dropdownIndex) => {
         const newDropdowns = [...dropdowns];
-        newDropdowns[dropdownIndex].dropDownValue.push("");
+        newDropdowns[dropdownIndex].dropDowneOption.push("");
         setDropdowns(newDropdowns);
     };
 
-    const handleRemoveDropdownValue = (dropdownIndex, valueIndex) => {
+    const handleRemoveDropdownOption = (dropdownIndex, optionIndex) => {
         const newDropdowns = [...dropdowns];
-        if (newDropdowns[dropdownIndex].dropDownValue.length > 1) {
-            newDropdowns[dropdownIndex].dropDownValue = newDropdowns[dropdownIndex].dropDownValue.filter((_, i) => i !== valueIndex);
+        if (newDropdowns[dropdownIndex].dropDowneOption.length > 1) {
+            newDropdowns[dropdownIndex].dropDowneOption =
+                newDropdowns[dropdownIndex].dropDowneOption.filter((_, i) => i !== optionIndex);
             setDropdowns(newDropdowns);
         }
     };
 
     const handleAddDropdown = () => {
-        setDropdowns([...dropdowns, { dropdownField: "", dropDownValue: [""] }]);
+        setDropdowns([...dropdowns, {
+            dropdownField: "",
+            dropdownanswer: "",
+            blank_or_not: true,
+            dropDowneOption: [""]
+        }]);
     };
 
     const handleRemoveDropdown = (index) => {
         if (dropdowns.length > 1) {
             const newDropdowns = dropdowns.filter((_, i) => i !== index);
             setDropdowns(newDropdowns);
-
-            // Remove corresponding answer
-            const newAnswers = answers.filter((_, i) => i !== index);
-            setAnswers(newAnswers);
         }
     };
 
-    // Answer handlers
-    const handleAnswerChange = (index, field, value) => {
-        const newAnswers = [...answers];
-        if (newAnswers[index]) {
-            newAnswers[index][field] = value;
-        } else {
-            newAnswers[index] = { dropdownField: "", dropdownValue: "" };
-            newAnswers[index][field] = value;
-        }
-        setAnswers(newAnswers);
-        setErrors(prev => ({ ...prev, answers: null }));
+    const handleToggleBlankOrNot = (index) => {
+        const newDropdowns = [...dropdowns];
+        newDropdowns[index].blank_or_not = !newDropdowns[index].blank_or_not;
+        setDropdowns(newDropdowns);
     };
 
     // Validation
@@ -176,46 +195,37 @@ const DropdownQuestionContent = () => {
 
         const validDropdowns = dropdowns.filter(dropdown =>
             dropdown.dropdownField.trim() &&
-            dropdown.dropDownValue.some(val => val.trim())
+            (dropdown.blank_or_not === false || (dropdown.dropdownanswer.trim() && dropdown.dropDowneOption.some(val => val.trim())))
         );
         if (validDropdowns.length === 0) {
             newErrors.dropdowns = 'At least one dropdown with field and values is required';
-        }
-
-        const validAnswers = answers.filter(answer =>
-            answer.dropdownField && answer.dropdownField.trim() &&
-            answer.dropdownValue && answer.dropdownValue.trim()
-        );
-        if (validAnswers.length === 0) {
-            newErrors.answers = 'At least one answer mapping is required';
         }
 
         setErrors(newErrors);
         return Object.keys(newErrors).length === 0;
     };
 
-    // Navigation handlers
+    // ✅ Navigation handlers - NO files in navigation state
     const handleNext = () => {
         if (!validateForm()) {
             return;
         }
 
+        // ✅ Prepare ONLY serializable question data matching the required structure
         const questionData = {
             questionType: questionType,
             question: question.trim(),
             tabs: tabs.filter(tab => tab.tabKey.trim() && tab.tabValue.trim()),
             dropdowns: dropdowns.filter(dropdown =>
                 dropdown.dropdownField.trim() &&
-                dropdown.dropDownValue.some(val => val.trim())
+                (dropdown.blank_or_not === false || (dropdown.dropdownanswer.trim() && dropdown.dropDowneOption.some(val => val.trim())))
             ).map(dropdown => ({
-                ...dropdown,
-                dropDownValue: dropdown.dropDownValue.filter(val => val.trim())
+                dropdownField: dropdown.dropdownField,
+                dropdownanswer: dropdown.dropdownanswer,
+                blank_or_not: dropdown.blank_or_not,
+                dropDowneOption: dropdown.dropDowneOption.filter(val => val.trim())
             })),
-            answers: answers.filter(answer =>
-                answer.dropdownField && answer.dropdownField.trim() &&
-                answer.dropdownValue && answer.dropdownValue.trim()
-            ),
-            exhibit: selectedFile,
+            // ✅ No file objects in navigation state
             createdAt: existingData.createdAt || new Date().toISOString(),
             updatedAt: new Date().toISOString(),
             questionId: existingData.questionId || `${questionType}_${Date.now()}`,
@@ -223,23 +233,33 @@ const DropdownQuestionContent = () => {
             completedSteps: ['type', 'content']
         };
 
-        console.log('Sending dropdown question data:', questionData);
+        console.log('✅ Navigating with serializable data only:', questionData);
+        console.log('✅ File stored in Context:', hasQuestionFile ? 'Yes' : 'No');
 
+        // ✅ Navigate with ONLY serializable data - NO file objects
         navigate('/admin/answer-explain', {
             state: {
                 questionData: questionData,
+                // ✅ Only pass file metadata for UI display, actual file is in Context
+                hasFile: hasQuestionFile,
+                fileInfo: selectedFile ? {
+                    name: selectedFile.name,
+                    type: selectedFile.type,
+                    size: selectedFile.size
+                    // ✅ No 'file' or 'url' properties to avoid serialization issues
+                } : null,
                 fromStep: 'content'
             }
         });
     };
 
     const handleBack = () => {
+        // ✅ Prepare current data for potential restoration (all serializable)
         const currentData = {
             question: question.trim(),
             tabs: tabs,
             dropdowns: dropdowns,
-            answers: answers,
-            exhibit: selectedFile
+            // ✅ No file objects in navigation state
         };
 
         navigate('/admin/question-type', {
@@ -270,14 +290,10 @@ const DropdownQuestionContent = () => {
         const hasValidTabs = tabs.some(tab => tab.tabKey.trim() && tab.tabValue.trim());
         const hasValidDropdowns = dropdowns.some(dropdown =>
             dropdown.dropdownField.trim() &&
-            dropdown.dropDownValue.some(val => val.trim())
-        );
-        const hasValidAnswers = answers.some(answer =>
-            answer.dropdownField && answer.dropdownField.trim() &&
-            answer.dropdownValue && answer.dropdownValue.trim()
+            (dropdown.blank_or_not === false || (dropdown.dropdownanswer.trim() && dropdown.dropDowneOption.some(val => val.trim())))
         );
 
-        return hasValidQuestion && hasValidTabs && hasValidDropdowns && hasValidAnswers;
+        return hasValidQuestion && hasValidTabs && hasValidDropdowns;
     };
 
     // Cleanup on unmount
@@ -303,6 +319,24 @@ const DropdownQuestionContent = () => {
             <Typography variant="body2" color="textSecondary" mb={3}>
                 Create a dropdown question with multiple tabs and dropdown selections.
             </Typography>
+
+            {/* ✅ Context Status Display */}
+            <Card sx={{ mb: 3, bgcolor: 'primary.light', color: 'primary.contrastText' }}>
+                <CardContent>
+                    <Typography variant="subtitle2" gutterBottom>
+                        🗂️ File Context Status:
+                    </Typography>
+                    <Typography variant="body2">
+                        • Question file in Context: {hasQuestionFile ? '✅ Available' : '➖ None'}
+                    </Typography>
+                    <Typography variant="body2">
+                        • Navigation safety: ✅ No FormData objects in navigation state
+                    </Typography>
+                    <Typography variant="body2">
+                        • File persistence: ✅ Files maintained across component navigation
+                    </Typography>
+                </CardContent>
+            </Card>
 
             {/* Question Input */}
             <Typography variant="h6" mb={1} color="primary">
@@ -341,7 +375,7 @@ const DropdownQuestionContent = () => {
                     startIcon={<CloudUpload />}
                     size="small"
                 >
-                    + Add Exhibit
+                    {selectedFile ? 'Change Exhibit' : '+ Add Exhibit'}
                 </Button>
             </Box>
 
@@ -362,11 +396,25 @@ const DropdownQuestionContent = () => {
                                 <Typography variant="body2" fontWeight={500}>
                                     {selectedFile.name}
                                 </Typography>
-                                <Chip
-                                    label={formatFileSize(selectedFile.size)}
-                                    size="small"
-                                    variant="outlined"
-                                />
+                                <Box display="flex" gap={1} mt={0.5}>
+                                    <Chip
+                                        label={formatFileSize(selectedFile.size)}
+                                        size="small"
+                                        variant="outlined"
+                                    />
+                                    <Chip
+                                        label={selectedFile.type.split('/')[1]?.toUpperCase() || 'FILE'}
+                                        size="small"
+                                        color="primary"
+                                        variant="outlined"
+                                    />
+                                    <Chip
+                                        label="Context Managed"
+                                        size="small"
+                                        color="success"
+                                        variant="outlined"
+                                    />
+                                </Box>
                             </Box>
                             {selectedFile.type.startsWith('image/') && (
                                 <Box
@@ -446,7 +494,7 @@ const DropdownQuestionContent = () => {
                 </AccordionDetails>
             </Accordion>
 
-            {/* Dropdowns Section */}
+            {/* ✅ Updated Dropdowns Section matching required structure */}
             <Accordion defaultExpanded sx={{ mb: 3 }}>
                 <AccordionSummary expandIcon={<ExpandMore />}>
                     <Typography variant="h6" color="primary">
@@ -471,47 +519,74 @@ const DropdownQuestionContent = () => {
 
                             <TextField
                                 fullWidth
-                                label="Dropdown Label/Field"
+                                label="Dropdown Field Text"
                                 value={dropdown.dropdownField}
                                 onChange={(e) => handleDropdownFieldChange(dropdownIndex, e.target.value)}
-                                placeholder="e.g., tachypnea, dull percussion"
+                                placeholder="e.g., Based on the client's, And, this client is at highest risk for"
                                 sx={{ mb: 2 }}
                                 size="small"
                             />
 
-                            <Typography variant="subtitle2" mb={1}>
-                                Dropdown Options:
-                            </Typography>
+                            <Box display="flex" alignItems="center" gap={2} mb={2}>
+                                <Button
+                                    variant={dropdown.blank_or_not ? "contained" : "outlined"}
+                                    onClick={() => handleToggleBlankOrNot(dropdownIndex)}
+                                    size="small"
+                                >
+                                    {dropdown.blank_or_not ? "Dropdown Field" : "Text Only"}
+                                </Button>
+                                <Typography variant="caption" color="textSecondary">
+                                    {dropdown.blank_or_not ? "Has dropdown options" : "Text field only"}
+                                </Typography>
+                            </Box>
 
-                            {dropdown.dropDownValue.map((value, valueIndex) => (
-                                <Box key={valueIndex} display="flex" alignItems="center" gap={1} mb={1}>
+                            {dropdown.blank_or_not && (
+                                <>
                                     <TextField
                                         fullWidth
-                                        placeholder={`Option ${valueIndex + 1}`}
-                                        value={value}
-                                        onChange={(e) => handleDropdownValueChange(dropdownIndex, valueIndex, e.target.value)}
+                                        label="Correct Answer"
+                                        value={dropdown.dropdownanswer}
+                                        onChange={(e) => handleDropdownAnswerChange(dropdownIndex, e.target.value)}
+                                        placeholder="e.g., pneumonia, hemothorax"
+                                        sx={{ mb: 2 }}
                                         size="small"
                                     />
-                                    {dropdown.dropDownValue.length > 1 && (
-                                        <IconButton
-                                            onClick={() => handleRemoveDropdownValue(dropdownIndex, valueIndex)}
-                                            color="error"
-                                            size="small"
-                                        >
-                                            <Delete />
-                                        </IconButton>
-                                    )}
-                                </Box>
-                            ))}
 
-                            <Button
-                                startIcon={<AddIcon />}
-                                onClick={() => handleAddDropdownValue(dropdownIndex)}
-                                variant="text"
-                                size="small"
-                            >
-                                Add Option
-                            </Button>
+                                    <Typography variant="subtitle2" mb={1}>
+                                        Dropdown Options:
+                                    </Typography>
+
+                                    {dropdown.dropDowneOption.map((option, optionIndex) => (
+                                        <Box key={optionIndex} display="flex" alignItems="center" gap={1} mb={1}>
+                                            <TextField
+                                                fullWidth
+                                                placeholder={`Option ${optionIndex + 1}`}
+                                                value={option}
+                                                onChange={(e) => handleDropdownOptionChange(dropdownIndex, optionIndex, e.target.value)}
+                                                size="small"
+                                            />
+                                            {dropdown.dropDowneOption.length > 1 && (
+                                                <IconButton
+                                                    onClick={() => handleRemoveDropdownOption(dropdownIndex, optionIndex)}
+                                                    color="error"
+                                                    size="small"
+                                                >
+                                                    <Delete />
+                                                </IconButton>
+                                            )}
+                                        </Box>
+                                    ))}
+
+                                    <Button
+                                        startIcon={<AddIcon />}
+                                        onClick={() => handleAddDropdownOption(dropdownIndex)}
+                                        variant="text"
+                                        size="small"
+                                    >
+                                        Add Option
+                                    </Button>
+                                </>
+                            )}
                         </Card>
                     ))}
 
@@ -532,54 +607,7 @@ const DropdownQuestionContent = () => {
                 </AccordionDetails>
             </Accordion>
 
-            {/* Answers Section */}
-            <Accordion defaultExpanded sx={{ mb: 3 }}>
-                <AccordionSummary expandIcon={<ExpandMore />}>
-                    <Typography variant="h6" color="primary">
-                        Correct Answers * ({answers.length})
-                    </Typography>
-                </AccordionSummary>
-                <AccordionDetails>
-                    {dropdowns.map((dropdown, index) => (
-                        <Card key={index} sx={{ mb: 2, p: 2 }}>
-                            <Typography variant="subtitle1" mb={2}>
-                                Answer for: {dropdown.dropdownField || `Dropdown ${index + 1}`}
-                            </Typography>
-
-                            <Box display="flex" gap={2}>
-                                <TextField
-                                    label="Dropdown Field"
-                                    value={answers[index]?.dropdownField || dropdown.dropdownField}
-                                    onChange={(e) => handleAnswerChange(index, 'dropdownField', e.target.value)}
-                                    size="small"
-                                    sx={{ flex: 1 }}
-                                />
-
-                                <TextField
-                                    label="Correct Answer"
-                                    value={answers[index]?.dropdownValue || ""}
-                                    onChange={(e) => handleAnswerChange(index, 'dropdownValue', e.target.value)}
-                                    placeholder="Select from dropdown options"
-                                    size="small"
-                                    sx={{ flex: 1 }}
-                                />
-                            </Box>
-
-                            <Typography variant="caption" color="textSecondary" sx={{ mt: 1, display: 'block' }}>
-                                Available options: {dropdown.dropDownValue.filter(v => v.trim()).join(', ')}
-                            </Typography>
-                        </Card>
-                    ))}
-
-                    {errors.answers && (
-                        <Typography color="error" variant="caption" sx={{ display: 'block', mt: 1 }}>
-                            {errors.answers}
-                        </Typography>
-                    )}
-                </AccordionDetails>
-            </Accordion>
-
-            {/* Form Summary */}
+            {/* ✅ Enhanced Form Summary with Context information */}
             <Card sx={{ mt: 3, bgcolor: 'grey.50' }}>
                 <CardContent>
                     <Typography variant="subtitle2" gutterBottom>
@@ -592,10 +620,13 @@ const DropdownQuestionContent = () => {
                         • Tabs: {tabs.filter(tab => tab.tabKey.trim() && tab.tabValue.trim()).length} valid tabs
                     </Typography>
                     <Typography variant="body2" color="textSecondary">
-                        • Dropdowns: {dropdowns.filter(d => d.dropdownField.trim() && d.dropDownValue.some(v => v.trim())).length} valid dropdowns
+                        • Dropdowns: {dropdowns.filter(d => d.dropdownField.trim() && (d.blank_or_not === false || (d.dropdownanswer.trim() && d.dropDowneOption.some(v => v.trim())))).length} valid dropdowns
                     </Typography>
                     <Typography variant="body2" color="textSecondary">
-                        • Answers: {answers.filter(a => a.dropdownField && a.dropdownValue).length} mappings defined
+                        • Exhibit: {selectedFile ? `✓ ${selectedFile.name} (Context Managed)` : '○ Optional'}
+                    </Typography>
+                    <Typography variant="body2" color="textSecondary">
+                        • Navigation: ✅ FormData-safe using React Context
                     </Typography>
                 </CardContent>
             </Card>

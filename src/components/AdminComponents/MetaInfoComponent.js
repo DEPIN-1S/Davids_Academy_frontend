@@ -20,19 +20,25 @@ import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import LibraryAddCheckIcon from "@mui/icons-material/LibraryAddCheck";
 import { useNavigate, useLocation } from 'react-router-dom';
 import { submitQuestion, resetStatus } from "../../features/exam/examSlice";
+import { useFileContext } from '../../context/FileContext'; // ✅ Import the Context
 
 const MetaInfoComponent = () => {
     const dispatch = useDispatch();
     const navigate = useNavigate();
     const location = useLocation();
 
-    // ✅ Receive complete question data and FormData from previous component
+    // ✅ Use File Context instead of receiving files through navigation
+    const {
+        questionFile,
+        explanationFile,
+        hasQuestionFile,
+        hasExplanationFile,
+        createCompleteFormData,
+        clearFiles
+    } = useFileContext();
+
+    // ✅ Receive only serializable question data
     const receivedQuestionData = location.state?.questionData || {};
-    const receivedFormData = location.state?.formData || null;
-    const hasQuestionFile = location.state?.hasQuestionFile || false;
-    const hasExplanationFile = location.state?.hasExplanationFile || false;
-    const questionFileInfo = location.state?.questionFileInfo || null;
-    const explanationFileInfo = location.state?.explanationFileInfo || null;
 
     const { loading, success, error } = useSelector(state => state.exam);
 
@@ -44,54 +50,13 @@ const MetaInfoComponent = () => {
         clientNeedTopic: receivedQuestionData.clientNeedTopic || ""
     });
 
-    // ✅ Helper function to finalize FormData with meta information
-    const finalizeFormData = (baseFormData, metaData) => {
-        const finalFormData = new FormData();
-        
-        // Copy all existing entries from base FormData
-        if (baseFormData) {
-            for (let [key, value] of baseFormData.entries()) {
-                finalFormData.append(key, value);
-            }
-        }
-        
-        // Add meta information
-        finalFormData.append('difficulty', metaData.difficulty);
-        finalFormData.append('subject', metaData.subject.toString());
-        finalFormData.append('lesson', metaData.lesson.toString());
-        finalFormData.append('clientNeedArea', metaData.clientNeedArea.toString());
-        finalFormData.append('clientNeedTopic', metaData.clientNeedTopic.toString());
-        
-        // Update metadata
-        finalFormData.set('updatedAt', new Date().toISOString());
-        finalFormData.set('currentStep', 'meta-info');
-        
-        // Update completed steps
-        const currentSteps = JSON.parse(finalFormData.get('completedSteps') || '[]');
-        if (!currentSteps.includes('meta-info')) {
-            currentSteps.push('meta-info');
-            finalFormData.set('completedSteps', JSON.stringify(currentSteps));
-        }
-        
-        return finalFormData;
-    };
-
-    // ✅ Debug: Log received data
+    // ✅ Debug: Log context status
     useEffect(() => {
-        console.log('Received question data:', receivedQuestionData);
-        console.log('Received FormData:', receivedFormData);
-        console.log('Has question file:', hasQuestionFile);
-        console.log('Has explanation file:', hasExplanationFile);
-        console.log('Question file info:', questionFileInfo);
-        console.log('Explanation file info:', explanationFileInfo);
-        
-        if (receivedFormData) {
-            console.log('FormData contents:');
-            for (let [key, value] of receivedFormData.entries()) {
-                console.log(key, value);
-            }
-        }
-    }, [receivedQuestionData, receivedFormData]);
+        console.log('✅ Context Status in MetaInfo:');
+        console.log('📎 Question file in context:', hasQuestionFile ? questionFile?.name : 'None');
+        console.log('📎 Explanation file in context:', hasExplanationFile ? explanationFile?.name : 'None');
+        console.log('📄 Received question data:', receivedQuestionData);
+    }, [hasQuestionFile, hasExplanationFile, questionFile, explanationFile, receivedQuestionData]);
 
     // Handle toast notifications based on Redux state
     useEffect(() => {
@@ -106,6 +71,9 @@ const MetaInfoComponent = () => {
                 progress: undefined,
                 theme: "colored",
             });
+
+            // Clear files from context after successful submission
+            clearFiles();
 
             // Redirect after showing success toast
             setTimeout(() => {
@@ -126,7 +94,7 @@ const MetaInfoComponent = () => {
                 theme: "colored",
             });
         }
-    }, [success, error, dispatch, navigate]);
+    }, [success, error, dispatch, navigate, clearFiles]);
 
     const handleChange = (field) => (event) => {
         setForm({ ...form, [field]: event.target.value });
@@ -149,9 +117,9 @@ const MetaInfoComponent = () => {
         return typeMapping[questionType] || 1;
     };
 
-    // ✅ Submit using FormData for multipart support
-    const handleSubmitWithFormData = async () => {
-        // Show loading toast
+    // ✅ Submit using Context FormData for multipart support
+    // Updated handleSubmitWithContextFormData function
+    const handleSubmitWithContextFormData = async () => {
         const loadingToastId = toast.loading('📝 Adding question to Q-Bank...', {
             position: "top-right",
             hideProgressBar: false,
@@ -163,23 +131,44 @@ const MetaInfoComponent = () => {
         });
 
         try {
-            // ✅ Finalize FormData with meta information
-            const finalFormData = finalizeFormData(receivedFormData, form);
-            
-            console.log('🚀 Submitting with FormData (multipart/form-data)');
-            console.log('📦 Final FormData contents:');
-            for (let [key, value] of finalFormData.entries()) {
+            // ✅ Prepare complete question data matching your required structure
+            const completeQuestionData = {
+                // Basic fields
+                questionType: receivedQuestionData.questionType,
+                question_type_id: getQuestionTypeId(receivedQuestionData.questionType),
+                question: receivedQuestionData.question,
+                difficulty: form.difficulty,
+                subject: parseInt(form.subject),
+                lesson: parseInt(form.lesson),
+                clientNeedArea: parseInt(form.clientNeedArea),
+                clientNeedTopic: parseInt(form.clientNeedTopic),
+
+                // Explanation fields
+                explanationHeading: receivedQuestionData.explanationHeading,
+                explanationText: receivedQuestionData.explanationText,
+                additionalInfo: receivedQuestionData.additionalInfo,
+
+                // ✅ Question type specific data
+                ...getQuestionTypeSpecificData(receivedQuestionData)
+            };
+
+            // ✅ Create FormData using Context
+            const completeFormData = createCompleteFormData(completeQuestionData);
+
+            console.log('🚀 Submitting with Context FormData (multipart/form-data)');
+            console.log('📦 FormData created from Context:');
+            for (let [key, value] of completeFormData.entries()) {
                 console.log(key, value);
             }
 
-            // ✅ Submit FormData using fetch with multipart/form-data
+            // ✅ Submit to your multipart endpoint
             const response = await fetch(`${process.env.REACT_APP_API_URL}/api/questions`, {
                 method: 'POST',
                 headers: {
-                    // Don't set Content-Type - let browser set it with boundary
                     'Authorization': `Bearer ${localStorage.getItem('token')}`,
+                    // Don't set Content-Type - let browser set multipart boundary
                 },
-                body: finalFormData
+                body: completeFormData
             });
 
             if (!response.ok) {
@@ -188,26 +177,24 @@ const MetaInfoComponent = () => {
 
             const result = await response.json();
             console.log('✅ Question submitted successfully:', result);
-            
+
             toast.dismiss(loadingToastId);
-            dispatch(resetStatus()); // Reset to trigger success state
-            
-            // Trigger success toast
             toast.success('🎉 Question successfully added to Q-Bank!', {
                 position: "top-right",
                 autoClose: 3000,
                 theme: "colored",
             });
 
-            // Navigate to success page after delay
+            // Clean up context and navigate
             setTimeout(() => {
+                clearFiles();
                 navigate('/admin/question-management');
             }, 2000);
 
         } catch (err) {
             toast.dismiss(loadingToastId);
             console.error('Failed to submit question:', err);
-            
+
             toast.error(`❌ Failed to add question: ${err.message}`, {
                 position: "top-right",
                 autoClose: 5000,
@@ -216,7 +203,60 @@ const MetaInfoComponent = () => {
         }
     };
 
-    // ✅ Fallback: Submit using JSON (if no FormData available)
+    // ✅ Helper function to get question type specific data
+    const getQuestionTypeSpecificData = (questionData) => {
+        const questionType = questionData.questionType;
+
+        switch (questionType) {
+            case 'MCQ':
+                return {
+                    correctAnswer: questionData.correctAnswer,
+                    options: questionData.options
+                };
+
+            case 'Dropdown':
+                return {
+                    tabs: questionData.tabs || [],
+                    dropdowns: questionData.dropdowns || []
+                };
+
+            case 'Sorting':
+            case 'Sort':
+                return {
+                    sortItems: questionData.sortItems || []
+                };
+
+            case 'Fill in the Blanks':
+            case 'Fill in Blanks':
+                return {
+                    answer: questionData.answer || '',
+                    question_content: questionData.question_content || [],
+                    options: questionData.options || []
+                };
+
+            case 'Multiple Radio':
+                return {
+                    tabs: questionData.tabs || [],
+                    question_content: questionData.question_content || [],
+                    radio_options: questionData.radio_options || []
+                };
+
+            case 'Drag Drop':
+            case 'Drag and Drop':
+                return {
+                    drag_drop_content: questionData.drag_drop_content || '',
+                    tabs: questionData.tabs || [],
+                    drag_and_drop: questionData.drag_and_drop || []
+                };
+
+            default:
+                return {
+                    correctAnswer: questionData.correctAnswer,
+                    options: questionData.options
+                };
+        }
+    };
+    // ✅ Fallback: Submit using JSON (if no files in Context)
     const handleSubmitWithJSON = async () => {
         // Show loading toast
         const loadingToastId = toast.loading('📝 Adding question to Q-Bank...', {
@@ -243,11 +283,11 @@ const MetaInfoComponent = () => {
         }
     };
 
-    // ✅ Main submit handler - choose method based on FormData availability
+    // ✅ Main submit handler - choose method based on Context file availability
     const handleSubmit = async () => {
-        if (receivedFormData) {
-            // Use FormData for multipart submission (supports files)
-            await handleSubmitWithFormData();
+        if (hasQuestionFile || hasExplanationFile) {
+            // Use Context FormData for multipart submission (supports files)
+            await handleSubmitWithContextFormData();
         } else {
             // Fallback to JSON submission
             await handleSubmitWithJSON();
@@ -258,7 +298,7 @@ const MetaInfoComponent = () => {
     const constructQuestionData = () => {
         const questionType = receivedQuestionData.questionType || 'MCQ';
         const exam_type = receivedQuestionData.exam_type;
-        
+
         // Base data common to all question types
         const baseData = {
             exam_type: exam_type,
@@ -270,11 +310,11 @@ const MetaInfoComponent = () => {
             lesson: parseInt(form.lesson),
             clientNeedArea: parseInt(form.clientNeedArea),
             clientNeedTopic: parseInt(form.clientNeedTopic),
-            exhibit: receivedQuestionData.exhibit?.url || null,
+            exhibit: null, // No files in JSON mode
             explanationHeading: receivedQuestionData.explanationHeading || "",
             explanationText: receivedQuestionData.explanationText || "",
             info: receivedQuestionData.additionalInfo || "",
-            infoImage: receivedQuestionData.infoImage?.url || null
+            infoImage: null // No files in JSON mode
         };
 
         // Question type specific data construction
@@ -296,7 +336,7 @@ const MetaInfoComponent = () => {
     };
 
     const onBack = () => {
-        // Preserve current meta data when going back
+        // ✅ Preserve current meta data when going back (all serializable)
         const currentMetaData = {
             difficulty: form.difficulty,
             subject: form.subject,
@@ -318,14 +358,24 @@ const MetaInfoComponent = () => {
         });
 
         dispatch(resetStatus());
+
+        // ✅ Navigate with only serializable data - files are in Context
         navigate('/admin/answer-explain', {
             state: {
                 questionData: dataToSendBack,
-                formData: receivedFormData, // ✅ Preserve FormData
+                // ✅ Only pass file metadata for UI display, actual files are in Context
                 hasQuestionFile: hasQuestionFile,
                 hasExplanationFile: hasExplanationFile,
-                questionFileInfo: questionFileInfo,
-                explanationFileInfo: explanationFileInfo,
+                questionFileInfo: hasQuestionFile ? {
+                    name: questionFile?.name,
+                    type: questionFile?.type,
+                    size: questionFile?.size
+                } : null,
+                explanationFileInfo: hasExplanationFile ? {
+                    name: explanationFile?.name,
+                    type: explanationFile?.type,
+                    size: explanationFile?.size
+                } : null,
                 fromStep: 'meta-info'
             }
         });
@@ -398,25 +448,26 @@ const MetaInfoComponent = () => {
                 Test type &gt; Question Type &gt; Question Content &gt; Explanation &gt; <strong>Add Tags</strong>
             </Typography>
 
-            {/* ✅ FormData Status Display */}
-            {receivedFormData && (
-                <Card sx={{ mb: 3, bgcolor: 'success.light', color: 'success.contrastText' }}>
-                    <CardContent>
-                        <Typography variant="h6" gutterBottom>
-                            📦 FormData Ready for Submission
-                        </Typography>
-                        <Typography variant="body2">
-                            • Submission method: <strong>Multipart/Form-Data</strong> (supports file uploads)
-                        </Typography>
-                        <Typography variant="body2">
-                            • Question file: {hasQuestionFile ? `✅ ${questionFileInfo?.name}` : '➖ None'}
-                        </Typography>
-                        <Typography variant="body2">
-                            • Explanation file: {hasExplanationFile ? `✅ ${explanationFileInfo?.name}` : '➖ None'}
-                        </Typography>
-                    </CardContent>
-                </Card>
-            )}
+            {/* ✅ Context Status Display */}
+            <Card sx={{ mb: 3, bgcolor: 'success.light', color: 'success.contrastText' }}>
+                <CardContent>
+                    <Typography variant="h6" gutterBottom>
+                        🗂️ React Context File Management
+                    </Typography>
+                    <Typography variant="body2">
+                        • Submission method: <strong>{hasQuestionFile || hasExplanationFile ? 'Multipart/Form-Data' : 'JSON'}</strong>
+                    </Typography>
+                    <Typography variant="body2">
+                        • Question file: {hasQuestionFile ? `✅ ${questionFile?.name}` : '➖ None'}
+                    </Typography>
+                    <Typography variant="body2">
+                        • Explanation file: {hasExplanationFile ? `✅ ${explanationFile?.name}` : '➖ None'}
+                    </Typography>
+                    <Typography variant="body2">
+                        • Navigation safety: ✅ No FormData objects in navigation state
+                    </Typography>
+                </CardContent>
+            </Card>
 
             {/* ✅ Display Question Summary */}
             {receivedQuestionData && (
@@ -436,10 +487,10 @@ const MetaInfoComponent = () => {
                             <strong>Explanation:</strong> {receivedQuestionData.explanationText ? '✅ Complete' : '❌ Missing'}
                         </Typography>
                         <Typography variant="body2">
-                            <strong>Files:</strong> 
+                            <strong>Files in Context:</strong>
                             {hasQuestionFile && <Chip label="Question exhibit" size="small" color="primary" sx={{ ml: 1, mr: 0.5 }} />}
                             {hasExplanationFile && <Chip label="Explanation file" size="small" color="secondary" sx={{ mr: 0.5 }} />}
-                            {!hasQuestionFile && !hasExplanationFile && ' No files attached'}
+                            {!hasQuestionFile && !hasExplanationFile && ' No files in context'}
                         </Typography>
                     </CardContent>
                 </Card>
@@ -544,15 +595,17 @@ const MetaInfoComponent = () => {
                 </Grid>
             </Grid>
 
-            {/* ✅ Final Data Preview */}
-            <Card sx={{ mt: 3, bgcolor: receivedFormData ? 'success.light' : 'warning.light', 
-                        color: receivedFormData ? 'success.contrastText' : 'warning.contrastText' }}>
+            {/* ✅ Enhanced Final Data Preview with Context information */}
+            <Card sx={{
+                mt: 3, bgcolor: hasQuestionFile || hasExplanationFile ? 'success.light' : 'warning.light',
+                color: hasQuestionFile || hasExplanationFile ? 'success.contrastText' : 'warning.contrastText'
+            }}>
                 <CardContent>
                     <Typography variant="subtitle2" gutterBottom>
                         🎯 Ready to Submit:
                     </Typography>
                     <Typography variant="body2">
-                        • Submission Method: {receivedFormData ? '📦 FormData (Multipart)' : '📄 JSON'}
+                        • Submission Method: {hasQuestionFile || hasExplanationFile ? '📦 Context FormData (Multipart)' : '📄 JSON'}
                     </Typography>
                     <Typography variant="body2">
                         • Question Type: {receivedQuestionData.questionType || 'MCQ'} (ID: {getQuestionTypeId(receivedQuestionData.questionType)})
@@ -571,6 +624,9 @@ const MetaInfoComponent = () => {
                     </Typography>
                     <Typography variant="body2">
                         • Client Need Topic: {form.clientNeedTopic ? clientNeedTopicOptions.find(t => t.value == form.clientNeedTopic)?.label : '❌ Required'}
+                    </Typography>
+                    <Typography variant="body2">
+                        • Files in Context: {(hasQuestionFile ? 1 : 0) + (hasExplanationFile ? 1 : 0)} file(s)
                     </Typography>
                 </CardContent>
             </Card>

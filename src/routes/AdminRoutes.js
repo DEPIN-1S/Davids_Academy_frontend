@@ -16,7 +16,8 @@ import FillinQuestionContent from "../components/AdminComponents/FillinQuestionC
 import McqAnswerExplanation from "../components/AdminComponents/AnswerExplain";
 import MetaInfoComponent from '../components/AdminComponents/MetaInfoComponent';
 import TestCreateComponent from "../components/AdminComponents/TestCreateComponent";
-import CourseManagement from '../components/AdminComponents/RecordedClass'
+import RecordedClass from '../components/AdminComponents/RecordedClass'
+import CourseManagement from "../components/AdminComponents/CourseManagementComponent";
 import UploadThumbnailComponent from "../components/AdminComponents/UploadThumbnailComponent";
 import RecordedClassInfoComponent from "../components/AdminComponents/RecordClassComponent";
 import EnquireLeadComponent from "../components/AdminComponents/EnquireLeadComponent";
@@ -103,6 +104,11 @@ const AdminRoutes = () => (
             <Route path="/admin/course-management" element={
                 // <ProtectedRoutes allowedRoles={[1]}>
                 <CourseManagement />
+                // </ProtectedRoutes>
+            } />
+            <Route path="/admin/recorded-class" element={
+                // <ProtectedRoutes allowedRoles={[1]}>
+                <RecordedClass />
                 // </ProtectedRoutes>
             } />
             <Route path="/admin/upload-thumbnail" element={

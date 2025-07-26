@@ -21,10 +21,14 @@ import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
 import { CloudUpload, Delete, ExpandMore, Image, PictureAsPdf, Description } from '@mui/icons-material';
 import { useNavigate, useLocation } from 'react-router-dom';
+import { useFileContext } from '../../context/FileContext'; // ✅ Import the Context
 
 const FillinQuestionContent = () => {
     const navigate = useNavigate();
     const location = useLocation();
+
+    // ✅ Use File Context instead of passing files through navigation
+    const { addQuestionFile, questionFile, hasQuestionFile } = useFileContext();
 
     // Get any existing data from previous steps
     const existingData = location.state?.questionData || {};
@@ -41,12 +45,34 @@ const FillinQuestionContent = () => {
     const [options, setOptions] = useState(existingData.options || [
         { option_heading: "", option_value: [""] }
     ]);
-    const [selectedFile, setSelectedFile] = useState(existingData.exhibit || null);
+    // ✅ Generate answer field from question content
+    const [answer, setAnswer] = useState(existingData.answer || "");
+    const [selectedFile, setSelectedFile] = useState(null); // ✅ Local state for UI, Context for persistence
     const [errors, setErrors] = useState({});
 
     const fileInputRef = useRef(null);
 
-    // File upload handlers
+    // ✅ Initialize with existing file from context if available
+    React.useEffect(() => {
+        if (questionFile) {
+            setSelectedFile(questionFile);
+        }
+    }, [questionFile]);
+
+    // ✅ Generate answer string from question content
+    React.useEffect(() => {
+        const answerParts = [];
+        questionContent.forEach(content => {
+            if (content.blank_or_not === "true" && content.fill_blanks_answer.trim()) {
+                answerParts.push(content.fill_blanks_answer.trim());
+            } else if (content.blank_or_not === "false" && content.question_text.trim()) {
+                answerParts.push(content.question_text.trim());
+            }
+        });
+        setAnswer(answerParts.join(' '));
+    }, [questionContent]);
+
+    // ✅ File upload handlers - Store in Context instead of passing through navigation
     const handleFileSelect = (event) => {
         const file = event.target.files[0];
         if (file) {
@@ -70,8 +96,12 @@ const FillinQuestionContent = () => {
                 uploadedAt: new Date().toISOString()
             };
 
+            // ✅ Store in both local state (for UI) and Context (for persistence)
             setSelectedFile(fileData);
+            addQuestionFile(fileData); // Store in Context
             setErrors(prev => ({ ...prev, file: null }));
+
+            console.log('File stored in Context:', fileData.name);
         }
         event.target.value = '';
     };
@@ -84,6 +114,8 @@ const FillinQuestionContent = () => {
         if (selectedFile) {
             URL.revokeObjectURL(selectedFile.url);
             setSelectedFile(null);
+            addQuestionFile(null); // ✅ Remove from Context as well
+            setErrors(prev => ({ ...prev, file: null }));
         }
     };
 
@@ -161,16 +193,17 @@ const FillinQuestionContent = () => {
         }
     };
 
-    // Navigation handlers
+    // ✅ Navigation handlers - NO files in navigation state
     const handleNext = () => {
-        // Prepare question data for Fill in the Blanks
+        // ✅ Prepare ONLY serializable question data matching the required structure
         const questionData = {
             questionType: questionType,
             question: question.trim(),
+            answer: answer, // ✅ Generated from question content
             tabs: tabs.filter(tab => tab.tabKey.trim() || tab.tabValue.trim()),
             question_content: questionContent,
             options: options.filter(opt => opt.option_heading.trim() || opt.option_value.some(val => val.trim())),
-            exhibit: selectedFile,
+            // ✅ No file objects in navigation state
 
             // Metadata
             createdAt: existingData.createdAt || new Date().toISOString(),
@@ -180,18 +213,43 @@ const FillinQuestionContent = () => {
             completedSteps: ['type', 'content']
         };
 
-        console.log('Sending Fill in Blanks data to explanation step:', questionData);
+        console.log('✅ Navigating with serializable data only:', questionData);
+        console.log('✅ File stored in Context:', hasQuestionFile ? 'Yes' : 'No');
 
+        // ✅ Navigate with ONLY serializable data - NO file objects
         navigate('/admin/answer-explain', {
             state: {
                 questionData: questionData,
+                // ✅ Only pass file metadata for UI display, actual file is in Context
+                hasFile: hasQuestionFile,
+                fileInfo: selectedFile ? {
+                    name: selectedFile.name,
+                    type: selectedFile.type,
+                    size: selectedFile.size
+                    // ✅ No 'file' or 'url' properties to avoid serialization issues
+                } : null,
                 fromStep: 'content'
             }
         });
     };
 
     const handleBack = () => {
-        navigate('/admin/question-type');
+        // ✅ Prepare current data for potential restoration (all serializable)
+        const currentData = {
+            question: question.trim(),
+            tabs: tabs,
+            question_content: questionContent,
+            options: options,
+            answer: answer,
+            // ✅ No file objects in navigation state
+        };
+
+        navigate('/admin/question-type', {
+            state: {
+                questionData: currentData,
+                fromStep: 'content'
+            }
+        });
     };
 
     // Helper functions
@@ -224,6 +282,24 @@ const FillinQuestionContent = () => {
                 Create fill-in-the-blank questions with multiple answer options for comprehensive assessment.
             </Typography>
 
+            {/* ✅ Context Status Display */}
+            <Card sx={{ mb: 3, bgcolor: 'primary.light', color: 'primary.contrastText' }}>
+                <CardContent>
+                    <Typography variant="subtitle2" gutterBottom>
+                        🗂️ File Context Status:
+                    </Typography>
+                    <Typography variant="body2">
+                        • Question file in Context: {hasQuestionFile ? '✅ Available' : '➖ None'}
+                    </Typography>
+                    <Typography variant="body2">
+                        • Navigation safety: ✅ No FormData objects in navigation state
+                    </Typography>
+                    <Typography variant="body2">
+                        • File persistence: ✅ Files maintained across component navigation
+                    </Typography>
+                </CardContent>
+            </Card>
+
             {/* Main Question */}
             <Typography variant="h6" mb={1} color="primary">
                 Main Question
@@ -255,9 +331,16 @@ const FillinQuestionContent = () => {
                     startIcon={<CloudUpload />}
                     size="small"
                 >
-                    + Add Exhibit
+                    {selectedFile ? 'Change Exhibit' : '+ Add Exhibit'}
                 </Button>
             </Box>
+
+            {/* File Error Display */}
+            {errors.file && (
+                <Alert severity="error" sx={{ mb: 2 }}>
+                    {errors.file}
+                </Alert>
+            )}
 
             {/* Display Uploaded File */}
             {selectedFile && (
@@ -269,11 +352,25 @@ const FillinQuestionContent = () => {
                                 <Typography variant="body2" fontWeight={500}>
                                     {selectedFile.name}
                                 </Typography>
-                                <Chip
-                                    label={formatFileSize(selectedFile.size)}
-                                    size="small"
-                                    variant="outlined"
-                                />
+                                <Box display="flex" gap={1} mt={0.5}>
+                                    <Chip
+                                        label={formatFileSize(selectedFile.size)}
+                                        size="small"
+                                        variant="outlined"
+                                    />
+                                    <Chip
+                                        label={selectedFile.type.split('/')[1]?.toUpperCase() || 'FILE'}
+                                        size="small"
+                                        color="primary"
+                                        variant="outlined"
+                                    />
+                                    <Chip
+                                        label="Context Managed"
+                                        size="small"
+                                        color="success"
+                                        variant="outlined"
+                                    />
+                                </Box>
                             </Box>
                             {selectedFile.type.startsWith('image/') && (
                                 <Box
@@ -302,7 +399,7 @@ const FillinQuestionContent = () => {
                     {tabs.map((tab, index) => (
                         <Card key={index} sx={{ mb: 2, bgcolor: 'grey.50' }}>
                             <CardContent>
-                                <Box display="flex" justifyContent="between" alignItems="center" mb={2}>
+                                <Box display="flex" justifyContent="space-between" alignItems="center" mb={2}>
                                     <Typography variant="subtitle1">Tab {index + 1}</Typography>
                                     {tabs.length > 1 && (
                                         <IconButton onClick={() => handleRemoveTab(index)} color="error" size="small">
@@ -352,7 +449,7 @@ const FillinQuestionContent = () => {
                     {questionContent.map((content, index) => (
                         <Card key={index} sx={{ mb: 2, bgcolor: 'grey.50' }}>
                             <CardContent>
-                                <Box display="flex" justifyContent="between" alignItems="center" mb={2}>
+                                <Box display="flex" justifyContent="space-between" alignItems="center" mb={2}>
                                     <Typography variant="subtitle1">Content {index + 1}</Typography>
                                     {questionContent.length > 1 && (
                                         <IconButton onClick={() => handleRemoveQuestionContent(index)} color="error" size="small">
@@ -390,6 +487,15 @@ const FillinQuestionContent = () => {
                                     }
                                     label="This is a blank to be filled"
                                 />
+
+                                {/* Preview */}
+                                <Box sx={{ mt: 2, p: 1, bgcolor: 'primary.light', borderRadius: 1 }}>
+                                    <Typography variant="caption" color="primary.contrastText">
+                                        Preview: {content.blank_or_not === "true" ?
+                                            `[BLANK: ${content.fill_blanks_answer || '___'}]` :
+                                            content.question_text || 'Text content'}
+                                    </Typography>
+                                </Box>
                             </CardContent>
                         </Card>
                     ))}
@@ -411,7 +517,7 @@ const FillinQuestionContent = () => {
                     {options.map((option, optionIndex) => (
                         <Card key={optionIndex} sx={{ mb: 2, bgcolor: 'grey.50' }}>
                             <CardContent>
-                                <Box display="flex" justifyContent="between" alignItems="center" mb={2}>
+                                <Box display="flex" justifyContent="space-between" alignItems="center" mb={2}>
                                     <Typography variant="subtitle1">Option Group {optionIndex + 1}</Typography>
                                     {options.length > 1 && (
                                         <IconButton onClick={() => handleRemoveOption(optionIndex)} color="error" size="small">
@@ -473,6 +579,36 @@ const FillinQuestionContent = () => {
                     </Button>
                 </AccordionDetails>
             </Accordion>
+
+            {/* ✅ Enhanced Form Summary with Context information */}
+            <Card sx={{ mt: 3, bgcolor: 'grey.50' }}>
+                <CardContent>
+                    <Typography variant="subtitle2" gutterBottom>
+                        Fill in the Blanks Question Summary:
+                    </Typography>
+                    <Typography variant="body2" color="textSecondary">
+                        • Main Question: {question ? '✓ Complete' : '✗ Required'}
+                    </Typography>
+                    <Typography variant="body2" color="textSecondary">
+                        • Generated Answer: {answer ? `"${answer.substring(0, 50)}${answer.length > 50 ? '...' : ''}"` : '✗ Auto-generated from content'}
+                    </Typography>
+                    <Typography variant="body2" color="textSecondary">
+                        • Information Tabs: {tabs.filter(tab => tab.tabKey.trim() || tab.tabValue.trim()).length} tabs
+                    </Typography>
+                    <Typography variant="body2" color="textSecondary">
+                        • Content Pieces: {questionContent.length} (Blanks: {questionContent.filter(c => c.blank_or_not === 'true').length})
+                    </Typography>
+                    <Typography variant="body2" color="textSecondary">
+                        • Option Groups: {options.filter(opt => opt.option_heading.trim() || opt.option_value.some(val => val.trim())).length} groups
+                    </Typography>
+                    <Typography variant="body2" color="textSecondary">
+                        • Exhibit: {selectedFile ? `✓ ${selectedFile.name} (Context Managed)` : '○ Optional'}
+                    </Typography>
+                    <Typography variant="body2" color="textSecondary">
+                        • Navigation: ✅ FormData-safe using React Context
+                    </Typography>
+                </CardContent>
+            </Card>
 
             {/* Navigation Buttons */}
             <Box mt={4} display="flex" justifyContent="space-between">

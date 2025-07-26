@@ -14,15 +14,23 @@ import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
 import { CloudUpload, Delete, Image, PictureAsPdf, Description } from '@mui/icons-material';
 import { useNavigate, useLocation } from 'react-router-dom';
+import { useFileContext } from '../../context/FileContext'; // ✅ Import the Context
 
 const AnswerExplain = () => {
     const navigate = useNavigate();
     const location = useLocation();
 
-    // ✅ Receive data including previous file information
+    // ✅ Use File Context instead of receiving files through navigation
+    const {
+        questionFile,
+        explanationFile,
+        addExplanationFile,
+        hasQuestionFile,
+        hasExplanationFile
+    } = useFileContext();
+
+    // ✅ Receive only serializable data
     const previousQuestionData = location.state?.questionData || {};
-    const hasQuestionFile = location.state?.hasFile || false;
-    const questionFileInfo = location.state?.fileInfo || null;
 
     // Component state
     const [explanationHeading, setExplanationHeading] = useState(
@@ -37,61 +45,26 @@ const AnswerExplain = () => {
     const [additionalInfo, setAdditionalInfo] = useState(
         previousQuestionData.additionalInfo || ""
     );
-    const [selectedFile, setSelectedFile] = useState(null);
+    const [selectedFile, setSelectedFile] = useState(null); // ✅ Local state for UI, Context for persistence
     const [errors, setErrors] = useState({});
 
     const fileInputRef = useRef(null);
 
-    // ✅ Restore previous question file if it exists
+    // ✅ Initialize with existing file from context if available
     useEffect(() => {
-        if (hasQuestionFile && questionFileInfo && window.questionFileRef) {
-            console.log('✅ Previous question file available:', questionFileInfo);
+        if (explanationFile) {
+            setSelectedFile(explanationFile);
         }
-    }, [hasQuestionFile, questionFileInfo]);
+    }, [explanationFile]);
 
-    // ✅ Create FormData factory function that includes BOTH files
-    const createFormDataFactory = () => {
-        return () => {
-            const formData = new FormData();
+    // ✅ Log context status
+    useEffect(() => {
+        console.log('✅ Context Status:');
+        console.log('📎 Question file in context:', hasQuestionFile ? questionFile?.name : 'None');
+        console.log('📎 Explanation file in context:', hasExplanationFile ? explanationFile?.name : 'None');
+    }, [hasQuestionFile, hasExplanationFile, questionFile, explanationFile]);
 
-            // Add basic question data
-            formData.append('exam_type', previousQuestionData.exam_type || '');
-            formData.append('question_type_id', previousQuestionData.question_type_id?.toString() || '');
-            formData.append('questionType', previousQuestionData.questionType || '');
-            formData.append('question', previousQuestionData.question || '');
-            formData.append('correctAnswer', previousQuestionData.correctAnswer || '');
-            formData.append('options', JSON.stringify(previousQuestionData.options || []));
-
-            // Add explanation data
-            formData.append('explanationHeading', explanationHeading.trim());
-            formData.append('explanationText', explanationText.trim());
-            formData.append('additionalInfoHeading', additionalInfoHeading.trim() || '');
-            formData.append('additionalInfo', additionalInfo.trim() || '');
-
-            // ✅ Add PREVIOUS question file (exhibit) if it exists
-            if (hasQuestionFile && window.questionFileRef) {
-                formData.append('exhibit', window.questionFileRef.file, window.questionFileRef.name);
-                console.log('📎 Added previous question file to FormData:', window.questionFileRef.name);
-            }
-
-            // ✅ Add CURRENT explanation file if it exists
-            if (selectedFile?.file) {
-                formData.append('infoImage', selectedFile.file, selectedFile.name);
-                console.log('📎 Added explanation file to FormData:', selectedFile.name);
-            }
-
-            // Add metadata
-            formData.append('createdAt', previousQuestionData.createdAt || new Date().toISOString());
-            formData.append('updatedAt', new Date().toISOString());
-            formData.append('questionId', previousQuestionData.questionId || `${previousQuestionData.questionType}_${Date.now()}`);
-            formData.append('currentStep', 'explanation');
-            formData.append('completedSteps', JSON.stringify(['exam-type', 'question-type', 'content', 'explanation']));
-
-            return formData;
-        };
-    };
-
-    // File upload handlers for explanation file
+    // ✅ File upload handlers - Store in Context instead of passing through navigation
     const handleFileSelect = (event) => {
         const file = event.target.files[0];
         if (file) {
@@ -117,8 +90,12 @@ const AnswerExplain = () => {
                 uploadedAt: new Date().toISOString()
             };
 
+            // ✅ Store in both local state (for UI) and Context (for persistence)
             setSelectedFile(fileData);
+            addExplanationFile(fileData); // Store in Context
             setErrors(prev => ({ ...prev, file: null }));
+
+            console.log('File stored in Context:', fileData.name);
         }
         event.target.value = '';
     };
@@ -131,6 +108,7 @@ const AnswerExplain = () => {
         if (selectedFile) {
             URL.revokeObjectURL(selectedFile.url);
             setSelectedFile(null);
+            addExplanationFile(null); // ✅ Remove from Context as well
             setErrors(prev => ({ ...prev, file: null }));
         }
     };
@@ -153,13 +131,13 @@ const AnswerExplain = () => {
         return Object.keys(newErrors).length === 0;
     };
 
-    // ✅ Navigation handler with both files passed through
+    // ✅ Navigation handlers - NO files in navigation state
     const handleNext = () => {
         if (!validateForm()) {
             return;
         }
 
-        // Create serializable data
+        // ✅ Create ONLY serializable data
         const mergedQuestionData = {
             // Previous step data
             exam_type: previousQuestionData.exam_type,
@@ -177,8 +155,12 @@ const AnswerExplain = () => {
             additionalInfoHeading: additionalInfoHeading.trim() || null,
             additionalInfo: additionalInfo.trim() || null,
 
-            // File metadata for both files
-            questionFileMeta: hasQuestionFile ? questionFileInfo : null,
+            // File metadata (serializable only)
+            questionFileMeta: hasQuestionFile ? {
+                name: questionFile?.name,
+                size: questionFile?.size,
+                type: questionFile?.type
+            } : null,
             explanationFileMeta: selectedFile ? {
                 name: selectedFile.name,
                 size: selectedFile.size,
@@ -192,55 +174,37 @@ const AnswerExplain = () => {
             completedSteps: ['exam-type', 'question-type', 'content', 'explanation']
         };
 
-        // ✅ Store FormData creation function globally
-        window.createQuestionFormData = createFormDataFactory();
+        console.log('✅ Navigating with serializable data only:', mergedQuestionData);
+        console.log('✅ Files managed by Context:');
+        console.log('📎 Question file:', hasQuestionFile ? 'Available' : 'None');
+        console.log('📎 Explanation file:', hasExplanationFile ? 'Available' : 'None');
 
-        // ✅ Store current explanation file reference globally
-        if (selectedFile?.file) {
-            window.explanationFileRef = {
-                file: selectedFile.file,
-                name: selectedFile.name
-            };
-        }
-
-        // ✅ Ensure previous question file is still available
-        // (This should already be set from the previous component, but we maintain it)
-        if (hasQuestionFile && !window.questionFileRef) {
-            console.warn('⚠️ Previous question file reference not found in global scope');
-        }
-
-        console.log('✅ Navigating with both files available:');
-        console.log('📎 Question file:', hasQuestionFile ? questionFileInfo?.name : 'None');
-        console.log('📎 Explanation file:', selectedFile?.name || 'None');
-
-        // Navigate with complete file information
+        // ✅ Navigate with ONLY serializable data - NO file objects
         navigate('/admin/meta-info', {
             state: {
                 questionData: mergedQuestionData,
-
-                // ✅ Pass information about BOTH files
+                // ✅ Only pass file metadata for UI display, actual files are in Context
                 hasQuestionFile: hasQuestionFile,
-                hasExplanationFile: !!selectedFile,
-
-                // ✅ Pass metadata for BOTH files
-                questionFileInfo: questionFileInfo,
+                hasExplanationFile: hasExplanationFile,
+                questionFileInfo: hasQuestionFile ? {
+                    name: questionFile?.name,
+                    type: questionFile?.type,
+                    size: questionFile?.size
+                } : null,
                 explanationFileInfo: selectedFile ? {
                     name: selectedFile.name,
                     type: selectedFile.type,
                     size: selectedFile.size,
                     uploadedAt: selectedFile.uploadedAt
                 } : null,
-
-                // ✅ File availability flags
-                bothFilesAvailable: hasQuestionFile && !!selectedFile,
-                formDataCreatorAvailable: true,
+                bothFilesAvailable: hasQuestionFile && hasExplanationFile,
                 fromStep: 'explanation'
             }
         });
     };
 
     const handleBack = () => {
-        // Preserve current explanation data
+        // ✅ Preserve current explanation data (all serializable)
         const dataToSendBack = {
             // Previous data
             exam_type: previousQuestionData.exam_type,
@@ -265,8 +229,13 @@ const AnswerExplain = () => {
         navigate('/admin/mcq-content', {
             state: {
                 questionData: dataToSendBack,
+                // ✅ Files are in Context, only pass metadata
                 hasFile: hasQuestionFile,
-                fileInfo: questionFileInfo,
+                fileInfo: hasQuestionFile ? {
+                    name: questionFile?.name,
+                    type: questionFile?.type,
+                    size: questionFile?.size
+                } : null,
                 fromStep: 'explanation'
             }
         });
@@ -343,16 +312,16 @@ const AnswerExplain = () => {
                             </Box>
                         )}
 
-                        {/* ✅ Display Previous Question File Info */}
-                        {hasQuestionFile && questionFileInfo && (
+                        {/* ✅ Display Previous Question File Info from Context */}
+                        {hasQuestionFile && questionFile && (
                             <Box sx={{ mt: 2, p: 1, bgcolor: 'primary.light', borderRadius: 1 }}>
                                 <Typography variant="subtitle2" color="primary.contrastText">
-                                    📎 Question Exhibit: {questionFileInfo.name}
+                                    📎 Question Exhibit: {questionFile.name}
                                 </Typography>
                                 <Typography variant="body2" color="primary.contrastText">
-                                    Size: {formatFileSize(questionFileInfo.size)} |
-                                    Type: {questionFileInfo.type} |
-                                    Status: Available for FormData
+                                    Size: {formatFileSize(questionFile.size)} |
+                                    Type: {questionFile.type} |
+                                    Status: ✅ Available in Context
                                 </Typography>
                             </Box>
                         )}
@@ -360,22 +329,23 @@ const AnswerExplain = () => {
                 </Card>
             )}
 
-            {/* ✅ File Status Display */}
-            <Card sx={{ mb: 3, bgcolor: 'info.light', color: 'info.contrastText' }}>
+            {/* ✅ Enhanced Context Status Display */}
+            <Card sx={{ mb: 3, bgcolor: 'success.light', color: 'success.contrastText' }}>
                 <CardContent>
                     <Typography variant="subtitle2" gutterBottom>
-                        📂 File Management Status:
+                        🗂️ React Context File Management:
                     </Typography>
                     <Typography variant="body2">
-                        • Previous question file: {hasQuestionFile ? `✅ ${questionFileInfo?.name}` : '➖ None'}
+                        • Question file in Context: {hasQuestionFile ? `✅ ${questionFile?.name}` : '➖ None'}
                     </Typography>
                     <Typography variant="body2">
-                        • Current explanation file: {selectedFile ? `✅ ${selectedFile.name}` : '➖ None'}
+                        • Explanation file in Context: {selectedFile ? `✅ ${selectedFile.name}` : '➖ None'}
                     </Typography>
                     <Typography variant="body2">
-                        • FormData will include: {hasQuestionFile || selectedFile ?
-                            `${hasQuestionFile ? 'exhibit' : ''}${hasQuestionFile && selectedFile ? ' + ' : ''}${selectedFile ? 'infoImage' : ''}` :
-                            'text data only'}
+                        • Navigation safety: ✅ No FormData objects in navigation state
+                    </Typography>
+                    <Typography variant="body2">
+                        • FormData creation: ✅ Available from Context when needed
                     </Typography>
                 </CardContent>
             </Card>
@@ -513,7 +483,7 @@ const AnswerExplain = () => {
                                         variant="outlined"
                                     />
                                     <Chip
-                                        label="Ready for FormData"
+                                        label="Context Managed"
                                         size="small"
                                         color="success"
                                         variant="outlined"
@@ -549,8 +519,8 @@ const AnswerExplain = () => {
                 </Card>
             )}
 
-            {/* ✅ Enhanced Form Summary showing both files */}
-            <Card sx={{ mt: 3, bgcolor: 'success.light', color: 'success.contrastText' }}>
+            {/* ✅ Enhanced Form Summary with Context information */}
+            <Card sx={{ mt: 3, bgcolor: 'primary.light', color: 'primary.contrastText' }}>
                 <CardContent>
                     <Typography variant="subtitle2" gutterBottom>
                         📊 Complete Form Status:
@@ -559,7 +529,7 @@ const AnswerExplain = () => {
                         • Question Content: {previousQuestionData.question ? '✅ Complete' : '❌ Missing'}
                     </Typography>
                     <Typography variant="body2">
-                        • Previous Question File: {hasQuestionFile ? `✅ ${questionFileInfo?.name}` : '➖ None'}
+                        • Question File (Context): {hasQuestionFile ? `✅ ${questionFile?.name}` : '➖ None'}
                     </Typography>
                     <Typography variant="body2">
                         • Explanation Heading: {explanationHeading ? '✅ Complete' : '❌ Required'}
@@ -568,10 +538,13 @@ const AnswerExplain = () => {
                         • Explanation Text: {explanationText && explanationText.length >= 20 ? '✅ Complete' : '❌ Required'}
                     </Typography>
                     <Typography variant="body2">
-                        • Explanation File: {selectedFile ? `✅ ${selectedFile.name}` : '➖ Optional'}
+                        • Explanation File (Context): {selectedFile ? `✅ ${selectedFile.name}` : '➖ Optional'}
                     </Typography>
                     <Typography variant="body2">
-                        • Total Files for FormData: {(hasQuestionFile ? 1 : 0) + (selectedFile ? 1 : 0)}
+                        • Total Files in Context: {(hasQuestionFile ? 1 : 0) + (selectedFile ? 1 : 0)}
+                    </Typography>
+                    <Typography variant="body2">
+                        • Navigation: ✅ FormData-safe using React Context
                     </Typography>
                 </CardContent>
             </Card>

@@ -25,10 +25,15 @@ import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
 import { CloudUpload, Delete, Image, PictureAsPdf, Description, ExpandMore } from '@mui/icons-material';
 import { useNavigate, useLocation } from 'react-router-dom';
+// ✅ Updated import path (might need adjustment based on your project structure)
+import { useFileContext } from '../../context/FileContext'; // or '../../context/FileContext'
 
 const MultiradioQuestionContent = () => {
     const navigate = useNavigate();
     const location = useLocation();
+
+    // ✅ Use File Context instead of passing files through navigation
+    const { addQuestionFile, questionFile, hasQuestionFile } = useFileContext();
 
     // Get any existing data from previous steps
     const existingData = location.state?.questionData || {};
@@ -45,12 +50,19 @@ const MultiradioQuestionContent = () => {
     const [radioOptions, setRadioOptions] = useState(existingData.radio_options || [
         { option_value: "" }
     ]);
-    const [selectedFile, setSelectedFile] = useState(existingData.exhibit || null);
+    const [selectedFile, setSelectedFile] = useState(null); // ✅ Local state for UI, Context for persistence
     const [errors, setErrors] = useState({});
 
     const fileInputRef = useRef(null);
 
-    // File upload handlers
+    // ✅ Initialize with existing file from context if available
+    React.useEffect(() => {
+        if (questionFile) {
+            setSelectedFile(questionFile);
+        }
+    }, [questionFile]);
+
+    // ✅ File upload handlers - Store in Context instead of passing through navigation
     const handleFileSelect = (event) => {
         const file = event.target.files[0];
         if (file) {
@@ -74,8 +86,12 @@ const MultiradioQuestionContent = () => {
                 uploadedAt: new Date().toISOString()
             };
 
+            // ✅ Store in both local state (for UI) and Context (for persistence)
             setSelectedFile(fileData);
+            addQuestionFile(fileData); // Store in Context
             setErrors(prev => ({ ...prev, file: null }));
+
+            console.log('File stored in Context:', fileData.name);
         }
         event.target.value = '';
     };
@@ -88,6 +104,7 @@ const MultiradioQuestionContent = () => {
         if (selectedFile) {
             URL.revokeObjectURL(selectedFile.url);
             setSelectedFile(null);
+            addQuestionFile(null); // ✅ Remove from Context as well
             setErrors(prev => ({ ...prev, file: null }));
         }
     };
@@ -182,19 +199,20 @@ const MultiradioQuestionContent = () => {
         return Object.keys(newErrors).length === 0;
     };
 
-    // Navigation handlers
+    // ✅ Navigation handlers - NO files in navigation state
     const handleNext = () => {
         if (!validateForm()) {
             return;
         }
 
+        // ✅ Prepare ONLY serializable question data
         const questionData = {
             questionType: questionType,
             question: question.trim(),
             tabs: tabs.filter(tab => tab.tabKey.trim() && tab.tabValue.trim()),
             question_content: questionContent.filter(q => q.question_text.trim() && q.question_answer.trim()),
             radio_options: radioOptions.filter(option => option.option_value.trim()),
-            exhibit: selectedFile,
+            // ✅ No file objects in navigation state
             createdAt: existingData.createdAt || new Date().toISOString(),
             updatedAt: new Date().toISOString(),
             questionId: existingData.questionId || `${questionType}_${Date.now()}`,
@@ -202,23 +220,34 @@ const MultiradioQuestionContent = () => {
             completedSteps: ['type', 'content']
         };
 
-        console.log('Sending multiple radio question data:', questionData);
+        console.log('✅ Navigating with serializable data only:', questionData);
+        console.log('✅ File stored in Context:', hasQuestionFile ? 'Yes' : 'No');
 
+        // ✅ Navigate with ONLY serializable data - NO file objects
         navigate('/admin/answer-explain', {
             state: {
                 questionData: questionData,
+                // ✅ Only pass file metadata for UI display, actual file is in Context
+                hasFile: hasQuestionFile,
+                fileInfo: selectedFile ? {
+                    name: selectedFile.name,
+                    type: selectedFile.type,
+                    size: selectedFile.size
+                    // ✅ No 'file' or 'url' properties to avoid serialization issues
+                } : null,
                 fromStep: 'content'
             }
         });
     };
 
     const handleBack = () => {
+        // ✅ Prepare current data for potential restoration (all serializable)
         const currentData = {
             question: question.trim(),
             tabs: tabs,
             question_content: questionContent,
             radio_options: radioOptions,
-            exhibit: selectedFile
+            // ✅ No file objects in navigation state
         };
 
         navigate('/admin/question-type', {
@@ -277,6 +306,24 @@ const MultiradioQuestionContent = () => {
                 Create a multiple radio question with tabs and sentence-based radio selections.
             </Typography>
 
+            {/* ✅ Context Status Display */}
+            <Card sx={{ mb: 3, bgcolor: 'primary.light', color: 'primary.contrastText' }}>
+                <CardContent>
+                    <Typography variant="subtitle2" gutterBottom>
+                        🗂️ File Context Status:
+                    </Typography>
+                    <Typography variant="body2">
+                        • Question file in Context: {hasQuestionFile ? '✅ Available' : '➖ None'}
+                    </Typography>
+                    <Typography variant="body2">
+                        • Navigation safety: ✅ No FormData objects in navigation state
+                    </Typography>
+                    <Typography variant="body2">
+                        • File persistence: ✅ Files maintained across component navigation
+                    </Typography>
+                </CardContent>
+            </Card>
+
             {/* Question Input */}
             <Typography variant="h6" mb={1} color="primary">
                 Question Text *
@@ -314,7 +361,7 @@ const MultiradioQuestionContent = () => {
                     startIcon={<CloudUpload />}
                     size="small"
                 >
-                    + Add Exhibit
+                    {selectedFile ? 'Change Exhibit' : '+ Add Exhibit'}
                 </Button>
             </Box>
 
@@ -335,11 +382,25 @@ const MultiradioQuestionContent = () => {
                                 <Typography variant="body2" fontWeight={500}>
                                     {selectedFile.name}
                                 </Typography>
-                                <Chip
-                                    label={formatFileSize(selectedFile.size)}
-                                    size="small"
-                                    variant="outlined"
-                                />
+                                <Box display="flex" gap={1} mt={0.5}>
+                                    <Chip
+                                        label={formatFileSize(selectedFile.size)}
+                                        size="small"
+                                        variant="outlined"
+                                    />
+                                    <Chip
+                                        label={selectedFile.type.split('/')[1]?.toUpperCase() || 'FILE'}
+                                        size="small"
+                                        color="primary"
+                                        variant="outlined"
+                                    />
+                                    <Chip
+                                        label="Context Managed"
+                                        size="small"
+                                        color="success"
+                                        variant="outlined"
+                                    />
+                                </Box>
                             </Box>
                             {selectedFile.type.startsWith('image/') && (
                                 <Box
@@ -563,7 +624,7 @@ const MultiradioQuestionContent = () => {
                 </AccordionDetails>
             </Accordion>
 
-            {/* Form Summary */}
+            {/* ✅ Enhanced Form Summary with Context information */}
             <Card sx={{ mt: 3, bgcolor: 'grey.50' }}>
                 <CardContent>
                     <Typography variant="subtitle2" gutterBottom>
@@ -580,6 +641,12 @@ const MultiradioQuestionContent = () => {
                     </Typography>
                     <Typography variant="body2" color="textSecondary">
                         • Sentences: {questionContent.filter(q => q.question_text.trim() && q.question_answer.trim()).length} complete sentences
+                    </Typography>
+                    <Typography variant="body2" color="textSecondary">
+                        • Exhibit: {selectedFile ? `✓ ${selectedFile.name} (Context Managed)` : '○ Optional'}
+                    </Typography>
+                    <Typography variant="body2" color="textSecondary">
+                        • Navigation: ✅ FormData-safe using React Context
                     </Typography>
                 </CardContent>
             </Card>
