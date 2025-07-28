@@ -150,7 +150,7 @@ const NavBar = ({ onToggleSidebar, onToggleCollapse, isCollapsed }) => {
               </span>
             )}
             {pageConfig.title}
-            {pageConfig.showWave && (
+            {pageConfig.showWave && ( 
               <span className="wave">👋</span>
             )}
           </h4>

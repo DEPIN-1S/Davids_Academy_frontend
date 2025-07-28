@@ -4,21 +4,18 @@ import { useTheme } from '@mui/material/styles';
 import { useLocation, useNavigate } from 'react-router-dom';
 
 const navItems = [
-  { label: 'My Q-Bank', path: '/question-bank' },
-  { label: 'My Statistics', path: '/my-statistics' },
-  { label: 'Recorded Classes', path: '/recorded-class' },
-  { label: 'Notes', path: '/notes' },
-  { label: 'Mock Test', path: '/mock-test' },
-  { label: 'Previous Tests', path: '/previous-tests' },
+  { label: 'My Q-Bank', path: '/student/question-bank' },
+  { label: 'My Statistics', path: '/student/my-statistics' },
+  { label: 'Recorded Classes', path: '/student/recorded-class' },
+  { label: 'Notes', path: '/student/notes' },
+  { label: 'Mock Test', path: '/student/mock-test' },
+  { label: 'Previous Tests', path: '/student/previous-tests' },
 ];
-
 const DashboardNavbar = () => {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
-
   const location = useLocation();
   const navigate = useNavigate();
-
   return (
     <Box
       sx={{

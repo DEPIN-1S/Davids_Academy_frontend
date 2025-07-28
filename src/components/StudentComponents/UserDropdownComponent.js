@@ -34,8 +34,8 @@ const UserDropdownComponent = () => {
                     <img src="/images/loginAvatar.png" alt="Avatar" />
                 </div>
                 <div className="user-meta">
-                    <span className="name">{user?.name || 'Admin'}</span>
-                    <span className="email">{user?.email || 'admin@email.com'}</span>
+                    <span className="name">{user?.name}</span>
+                    <span className="email">{user?.email}</span>
                 </div>
                 <span className="arrow">▾</span>
             </div>
