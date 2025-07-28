@@ -12,12 +12,15 @@ import {
   FaChevronRight,
 } from "react-icons/fa";
 import { useNavigate, useLocation } from "react-router-dom";
+import { useDispatch, useSelector } from 'react-redux';
+import { logout } from '../../../features/user/userSlice';
 import "../../../styles/AdminStyles/Sidebar.css";
 
 const Sidebar = ({ isOpen, isCollapsed, toggleSidebar, toggleCollapse }) => {
   const navigate = useNavigate();
   const location = useLocation();
-
+  const dispatch = useDispatch();
+  const user = useSelector((state) => state.user.user);
   const menuItems = [
     { name: "Dashboard", icon: <FaThLarge />, path: "/admin/dashboard" },
     { name: "Student Management", icon: <FaUserGraduate />, path: "/admin/student-manage" },
@@ -43,7 +46,8 @@ const Sidebar = ({ isOpen, isCollapsed, toggleSidebar, toggleCollapse }) => {
     if (window.innerWidth <= 767) {
       toggleSidebar();
     }
-    navigate("/");
+    dispatch(logout());
+    window.location.href = '/login';
   };
 
   const handleKeyDown = (e, action) => {
