@@ -9,7 +9,7 @@ const StudentManage = () => {
       name: "Aisha Khan",
       email: "aisha@email.com",
       course: "DHA",
-      password: "123@pass",
+
       status: "Active",
     },
     {
@@ -17,7 +17,6 @@ const StudentManage = () => {
       name: "Aisha Khan",
       email: "aisha@email.com",
       course: "DHA",
-      password: "123@pass",
       status: "Active",
     },
     {
@@ -25,7 +24,6 @@ const StudentManage = () => {
       name: "Aisha Khan",
       email: "aisha@email.com",
       course: "DHA",
-      password: "123@pass",
       status: "Active",
     },
     {
@@ -33,7 +31,6 @@ const StudentManage = () => {
       name: "Aisha Khan",
       email: "aisha@email.com",
       course: "DHA",
-      password: "123@pass",
       status: "Active",
     },
     {
@@ -41,7 +38,6 @@ const StudentManage = () => {
       name: "Aisha Khan",
       email: "aisha@email.com",
       course: "DHA",
-      password: "123@pass",
       status: "Active",
     },
   ];
@@ -55,7 +51,6 @@ const StudentManage = () => {
             <th>Name</th>
             <th>Email</th>
             <th>Course</th>
-            <th>Password</th>
             <th>Status</th>
             <th>Actions</th>
           </tr>
@@ -67,7 +62,6 @@ const StudentManage = () => {
               <td>{student.name}</td>
               <td>{student.email}</td>
               <td>{student.course}</td>
-              <td>{student.password}</td>
               <td>{student.status}</td>
               <td className="action-buttons">
                 <button className="progress-btn">View Progress</button>

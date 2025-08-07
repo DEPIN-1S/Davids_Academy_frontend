@@ -28,8 +28,7 @@ const LoginPage = () => {
       if (login.fulfilled.match(resultAction)) {
         const userRole = resultAction.payload?.user?.role;
         // ✅ Only one navigate call based on role
-        console.log('userRole', userRole);
-        if (userRole === 'user') {
+        if (userRole === 'student') {
           navigate('/student/question-bank');
         } else if (userRole === 'admin') {
           navigate('/admin/dashboard');

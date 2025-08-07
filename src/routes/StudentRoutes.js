@@ -1,21 +1,21 @@
 import React from "react";
 import { Route } from "react-router-dom";
 import ProtectedRoutes from "./ProtectedRoutes";
-import QuestionBankPage from "../pages/DashboardPages/QuestionBankPage";
-import StatisticsPage from "../pages/DashboardPages/StatisticsPage";
-import RecordedClassesPage from "../pages/DashboardPages/RecordedClassesPage";
-import NotesPage from "../pages/DashboardPages/NotesPage";
-import MockTestPage from "../pages/DashboardPages/MockTestPage";
-import PreviousTestPage from "../pages/DashboardPages/PreviousTestPage";
-import RadioButtonQuestionPage from "../pages/DashboardPages/RadioButtonQuestionPage";
-import RevealAnswerRadioPage from "../pages/DashboardPages/RevealAnswerRadioPage";
-import DropdownQuestionPage from "../pages/DashboardPages/DropdownQuestionPage";
-import DragDropQuestionPage from "../pages/DashboardPages/DragDropQuestionPage";
-import MultiRadioQuestionPage from "../pages/DashboardPages/MultiRadioQuestionPage";
-import SortQuestionPage from "../pages/DashboardPages/SortQuestionPage";
-import SentenceQuestionPage from "../pages/DashboardPages/SentenceQuestionPage";
-import DropSortQuestionPage from "../pages/DashboardPages/DropSortQuestionPage";
-import ScorePage from "../pages/DashboardPages/ScorePage";
+import QuestionBankPage from "../pages/StudentPages/QuestionBankPage";
+import StatisticsPage from "../pages/StudentPages/StatisticsPage";
+import RecordedClassesPage from "../pages/StudentPages/RecordedClassesPage";
+import NotesPage from "../pages/StudentPages/NotesPage";
+import MockTestPage from "../pages/StudentPages/MockTestPage";
+import PreviousTestPage from "../pages/StudentPages/PreviousTestPage";
+import RadioButtonQuestionPage from "../pages/StudentPages/RadioButtonQuestionPage";
+import RevealAnswerRadioPage from "../pages/StudentPages/RevealAnswerRadioPage";
+import DropdownQuestionPage from "../pages/StudentPages/DropdownQuestionPage";
+import DragDropQuestionPage from "../pages/StudentPages/DragDropQuestionPage";
+import MultiRadioQuestionPage from "../pages/StudentPages/MultiRadioQuestionPage";
+import SortQuestionPage from "../pages/StudentPages/SortQuestionPage";
+import SentenceQuestionPage from "../pages/StudentPages/SentenceQuestionPage";
+import DropSortQuestionPage from "../pages/StudentPages/DropSortQuestionPage";
+import ScorePage from "../pages/StudentPages/ScorePage";
 import StudentLayout from "../components/StudentComponents/StudentLayout";
 const StudentRoutes = () => (
     <>
