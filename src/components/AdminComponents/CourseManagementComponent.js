@@ -32,10 +32,15 @@ const CourseManagementComponent = () => {
     const navigate = useNavigate();
     const dispatch = useDispatch();
 
-    // Selectors to get courses, loading and error from Redux store
-    const { list: courses, loading, error } = useSelector((state) => state.course);
-    console.log('courses', courses);
-    // Fetch courses on mount
+    // Redux selectors
+    const {
+        list: courses,
+        loading,
+        error,
+        deleteLoading,
+        deleteError
+    } = useSelector((state) => state.course);
+
     useEffect(() => {
         dispatch(fetchCourses());
     }, [dispatch]);
@@ -45,7 +50,7 @@ const CourseManagementComponent = () => {
     };
 
     const handleEditCourse = (courseId) => {
-        navigate(`/admin/course-form/${courseId}`); // Assuming you have route for editing course
+        navigate(`/admin/course-form/${courseId}`);
     };
 
     const handleDeleteCourse = (courseId) => {
@@ -80,7 +85,6 @@ const CourseManagementComponent = () => {
                 >
                     Available Courses
                 </Typography>
-
                 <Button
                     variant="contained"
                     startIcon={<AddIcon />}
@@ -95,14 +99,32 @@ const CourseManagementComponent = () => {
                         textTransform: 'none',
                         fontSize: { xs: '0.875rem', sm: '1rem' },
                         minWidth: { xs: '100%', sm: 'auto' },
-                        '&:hover': {
-                            bgcolor: '#E6B53C',
-                        }
+                        '&:hover': { bgcolor: '#E6B53C' }
                     }}
                 >
                     Add Course
                 </Button>
             </Box>
+
+            {/* Delete feedback */}
+            {deleteLoading && (
+                <Typography
+                    variant="body2"
+                    color="warning.main"
+                    sx={{ mt: 2, mb: 1, textAlign: 'center' }}
+                >
+                    Deleting course...
+                </Typography>
+            )}
+            {deleteError && (
+                <Typography
+                    variant="body2"
+                    color="error"
+                    sx={{ mb: 2, textAlign: 'center' }}
+                >
+                    Error deleting course: {deleteError}
+                </Typography>
+            )}
 
             {/* Loading */}
             {loading && (
@@ -193,14 +215,8 @@ const CourseManagementComponent = () => {
                                     pb: { xs: 1, sm: 2 }
                                 }}
                             >
-                                <Box
-                                    sx={{
-                                        display: 'flex',
-                                        alignItems: 'center',
-                                        mb: { xs: 1.5, sm: 2 },
-                                        gap: 1
-                                    }}
-                                >
+                                {/* Course Title with Icon */}
+                                <Box sx={{ display: 'flex', alignItems: 'center', mb: { xs: 1.5, sm: 2 }, gap: 1 }}>
                                     <SchoolIcon
                                         sx={{
                                             color: 'primary.main',
@@ -221,6 +237,7 @@ const CourseManagementComponent = () => {
                                     </Typography>
                                 </Box>
 
+                                {/* Course Description */}
                                 <Typography
                                     variant="body2"
                                     sx={{
@@ -233,12 +250,12 @@ const CourseManagementComponent = () => {
                                     {course.cs_description}
                                 </Typography>
 
-                                <Box sx={{ mb: { xs: 2, sm: 2.5 } }}>
+                                {/* Course Overview */}
+                                <Box sx={{ mb: { xs: 1.5, sm: 1.7 } }}>
                                     <Typography
                                         variant="subtitle2"
                                         sx={{
                                             fontWeight: 600,
-                                            mb: 1,
                                             color: 'text.primary',
                                             fontSize: { xs: '0.9rem', sm: '1rem' }
                                         }}
@@ -261,6 +278,31 @@ const CourseManagementComponent = () => {
                                     </Typography>
                                 </Box>
 
+                                {/* Course Highlights */}
+                                {course.cs_desc_points && (
+                                    <Box sx={{ mb: { xs: 2, sm: 2.5 } }}>
+                                        <Typography
+                                            variant="subtitle2"
+                                            sx={{
+                                                fontWeight: 600,
+                                                color: 'text.primary',
+                                                fontSize: { xs: '0.9rem', sm: '1rem' },
+                                                mb: 1
+                                            }}
+                                        >
+                                            Course Highlights
+                                        </Typography>
+                                        <ul style={{ margin: 0, paddingLeft: '1.2em', color: '#607d8b', fontSize: '0.96em' }}>
+                                            {course.cs_desc_points.split(',').map((point, idx) =>
+                                                <li key={idx} style={{ marginBottom: 4 }}>
+                                                    {point.trim()}
+                                                </li>
+                                            )}
+                                        </ul>
+                                    </Box>
+                                )}
+
+                                {/* Status Chip */}
                                 <Chip
                                     label={course.cs_status ? course.cs_status.charAt(0).toUpperCase() + course.cs_status.slice(1) : "Active"}
                                     size="small"
@@ -308,6 +350,7 @@ const CourseManagementComponent = () => {
                                                 }
                                             }}
                                             size="small"
+                                            disabled={deleteLoading}
                                         >
                                             <DeleteIcon fontSize="small" />
                                         </IconButton>
@@ -340,6 +383,7 @@ const CourseManagementComponent = () => {
                                                 borderRadius: 2,
                                                 px: { sm: 1.5, md: 2 }
                                             }}
+                                            disabled={deleteLoading}
                                         >
                                             Delete
                                         </Button>
