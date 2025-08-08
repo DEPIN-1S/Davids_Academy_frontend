@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
     Box,
     Typography,
@@ -41,9 +41,21 @@ const CourseManagementComponent = () => {
         deleteError
     } = useSelector((state) => state.course);
 
+    // Local state for optimistically hiding courses being deleted
+    const [pendingDeleteIds, setPendingDeleteIds] = useState([]);
+
     useEffect(() => {
         dispatch(fetchCourses());
     }, [dispatch]);
+
+    // If all deletion is done (deleteLoading false), clear the pending list
+    // If you have deleteSuccess in your slice, you can use that too
+    useEffect(() => {
+        if (!deleteLoading && pendingDeleteIds.length > 0) {
+            setPendingDeleteIds([]);
+        }
+        // Optionally, handle rollback on deleteError!
+    }, [deleteLoading, pendingDeleteIds.length]);
 
     const handleAddCourse = () => {
         navigate('/admin/course-form');
@@ -56,9 +68,15 @@ const CourseManagementComponent = () => {
     const handleDeleteCourse = (courseId) => {
         const confirmed = window.confirm("Are you sure you want to delete this course?");
         if (confirmed) {
+            setPendingDeleteIds((prev) => [...prev, courseId]);
             dispatch(removeCourse(courseId));
         }
     };
+
+    // Display all courses except those being deleted right now
+    const displayCourses = courses.filter(
+        (course) => !pendingDeleteIds.includes(course.cs_id)
+    );
 
     return (
         <Container maxWidth="xl" sx={{ py: { xs: 2, sm: 3, md: 4 } }}>
@@ -143,8 +161,8 @@ const CourseManagementComponent = () => {
                 </Typography>
             )}
 
-            {/* Course Cards */}
-            {!loading && !error && courses.length === 0 && (
+            {/* No Courses */}
+            {!loading && !error && displayCourses.length === 0 && (
                 <Box
                     sx={{
                         display: 'flex',
@@ -184,8 +202,9 @@ const CourseManagementComponent = () => {
                 </Box>
             )}
 
+            {/* Course Cards */}
             <Grid container spacing={{ xs: 2, sm: 3, md: 3 }}>
-                {courses.map((course) => (
+                {displayCourses.map((course) => (
                     <Grid
                         item
                         xs={12}

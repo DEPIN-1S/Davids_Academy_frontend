@@ -59,8 +59,8 @@ const AddCourseComponent = () => {
             setFile(null);
             setErrors({});
             dispatch(resetCourseStatus());
-            // Redirect after short delay for user to see toast (2s)
-            setTimeout(() => navigate('/admin/course-management'), 2000);
+            // Redirect after short delay for user to see toast (1s)
+            setTimeout(() => navigate('/admin/course-management'), 1000);
         }
         if (createError) {
             toast.error(typeof createError === 'string' ? createError : 'Failed to add course!');
