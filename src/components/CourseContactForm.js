@@ -15,7 +15,13 @@ const CourseContactForm = () => {
   const [form, setForm] = useState(initialForm);
 
   const dispatch = useDispatch();
-  const { submitLoading, submitSuccess, submitError } = useSelector(state => state.contacts);
+
+  // Safe destructuring with fallbacks
+  const {
+    submitLoading = false,
+    submitSuccess = false,
+    submitError = null
+  } = useSelector(state => state.contacts || {});
 
   // Reset form after successful submit
   useEffect(() => {
@@ -33,9 +39,8 @@ const CourseContactForm = () => {
   };
 
   // Submit handler
-  const handleSubmit = async (e) => {
+  const handleSubmit = (e) => {
     e.preventDefault();
-    // Dispatch thunk (async Redux action)
     dispatch(submitContact(form));
   };
 

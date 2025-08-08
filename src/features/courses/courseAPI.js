@@ -73,8 +73,8 @@ export const listCoursesByCsId = async (cs_id) => {
 export const updateCourse = async (formData) => {
     try {
         const response = await fetch(baseUrl + "/course/update/course", {
-            method: "PUT",
-            body: formData
+            method: "POST",
+            body: formData 
             // Don't set Content-Type for FormData
         });
 
