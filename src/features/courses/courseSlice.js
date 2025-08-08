@@ -37,6 +37,7 @@ export const fetchCoursesByCsId = createAsyncThunk(
 export const createCourse = createAsyncThunk(
     "courses/createCourse",
     async (formData, { rejectWithValue }) => {
+        // Log each field of the FormData
         try {
             const data = await addCourse(formData);
             return data;
@@ -45,6 +46,7 @@ export const createCourse = createAsyncThunk(
         }
     }
 );
+
 
 export const editCourse = createAsyncThunk(
     "courses/editCourse",

@@ -5,18 +5,34 @@ const baseUrl = process.env.REACT_APP_API_URL;
 // ADD COURSE (POST, FormData)
 export const addCourse = async (courseData) => {
     try {
-        // courseData must be a FormData instance, not JSON!
-        const response = await fetch(baseUrl + "/exam/course/create/course", {
+        // courseData must be a FormData instance!
+        const response = await fetch(baseUrl + "/course/create/course", {
             method: "POST",
-            body: courseData
-            // NOTE: Do NOT set 'Content-Type' header for FormData!
+            body: courseData, // will be sent as multipart/form-data
+            // DO NOT set Content-Type! Browser will set it with boundary.
         });
 
+        // Handle HTTP errors
         if (!response.ok) {
-            throw new Error("Failed to add course");
+            let errorText;
+            // Try to parse error JSON with detailed message, if possible
+            try {
+                const errRes = await response.json();
+                errorText =
+                    errRes?.message ||
+                    errRes?.error ||
+                    JSON.stringify(errRes) ||
+                    "Failed to add course";
+            } catch {
+                errorText = response.statusText || "Failed to add course";
+            }
+            throw new Error(errorText);
         }
+
+        // Return the parsed response
         return await response.json();
     } catch (error) {
+        // Should always throw the actual error instance (not just a string!)
         throw error;
     }
 };

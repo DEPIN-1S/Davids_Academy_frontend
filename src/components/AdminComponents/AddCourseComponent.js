@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useRef, useState, useEffect } from 'react';
 import {
     Box,
     Typography,
@@ -10,376 +10,219 @@ import {
     useTheme,
     useMediaQuery,
     IconButton,
-    Alert,
     Chip,
     Grid,
-    Stack,
-    Divider
+    Stack
 } from '@mui/material';
 import {
     CloudUpload,
     Delete,
     Image as ImageIcon,
     PictureAsPdf,
-    Description,
     Save as SaveIcon,
     Cancel as CancelIcon
 } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
+import { useDispatch, useSelector } from 'react-redux';
+import { createCourse, resetCourseStatus } from '../../features/courses/courseSlice';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 const AddCourseComponent = () => {
     const theme = useTheme();
     const navigate = useNavigate();
+    const dispatch = useDispatch();
+
     const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
-    const isTablet = useMediaQuery(theme.breakpoints.down('md'));
 
     // Form state
-    const [formData, setFormData] = useState({
-        courseTitle: '',
-        courseSubtitle: '',
-        courseOverview: ''
+    const [form, setForm] = useState({
+        course_name: '',
+        sub_title: '',
+        description: '',
     });
-
-    const [selectedFile, setSelectedFile] = useState(null);
-    const [errors, setErrors] = useState({});
     const [highlights, setHighlights] = useState(['']);
+    const [file, setFile] = useState(null);
+    const [errors, setErrors] = useState({});
+    const fileInputRef = useRef();
 
-    const fileInputRef = useRef(null);
+    // Redux feedback
+    const { createLoading, createSuccess, createError } = useSelector(state => state.course);
 
-    // Handle form input changes
-    const handleInputChange = (field) => (event) => {
-        setFormData({
-            ...formData,
-            [field]: event.target.value
-        });
-        // Clear error when user starts typing
-        if (errors[field]) {
-            setErrors(prev => ({ ...prev, [field]: null }));
+    // Toast feedback (+ reset form on success)
+    // Toast and redirect on success, Toast on error
+    useEffect(() => {
+        if (createSuccess) {
+            toast.success('Course added successfully!');
+            setForm({ course_name: '', sub_title: '', description: '' });
+            setHighlights(['']);
+            setFile(null);
+            setErrors({});
+            dispatch(resetCourseStatus());
+            // Redirect after short delay for user to see toast (2s)
+            setTimeout(() => navigate('/admin/course-management'), 2000);
         }
+        if (createError) {
+            toast.error(typeof createError === 'string' ? createError : 'Failed to add course!');
+            dispatch(resetCourseStatus());
+        }
+    }, [createSuccess, createError, dispatch, navigate]);
+
+    // Input handlers
+    const handleInputChange = (field) => (e) => {
+        setForm({ ...form, [field]: e.target.value });
+        setErrors(prev => ({ ...prev, [field]: null }));
     };
+    // Highlights handlers
+    const handleHighlightChange = (idx, val) => {
+        const updated = [...highlights];
+        updated[idx] = val;
+        setHighlights(updated);
+    };
+    const addHighlight = () => setHighlights([...highlights, '']);
+    const removeHighlight = idx => highlights.length > 1 && setHighlights(highlights.filter((_, i) => i !== idx));
 
-    // Handle file upload
-    const handleFileSelect = (event) => {
-        const file = event.target.files[0];
-        if (file) {
-            if (file.size > 10 * 1024 * 1024) {
-                setErrors(prev => ({ ...prev, file: 'File size must be less than 10MB' }));
-                return;
-            }
-
-            const allowedTypes = ['image/jpeg', 'image/png', 'image/gif', 'application/pdf'];
-            if (!allowedTypes.includes(file.type)) {
-                setErrors(prev => ({ ...prev, file: 'Only images and PDF files are allowed' }));
-                return;
-            }
-
-            const fileData = {
-                file: file,
-                name: file.name,
-                size: file.size,
-                type: file.type,
-                url: URL.createObjectURL(file),
-                uploadedAt: new Date().toISOString()
-            };
-
-            setSelectedFile(fileData);
+    // File handling
+    const handleFileSelect = (e) => {
+        const fileVal = e.target.files[0];
+        if (fileVal) {
+            if (fileVal.size > 10 * 1024 * 1024)
+                return setErrors(prev => ({ ...prev, file: 'File size must be < 10MB' }));
+            if (!['image/jpeg', 'image/png', 'image/gif', 'application/pdf'].includes(fileVal.type))
+                return setErrors(prev => ({ ...prev, file: 'Only image or pdf allowed.' }));
+            setFile(fileVal);
             setErrors(prev => ({ ...prev, file: null }));
         }
-        event.target.value = '';
+        e.target.value = '';
     };
-
-    const handleRemoveFile = () => {
-        if (selectedFile && selectedFile.url) {
-            URL.revokeObjectURL(selectedFile.url);
-            setSelectedFile(null);
-        }
-    };
-
-    // Handle highlights
-    const handleHighlightChange = (index, value) => {
-        const newHighlights = [...highlights];
-        newHighlights[index] = value;
-        setHighlights(newHighlights);
-    };
-
-    const addHighlight = () => {
-        setHighlights([...highlights, '']);
-    };
-
-    const removeHighlight = (index) => {
-        if (highlights.length > 1) {
-            const newHighlights = highlights.filter((_, i) => i !== index);
-            setHighlights(newHighlights);
-        }
-    };
+    const handleRemoveFile = () => setFile(null);
 
     // Form validation
-    const validateForm = () => {
-        const newErrors = {};
-
-        if (!formData.courseTitle.trim()) {
-            newErrors.courseTitle = 'Course title is required';
-        }
-
-        if (!formData.courseSubtitle.trim()) {
-            newErrors.courseSubtitle = 'Course subtitle is required';
-        }
-
-        if (!formData.courseOverview.trim()) {
-            newErrors.courseOverview = 'Course overview is required';
-        }
-
-        setErrors(newErrors);
-        return Object.keys(newErrors).length === 0;
+    const validate = () => {
+        const e = {};
+        if (!form.course_name.trim()) e.course_name = 'Title is required';
+        if (!form.sub_title.trim()) e.sub_title = 'Subtitle is required';
+        if (!form.description.trim()) e.description = 'Description is required';
+        setErrors(e);
+        return Object.keys(e).length === 0;
     };
 
-    // Handle form submission
+    // Form Submit: Compose FormData and dispatch thunk
     const handleSave = () => {
-        if (validateForm()) {
-            const courseData = {
-                ...formData,
-                highlights: highlights.filter(h => h.trim()),
-                file: selectedFile
-            };
-            console.log('Saving course:', courseData);
-            // Add your save logic here
-        }
+        if (!validate()) return;
+        const fd = new FormData();
+        fd.append('course_name', form.course_name);
+        fd.append('sub_title', form.sub_title);
+        fd.append('descrption', form.description);
+        fd.append('desc_points', highlights.filter(h => h.trim()).join(','));
+        if (file) fd.append('courseimage', file);
+        dispatch(createCourse(fd));
     };
 
-    const handleCancel = () => {
-        navigate(-1); // Go back to previous page
-    };
 
-    // Helper functions
+    const handleCancel = () => navigate(-1);
+
     const getFileIcon = (fileType) => {
         if (fileType?.startsWith('image/')) return <ImageIcon />;
         if (fileType === 'application/pdf') return <PictureAsPdf />;
-        return <Description />;
-    };
-
-    const formatFileSize = (bytes) => {
-        if (bytes === 0) return '0 Bytes';
-        const k = 1024;
-        const sizes = ['Bytes', 'KB', 'MB', 'GB'];
-        const i = Math.floor(Math.log(bytes) / Math.log(k));
-        return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+        return null;
     };
 
     return (
-        <Container maxWidth="md" sx={{ py: { xs: 2, sm: 3, md: 4 } }}>
+        <Container maxWidth="md" sx={{ py: 4 }}>
+            {/* Toast container sits outside UI */}
+            <ToastContainer position="top-center" autoClose={2000} hideProgressBar />
+
             {/* Header */}
-            <Box sx={{ mb: { xs: 3, sm: 4 } }}>
-                <Typography
-                    variant="h4"
-                    component="h1"
-                    sx={{
-                        fontWeight: 600,
-                        fontSize: { xs: '1.75rem', sm: '2rem', md: '2.5rem' },
-                        color: 'text.primary',
-                        mb: 1,
-                        textAlign: { xs: 'center', sm: 'left' }
-                    }}
-                >
+            <Box sx={{ mb: 4 }}>
+                <Typography variant="h4" fontWeight={600} mb={1} textAlign={isMobile ? 'center' : 'left'}>
                     Add New Course
                 </Typography>
-                <Typography
-                    variant="body1"
-                    sx={{
-                        color: 'text.secondary',
-                        fontSize: { xs: '0.9rem', sm: '1rem' },
-                        textAlign: { xs: 'center', sm: 'left' }
-                    }}
-                >
+                <Typography variant="body1" color="text.secondary" mb={2}>
                     Fill in the details to create and publish a new course.
                 </Typography>
             </Box>
 
-            {/* Form Card */}
-            <Card
-                sx={{
-                    borderRadius: { xs: 2, sm: 3 },
-                    boxShadow: '0 4px 20px rgba(0,0,0,0.08)',
-                    border: '1px solid',
-                    borderColor: 'grey.200'
-                }}
-            >
+            <Card sx={{ borderRadius: 3, border: '1px solid', borderColor: 'grey.200', boxShadow: '0 4px 20px rgba(0,0,0,0.08)' }}>
                 <CardContent sx={{ p: { xs: 3, sm: 4 } }}>
-                    <Grid container spacing={{ xs: 3, sm: 4 }}>
-                        {/* Course Title */}
+                    <Grid container spacing={3}>
+
+                        {/* Title */}
                         <Grid item xs={12}>
-                            <Typography
-                                variant="h6"
-                                sx={{
-                                    fontWeight: 600,
-                                    mb: 1.5,
-                                    fontSize: { xs: '1.1rem', sm: '1.25rem' }
-                                }}
-                            >
-                                Course Title
-                            </Typography>
+                            <Typography variant="h6" fontWeight={600} mb={1.5}>Course Title</Typography>
                             <TextField
                                 fullWidth
-                                placeholder="Enter Course title..."
-                                value={formData.courseTitle}
-                                onChange={handleInputChange('courseTitle')}
-                                error={!!errors.courseTitle}
-                                helperText={errors.courseTitle}
-                                sx={{
-                                    '& .MuiOutlinedInput-root': {
-                                        borderRadius: 2,
-                                        fontSize: { xs: '0.9rem', sm: '1rem' }
-                                    }
-                                }}
+                                value={form.course_name}
+                                onChange={handleInputChange('course_name')}
+                                placeholder="NCLEX-RN Preparation"
+                                error={!!errors.course_name} helperText={errors.course_name}
                             />
                         </Grid>
 
-                        {/* Course Subtitle */}
+                        {/* Subtitle */}
                         <Grid item xs={12}>
-                            <Typography
-                                variant="h6"
-                                sx={{
-                                    fontWeight: 600,
-                                    mb: 1.5,
-                                    fontSize: { xs: '1.1rem', sm: '1.25rem' }
-                                }}
-                            >
-                                Course Subtitle
-                            </Typography>
+                            <Typography variant="h6" fontWeight={600} mb={1.5}>Course Subtitle</Typography>
                             <TextField
                                 fullWidth
-                                multiline
-                                minRows={2}
-                                maxRows={4}
-                                placeholder="Write a brief course description"
-                                value={formData.courseSubtitle}
-                                onChange={handleInputChange('courseSubtitle')}
-                                error={!!errors.courseSubtitle}
-                                helperText={errors.courseSubtitle}
-                                sx={{
-                                    '& .MuiOutlinedInput-root': {
-                                        borderRadius: 2,
-                                        fontSize: { xs: '0.9rem', sm: '1rem' }
-                                    }
-                                }}
+                                value={form.sub_title}
+                                onChange={handleInputChange('sub_title')}
+                                placeholder="Brief summary of course"
+                                error={!!errors.sub_title} helperText={errors.sub_title}
                             />
                         </Grid>
 
-                        {/* Course Overview */}
+                        {/* Description / Overview */}
                         <Grid item xs={12}>
-                            <Typography
-                                variant="h6"
-                                sx={{
-                                    fontWeight: 600,
-                                    mb: 1.5,
-                                    fontSize: { xs: '1.1rem', sm: '1.25rem' }
-                                }}
-                            >
-                                Now let's create Course Overview.
-                            </Typography>
+                            <Typography variant="h6" fontWeight={600} mb={1.5}>Course Description</Typography>
                             <TextField
-                                fullWidth
-                                multiline
-                                minRows={4}
-                                maxRows={8}
-                                placeholder="Write a detailed course description"
-                                value={formData.courseOverview}
-                                onChange={handleInputChange('courseOverview')}
-                                error={!!errors.courseOverview}
-                                helperText={errors.courseOverview}
-                                sx={{
-                                    '& .MuiOutlinedInput-root': {
-                                        borderRadius: 2,
-                                        fontSize: { xs: '0.9rem', sm: '1rem' }
-                                    }
-                                }}
+                                fullWidth multiline minRows={4} value={form.description}
+                                onChange={handleInputChange('description')}
+                                placeholder="Full course overview"
+                                error={!!errors.description} helperText={errors.description}
                             />
                         </Grid>
 
-                        {/* Add Highlights Section */}
+                        {/* Highlights */}
                         <Grid item xs={12}>
-                            <Box sx={{ mb: 2 }}>
-                                <Typography
-                                    variant="h6"
-                                    sx={{
-                                        fontWeight: 600,
-                                        mb: 1.5,
-                                        fontSize: { xs: '1.1rem', sm: '1.25rem' }
-                                    }}
-                                >
-                                    ✓ Add Highlights
-                                </Typography>
-                                <Typography
-                                    variant="body2"
-                                    sx={{
-                                        color: 'text.secondary',
-                                        mb: 2,
-                                        fontSize: { xs: '0.85rem', sm: '0.9rem' }
-                                    }}
-                                >
-                                    Highlights the goals
-                                </Typography>
-
-                                {highlights.map((highlight, index) => (
-                                    <Box
-                                        key={index}
-                                        sx={{
-                                            display: 'flex',
-                                            alignItems: 'center',
-                                            gap: 1,
-                                            mb: 2
-                                        }}
-                                    >
-                                        <Box
-                                            sx={{
-                                                width: 8,
-                                                height: 8,
-                                                borderRadius: '50%',
-                                                bgcolor: 'success.main',
-                                                flexShrink: 0
-                                            }}
-                                        />
-                                        <TextField
-                                            fullWidth
-                                            placeholder="Highlights the goals"
-                                            value={highlight}
-                                            onChange={(e) => handleHighlightChange(index, e.target.value)}
-                                            size="small"
-                                            sx={{
-                                                '& .MuiOutlinedInput-root': {
-                                                    borderRadius: 2,
-                                                    fontSize: { xs: '0.85rem', sm: '0.9rem' }
-                                                }
-                                            }}
-                                        />
-                                        {highlights.length > 1 && (
-                                            <IconButton
-                                                onClick={() => removeHighlight(index)}
-                                                size="small"
-                                                sx={{ color: 'error.main' }}
-                                            >
-                                                <Delete fontSize="small" />
-                                            </IconButton>
-                                        )}
-                                    </Box>
-                                ))}
-
-                                <Button
-                                    onClick={addHighlight}
-                                    variant="outlined"
-                                    size="small"
-                                    sx={{
-                                        textTransform: 'none',
-                                        borderRadius: 2,
-                                        fontSize: { xs: '0.8rem', sm: '0.9rem' }
-                                    }}
-                                >
-                                    + Add More Highlight
-                                </Button>
-                            </Box>
+                            <Typography variant="h6" fontWeight={600} mb={1.5}>✓ Add Highlights</Typography>
+                            <Typography variant="body2" color="text.secondary" mb={2}>Highlights the goals, comma separated</Typography>
+                            {highlights.map((h, idx) => (
+                                <Box key={idx} sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 2 }}>
+                                    <Chip label={idx + 1} color="primary" size="small" />
+                                    <TextField
+                                        fullWidth
+                                        placeholder="e.g. Expert mentors"
+                                        value={h}
+                                        onChange={e => handleHighlightChange(idx, e.target.value)}
+                                        size="small"
+                                    />
+                                    {highlights.length > 1 && (
+                                        <IconButton onClick={() => removeHighlight(idx)} size="small" sx={{ color: 'error.main' }}>
+                                            <Delete fontSize="small" />
+                                        </IconButton>
+                                    )}
+                                </Box>
+                            ))}
+                            <Button
+                                onClick={addHighlight}
+                                variant="outlined"
+                                size="small"
+                                sx={{ textTransform: 'none', borderRadius: 2, fontSize: '0.9rem' }}
+                            >
+                                + Add More Highlight
+                            </Button>
                         </Grid>
 
-                        {/* File Upload Section */}
+                        {/* File Upload */}
                         <Grid item xs={12}>
+                            <Button
+                                variant="outlined"
+                                startIcon={<CloudUpload />}
+                                onClick={() => fileInputRef.current && fileInputRef.current.click()}
+                                sx={{ textTransform: 'none', borderRadius: 2, mb: 2 }}
+                            >
+                                Upload Course Image or PDF
+                            </Button>
                             <input
                                 type="file"
                                 ref={fileInputRef}
@@ -387,57 +230,34 @@ const AddCourseComponent = () => {
                                 accept="image/*,.pdf"
                                 style={{ display: 'none' }}
                             />
-
-
-                            {/* File Error Display */}
                             {errors.file && (
-                                <Alert severity="error" sx={{ mt: 2 }}>
-                                    {errors.file}
-                                </Alert>
+                                <Box sx={{ mt: 1, color: "error.main", fontSize: "0.95rem" }}>{errors.file}</Box>
                             )}
-
-                            {/* Display Uploaded File */}
-                            {selectedFile && (
+                            {file && (
                                 <Card sx={{ mt: 2, border: '1px solid', borderColor: 'grey.200' }}>
                                     <CardContent sx={{ p: 2 }}>
                                         <Box display="flex" alignItems="center" gap={2}>
-                                            {getFileIcon(selectedFile.type)}
+                                            {getFileIcon(file.type)}
                                             <Box flex={1}>
-                                                <Typography variant="body2" fontWeight={500}>
-                                                    {selectedFile.name}
-                                                </Typography>
+                                                <Typography variant="body2" fontWeight={500}>{file.name}</Typography>
                                                 <Stack direction="row" spacing={1} mt={0.5}>
                                                     <Chip
-                                                        label={formatFileSize(selectedFile.size)}
+                                                        label={Math.ceil(file.size / 1024) + " KB"}
                                                         size="small"
                                                         variant="outlined"
                                                     />
                                                     <Chip
-                                                        label={selectedFile.type.split('/')[1]?.toUpperCase() || 'FILE'}
+                                                        label={file.type.split('/')[1]?.toUpperCase() || 'FILE'}
                                                         size="small"
                                                         color="primary"
                                                         variant="outlined"
                                                     />
                                                 </Stack>
                                             </Box>
-                                            {selectedFile.type.startsWith('image/') && (
-                                                <Box
-                                                    component="img"
-                                                    src={selectedFile.url}
-                                                    alt={selectedFile.name}
-                                                    sx={{
-                                                        width: { xs: 50, sm: 60 },
-                                                        height: { xs: 50, sm: 60 },
-                                                        objectFit: 'cover',
-                                                        borderRadius: 1
-                                                    }}
-                                                />
-                                            )}
-                                            <IconButton
-                                                onClick={handleRemoveFile}
-                                                color="error"
-                                                size="small"
-                                            >
+                                            {file.type.startsWith('image/') &&
+                                                <Box component="img" src={URL.createObjectURL(file)} alt={file.name}
+                                                    sx={{ width: 50, height: 50, objectFit: 'cover', borderRadius: 1 }} />}
+                                            <IconButton onClick={handleRemoveFile} color="error" size="small">
                                                 <Delete />
                                             </IconButton>
                                         </Box>
@@ -450,15 +270,11 @@ const AddCourseComponent = () => {
             </Card>
 
             {/* Action Buttons */}
-            <Box
-                sx={{
-                    mt: { xs: 3, sm: 4 },
-                    display: 'flex',
-                    flexDirection: { xs: 'column', sm: 'row' },
-                    justifyContent: { xs: 'stretch', sm: 'space-between' },
-                    gap: { xs: 2, sm: 2 }
-                }}
-            >
+            <Box sx={{
+                mt: { xs: 3, sm: 4 },
+                display: 'flex', gap: 2, flexDirection: { xs: 'column', sm: 'row' },
+                justifyContent: { xs: 'stretch', sm: 'space-between' }
+            }}>
                 <Button
                     variant="outlined"
                     startIcon={<CancelIcon />}
@@ -472,10 +288,10 @@ const AddCourseComponent = () => {
                         fontSize: { xs: '0.9rem', sm: '1rem' },
                         order: { xs: 2, sm: 1 }
                     }}
+                    disabled={createLoading}
                 >
                     Cancel
                 </Button>
-
                 <Button
                     variant="contained"
                     endIcon={<SaveIcon />}
@@ -490,16 +306,15 @@ const AddCourseComponent = () => {
                         py: { xs: 1.2, sm: 1.5 },
                         fontSize: { xs: '0.9rem', sm: '1rem' },
                         order: { xs: 1, sm: 2 },
-                        '&:hover': {
-                            bgcolor: '#E6B53C',
-                            transform: 'translateY(-2px)',
-                            boxShadow: '0 6px 20px rgba(245, 200, 66, 0.4)'
-                        }
+                        '&:hover': { bgcolor: '#E6B53C' }
                     }}
+                    disabled={createLoading}
                 >
-                    Save
+                    {createLoading ? "Saving..." : "Save"}
                 </Button>
             </Box>
+
+            {/* Toast feedback is now handled above by react-toastify */}
         </Container>
     );
 };
