@@ -7,23 +7,18 @@ import "../../styles/AdminStyles/EnquireLeadComponent.css";
 const EnquireLeadComponent = () => {
     const [showDropdown, setShowDropdown] = useState(false);
 
-    // Get Redux contacts data
-    const dispatch = useDispatch();
-    const { list: contacts, loading, error } = useSelector(
-        (state) => state.contacts
-    );
+    // Provide fallback object so destructuring never fails
+    const { list: contacts = [], loading = false, error = null } =
+        useSelector(state => state.contacts || {});
 
-    // Fetch contacts on mount
+    const dispatch = useDispatch();
+
     useEffect(() => {
         dispatch(fetchContacts());
     }, [dispatch]);
 
-    // Optionally, you could implement filters here
-    // For now, just list all contacts
-
     return (
         <div className="enquire-lead-page">
-            {/* Content Area */}
             <div className="content-area">
                 {/* Filter Dropdown */}
                 <div className="filter-section">
@@ -63,7 +58,7 @@ const EnquireLeadComponent = () => {
                             </div>
                         )}
                         {/* Desktop Table */}
-                        {!loading && !error && contacts?.length > 0 && (
+                        {!loading && !error && contacts.length > 0 && (
                             <div className="desktop-table">
                                 <table className="enquiries-table">
                                     <thead>
@@ -77,14 +72,14 @@ const EnquireLeadComponent = () => {
                                     </thead>
                                     <tbody>
                                         {contacts.map((enquiry, index) => (
-                                            <tr key={enquiry.id || index} className={index % 2 === 1 ? "row-even" : "row-odd"}>
-                                                <td className="cell-qid">{enquiry.id || index + 1}</td>
-                                                <td className="cell-preview">{enquiry.name}</td>
+                                            <tr key={enquiry.cu_id || index} className={index % 2 === 1 ? "row-even" : "row-odd"}>
+                                                <td className="cell-qid">{enquiry.cu_id || index + 1}</td>
+                                                <td className="cell-preview">{enquiry.cu_name}</td>
                                                 <td className="cell-contact">
-                                                    {enquiry.email} <br />{enquiry.phone}
+                                                    {enquiry.cu_email} <br />{enquiry.cu_mobile}
                                                 </td>
-                                                <td className="cell-course">{enquiry.subject}</td>
-                                                <td className="cell-message">{enquiry.message}</td>
+                                                <td className="cell-course">{enquiry.cu_course_interested}</td>
+                                                <td className="cell-message">{enquiry.cu_message}</td>
                                             </tr>
                                         ))}
                                     </tbody>
@@ -92,35 +87,43 @@ const EnquireLeadComponent = () => {
                             </div>
                         )}
                         {/* Empty state */}
-                        {!loading && !error && (!contacts || contacts.length === 0) && (
+                        {!loading && !error && contacts.length === 0 && (
                             <div style={{ textAlign: "center", color: "#888", padding: "3rem" }}>
                                 No enquiries found.
                             </div>
                         )}
 
                         {/* Mobile Cards */}
-                        {!loading && !error && contacts?.length > 0 && (
+                        {!loading && !error && contacts.length > 0 && (
                             <div className="mobile-cards">
                                 {contacts.map((enquiry, index) => (
-                                    <div key={enquiry.id || index} className="enquiry-card">
+                                    <div key={enquiry.cu_id || index} className="enquiry-card">
                                         <div className="card-header">
-                                            <span className="qid-badge">{enquiry.id || index + 1}</span>
+                                            <span className="qid-badge">{enquiry.cu_id || index + 1}</span>
                                         </div>
                                         <div className="card-body">
-                                            <p className="card-preview">{enquiry.name}</p>
+                                            <p className="card-preview">{enquiry.cu_name}</p>
                                             <div className="card-details">
                                                 <div className="detail-row">
-                                                    <strong>Email:</strong> {enquiry.email}
+                                                    <strong>Email:</strong> {enquiry.cu_email}
                                                 </div>
                                                 <div className="detail-row">
-                                                    <strong>Phone:</strong> {enquiry.phone}
+                                                    <strong>Phone:</strong> {enquiry.cu_mobile}
                                                 </div>
                                                 <div className="detail-row">
-                                                    <strong>Course:</strong> {enquiry.subject}
+                                                    <strong>Course:</strong> {enquiry.cu_course_interested}
                                                 </div>
                                                 <div className="detail-row">
-                                                    <strong>Message:</strong> {enquiry.message}
+                                                    <strong>Message:</strong> {enquiry.cu_message}
                                                 </div>
+                                                {/* Optionally, show status or created_at:
+                        <div className="detail-row">
+                          <strong>Status:</strong> {enquiry.cu_status}
+                        </div>
+                        <div className="detail-row">
+                          <strong>Date:</strong> {new Date(enquiry.cu_created_at).toLocaleString()}
+                        </div>
+                        */}
                                             </div>
                                         </div>
                                     </div>
