@@ -1,7 +1,23 @@
-import React from "react";
+import React, { useEffect } from "react";
 import "../../styles/AdminStyles/AdminDashboardPage.css";
+import { useDispatch, useSelector } from "react-redux";
+import { fetchCourses } from "../../features/courses/courseSlice";
+import { fetchRecentEnquiries } from "../../features/contact/contactSlice";
+
+
 
 const DashboardPage = () => {
+  const dispatch = useDispatch();
+  const { list: courses, loading: coursesLoading } = useSelector((state) => state.course);
+  const { list: enquiries, loading, error } = useSelector((state) => state.contact);
+  console.log("enquiries::::", enquiries);
+
+
+  useEffect(() => {
+    dispatch(fetchCourses());
+    dispatch(fetchRecentEnquiries());
+  }, [dispatch]);
+
   const stats = [
     {
       title: "Total Students",
@@ -9,7 +25,7 @@ const DashboardPage = () => {
       change: "20%",
       subtitle: "Increase of 65 Student",
     },
-    { title: "Total Courses", value: 6, subtitle: "Available for student" },
+    { title: "Total Courses", value: coursesLoading ? "Loading..." : courses.length, subtitle: "Available for student" },
     {
       title: "Tests Created",
       value: 145,
@@ -30,13 +46,6 @@ const DashboardPage = () => {
     { name: "HAAD", avg: 76, color: "#32CD32" },
   ];
 
-  const enquiries = [
-    { name: "Aisha Khan", course: "DHA", status: "NEW" }, 
-    { name: "Aisha Khan", course: "DHA", status: "NEW" },
-    { name: "Aisha Khan", course: "DHA", status: "NEW" },
-    { name: "Aisha Khan", course: "DHA", status: "NEW" },
-    { name: "Aisha Khan", course: "DHA", status: "NEW" },
-  ];
 
   return (
     <div className="dashboard-container">
@@ -100,15 +109,22 @@ const DashboardPage = () => {
             <button className="view-all-btn">View all</button>
           </div>
 
-          {enquiries.map((enq, i) => (
-            <div key={i} className="enquiry-item">
-              <div>
-                <h4>{enq.name}</h4>
-                <span className="enquiry-course">{enq.course}</span>
+
+          {enquiries.length > 0 ? (
+            enquiries.map((enq, i) => (
+              <div key={i} className="enquiry-item">
+                <div>
+                  <h4>{enq.name || "No Name"}</h4>
+                  <span className="enquiry-course">{enq.course || "No Course"}</span>
+                </div>
+                <span className="status-badge">{enq.status || "N/A"}</span>
               </div>
-              <span className="status-badge">{enq.status}</span>
-            </div>
-          ))}
+            ))
+          ) : (
+            <p>No enquiries available.</p>
+          )}
+
+
         </div>
       </div>
     </div>
