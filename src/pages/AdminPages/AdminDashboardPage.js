@@ -1,15 +1,38 @@
-import React from "react";
+import React, { useEffect } from "react";
 import "../../styles/AdminStyles/AdminDashboardPage.css";
+import { useDispatch, useSelector } from "react-redux";
+import { fetchCourses } from "../../features/courses/courseSlice";
+import { fetchRecentEnquiries } from "../../features/contact/contactSlice";
+import { fetchStudents } from "../../features/students/studentSlice";
+
+
+
 
 const DashboardPage = () => {
+  const dispatch = useDispatch();
+  const { list: courses, loading: coursesLoading } = useSelector((state) => state.course);
+  const { list: students, loading: studentsLoading, error: studentsError } = useSelector((state) => state.students);
+  const { recentEnquiries, loading, error } = useSelector((state) => state.contact);
+
+  const studentCount = students.length;
+  console.log("er4r34reet:::", recentEnquiries);
+
+  useEffect(() => {
+    console.log("Dashboard useEffect triggered");
+    dispatch(fetchCourses());
+    dispatch(fetchStudents());
+    dispatch(fetchRecentEnquiries());
+  }, [dispatch]);
+
+
   const stats = [
     {
       title: "Total Students",
-      value: 1260,
+      value: studentCount,
       change: "20%",
       subtitle: "Increase of 65 Student",
     },
-    { title: "Total Courses", value: 6, subtitle: "Available for student" },
+    { title: "Total Courses", value: coursesLoading ? "Loading..." : courses.length, subtitle: "Available for student" },
     {
       title: "Tests Created",
       value: 145,
@@ -30,13 +53,6 @@ const DashboardPage = () => {
     { name: "HAAD", avg: 76, color: "#32CD32" },
   ];
 
-  const enquiries = [
-    { name: "Aisha Khan", course: "DHA", status: "NEW" }, 
-    { name: "Aisha Khan", course: "DHA", status: "NEW" },
-    { name: "Aisha Khan", course: "DHA", status: "NEW" },
-    { name: "Aisha Khan", course: "DHA", status: "NEW" },
-    { name: "Aisha Khan", course: "DHA", status: "NEW" },
-  ];
 
   return (
     <div className="dashboard-container">
@@ -100,15 +116,32 @@ const DashboardPage = () => {
             <button className="view-all-btn">View all</button>
           </div>
 
-          {enquiries.map((enq, i) => (
-            <div key={i} className="enquiry-item">
-              <div>
-                <h4>{enq.name}</h4>
-                <span className="enquiry-course">{enq.course}</span>
-              </div>
-              <span className="status-badge">{enq.status}</span>
+          {/* 
+          <div className="enquiry-item">
+            <div>
+              <h4>frw</h4>
+              <span className="enquiry-course"></span>
             </div>
-          ))}
+            <span className="status-badge">\</span>
+          </div> */}
+          <div className="enquiry-list">
+            {recentEnquiries.length > 0 ? (
+              recentEnquiries.map(({ _id, cu_course_interested, cu_name, cu_status }) => (
+                <div className="enquiry-item" key={_id}>
+                  <div>
+                    <h4>{cu_name}</h4>
+                    <span className="enquiry-course">{cu_course_interested}</span>
+                  </div>
+                  <span className="status-badge">{cu_status}</span>
+                </div>
+              ))
+            ) : (
+              <p>No enquiries found.</p>
+            )}
+          </div>
+
+
+
         </div>
       </div>
     </div>

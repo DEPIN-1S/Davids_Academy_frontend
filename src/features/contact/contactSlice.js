@@ -1,7 +1,5 @@
-// src/features/contacts/contactSlice.js
-
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import { postContact, listContacts } from "./contactAPI";
+import { postContact, listContacts, listRecentEnquiries } from "./contactAPI"; 
 
 // Thunk to submit a contact message
 export const submitContact = createAsyncThunk(
@@ -16,14 +14,37 @@ export const submitContact = createAsyncThunk(
     }
 );
 
-// Thunk to list all contacts
+// Thunk to list all contacts (without auth header)
 export const fetchContacts = createAsyncThunk(
     "contacts/fetchContacts",
     async (_, { rejectWithValue }) => {
         try {
             const data = await listContacts();
-            // If backend returns { list: [...] }
             return data.list || data;
+        } catch (error) {
+            return rejectWithValue(error.message);
+        }
+    }
+);
+
+
+export const fetchRecentEnquiries = createAsyncThunk(
+    "contacts/fetchRecentEnquiries",
+    async (_, { rejectWithValue }) => {
+        try {
+            console.log("Thunk called ✅");
+            console.log("inside fetchrecentenquiriees")
+            const token = localStorage.getItem("accessToken");
+            const data = await listRecentEnquiries(token);
+            console.log("recent enquiries:", token);
+            if (Array.isArray(data)) {
+                return data;
+            } else if (Array.isArray(data.list)) {
+                return data.list;
+            } else if (Array.isArray(data.data)) {
+                return data.data;
+            }
+            return [];
         } catch (error) {
             return rejectWithValue(error.message);
         }
@@ -34,6 +55,7 @@ const contactSlice = createSlice({
     name: "contacts",
     initialState: {
         list: [],
+        recentEnquiries: [],
         loading: false,
         error: null,
         submitLoading: false,
@@ -64,7 +86,7 @@ const contactSlice = createSlice({
                 state.submitError = action.payload;
             })
 
-            // List contacts
+            // List contacts (non-auth)
             .addCase(fetchContacts.pending, (state) => {
                 state.loading = true;
                 state.error = null;
@@ -74,6 +96,20 @@ const contactSlice = createSlice({
                 state.list = action.payload;
             })
             .addCase(fetchContacts.rejected, (state, action) => {
+                state.loading = false;
+                state.error = action.payload;
+            })
+
+            //  List recent enquiries
+            .addCase(fetchRecentEnquiries.pending, (state) => {
+                state.loading = true;
+                state.error = null;
+            })
+            .addCase(fetchRecentEnquiries.fulfilled, (state, action) => {
+                state.loading = false;
+                state.recentEnquiries = action.payload;
+            })
+            .addCase(fetchRecentEnquiries.rejected, (state, action) => {
                 state.loading = false;
                 state.error = action.payload;
             });
