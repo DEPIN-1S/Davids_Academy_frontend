@@ -1,4 +1,3 @@
-// components/UserDropdownComponent.js
 import React, { useState, useEffect, useRef } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { logout } from '../../features/user/userSlice';
@@ -22,14 +21,13 @@ const UserDropdownComponent = () => {
                 setOpen(false);
             }
         };
-
         document.addEventListener('mousedown', handleClickOutside);
         return () => document.removeEventListener('mousedown', handleClickOutside);
     }, []);
 
     return (
         <div className="user-dropdown-wrapper" ref={dropdownRef}>
-            <div className="user-display" onClick={() => setOpen(prev => !prev)}>
+            <div className="user-display" onClick={() => setOpen((prev) => !prev)}>
                 <div className="avatar-circle">
                     <img src="/images/loginAvatar.png" alt="Avatar" />
                 </div>
@@ -39,9 +37,8 @@ const UserDropdownComponent = () => {
                 </div>
                 <span className="arrow">▾</span>
             </div>
-
             {open && (
-                <div className="dropdown-menu">
+                <div className="drop-menu">
                     <button onClick={handleLogout}>Logout</button>
                 </div>
             )}

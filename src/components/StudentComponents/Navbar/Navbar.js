@@ -15,7 +15,7 @@ import {
 import { useLocation } from "react-router-dom";
 import "../../../styles/AdminStyles/NavBar.css";
 import UserDropdownComponent from "../UserDropdownComponent";
-
+import { logout } from '../../../features/user/userSlice';
 const NavBar = () => {
     const location = useLocation();
 
