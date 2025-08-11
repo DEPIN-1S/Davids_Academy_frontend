@@ -124,7 +124,10 @@ const AdminRoutes = () => (
                     <AddCourseComponent />
                 </ProtectedRoutes>
             } />
-
+            <Route path="/admin/course-form/:id" element={
+                <ProtectedRoutes allowedRoles={['admin']}>
+                    <AddCourseComponent />
+                </ProtectedRoutes>} />
             {/* ✅ Recorded Class Management Routes */}
             <Route path="/admin/recorded-class" element={
                 <ProtectedRoutes allowedRoles={['admin']}>

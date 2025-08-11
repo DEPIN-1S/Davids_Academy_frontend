@@ -1,30 +1,14 @@
 import React, { useRef, useState, useEffect } from 'react';
 import {
-    Box,
-    Typography,
-    Button,
-    TextField,
-    Card,
-    CardContent,
-    Container,
-    useTheme,
-    useMediaQuery,
-    IconButton,
-    Chip,
-    Grid,
-    Stack
+    Box, Typography, Button, TextField, Card, CardContent, Container, useTheme,
+    useMediaQuery, IconButton, Chip, Grid, Stack
 } from '@mui/material';
 import {
-    CloudUpload,
-    Delete,
-    Image as ImageIcon,
-    PictureAsPdf,
-    Save as SaveIcon,
-    Cancel as CancelIcon
+    CloudUpload, Delete, Image as ImageIcon, PictureAsPdf, Save as SaveIcon, Cancel as CancelIcon
 } from '@mui/icons-material';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
-import { createCourse, resetCourseStatus } from '../../features/courses/courseSlice';
+import { createCourse, editCourse, resetCourseStatus, fetchCourses } from '../../features/courses/courseSlice';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
@@ -32,10 +16,14 @@ const AddCourseComponent = () => {
     const theme = useTheme();
     const navigate = useNavigate();
     const dispatch = useDispatch();
+    const { id } = useParams(); // id from /admin/course-form/:id
 
     const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
 
-    // Form state
+    // Redux selectors
+    const { list: courseList, createLoading, createSuccess, createError, updateLoading, updateSuccess, updateError } = useSelector(state => state.course);
+
+    // FORM STATE
     const [form, setForm] = useState({
         course_name: '',
         sub_title: '',
@@ -46,34 +34,66 @@ const AddCourseComponent = () => {
     const [errors, setErrors] = useState({});
     const fileInputRef = useRef();
 
-    // Redux feedback
-    const { createLoading, createSuccess, createError } = useSelector(state => state.course);
-
-    // Toast feedback (+ reset form on success)
-    // Toast and redirect on success, Toast on error
+    // ----------  1. PREFILLS ON EDIT ----------
     useEffect(() => {
+        if (id) {
+            // Try to find matching course from Redux store
+            let found = courseList.find((c) => String(c.cs_id) === String(id));
+            // If not present (direct reload), you should fetch it (optional, assuming fetchCourses gives all)
+            if (!found) {
+                dispatch(fetchCourses());
+            } else {
+                // Pre-fill fields: you may need to map backend fields to UI fields
+                setForm({
+                    course_name: found.cs_name || '',
+                    sub_title: found.cs_sub_title || found.sub_title || '',
+                    description: found.cs_description || found.description || '',
+                });
+                setHighlights(
+                    found.cs_desc_points
+                        ? found.cs_desc_points.split(',').map((s) => s.trim())
+                        : ['']
+                );
+                setFile(null); // To prevent wrongly uploading old image
+            }
+        }
+        // eslint-disable-next-line
+    }, [id, courseList]);
+
+    // ---------- 2. TOAST and REDIRECT ----------
+    useEffect(() => {
+        // Creation success
         if (createSuccess) {
             toast.success('Course added successfully!');
+            // Clear form
             setForm({ course_name: '', sub_title: '', description: '' });
             setHighlights(['']);
             setFile(null);
             setErrors({});
             dispatch(resetCourseStatus());
-            // Redirect after short delay for user to see toast (1s)
+            setTimeout(() => navigate('/admin/course-management'), 1000);
+        }
+        // Edit success
+        if (updateSuccess) {
+            toast.success('Course updated successfully!');
+            dispatch(resetCourseStatus());
             setTimeout(() => navigate('/admin/course-management'), 1000);
         }
         if (createError) {
             toast.error(typeof createError === 'string' ? createError : 'Failed to add course!');
             dispatch(resetCourseStatus());
         }
-    }, [createSuccess, createError, dispatch, navigate]);
+        if (updateError) {
+            toast.error(typeof updateError === 'string' ? updateError : 'Failed to update course!');
+            dispatch(resetCourseStatus());
+        }
+    }, [createSuccess, createError, updateSuccess, updateError, dispatch, navigate]);
 
-    // Input handlers
+    // ---------- 3. INPUT HANDLERS ----------
     const handleInputChange = (field) => (e) => {
         setForm({ ...form, [field]: e.target.value });
         setErrors(prev => ({ ...prev, [field]: null }));
     };
-    // Highlights handlers
     const handleHighlightChange = (idx, val) => {
         const updated = [...highlights];
         updated[idx] = val;
@@ -81,8 +101,6 @@ const AddCourseComponent = () => {
     };
     const addHighlight = () => setHighlights([...highlights, '']);
     const removeHighlight = idx => highlights.length > 1 && setHighlights(highlights.filter((_, i) => i !== idx));
-
-    // File handling
     const handleFileSelect = (e) => {
         const fileVal = e.target.files[0];
         if (fileVal) {
@@ -97,17 +115,17 @@ const AddCourseComponent = () => {
     };
     const handleRemoveFile = () => setFile(null);
 
-    // Form validation
+    // ---------- 4. VALIDATION ----------
     const validate = () => {
         const e = {};
         if (!form.course_name.trim()) e.course_name = 'Title is required';
         if (!form.sub_title.trim()) e.sub_title = 'Subtitle is required';
-        if (!form.description.trim()) e.description = 'Description is required';
+        if (!form.description.trim()) e.description = 'description is required';
         setErrors(e);
         return Object.keys(e).length === 0;
     };
 
-    // Form Submit: Compose FormData and dispatch thunk
+    // ---------- 5. SUBMIT ----------
     const handleSave = () => {
         if (!validate()) return;
         const fd = new FormData();
@@ -116,11 +134,17 @@ const AddCourseComponent = () => {
         fd.append('descrption', form.description);
         fd.append('desc_points', highlights.filter(h => h.trim()).join(','));
         if (file) fd.append('courseimage', file);
-        dispatch(createCourse(fd));
+        if (id) {
+            // EDIT, must append id (usually "cs_id") for the backend; adjust if your update API expects different field!
+            fd.append('cs_id', id);
+            dispatch(editCourse(fd));
+        } else {
+            // NEW COURSE
+            dispatch(createCourse(fd));
+        }
     };
 
-
-    const handleCancel = () => navigate(-1);
+    const handleCancel = () => navigate('/admin/course-management');
 
     const getFileIcon = (fileType) => {
         if (fileType?.startsWith('image/')) return <ImageIcon />;
@@ -130,23 +154,18 @@ const AddCourseComponent = () => {
 
     return (
         <Container maxWidth="md" sx={{ py: 4 }}>
-            {/* Toast container sits outside UI */}
             <ToastContainer position="top-center" autoClose={2000} hideProgressBar />
-
-            {/* Header */}
             <Box sx={{ mb: 4 }}>
                 <Typography variant="h4" fontWeight={600} mb={1} textAlign={isMobile ? 'center' : 'left'}>
-                    Add New Course
+                    {id ? "Edit Course" : "Add New Course"}
                 </Typography>
                 <Typography variant="body1" color="text.secondary" mb={2}>
-                    Fill in the details to create and publish a new course.
+                    Fill in the details to {id ? "update this" : "create and publish a new"} course.
                 </Typography>
             </Box>
-
             <Card sx={{ borderRadius: 3, border: '1px solid', borderColor: 'grey.200', boxShadow: '0 4px 20px rgba(0,0,0,0.08)' }}>
                 <CardContent sx={{ p: { xs: 3, sm: 4 } }}>
                     <Grid container spacing={3}>
-
                         {/* Title */}
                         <Grid item xs={12}>
                             <Typography variant="h6" fontWeight={600} mb={1.5}>Course Title</Typography>
@@ -158,7 +177,6 @@ const AddCourseComponent = () => {
                                 error={!!errors.course_name} helperText={errors.course_name}
                             />
                         </Grid>
-
                         {/* Subtitle */}
                         <Grid item xs={12}>
                             <Typography variant="h6" fontWeight={600} mb={1.5}>Course Subtitle</Typography>
@@ -170,18 +188,17 @@ const AddCourseComponent = () => {
                                 error={!!errors.sub_title} helperText={errors.sub_title}
                             />
                         </Grid>
-
                         {/* Description / Overview */}
                         <Grid item xs={12}>
                             <Typography variant="h6" fontWeight={600} mb={1.5}>Course Description</Typography>
                             <TextField
-                                fullWidth multiline minRows={4} value={form.description}
+                                fullWidth multiline minRows={4}
+                                value={form.description}
                                 onChange={handleInputChange('description')}
                                 placeholder="Full course overview"
                                 error={!!errors.description} helperText={errors.description}
                             />
                         </Grid>
-
                         {/* Highlights */}
                         <Grid item xs={12}>
                             <Typography variant="h6" fontWeight={600} mb={1.5}>✓ Add Highlights</Typography>
@@ -212,7 +229,6 @@ const AddCourseComponent = () => {
                                 + Add More Highlight
                             </Button>
                         </Grid>
-
                         {/* File Upload */}
                         <Grid item xs={12}>
                             <Button
@@ -268,7 +284,6 @@ const AddCourseComponent = () => {
                     </Grid>
                 </CardContent>
             </Card>
-
             {/* Action Buttons */}
             <Box sx={{
                 mt: { xs: 3, sm: 4 },
@@ -288,7 +303,7 @@ const AddCourseComponent = () => {
                         fontSize: { xs: '0.9rem', sm: '1rem' },
                         order: { xs: 2, sm: 1 }
                     }}
-                    disabled={createLoading}
+                    disabled={createLoading || updateLoading}
                 >
                     Cancel
                 </Button>
@@ -308,13 +323,11 @@ const AddCourseComponent = () => {
                         order: { xs: 1, sm: 2 },
                         '&:hover': { bgcolor: '#E6B53C' }
                     }}
-                    disabled={createLoading}
+                    disabled={createLoading || updateLoading}
                 >
-                    {createLoading ? "Saving..." : "Save"}
+                    {(createLoading || updateLoading) ? "Saving..." : id ? "Update" : "Save"}
                 </Button>
             </Box>
-
-            {/* Toast feedback is now handled above by react-toastify */}
         </Container>
     );
 };

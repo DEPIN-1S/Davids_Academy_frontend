@@ -1,7 +1,8 @@
 // src/api/contactApi.js
 
 const baseUrl = process.env.REACT_APP_API_URL;
-
+const accessToken = localStorage.getItem('accessToken');
+const refreshToken = localStorage.getItem('refreshToken');
 // POST: Submit a new contact message
 export const postContact = async (contactData) => {
     try {
@@ -22,9 +23,15 @@ export const postContact = async (contactData) => {
 // GET: List all contact messages
 export const listContacts = async () => {
     try {
-        const response = await fetch(baseUrl + "/student/list/contact-us", {
-            method: "GET"
+        const response = await fetch(baseUrl + "/admin/list/contact-us", {
+            method: "POST",
+            headers: {
+                "Authorization": `Bearer ${accessToken}`, // Send accessToken as Bearer token
+                // If your API requires the refresh token, you may also send it:
+                // "x-refresh-token": refreshToken
+            }
         });
+        console.log('response', response);
         if (!response.ok) throw new Error("Failed to list contacts");
         return await response.json();
     } catch (error) {
