@@ -31,3 +31,21 @@ export const listContacts = async () => {
         throw error;
     }
 };
+
+
+export async function listRecentEnquiries(token) {
+    console.log("inside api function of listing enquiries");
+    const response = await fetch(`${process.env.REACT_APP_API_URL}/admin/list/contact-us`, {
+        method: "POST", 
+        headers: {
+            "Authorization": `Bearer ${token}`,
+            "Content-Type": "application/json",
+        }
+    });
+
+    if (!response.ok) {
+        throw new Error("Failed to fetch recent enquiries");
+    }
+
+    return await response.json();
+}

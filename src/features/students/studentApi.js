@@ -1,5 +1,3 @@
-const baseUrl = process.env.REACT_APP_API_URL.replace(/\/$/, '');
-
 export async function listStudents(token) {
   const response = await fetch(`${process.env.REACT_APP_API_URL}/admin/student/list`, {
     method: "POST", 
@@ -7,8 +5,7 @@ export async function listStudents(token) {
       "Authorization": `Bearer ${token}`,
       "Content-Type": "application/json",
     },
-    
-    body: JSON.stringify({}) 
+    body: JSON.stringify({ type: "all" })  // <-- sending type: "all"
   });
 
   if (!response.ok) {
@@ -18,3 +15,4 @@ export async function listStudents(token) {
   const data = await response.json();
   return data;
 }
+

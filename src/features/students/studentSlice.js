@@ -5,14 +5,24 @@ export const fetchStudents = createAsyncThunk(
   "students/fetchStudents",
   async (_, { rejectWithValue }) => {
     try {
-      const token = localStorage.getItem("accessToken"); 
+      const token = localStorage.getItem("accessToken");
+      console.log("Access toke in student list",token);
+      
       const data = await listStudents(token);
-      return data.list || data; 
+      if (Array.isArray(data)) {
+        return data; 
+      } else if (Array.isArray(data.list)) {
+        return data.list; 
+      } else if (Array.isArray(data.data)) {
+        return data.data; 
+      }
+      return []; 
     } catch (error) {
       return rejectWithValue(error.message);
     }
   }
 );
+
 
 const studentSlice = createSlice({
   name: "students",

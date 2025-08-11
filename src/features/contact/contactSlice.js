@@ -1,5 +1,5 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import { postContact, listContacts } from "./contactAPI";
+import { postContact, listContacts, listRecentEnquiries } from "./contactAPI"; 
 
 // Thunk to submit a contact message
 export const submitContact = createAsyncThunk(
@@ -27,43 +27,35 @@ export const fetchContacts = createAsyncThunk(
     }
 );
 
-// NEW Thunk: fetch recent enquiries with token auth header
+
 export const fetchRecentEnquiries = createAsyncThunk(
     "contacts/fetchRecentEnquiries",
     async (_, { rejectWithValue }) => {
         try {
-            const token = localStorage.getItem('accessToken');
-            console.log("acess token", token);
-            const response = await fetch(
-                `${process.env.REACT_APP_API_URL}/exam/list/contact-us`,
-                {
-                    method: "POST",
-                    headers: {
-                        Authorization: `Bearer ${token}`,
-                        "Content-Type": "application/json",
-                    },
-                    body: JSON.stringify({}),
-                }
-            );
-
-            if (!response.ok) {
-                throw new Error(`Failed to fetch: ${response.statusText}`);
+            console.log("Thunk called ✅");
+            console.log("inside fetchrecentenquiriees")
+            const token = localStorage.getItem("accessToken");
+            const data = await listRecentEnquiries(token);
+            console.log("recent enquiries:", token);
+            if (Array.isArray(data)) {
+                return data;
+            } else if (Array.isArray(data.list)) {
+                return data.list;
+            } else if (Array.isArray(data.data)) {
+                return data.data;
             }
-
-            const data = await response.json();
-            return data.list || data;
+            return [];
         } catch (error) {
             return rejectWithValue(error.message);
         }
     }
 );
 
-
-
 const contactSlice = createSlice({
     name: "contacts",
     initialState: {
         list: [],
+        recentEnquiries: [],
         loading: false,
         error: null,
         submitLoading: false,
@@ -108,14 +100,14 @@ const contactSlice = createSlice({
                 state.error = action.payload;
             })
 
-            // New fetchRecentEnquiries
+            //  List recent enquiries
             .addCase(fetchRecentEnquiries.pending, (state) => {
                 state.loading = true;
                 state.error = null;
             })
             .addCase(fetchRecentEnquiries.fulfilled, (state, action) => {
                 state.loading = false;
-                state.list = action.payload;
+                state.recentEnquiries = action.payload;
             })
             .addCase(fetchRecentEnquiries.rejected, (state, action) => {
                 state.loading = false;
