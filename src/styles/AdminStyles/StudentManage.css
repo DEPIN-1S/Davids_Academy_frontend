@@ -1,3 +1,52 @@
+.table-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+  padding-left: 20px;
+  padding-right: 20px;
+}
+
+.status-dropdown {
+  padding: 6px 17px;
+  border-radius: 20px;
+  border-color: none;
+  font-size: 14px;
+  background-color: #E9E9E9;
+}
+
+.add-student {
+  padding: 6px 14px;
+  border: none;
+  border-radius: 20px;
+  background-color: #f5b700;
+  color: white;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.add-student:hover {
+  opacity: 0.9;
+}
+
+
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 999;
+}
+
+
+
+
+
 .table-container {
   padding: 20px;
   font-family: Arial, sans-serif;
