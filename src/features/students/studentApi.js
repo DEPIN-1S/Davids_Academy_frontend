@@ -1,11 +1,11 @@
 export async function listStudents(token) {
   const response = await fetch(`${process.env.REACT_APP_API_URL}/admin/student/list`, {
-    method: "POST", 
+    method: "POST",
     headers: {
       "Authorization": `Bearer ${token}`,
       "Content-Type": "application/json",
     },
-    body: JSON.stringify({ type: "all" })  
+    body: JSON.stringify({ type: "all" })
   });
 
   if (!response.ok) {
@@ -36,3 +36,33 @@ export async function addStudent(studentData, token) {
   }
   return await response.json();
 }
+
+
+export async function deleteStudent(id, token) {
+  const response = await fetch(
+    `${process.env.REACT_APP_API_URL}/admin/student/update-status`,
+    {
+      method: "POST",
+      headers: {
+        "Authorization": `Bearer ${token}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        student_id: id
+      })
+    }
+  );
+
+  console.log("Delete API raw response:", response);
+
+  if (!response.ok) {
+    throw new Error(`Failed to delete student: ${response.status}`);
+  }
+
+  const data = await response.json();
+  console.log("Delete API parsed JSON:", data);
+
+  return data;
+}
+
+

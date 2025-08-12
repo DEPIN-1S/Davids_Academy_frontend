@@ -1,6 +1,7 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import { listStudents } from "../../features/students/studentApi";
 import { addStudent } from '../../features/students/studentApi'
+import { deleteStudent } from "../../features/students/studentApi";
 
 
 export const fetchStudents = createAsyncThunk(
@@ -47,6 +48,23 @@ export const createStudent = createAsyncThunk(
   }
 );
 
+export const removeStudent = createAsyncThunk(
+  "students/removeStudent",
+  async (studentId, { rejectWithValue }) => {
+    try {
+      const token = localStorage.getItem("accessToken");
+      const data = await deleteStudent(studentId, token);
+
+      if (!data || data.success === false) {
+        return rejectWithValue(data?.message || "Failed to delete student");
+      }
+
+      return studentId; 
+    } catch (error) {
+      return rejectWithValue(error.message);
+    }
+  }
+);
 
 
 const studentSlice = createSlice({
@@ -70,7 +88,17 @@ const studentSlice = createSlice({
       .addCase(fetchStudents.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
-      });
+      })
+
+      //for deleting student
+      .addCase(removeStudent.fulfilled, (state, action) => {
+        state.list = state.list.filter(
+          (student) => student.student_id !== action.payload
+        );
+      })
+
+
+
   },
 });
 

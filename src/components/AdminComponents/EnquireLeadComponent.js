@@ -3,18 +3,16 @@ import { FaChevronDown } from "react-icons/fa";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchContacts } from "../../features/contact/contactSlice";
 import "../../styles/AdminStyles/EnquireLeadComponent.css";
+import { fetchRecentEnquiries } from "../../features/contact/contactSlice";
 
 const EnquireLeadComponent = () => {
     const [showDropdown, setShowDropdown] = useState(false);
-
-    // Provide fallback object so destructuring never fails
-    const { list: contacts = [], loading = false, error = null } =
-        useSelector(state => state.contacts || {});
-
+    const { recentEnquiries, loading, error } = useSelector((state) => state.contact);
     const dispatch = useDispatch();
+    console.log("Enquiries::::", recentEnquiries);
 
     useEffect(() => {
-        dispatch(fetchContacts());
+        dispatch(fetchRecentEnquiries());
     }, [dispatch]);
 
     return (
@@ -58,12 +56,12 @@ const EnquireLeadComponent = () => {
                             </div>
                         )}
                         {/* Desktop Table */}
-                        {!loading && !error && contacts.length > 0 && (
+                        {!loading && !error && recentEnquiries.length > 0 && (
                             <div className="desktop-table">
                                 <table className="enquiries-table">
                                     <thead>
                                         <tr>
-                                            <th>#</th>
+                                            <th>Q-ID</th>
                                             <th>Name</th>
                                             <th>Email / Phone</th>
                                             <th>Course Interested</th>
@@ -71,7 +69,7 @@ const EnquireLeadComponent = () => {
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        {contacts.map((enquiry, index) => (
+                                        {recentEnquiries.map((enquiry, index) => (
                                             <tr key={enquiry.cu_id || index} className={index % 2 === 1 ? "row-even" : "row-odd"}>
                                                 <td className="cell-qid">{enquiry.cu_id || index + 1}</td>
                                                 <td className="cell-preview">{enquiry.cu_name}</td>
@@ -87,16 +85,16 @@ const EnquireLeadComponent = () => {
                             </div>
                         )}
                         {/* Empty state */}
-                        {!loading && !error && contacts.length === 0 && (
+                        {!loading && !error && recentEnquiries.length === 0 && (
                             <div style={{ textAlign: "center", color: "#888", padding: "3rem" }}>
                                 No enquiries found.
                             </div>
                         )}
 
                         {/* Mobile Cards */}
-                        {!loading && !error && contacts.length > 0 && (
+                        {!loading && !error && recentEnquiries.length > 0 && (
                             <div className="mobile-cards">
-                                {contacts.map((enquiry, index) => (
+                                {recentEnquiries.map((enquiry, index) => (
                                     <div key={enquiry.cu_id || index} className="enquiry-card">
                                         <div className="card-header">
                                             <span className="qid-badge">{enquiry.cu_id || index + 1}</span>
