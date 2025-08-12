@@ -53,6 +53,7 @@ const CourseManagementComponent = () => {
     useEffect(() => {
         if (!deleteLoading && pendingDeleteIds.length > 0) {
             setPendingDeleteIds([]);
+
         }
         // Optionally, handle rollback on deleteError!
     }, [deleteLoading, pendingDeleteIds.length]);
@@ -70,6 +71,7 @@ const CourseManagementComponent = () => {
         if (confirmed) {
             setPendingDeleteIds((prev) => [...prev, courseId]);
             dispatch(removeCourse(courseId));
+
         }
     };
 
