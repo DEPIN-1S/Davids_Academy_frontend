@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { createStudent } from "../../features/students/studentSlice";
 import {
     Box,
     Typography,
@@ -29,6 +30,7 @@ import {
     Class as ClassIcon
 } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
+import { useDispatch } from 'react-redux';
 
 const AddStudentForm = () => {
     const theme = useTheme();
@@ -123,15 +125,44 @@ const AddStudentForm = () => {
         setErrors(newErrors);
         return Object.keys(newErrors).length === 0;
     };
+    const dispatch = useDispatch();
+    console.log("inside function:::", formData);
 
-    // Handle form submission
-    const handleSave = () => {
-        if (validateForm()) {
-            console.log('Saving student:', formData);
-            // Add your save logic here
-            // navigate('/admin/student-management');
+
+    const handleSave = (e) => {
+    e.preventDefault();
+    console.log("handle student adding");
+
+    if (validateForm()) {
+        const payload = {
+            fullname: formData.fullName,
+            email: formData.emailAddress,
+            phone: formData.phoneNumber,
+            target_exam: formData.targetExam,
+            class_type: formData.classType
+        };
+
+        // Only include one password-related field
+        if (formData.autoGeneratePassword) {
+            payload.password = true;
+        } else {
+            payload.password = formData.password;
         }
-    };
+
+        console.log("Sending payload to backend:", payload);
+
+        dispatch(createStudent(payload))
+            .unwrap()
+            .then(() => {
+                console.log("Student added successfully");
+            })
+            .catch((error) => {
+                console.error("Error adding student:", error);
+            });
+    }
+};
+
+
 
     const handleCancel = () => {
         navigate(-1); // Go back to previous page

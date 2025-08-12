@@ -1,27 +1,52 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import { listStudents } from "../../features/students/studentApi";
+import { addStudent } from '../../features/students/studentApi'
+
 
 export const fetchStudents = createAsyncThunk(
   "students/fetchStudents",
   async (_, { rejectWithValue }) => {
     try {
       const token = localStorage.getItem("accessToken");
-      console.log("Access toke in student list",token);
-      
+      console.log("Access toke in student list", token);
+
       const data = await listStudents(token);
       if (Array.isArray(data)) {
-        return data; 
+        return data;
       } else if (Array.isArray(data.list)) {
-        return data.list; 
+        return data.list;
       } else if (Array.isArray(data.data)) {
-        return data.data; 
+        return data.data;
       }
-      return []; 
+      return [];
     } catch (error) {
       return rejectWithValue(error.message);
     }
   }
 );
+
+
+export const createStudent = createAsyncThunk(
+  "students/createStudent",
+  async (studentData, { rejectWithValue }) => {
+    try {
+      const token = localStorage.getItem("accessToken");
+      const data = await addStudent(studentData, token);
+      console.log("student data ::", studentData);
+      console.log("Received data from API:", data);
+
+      if (!data || data.success === false) {
+        // Backend failed to save
+        return rejectWithValue(data?.message || "Failed to create student");
+      }
+
+      return data.student || data;
+    } catch (error) {
+      return rejectWithValue(error.message);
+    }
+  }
+);
+
 
 
 const studentSlice = createSlice({
