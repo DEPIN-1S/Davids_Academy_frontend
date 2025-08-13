@@ -55,16 +55,17 @@ export const removeStudent = createAsyncThunk(
       const token = localStorage.getItem("accessToken");
       const data = await deleteStudent(studentId, token);
 
-      if (!data || data.success === false) {
+      if (!data || data.result === false) { // ✅ match backend field
         return rejectWithValue(data?.message || "Failed to delete student");
       }
 
-      return studentId; 
+      return studentId; // this will be used to remove from state
     } catch (error) {
       return rejectWithValue(error.message);
     }
   }
 );
+
 
 
 const studentSlice = createSlice({
@@ -91,12 +92,14 @@ const studentSlice = createSlice({
       })
 
       //for deleting student
-      .addCase(removeStudent.fulfilled, (state, action) => {
-        state.list = state.list.filter(
-          (student) => student.student_id !== action.payload
-        );
-      })
-
+     .addCase(removeStudent.fulfilled, (state, action) => {
+      state.students = state.students.filter(
+        (student) => student.id !== action.payload
+      );
+    })
+    .addCase(removeStudent.rejected, (state, action) => {
+      state.error = action.payload;
+    });
 
 
   },
