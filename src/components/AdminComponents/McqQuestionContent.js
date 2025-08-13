@@ -34,7 +34,9 @@ const McqQuestionContent = () => {
         exam_type,
         question_type_id,
         questionType: questionTypeName,
-        questionData: existingQuestionData
+        questionData: existingQuestionData,
+        cs_id,
+        
     } = location.state || {};
 
     // ✅ Redirect back if required data is missing

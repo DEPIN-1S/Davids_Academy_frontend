@@ -38,7 +38,6 @@ export const FileProvider = ({ children }) => {
         if (questionFile?.file) {
             formData.append('exhibit', questionFile.file, questionFile.name);
         }
-
         if (explanationFile?.file) {
             formData.append('infoImage', explanationFile.file, explanationFile.name);
         }
