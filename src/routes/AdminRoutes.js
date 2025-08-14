@@ -25,6 +25,7 @@ import RecordedClassInfoComponent from "../components/AdminComponents/RecordClas
 import EnquireLeadComponent from "../components/AdminComponents/EnquireLeadComponent";
 import ExamTypeComponent from "../components/AdminComponents/ExamTypeComponent";
 import SelectCourseComponent from "../components/AdminComponents/SelectCourseComponent";
+import { FileProvider } from '../context/FileContext';
 
 const AdminRoutes = () => (
     <>
@@ -100,7 +101,9 @@ const AdminRoutes = () => (
             } />
             <Route path="/admin/meta-info" element={
                 <ProtectedRoutes allowedRoles={['admin']}>
+                    <FileProvider>
                     <MetaInfoComponent />
+                    </FileProvider>
                 </ProtectedRoutes>
             } />
             <Route path="/admin/create-question" element={

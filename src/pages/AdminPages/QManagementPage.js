@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { FaTrash, FaEdit, FaPlus, FaEye, FaFilter, FaSearch } from "react-icons/fa";
 import QuestionFlowManager from "../../components/AdminComponents/QuestionFlowManager";
 import {
@@ -13,8 +13,24 @@ import {
 } from "@mui/material";
 import "../../styles/AdminStyles/QManagement.css";
 import { useNavigate } from 'react-router-dom';
+import { useDispatch, useSelector } from "react-redux";
+import { listQuestionTypes } from "../../features/exam/examSlice";
+
 
 const QManagementPage = () => {
+
+    const dispatch = useDispatch();
+    const { questionTypes, questionTypesLoading, questionTypesError } = useSelector(
+        (state) => state.exam
+    );
+
+
+    useEffect(() => {
+        dispatch(listQuestionTypes());
+        console.log("Question types ::::: ",questionTypes);
+        
+    }, [dispatch]);
+
     const [activeTab, setActiveTab] = useState("Q-bank");
     const [showModal, setShowModal] = useState(false);
     const [selectedType, setSelectedType] = useState("classic");

@@ -4,8 +4,10 @@ const baseUrl = process.env.REACT_APP_API_URL;
 console.log(baseUrl);
 export const postQuestion = async (questionData) => {
     try {
+        console.log("inside submit question apiiii");
         console.log("🚀 API request started:", questionData);
         const response = await fetch(baseUrl + "/exam/question", {
+               
             method: "POST",
             headers: {
                 "Content-Type": "application/json"
@@ -22,6 +24,13 @@ export const postQuestion = async (questionData) => {
         throw error;
     }
 };
+
+
+
+
+
+
+
 // src/api/questionTypeApi.js
 export const fetchQuestionTypes = async () => {
     try {

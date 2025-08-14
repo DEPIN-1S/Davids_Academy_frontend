@@ -1,11 +1,14 @@
 // src/features/questions/questionSlice.js
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import { postQuestion, fetchQuestionTypes } from "./examAPI";
+import { postQuestion, fetchQuestionTypes, } from "./examAPI";
 
 // Async thunk for posting any question type
 export const submitQuestion = createAsyncThunk(
+ 
+    
     "questions/submitQuestion",
     async (payload, { rejectWithValue }) => {
+        console.log("inside submit question");
         console.log("Inside submit Question::::::::");
         try {
             const data = await postQuestion(payload);
@@ -15,6 +18,10 @@ export const submitQuestion = createAsyncThunk(
         }
     }
 );
+
+
+
+
 // Thunk for listing question types
 export const listQuestionTypes = createAsyncThunk(
     "questions/listQuestionTypes",

@@ -37,6 +37,14 @@ const MetaInfoComponent = () => {
         clearFiles
     } = useFileContext();
 
+    console.log("🔍 Context from MetaInfo:", {
+        hasQuestionFile,
+        hasExplanationFile,
+        questionFile,
+        explanationFile
+    });
+
+
     // ✅ Receive only serializable question data
     const receivedQuestionData = location.state?.questionData || {};
 
@@ -121,6 +129,12 @@ const MetaInfoComponent = () => {
     // ✅ Submit using Context FormData for multipart support
     // Updated handleSubmitWithContextFormData function
     const handleSubmitWithContextFormData = async () => {
+         console.log("🔍 Context from MetaInfo:", {
+        hasQuestionFile,
+        hasExplanationFile,
+        questionFile,
+        explanationFile
+    });
         const loadingToastId = toast.loading('📝 Adding question to Q-Bank...', {
             position: "top-right",
             hideProgressBar: false,
@@ -130,6 +144,7 @@ const MetaInfoComponent = () => {
             progress: undefined,
             theme: "colored",
         });
+        console.log("Full URL: ", `${process.env.REACT_APP_API_URL}/exam/question`);
 
         try {
             // ✅ Prepare complete question data matching your required structure
@@ -163,7 +178,8 @@ const MetaInfoComponent = () => {
             }
 
             // ✅ Submit to your multipart endpoint
-            const response = await fetch(`${process.env.REACT_APP_API_URL}/api/questions`, {
+            console.log("URL :::::: ", process.env.REACT_APP_API_URL);
+            const response = await fetch(`${process.env.REACT_APP_API_URL}/exam/question`, {
                 method: 'POST',
                 headers: {
                     'Authorization': `Bearer ${localStorage.getItem('token')}`,
@@ -256,6 +272,9 @@ const MetaInfoComponent = () => {
                 };
         }
     };
+
+
+
     // ✅ Fallback: Submit using JSON (if no files in Context)
     const handleSubmitWithJSON = async () => {
         // Show loading toast
@@ -383,7 +402,7 @@ const MetaInfoComponent = () => {
 
     // Validation function
     const isFormValid = () => {
-        return form.difficulty ;
+        return form.difficulty;
     };
 
     // Show warning if trying to submit incomplete form
@@ -522,7 +541,7 @@ const MetaInfoComponent = () => {
                     </FormControl>
                 </Grid>
 
-              
+
             </Grid>
 
             {/* ✅ Enhanced Final Data Preview with Context information */}

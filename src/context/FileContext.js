@@ -44,6 +44,9 @@ export const FileProvider = ({ children }) => {
 
         switch (questionType) {
             case 'MCQ':
+
+            console.log("inside mcq case:::");
+            
                 formData.append('questionType', questionData.questionType || 'MCQ');
                 formData.append('courseId', questionData.cs_id || '');
                 formData.append('question_type_id', questionData.question_type_id?.toString() || '');
