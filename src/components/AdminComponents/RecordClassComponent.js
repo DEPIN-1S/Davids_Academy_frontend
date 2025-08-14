@@ -1,11 +1,15 @@
 import React, { useState } from "react";
 import { FaArrowLeft, FaArrowRight } from "react-icons/fa";
 import "../../styles/AdminStyles/RecordClassInfoComponent.css";
+import { useNavigate } from "react-router-dom";
+import { useDispatch } from "react-redux";
+import {addRecording} from "../../features/recorded classes/recordedClassSlice"
 const RecordedClassInfoComponent = ({ onNext, onBack }) => {
     const [formData, setFormData] = useState({
         classTitle: '',
         classDuration: '',
-        tutorName: ''
+        tutorName: '',
+        videoUrl: ''
     });
 
     const [errors, setErrors] = useState({});
@@ -28,29 +32,36 @@ const RecordedClassInfoComponent = ({ onNext, onBack }) => {
 
     const validateForm = () => {
         const newErrors = {};
-
         if (!formData.classTitle.trim()) {
             newErrors.classTitle = 'Class title is required';
         }
-
         if (!formData.classDuration.trim()) {
             newErrors.classDuration = 'Class duration is required';
         }
-
         if (!formData.tutorName.trim()) {
             newErrors.tutorName = 'Tutor name is required';
         }
-
+        if (!formData.videoUrl.trim()) {
+            newErrors.videoUrl = 'Video url is required';
+        }
         setErrors(newErrors);
         return Object.keys(newErrors).length === 0;
     };
 
+    const navigate = useNavigate()
+    const dispatch = useDispatch();
+    
     const handleNext = () => {
         if (validateForm()) {
-            console.log('Form data:', formData);
-            if (onNext) {
-                onNext(formData);
-            }
+            dispatch(addRecording(formData))
+                .unwrap()
+                .then(() => {
+                    if (onNext) onNext(formData);
+                    navigate('/admin/recorded-class');
+                })
+                .catch((err) => {
+                    console.error("Failed to create recording:", err);
+                });
         }
     };
 
@@ -136,6 +147,26 @@ const RecordedClassInfoComponent = ({ onNext, onBack }) => {
                                 <span className="error-message">{errors.tutorName}</span>
                             )}
                         </div>
+
+
+                        {/* Video Name */}
+                        <div className="form-group">
+                            <label className="form-label" htmlFor="videoUrl">
+                                Video URL
+                            </label>
+                            <input
+                                id="videoUrl"
+                                name="videoUrl"
+                                type="text"
+                                className={`form-input ${errors.videoUrl ? 'error' : ''}`}
+                                placeholder="Add the video url."
+                                value={formData.videoUrl}
+                                onChange={handleInputChange}
+                            />
+                            {errors.tutorName && (
+                                <span className="error-message">{errors.videoUrl}</span>
+                            )}
+                        </div>
                     </form>
 
                     {/* Navigation Buttons */}
@@ -154,7 +185,7 @@ const RecordedClassInfoComponent = ({ onNext, onBack }) => {
                             onClick={handleNext}
                             type="button"
                         >
-                            <span className="btn-text">Next</span>
+                            <span className="btn-text">Submit</span>
                             <FaArrowRight className="btn-icon" />
                         </button>
                     </div>

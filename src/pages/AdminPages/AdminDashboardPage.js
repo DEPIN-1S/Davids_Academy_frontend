@@ -116,14 +116,7 @@ const DashboardPage = () => {
             <button className="view-all-btn">View all</button>
           </div>
 
-          {/* 
-          <div className="enquiry-item">
-            <div>
-              <h4>frw</h4>
-              <span className="enquiry-course"></span>
-            </div>
-            <span className="status-badge">\</span>
-          </div> */}
+         
           <div className="enquiry-list">
             {recentEnquiries.length > 0 ? (
               recentEnquiries.map(({ _id, cu_course_interested, cu_name, cu_status }) => (

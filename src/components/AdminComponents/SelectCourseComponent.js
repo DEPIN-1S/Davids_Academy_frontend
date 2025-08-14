@@ -1,5 +1,4 @@
-// src/components/admin/ExamTypeComponent.js
-import React, { useState } from "react";
+import React, { useEffect, useState } from 'react';
 import {
     Box,
     Typography,
@@ -11,39 +10,32 @@ import {
 } from "@mui/material";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
-import { useLocation, useNavigate } from "react-router-dom";
-import { QUESTION_TYPE_TO_ROUTE } from './QuestionRoutes';
+import { useNavigate } from "react-router-dom";
+import { useDispatch, useSelector } from 'react-redux';
 
-const ExamTypeComponent = () => {
+
+import { fetchCourses } from "../../features/courses/courseSlice";
+const SelectCourseComponent = () => {
     const navigate = useNavigate();
     const isMobile = useMediaQuery("(max-width:600px)");
-    const location = useLocation();
-    const { cs_id } = location.state
-    // Hardcoded exam types - no state needed for this array
-    const examTypes = ['Mock Test', 'Q-Bank'];
+    const { list: courses, loading: coursesLoading } = useSelector((state) => state.course);
+    const dispatch = useDispatch();
+    const [selectedCourseType, setSelectedCourseType] = useState("");
 
-    // Only state needed is for user selection
-    const [selectedExamType, setSelectedExamType] = useState("");
+    useEffect(() => {
+        dispatch(fetchCourses());
+    }, [dispatch]);
 
     const handleNextClick = () => {
-        if (!selectedExamType) return; // Prevent navigation if nothing is selected
-        console.log("course id in exam type comp", cs_id);
-        // Pass the selected exam type to the next component via state
-        navigate("/admin/question-type", {
-            state: {
-                exam_type: selectedExamType,
-                cs_id
-            }
+        if (!selectedCourseType) return;
+        navigate("/admin/exam-type", {
+            state: { cs_id: selectedCourseType }
         });
+
     };
 
     const handleBackClick = () => {
-        navigate("/admin/question-management",{
-             state: {     
-                cs_id
-            }
-        });
-        
+        navigate("/admin/question-management");
     };
 
     return (
@@ -60,24 +52,24 @@ const ExamTypeComponent = () => {
         >
             {/* Breadcrumb */}
             <Typography variant="subtitle2" color="text.secondary">
-                Test Type &nbsp;&gt;&nbsp; Exam Type
+                Course &nbsp;&gt;&nbsp; course Type
             </Typography>
 
             {/* Title */}
             <Typography variant="h5" fontWeight={600}>
-                Select Exam Type
+                Select course
             </Typography>
 
             {/* Subtitle */}
             <Typography color="text.secondary">
-                Choose the format best suited for your question.
+                Choose a course.
             </Typography>
 
             {/* Dropdown */}
             <FormControl fullWidth>
                 <Select
-                    value={selectedExamType}
-                    onChange={(e) => setSelectedExamType(e.target.value)}
+                    value={selectedCourseType}
+                    onChange={(e) => setSelectedCourseType(e.target.value)}
                     displayEmpty
                     sx={{
                         borderRadius: 2,
@@ -87,12 +79,11 @@ const ExamTypeComponent = () => {
                     }}
                 >
                     <MenuItem value="" disabled>
-                        Select an Exam Type
+                        Select Course
                     </MenuItem>
-
-                    {examTypes.map((type, index) => (
-                        <MenuItem key={index} value={type}>
-                            {type}
+                    {courses.map((courses, index) => (
+                        <MenuItem key={index} value={courses.cs_id}>
+                            {courses.cs_name}
                         </MenuItem>
                     ))}
                 </Select>
@@ -120,7 +111,7 @@ const ExamTypeComponent = () => {
                     variant="contained"
                     endIcon={<ArrowForwardIcon />}
                     onClick={handleNextClick}
-                    disabled={!selectedExamType}
+                    disabled={!selectedCourseType}
                     sx={{ backgroundColor: "#FFD700", color: "#000" }}
                     fullWidth={isMobile}
                 >
@@ -131,4 +122,4 @@ const ExamTypeComponent = () => {
     );
 };
 
-export default ExamTypeComponent;
+export default SelectCourseComponent;

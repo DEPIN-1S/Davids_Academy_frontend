@@ -1,6 +1,7 @@
 import React, { useState, useRef } from "react";
 import { FaUpload, FaTimes, FaImage, FaCheck } from "react-icons/fa";
 import "../../styles/AdminStyles/UploadThumbnailComponent.css";
+import { useNavigate } from "react-router-dom";
 
 const UploadThumbnail = ({ onUpload, onNext, onBack }) => {
     const [dragActive, setDragActive] = useState(false);
@@ -91,16 +92,38 @@ const UploadThumbnail = ({ onUpload, onNext, onBack }) => {
         return null;
     };
 
+    function fileToBase64(file) {
+        return new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.readAsDataURL(file); // converts file to base64 string
+            reader.onload = () => resolve(reader.result);
+            reader.onerror = reject;
+        });
+    }
+
+    const navigate = useNavigate()
+   const handleNextToRecordedClassInfo = async () => {
+    if (uploadedFile) {
+        const base64Image = await fileToBase64(uploadedFile);
+        localStorage.setItem('screenshot', base64Image);
+
+        // Check in console
+        console.log("Saved screenshot:", localStorage.getItem('screenshot'));
+    }
+    navigate('/admin/record-class-info');
+};
+
+
     return (
         <div className="upload-thumbnail-page">
             {/* Page Header */}
             <div className="upload-page-header">
                 <div className="header-content">
-                    <div className="breadcrumb">
+                    {/* <div className="breadcrumb">
                         <span className="breadcrumb-item">Attach Recorded Video</span>
                         <span className="breadcrumb-separator">›</span>
                         <span className="breadcrumb-item active">Thumbnail Upload</span>
-                    </div>
+                    </div> */}
                     <h1 className="page-title">Thumbnail Upload</h1>
                     <p className="page-subtitle">
                         Upload a cover image for your recorded session.
@@ -217,7 +240,7 @@ const UploadThumbnail = ({ onUpload, onNext, onBack }) => {
 
                         <button
                             className={`nav-btn next-btn ${!uploadedFile || isUploading ? 'disabled' : ''}`}
-                            onClick={onNext}
+                            onClick={handleNextToRecordedClassInfo}
                             disabled={!uploadedFile || isUploading}
                             type="button"
                         >

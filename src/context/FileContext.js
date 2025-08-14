@@ -17,40 +17,59 @@ export const FileProvider = ({ children }) => {
 
     // ✅ Updated to match your required data structure
     const createCompleteFormData = (questionData) => {
+        console.log("question data inside fileContext", questionData);
         const formData = new FormData();
 
-        // ✅ Add required fields for all question types
-        formData.append('questionType', questionData.questionType || '');
-        formData.append('question_type_id', questionData.question_type_id?.toString() || '');
-        formData.append('question', questionData.question || '');
-        formData.append('difficulty', questionData.difficulty || '');
-        formData.append('subject', questionData.subject?.toString() || '');
-        formData.append('lesson', questionData.lesson?.toString() || '');
-        formData.append('clientNeedArea', questionData.clientNeedArea?.toString() || '');
-        formData.append('clientNeedTopic', questionData.clientNeedTopic?.toString() || '');
+        /*     
+            formData.append('questionType', questionData.questionType || '');
+            formData.append('question_type_id', questionData.question_type_id?.toString() || '');
+            formData.append('question', questionData.question || '');
+            formData.append('difficulty', questionData.difficulty || '');
+            formData.append('subject', questionData.subject?.toString() || '');
+            formData.append('lesson', questionData.lesson?.toString() || '');
+            formData.append('clientNeedArea', questionData.clientNeedArea?.toString() || '');
+            formData.append('clientNeedTopic', questionData.clientNeedTopic?.toString() || '');
+            formData.append('explanationHeading', questionData.explanationHeading || '');
+            formData.append('explanationText', questionData.explanationText || '');
+            formData.append('info', questionData.additionalInfo || '');
+      
+            if (questionFile?.file) {
+                formData.append('exhibit', questionFile.file, questionFile.name);
+            }
+            if (explanationFile?.file) {
+                formData.append('infoImage', explanationFile.file, explanationFile.name);
+            } */
 
-        // ✅ Add explanation fields
-        formData.append('explanationHeading', questionData.explanationHeading || '');
-        formData.append('explanationText', questionData.explanationText || '');
-        formData.append('info', questionData.additionalInfo || '');
-
-        // ✅ Add files if they exist
-        if (questionFile?.file) {
-            formData.append('exhibit', questionFile.file, questionFile.name);
-        }
-
-        if (explanationFile?.file) {
-            formData.append('infoImage', explanationFile.file, explanationFile.name);
-        }
-
-        // ✅ Question type specific data
         const questionType = questionData.questionType;
 
         switch (questionType) {
             case 'MCQ':
-                formData.append('answer', questionData.correctAnswer || '');
+                formData.append('questionType', questionData.questionType || 'MCQ');
+                formData.append('cs_id', questionData.cs_id || '');
+                formData.append('question_type_id', questionData.question_type_id?.toString() || '');
+                formData.append('question', questionData.question || '');
+                formData.append('exam_type', questionData.exam_type || '');
+                formData.append('answer', questionData.answer || '');
+                formData.append('difficulty', questionData.difficulty || '');
+                if (questionFile?.file) {
+                    formData.append('exhibit', questionFile.file, questionFile.name);
+                } else {
+                    formData.append('exhibit', questionData.exhibit || '');
+                }
+
                 formData.append('options', JSON.stringify(questionData.options || []));
+                formData.append('explanationHeading', questionData.explanationHeading || '');
+                formData.append('explanationText', questionData.explanationText || '');
+                formData.append('info', questionData.info || '');
+
+                if (explanationFile?.file) {
+                    formData.append('infoImage', explanationFile.file, explanationFile.name);
+                } else {
+                    formData.append('infoImage', questionData.infoImage || '');
+                }
                 break;
+
+
 
             case 'Dropdown':
                 formData.append('tabs', JSON.stringify(questionData.tabs || []));

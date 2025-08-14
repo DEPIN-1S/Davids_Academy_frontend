@@ -34,15 +34,17 @@ const McqQuestionContent = () => {
         exam_type,
         question_type_id,
         questionType: questionTypeName,
-        questionData: existingQuestionData
+        questionData: existingQuestionData,
+        cs_id,
+
     } = location.state || {};
 
     // ✅ Redirect back if required data is missing
     React.useEffect(() => {
-        if (!exam_type || !question_type_id || !questionTypeName) {
+        if (!exam_type || !question_type_id || !questionTypeName || !cs_id) {
             navigate("/admin/question-type");
         }
-    }, [exam_type, question_type_id, questionTypeName, navigate]);
+    }, [exam_type, question_type_id, questionTypeName,cs_id, navigate]);
 
     // Form state - initialize with existing data if available
     const [question, setQuestion] = useState(existingQuestionData?.question || "");
@@ -50,7 +52,6 @@ const McqQuestionContent = () => {
     const [correctAnswer, setCorrectAnswer] = useState(existingQuestionData?.correctAnswer || "");
     const [selectedFile, setSelectedFile] = useState(null); // ✅ Local state for UI, Context for persistence
     const [errors, setErrors] = useState({});
-
     const fileInputRef = useRef(null);
 
     // ✅ Initialize with existing file from context if available
@@ -191,6 +192,7 @@ const McqQuestionContent = () => {
             exam_type,
             question_type_id,
             questionType: questionTypeName,
+            cs_id,
 
             // Question content
             question: question.trim(),
@@ -242,7 +244,8 @@ const McqQuestionContent = () => {
             state: {
                 exam_type,
                 questionData: currentQuestionData,
-                fromStep: 'content'
+                fromStep: 'content',
+                cs_id
             }
         });
     };
