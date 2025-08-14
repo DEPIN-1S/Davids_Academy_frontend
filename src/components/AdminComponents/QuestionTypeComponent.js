@@ -26,7 +26,7 @@ const QuestionTypeComponent = () => {
     const [selectedQuestionType, setSelectedQuestionType] = useState(null);
 
     // ✅ Receive exam_type from previous component
-    const { exam_type , cs_id } = location.state || {};
+    const { exam_type, cs_id } = location.state || {};
 
     // ✅ Access the correct state key - your store has 'exam' not 'questions'
     const {
@@ -68,7 +68,15 @@ const QuestionTypeComponent = () => {
 
     const handleBackClick = () => {
         // ✅ Go back to exam type selection, preserving any state if needed
-        navigate("/admin/exam-type");
+        navigate("/admin/exam-type",
+            {
+                state: {
+                    exam_type,
+                    cs_id
+                }
+            }
+        );
+
     };
 
     // ✅ Handle dropdown change to store complete question type object

@@ -6,6 +6,7 @@ import { postQuestion, fetchQuestionTypes } from "./examAPI";
 export const submitQuestion = createAsyncThunk(
     "questions/submitQuestion",
     async (payload, { rejectWithValue }) => {
+        console.log("Inside submit Question::::::::");
         try {
             const data = await postQuestion(payload);
             return data;

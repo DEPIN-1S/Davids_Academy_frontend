@@ -20,7 +20,7 @@ import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import LibraryAddCheckIcon from "@mui/icons-material/LibraryAddCheck";
 import { useNavigate, useLocation } from 'react-router-dom';
 import { submitQuestion, resetStatus } from "../../features/exam/examSlice";
-import { useFileContext } from '../../context/FileContext'; // ✅ Import the Context
+import { useFileContext } from '../../context/FileContext'; // 
 
 const MetaInfoComponent = () => {
     const dispatch = useDispatch();
@@ -39,6 +39,7 @@ const MetaInfoComponent = () => {
 
     // ✅ Receive only serializable question data
     const receivedQuestionData = location.state?.questionData || {};
+
 
     const { loading, success, error } = useSelector(state => state.exam);
 
@@ -134,6 +135,7 @@ const MetaInfoComponent = () => {
             // ✅ Prepare complete question data matching your required structure
             const completeQuestionData = {
                 // Basic fields
+                cs_id:receivedQuestionData.cs_id,
                 questionType: receivedQuestionData.questionType,
                 question_type_id: getQuestionTypeId(receivedQuestionData.questionType),
                 question: receivedQuestionData.question,
@@ -285,6 +287,8 @@ const MetaInfoComponent = () => {
 
     // ✅ Main submit handler - choose method based on Context file availability
     const handleSubmit = async () => {
+        console.log("hasQuestionFile:", hasQuestionFile);
+        console.log("hasExplanationFile:", hasExplanationFile);
         if (hasQuestionFile || hasExplanationFile) {
             // Use Context FormData for multipart submission (supports files)
             await handleSubmitWithContextFormData();
@@ -298,9 +302,10 @@ const MetaInfoComponent = () => {
     const constructQuestionData = () => {
         const questionType = receivedQuestionData.questionType || 'MCQ';
         const exam_type = receivedQuestionData.exam_type;
-
+        const cs_id = receivedQuestionData.cs_id;
         // Base data common to all question types
         const baseData = {
+            cs_id:cs_id,
             exam_type: exam_type,
             questionType: questionType,
             question_type_id: getQuestionTypeId(questionType),

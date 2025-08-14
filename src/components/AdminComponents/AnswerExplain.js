@@ -140,6 +140,7 @@ const AnswerExplain = () => {
         // ✅ Create ONLY serializable data
         const mergedQuestionData = {
             // Previous step data
+            cs_id:previousQuestionData.cs_id,
             exam_type: previousQuestionData.exam_type,
             question_type_id: previousQuestionData.question_type_id,
             questionType: previousQuestionData.questionType,
@@ -215,6 +216,7 @@ const AnswerExplain = () => {
             correctAnswer: previousQuestionData.correctAnswer,
             createdAt: previousQuestionData.createdAt,
             questionId: previousQuestionData.questionId,
+            cs_id: previousQuestionData.cs_id,
 
             // Current explanation data
             explanationHeading: explanationHeading.trim(),

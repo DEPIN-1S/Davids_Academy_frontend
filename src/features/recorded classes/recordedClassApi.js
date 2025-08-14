@@ -10,9 +10,10 @@ export async function listRecordedClasses(token) {
     if (!response.ok) {
         throw new Error("Failed to fetch recorded classes");
     }
-
     return await response.json();
 }
+
+
 
 export async function createRecording(token, recordingData) {
     console.log("Inside add recording API");

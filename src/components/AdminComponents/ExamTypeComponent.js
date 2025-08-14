@@ -38,7 +38,12 @@ const ExamTypeComponent = () => {
     };
 
     const handleBackClick = () => {
-        navigate("/admin/question-management");
+        navigate("/admin/question-management",{
+             state: {     
+                cs_id
+            }
+        });
+        
     };
 
     return (
