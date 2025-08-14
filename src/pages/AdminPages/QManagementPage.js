@@ -92,7 +92,7 @@ const QManagementPage = () => {
     const navigate = useNavigate();
 
     const handleAddQuestionClick = () => {
-        navigate('/admin/exam-type');
+        navigate('/admin/selectCourse');
     };
 
     const handleView = (questionId) => {

@@ -4,6 +4,8 @@ import "../../styles/AdminStyles/StudentManage.css";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchStudents } from "../../features/students/studentSlice";
 import AddStudentForm from "../../components/AdminComponents/AddStudentForm";
+import { removeStudent } from "../../features/students/studentSlice";
+
 
 const StudentManage = () => {
   const dispatch = useDispatch();
@@ -16,6 +18,22 @@ const StudentManage = () => {
     if (filterStatus === "all") return true;
     return student.status?.toLowerCase() === filterStatus;
   });
+
+
+const handleDelete = (studentId) => {
+  if (window.confirm("Are you sure you want to delete this student?")) {
+    dispatch(removeStudent(studentId))
+      .unwrap()
+      .then(() => {
+        console.log("Student deleted successfully");
+      })
+      .catch((error) => {
+        console.error("Failed to delete student:", error);
+        alert("Error deleting student");
+      });
+  }
+};
+
 
   useEffect(() => {
     dispatch(fetchStudents());
@@ -68,7 +86,7 @@ const StudentManage = () => {
                 <td className="action-buttons">
                   <button className="progress-btn">View Progress</button>
                   <button className="delete-btn">
-                    <FaTrash />
+                    <FaTrash onClick={() => handleDelete(student.id)} />
                   </button>
                   <button className="edit-btn">
                     <FaEdit />

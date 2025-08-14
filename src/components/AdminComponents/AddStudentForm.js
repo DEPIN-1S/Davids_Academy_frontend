@@ -44,7 +44,7 @@ const AddStudentForm = () => {
         emailAddress: '',
         phoneNumber: '',
         password: '',
-        targetExam: 'NCLEX',
+        targetExam: 12,
         classType: 'Online',
         autoGeneratePassword: false
     });
@@ -416,7 +416,7 @@ const AddStudentForm = () => {
                                         </InputAdornment>
                                     }
                                 >
-                                    <MenuItem value="NCLEX">NCLEX</MenuItem>
+                                    <MenuItem value="12">NCLEX</MenuItem>
                                     <MenuItem value="PROMETRIC">PROMETRIC</MenuItem>
                                     <MenuItem value="CGFNS">CGFNS</MenuItem>
                                     <MenuItem value="IELTS">IELTS</MenuItem>

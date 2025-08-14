@@ -43,7 +43,16 @@
   font-weight: 500;
 }
 
-.contact-form input,
+.error-text {
+  color: red;
+  font-size: 0.85rem;
+  margin-top: 1px;
+}
+
+
+
+.contact-form input, 
+.contact-form select,
 .contact-form textarea {
   padding: 0.8rem;
   border: none;

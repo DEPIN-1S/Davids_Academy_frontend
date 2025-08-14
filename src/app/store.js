@@ -4,6 +4,7 @@ import examReducer from '../features/exam/examSlice'
 import courseReducer from '../features/courses/courseSlice';
 import contactReducer from '../features/contact/contactSlice'
 import studentsReducer from '../features/students/studentSlice';
+import recordingsReducer from '../features/recorded classes/recordedClassSlice';
 
 export const store = configureStore({
   reducer: {
@@ -12,6 +13,8 @@ export const store = configureStore({
     course: courseReducer,
     contact: contactReducer,
     students: studentsReducer,
+    recordings: recordingsReducer,
+     
     
   },
 });
