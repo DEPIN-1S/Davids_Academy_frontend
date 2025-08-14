@@ -45,12 +45,12 @@ export const FileProvider = ({ children }) => {
         switch (questionType) {
             case 'MCQ':
                 formData.append('questionType', questionData.questionType || 'MCQ');
-                formData.append('cs_id', questionData.cs_id || '');
+                formData.append('courseId', questionData.cs_id || '');
                 formData.append('question_type_id', questionData.question_type_id?.toString() || '');
                 formData.append('question', questionData.question || '');
-                formData.append('exam_type', questionData.exam_type || '');
                 formData.append('answer', questionData.answer || '');
                 formData.append('difficulty', questionData.difficulty || '');
+                formData.append('exam_type', questionData.exam_type || '');
                 if (questionFile?.file) {
                     formData.append('exhibit', questionFile.file, questionFile.name);
                 } else {

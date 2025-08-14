@@ -135,7 +135,7 @@ const MetaInfoComponent = () => {
             // ✅ Prepare complete question data matching your required structure
             const completeQuestionData = {
                 // Basic fields
-                cs_id:receivedQuestionData.cs_id,
+                cs_id: receivedQuestionData.cs_id,
                 questionType: receivedQuestionData.questionType,
                 question_type_id: getQuestionTypeId(receivedQuestionData.questionType),
                 question: receivedQuestionData.question,
@@ -156,7 +156,6 @@ const MetaInfoComponent = () => {
 
             // ✅ Create FormData using Context
             const completeFormData = createCompleteFormData(completeQuestionData);
-
             console.log('🚀 Submitting with Context FormData (multipart/form-data)');
             console.log('📦 FormData created from Context:');
             for (let [key, value] of completeFormData.entries()) {
@@ -196,7 +195,6 @@ const MetaInfoComponent = () => {
         } catch (err) {
             toast.dismiss(loadingToastId);
             console.error('Failed to submit question:', err);
-
             toast.error(`❌ Failed to add question: ${err.message}`, {
                 position: "top-right",
                 autoClose: 5000,
@@ -305,17 +303,14 @@ const MetaInfoComponent = () => {
         const cs_id = receivedQuestionData.cs_id;
         // Base data common to all question types
         const baseData = {
-            cs_id:cs_id,
-            exam_type: exam_type,
             questionType: questionType,
+            courseId: cs_id,
             question_type_id: getQuestionTypeId(questionType),
             question: receivedQuestionData.question || "",
+            exam_type: exam_type,
+            exhibit: null, // No files in JSON mode
             difficulty: form.difficulty,
             subject: parseInt(form.subject),
-            lesson: parseInt(form.lesson),
-            clientNeedArea: parseInt(form.clientNeedArea),
-            clientNeedTopic: parseInt(form.clientNeedTopic),
-            exhibit: null, // No files in JSON mode
             explanationHeading: receivedQuestionData.explanationHeading || "",
             explanationText: receivedQuestionData.explanationText || "",
             info: receivedQuestionData.additionalInfo || "",
@@ -388,7 +383,7 @@ const MetaInfoComponent = () => {
 
     // Validation function
     const isFormValid = () => {
-        return form.difficulty && form.subject && form.lesson && form.clientNeedArea && form.clientNeedTopic;
+        return form.difficulty ;
     };
 
     // Show warning if trying to submit incomplete form
@@ -527,77 +522,7 @@ const MetaInfoComponent = () => {
                     </FormControl>
                 </Grid>
 
-                <Grid item xs={12} sm={4}>
-                    <FormControl fullWidth>
-                        <InputLabel>Subject *</InputLabel>
-                        <Select
-                            value={form.subject}
-                            onChange={handleChange("subject")}
-                            label="Subject *"
-                            disabled={loading}
-                        >
-                            {subjectOptions.map((option) => (
-                                <MenuItem key={option.value} value={option.value}>
-                                    {option.label}
-                                </MenuItem>
-                            ))}
-                        </Select>
-                    </FormControl>
-                </Grid>
-
-                <Grid item xs={12} sm={4}>
-                    <FormControl fullWidth>
-                        <InputLabel>Lesson *</InputLabel>
-                        <Select
-                            value={form.lesson}
-                            onChange={handleChange("lesson")}
-                            label="Lesson *"
-                            disabled={loading}
-                        >
-                            {lessonOptions.map((option) => (
-                                <MenuItem key={option.value} value={option.value}>
-                                    {option.label}
-                                </MenuItem>
-                            ))}
-                        </Select>
-                    </FormControl>
-                </Grid>
-
-                <Grid item xs={12} sm={6}>
-                    <FormControl fullWidth>
-                        <InputLabel>Client Need Area *</InputLabel>
-                        <Select
-                            value={form.clientNeedArea}
-                            onChange={handleChange("clientNeedArea")}
-                            label="Client Need Area *"
-                            disabled={loading}
-                        >
-                            {clientNeedAreaOptions.map((option) => (
-                                <MenuItem key={option.value} value={option.value}>
-                                    {option.label}
-                                </MenuItem>
-                            ))}
-                        </Select>
-                    </FormControl>
-                </Grid>
-
-                <Grid item xs={12} sm={6}>
-                    <FormControl fullWidth>
-                        <InputLabel>Client Need Topic *</InputLabel>
-                        <Select
-                            value={form.clientNeedTopic}
-                            onChange={handleChange("clientNeedTopic")}
-                            label="Client Need Topic *"
-                            disabled={loading}
-                        >
-                            {clientNeedTopicOptions.map((option) => (
-                                <MenuItem key={option.value} value={option.value}>
-                                    {option.label}
-                                </MenuItem>
-                            ))}
-                        </Select>
-                    </FormControl>
-                </Grid>
+              
             </Grid>
 
             {/* ✅ Enhanced Final Data Preview with Context information */}
