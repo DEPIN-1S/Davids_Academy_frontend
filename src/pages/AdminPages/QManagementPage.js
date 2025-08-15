@@ -103,7 +103,7 @@ const QManagementPage = () => {
                         {/* Controls Section */}
                         <div className="controls-section">
                             {/* Tabs */}
-                            {/* <div className="tabs-container">
+                            <div className="tabs-container">
                                 <div className="examtype-tabs">
                                     <button
                                         className={`tab-btn ${activeTab === "Q-bank" ? "active" : ""}`}
@@ -120,7 +120,7 @@ const QManagementPage = () => {
                                         <span className="tab-count">{mockTestData.length}</span>
                                     </button>
                                 </div>
-                            </div> */}
+                            </div>
 
                             {/* Action Bar */}
                             <div className="action-bar">
