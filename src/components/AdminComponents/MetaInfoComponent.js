@@ -469,7 +469,7 @@ const MetaInfoComponent = () => {
 
     return (
         <Box p={3} maxWidth="800px" mx="auto">
-            {/* Toast Container */}
+            {/* Toast Container */} 
             <ToastContainer
                 position="top-right"
                 autoClose={4000}
