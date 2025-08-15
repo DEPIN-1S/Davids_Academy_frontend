@@ -162,8 +162,19 @@ const AnswerExplain = () => {
             drag_drop_content: previousQuestionData.drag_drop_content,
 
 
+
             //for sorting
-            sortitems: previousQuestionData.sortItems ,
+            sortitems: previousQuestionData.sortItems,
+
+            //for multiple radio
+            question_content: previousQuestionData.question_content,
+            radio_options: previousQuestionData.radio_options,
+
+
+            /* 
+                        //for filling the blanks
+                        FTBquestion_content: previousQuestionData.FTBquestion_content,
+                        FTBoptions: previousQuestionData.FTBoptions, */
 
 
             // Current explanation data

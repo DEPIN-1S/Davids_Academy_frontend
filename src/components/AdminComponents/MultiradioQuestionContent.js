@@ -287,7 +287,6 @@ const MultiradioQuestionContent = () => {
         const hasValidTabs = tabs.some(tab => tab.tabKey.trim() && tab.tabValue.trim());
         const hasValidQuestions = questionContent.some(q => q.question_text.trim() && q.question_answer.trim());
         const hasValidRadioOptions = radioOptions.filter(option => option.option_value.trim()).length >= 2;
-
         return hasValidQuestion && hasValidTabs && hasValidQuestions && hasValidRadioOptions;
     };
 

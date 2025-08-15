@@ -44,13 +44,9 @@ const MetaInfoComponent = () => {
         explanationFile
     });
 
-
     // ✅ Receive only serializable question data
     const receivedQuestionData = location.state?.questionData || {};
-
-
     const { loading, success, error } = useSelector(state => state.exam);
-
     const [form, setForm] = useState({
         difficulty: receivedQuestionData.difficulty || "",
         subject: receivedQuestionData.subject || "",
@@ -65,6 +61,8 @@ const MetaInfoComponent = () => {
         console.log('📎 Question file in context:', hasQuestionFile ? questionFile?.name : 'None');
         console.log('📎 Explanation file in context:', hasExplanationFile ? explanationFile?.name : 'None');
         console.log('📄 Received question data:', receivedQuestionData);
+        console.log("question_content:::", receivedQuestionData.question_content);
+
     }, [hasQuestionFile, hasExplanationFile, questionFile, explanationFile, receivedQuestionData]);
 
     // Handle toast notifications based on Redux state
@@ -145,7 +143,6 @@ const MetaInfoComponent = () => {
             theme: "colored",
         });
         console.log("Full URL: ", `${process.env.REACT_APP_API_URL}/exam/question`);
-
         try {
             // ✅ Prepare complete question data matching your required structure
             const completeQuestionData = {
@@ -156,15 +153,24 @@ const MetaInfoComponent = () => {
                 question: receivedQuestionData.question,
                 difficulty: form.difficulty,
 
+                //for drop down
                 tabs: receivedQuestionData.tabs || [],
                 dropdowns: receivedQuestionData.dropdowns || [],
+
+                //for drag and drop
+                drag_and_drop: receivedQuestionData.drag_and_drop || [],
+
+                //for sorting
+                sortItems: receivedQuestionData.sortitems || [],
 
                 // Explanation fields
                 explanationHeading: receivedQuestionData.explanationHeading,
                 explanationText: receivedQuestionData.explanationText,
                 additionalInfo: receivedQuestionData.additionalInfo,
 
-
+                //for filling the blanks 
+                FTBquestion_content: receivedQuestionData.FTBquestion_content,
+                FTBoptions: receivedQuestionData.FTBoptions,
 
                 // ✅ Question type specific data
                 ...getQuestionTypeSpecificData(receivedQuestionData)
@@ -291,9 +297,7 @@ const MetaInfoComponent = () => {
 
         // Construct complete question data based on question type
         const completeQuestionData = constructQuestionData();
-
         console.log('🚀 Submitting question data (JSON):', completeQuestionData);
-
         try {
             await dispatch(submitQuestion(completeQuestionData)).unwrap();
             toast.dismiss(loadingToastId);
@@ -325,7 +329,6 @@ const MetaInfoComponent = () => {
         exam_type: receivedQuestionData.exam_type,
         exhibit: null,
         difficulty: form.difficulty,
-
         explanationHeading: receivedQuestionData.explanationHeading || "",
         explanationText: receivedQuestionData.explanationText || "",
         info: receivedQuestionData.additionalInfo || "",
@@ -383,6 +386,41 @@ const MetaInfoComponent = () => {
         infoImage: receivedQuestionData.infoImage || null
     });
 
+    const getFillInTheBlanksBaseData = () => ({
+        questionType: receivedQuestionData.questionType,
+        question_type_id: getQuestionTypeId('Fill in the Blanks'),
+        courseId: receivedQuestionData.cs_id,
+        question: receivedQuestionData.question || "",
+        answer: receivedQuestionData.answer || "",
+        exam_type: receivedQuestionData.exam_type,
+        FTBquestion_content: receivedQuestionData.FTBquestion_content,
+        FTBoptions: receivedQuestionData.FTBoptions,
+        difficulty: form.difficulty || "",
+        explanationHeading: receivedQuestionData.explanationHeading || "",
+        explanationText: receivedQuestionData.explanationText || "",
+        info: receivedQuestionData.additionalInfo || "",
+        infoImage: receivedQuestionData.infoImage || null
+    });
+
+    const getMultiRadioBaseData = () => ({
+        courseId: receivedQuestionData.cs_id,
+        questionType: receivedQuestionData.questionType,
+        question_type_id: getQuestionTypeId('Multiple Radio'),
+        exam_type: receivedQuestionData.exam_type,
+        question: receivedQuestionData.question || "",
+        difficulty: form.difficulty || "",
+        tabs: receivedQuestionData.tabs || [],
+        /* question_content:receivedQuestionData.question_content, */
+        question_content: receivedQuestionData.question_content || [],
+        radio_options: receivedQuestionData.radio_options || [],
+        explanationHeading: receivedQuestionData.explanationHeading || "",
+        explanationText: receivedQuestionData.explanationText || "",
+        info: receivedQuestionData.additionalInfo || "",
+        infoImage: receivedQuestionData.infoImage || null
+    });
+
+
+
 
 
 
@@ -397,10 +435,17 @@ const MetaInfoComponent = () => {
                 return getDropdownBaseData();
 
             case 'Drag Drop':
-                return getDragDropBaseData(); 
+                return getDragDropBaseData();
 
             case 'Sorting':
                 return getSortingBaseData();
+
+            case 'Multiple Radio"':
+                return getMultiRadioBaseData();
+
+            case 'Fill in the Blanks':
+                return getFillInTheBlanksBaseData();
+
             default:
                 return getMCQBaseData(); // fallback to MCQ format
         }
@@ -469,7 +514,7 @@ const MetaInfoComponent = () => {
 
     return (
         <Box p={3} maxWidth="800px" mx="auto">
-            {/* Toast Container */} 
+            {/* Toast Container */}
             <ToastContainer
                 position="top-right"
                 autoClose={4000}
