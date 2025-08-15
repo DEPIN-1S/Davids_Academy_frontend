@@ -38,6 +38,9 @@ const MultiradioQuestionContent = () => {
     // Get any existing data from previous steps
     const existingData = location.state?.questionData || {};
     const questionType = location.state?.questionType || existingData.questionType || "Multiple Radio";
+    const cs_id = location.state?.cs_id || "";
+    const exam_type = location.state?.exam_type || "";
+    const question_type_id = location.state?.question_type_id || "";
 
     // Form state
     const [question, setQuestion] = useState(existingData.question || "");
@@ -207,6 +210,9 @@ const MultiradioQuestionContent = () => {
 
         // ✅ Prepare ONLY serializable question data
         const questionData = {
+            cs_id: cs_id,
+            exam_type: exam_type,
+            question_type_id: question_type_id,
             questionType: questionType,
             question: question.trim(),
             tabs: tabs.filter(tab => tab.tabKey.trim() && tab.tabValue.trim()),
@@ -253,7 +259,10 @@ const MultiradioQuestionContent = () => {
         navigate('/admin/question-type', {
             state: {
                 questionData: currentData,
-                fromStep: 'content'
+                fromStep: 'content',
+                cs_id: cs_id,
+                exam_type: exam_type,
+                question_type_id: question_type_id,
             }
         });
     };
@@ -278,7 +287,6 @@ const MultiradioQuestionContent = () => {
         const hasValidTabs = tabs.some(tab => tab.tabKey.trim() && tab.tabValue.trim());
         const hasValidQuestions = questionContent.some(q => q.question_text.trim() && q.question_answer.trim());
         const hasValidRadioOptions = radioOptions.filter(option => option.option_value.trim()).length >= 2;
-
         return hasValidQuestion && hasValidTabs && hasValidQuestions && hasValidRadioOptions;
     };
 

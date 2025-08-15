@@ -6,8 +6,11 @@ import {
     fetchMockTestQuestion as fetchMockTestQuestionAPI, postTest
 } from "./examAPI";
 
+
 // Async thunk for posting any question type
 export const submitQuestion = createAsyncThunk(
+ 
+    
     "questions/submitQuestion",
     async (payload, { rejectWithValue }) => {
         try {
@@ -18,7 +21,6 @@ export const submitQuestion = createAsyncThunk(
         }
     }
 );
-
 // Thunk for listing question types
 export const listQuestionTypes = createAsyncThunk(
     "questions/listQuestionTypes",

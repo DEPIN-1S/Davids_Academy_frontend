@@ -133,3 +133,24 @@
     display: flex;
   }
 }
+
+
+/* Default: Mobile First */
+.desktop-only {
+  display: none;
+}
+
+.mobile-login {
+  display: block;
+}
+
+/* Desktop view */
+@media (min-width: 768px) {
+  .desktop-only {
+    display: block;
+  }
+
+  .mobile-login {
+    display: none;
+  }
+}

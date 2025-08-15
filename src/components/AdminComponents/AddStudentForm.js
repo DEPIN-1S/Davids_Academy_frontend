@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { createStudent } from "../../features/students/studentSlice";
 import {
     Box,
@@ -30,13 +30,22 @@ import {
     Class as ClassIcon
 } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
+import { fetchCourses } from '../../features/courses/courseSlice';
 
 const AddStudentForm = () => {
     const theme = useTheme();
     const navigate = useNavigate();
     const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
     const isTablet = useMediaQuery(theme.breakpoints.down('md'));
+    const { list: courses, loading: coursesLoading } = useSelector((state) => state.course);
+
+    const dispatch = useDispatch();
+    useEffect(() => {
+        dispatch(fetchCourses());
+    }, [dispatch]);
+
+
 
     // Form state
     const [formData, setFormData] = useState({
@@ -125,42 +134,43 @@ const AddStudentForm = () => {
         setErrors(newErrors);
         return Object.keys(newErrors).length === 0;
     };
-    const dispatch = useDispatch();
+
     console.log("inside function:::", formData);
 
 
+
     const handleSave = (e) => {
-    e.preventDefault();
-    console.log("handle student adding");
+        e.preventDefault();
+        console.log("handle student adding");
 
-    if (validateForm()) {
-        const payload = {
-            fullname: formData.fullName,
-            email: formData.emailAddress,
-            phone: formData.phoneNumber,
-            target_exam: formData.targetExam,
-            class_type: formData.classType
-        };
+        if (validateForm()) {
+            const payload = {
+                fullname: formData.fullName,
+                email: formData.emailAddress,
+                phone: formData.phoneNumber,
+                target_exam: formData.targetExam,
+                class_type: formData.classType
+            };
 
-        // Only include one password-related field
-        if (formData.autoGeneratePassword) {
-            payload.password = true;
-        } else {
-            payload.password = formData.password;
+            // Only include one password-related field
+            if (formData.autoGeneratePassword) {
+                payload.password = true;
+            } else {
+                payload.password = formData.password;
+            }
+
+            console.log("Sending payload to backend:", payload);
+
+            dispatch(createStudent(payload))
+                .unwrap()
+                .then(() => {
+                    console.log("Student added successfully");
+                })
+                .catch((error) => {
+                    console.error("Error adding student:", error);
+                });
         }
-
-        console.log("Sending payload to backend:", payload);
-
-        dispatch(createStudent(payload))
-            .unwrap()
-            .then(() => {
-                console.log("Student added successfully");
-            })
-            .catch((error) => {
-                console.error("Error adding student:", error);
-            });
-    }
-};
+    };
 
 
 
@@ -406,6 +416,7 @@ const AddStudentForm = () => {
                                     value={formData.targetExam}
                                     onChange={handleInputChange('targetExam')}
                                     displayEmpty
+                                    fullWidth
                                     sx={{
                                         borderRadius: 2,
                                         fontSize: { xs: '0.9rem', sm: '1rem' }
@@ -416,12 +427,18 @@ const AddStudentForm = () => {
                                         </InputAdornment>
                                     }
                                 >
-                                    <MenuItem value="12">NCLEX</MenuItem>
-                                    <MenuItem value="PROMETRIC">PROMETRIC</MenuItem>
-                                    <MenuItem value="CGFNS">CGFNS</MenuItem>
-                                    <MenuItem value="IELTS">IELTS</MenuItem>
-                                    <MenuItem value="OET">OET</MenuItem>
+                                    <MenuItem value="" disabled>
+                                        Select Course
+                                    </MenuItem>
+                                    {courses.map((course, index) => (
+                                        <MenuItem key={index} value={course.cs_id}>
+                                            {course.cs_name}
+                                        </MenuItem>
+                                    ))}
                                 </Select>
+
+
+
                             </FormControl>
                         </Grid>
 

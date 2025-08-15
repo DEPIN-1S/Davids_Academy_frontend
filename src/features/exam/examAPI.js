@@ -14,11 +14,21 @@ export const postQuestion = async (questionData) => {
             throw new Error("Failed to post question");
         }
 
-        return await response.json();
+        const result = await response.json(); // ✅ store result
+
+        if (result?.message) {
+            console.log("✅ API Response Message:", result.message);
+        }
+
+        return result; // ✅ return after logging
     } catch (error) {
+        console.error("❌ API Error:", error);
         throw error;
     }
 };
+
+
+
 // src/api/questionTypeApi.js
 export const fetchQuestionTypes = async () => {
     try {

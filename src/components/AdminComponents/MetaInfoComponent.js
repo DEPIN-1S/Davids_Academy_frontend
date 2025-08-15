@@ -37,12 +37,16 @@ const MetaInfoComponent = () => {
         clearFiles
     } = useFileContext();
 
+    console.log("🔍 Context from MetaInfo:", {
+        hasQuestionFile,
+        hasExplanationFile,
+        questionFile,
+        explanationFile
+    });
+
     // ✅ Receive only serializable question data
     const receivedQuestionData = location.state?.questionData || {};
-
-
     const { loading, success, error } = useSelector(state => state.exam);
-
     const [form, setForm] = useState({
         difficulty: receivedQuestionData.difficulty || "",
         subject: receivedQuestionData.subject || "",
@@ -57,6 +61,8 @@ const MetaInfoComponent = () => {
         console.log('📎 Question file in context:', hasQuestionFile ? questionFile?.name : 'None');
         console.log('📎 Explanation file in context:', hasExplanationFile ? explanationFile?.name : 'None');
         console.log('📄 Received question data:', receivedQuestionData);
+        console.log("question_content:::", receivedQuestionData.question_content);
+
     }, [hasQuestionFile, hasExplanationFile, questionFile, explanationFile, receivedQuestionData]);
 
     // Handle toast notifications based on Redux state
@@ -121,6 +127,12 @@ const MetaInfoComponent = () => {
     // ✅ Submit using Context FormData for multipart support
     // Updated handleSubmitWithContextFormData function
     const handleSubmitWithContextFormData = async () => {
+        console.log("🔍 Context from MetaInfo:", {
+            hasQuestionFile,
+            hasExplanationFile,
+            questionFile,
+            explanationFile
+        });
         const loadingToastId = toast.loading('📝 Adding question to Q-Bank...', {
             position: "top-right",
             hideProgressBar: false,
@@ -130,25 +142,35 @@ const MetaInfoComponent = () => {
             progress: undefined,
             theme: "colored",
         });
-
+        console.log("Full URL: ", `${process.env.REACT_APP_API_URL}/exam/question`);
         try {
             // ✅ Prepare complete question data matching your required structure
             const completeQuestionData = {
                 // Basic fields
-                cs_id:receivedQuestionData.cs_id,
+                cs_id: receivedQuestionData.cs_id,
                 questionType: receivedQuestionData.questionType,
                 question_type_id: getQuestionTypeId(receivedQuestionData.questionType),
                 question: receivedQuestionData.question,
                 difficulty: form.difficulty,
-                subject: parseInt(form.subject),
-                lesson: parseInt(form.lesson),
-                clientNeedArea: parseInt(form.clientNeedArea),
-                clientNeedTopic: parseInt(form.clientNeedTopic),
+
+                //for drop down
+                tabs: receivedQuestionData.tabs || [],
+                dropdowns: receivedQuestionData.dropdowns || [],
+
+                //for drag and drop
+                drag_and_drop: receivedQuestionData.drag_and_drop || [],
+
+                //for sorting
+                sortItems: receivedQuestionData.sortitems || [],
 
                 // Explanation fields
                 explanationHeading: receivedQuestionData.explanationHeading,
                 explanationText: receivedQuestionData.explanationText,
                 additionalInfo: receivedQuestionData.additionalInfo,
+
+                //for filling the blanks 
+                FTBquestion_content: receivedQuestionData.FTBquestion_content,
+                FTBoptions: receivedQuestionData.FTBoptions,
 
                 // ✅ Question type specific data
                 ...getQuestionTypeSpecificData(receivedQuestionData)
@@ -156,7 +178,6 @@ const MetaInfoComponent = () => {
 
             // ✅ Create FormData using Context
             const completeFormData = createCompleteFormData(completeQuestionData);
-
             console.log('🚀 Submitting with Context FormData (multipart/form-data)');
             console.log('📦 FormData created from Context:');
             for (let [key, value] of completeFormData.entries()) {
@@ -164,7 +185,8 @@ const MetaInfoComponent = () => {
             }
 
             // ✅ Submit to your multipart endpoint
-            const response = await fetch(`${process.env.REACT_APP_API_URL}/api/questions`, {
+            console.log("URL :::::: ", process.env.REACT_APP_API_URL);
+            const response = await fetch(`${process.env.REACT_APP_API_URL}/exam/question`, {
                 method: 'POST',
                 headers: {
                     'Authorization': `Bearer ${localStorage.getItem('token')}`,
@@ -196,7 +218,6 @@ const MetaInfoComponent = () => {
         } catch (err) {
             toast.dismiss(loadingToastId);
             console.error('Failed to submit question:', err);
-
             toast.error(`❌ Failed to add question: ${err.message}`, {
                 position: "top-right",
                 autoClose: 5000,
@@ -258,6 +279,9 @@ const MetaInfoComponent = () => {
                 };
         }
     };
+
+
+
     // ✅ Fallback: Submit using JSON (if no files in Context)
     const handleSubmitWithJSON = async () => {
         // Show loading toast
@@ -273,9 +297,7 @@ const MetaInfoComponent = () => {
 
         // Construct complete question data based on question type
         const completeQuestionData = constructQuestionData();
-
         console.log('🚀 Submitting question data (JSON):', completeQuestionData);
-
         try {
             await dispatch(submitQuestion(completeQuestionData)).unwrap();
             toast.dismiss(loadingToastId);
@@ -298,56 +320,144 @@ const MetaInfoComponent = () => {
         }
     };
 
-    // ✅ Construct question data for JSON fallback
+    // ✅ MCQ base structure
+    const getMCQBaseData = () => ({
+        questionType: receivedQuestionData.questionType,
+        courseId: receivedQuestionData.cs_id,
+        question_type_id: getQuestionTypeId('MCQ'),
+        question: receivedQuestionData.question || "",
+        exam_type: receivedQuestionData.exam_type,
+        exhibit: null,
+        difficulty: form.difficulty,
+        explanationHeading: receivedQuestionData.explanationHeading || "",
+        explanationText: receivedQuestionData.explanationText || "",
+        info: receivedQuestionData.additionalInfo || "",
+        infoImage: null,
+        answer: receivedQuestionData.correctAnswer || "",
+        options: receivedQuestionData.options || []
+    });
+
+
+    // ✅ Dropdown question data
+    const getDropdownBaseData = () => ({
+        questionType: receivedQuestionData.questionType,
+        question_type_id: getQuestionTypeId('Dropdown'),
+        courseId: receivedQuestionData.cs_id,
+        question: receivedQuestionData.question || "",
+        difficulty: form.difficulty,
+
+        exam_type: receivedQuestionData.exam_type,
+        tabs: receivedQuestionData.tabs || [],
+        dropdowns: receivedQuestionData.dropdowns || [],
+        explanationHeading: receivedQuestionData.explanationHeading || "",
+        explanationText: receivedQuestionData.explanationText || "",
+        info: receivedQuestionData.additionalInfo || "",
+        infoImage: null // or receivedQuestionData.infoImage if you want actual image link
+    });
+
+    const getDragDropBaseData = () => ({
+        questionType: receivedQuestionData.questionType,
+        question_type_id: getQuestionTypeId("Drag Drop"),
+        courseId: receivedQuestionData.cs_id,
+        exam_type: receivedQuestionData.exam_type,
+        question: receivedQuestionData.question || "",
+        drag_drop_content: receivedQuestionData.drag_drop_content || "",
+        difficulty: form.difficulty || "",
+        tabs: receivedQuestionData.tabs || [],
+        drag_and_drop: receivedQuestionData.drag_and_drop || [],
+        explanationHeading: receivedQuestionData.explanationHeading || "",
+        explanationText: receivedQuestionData.explanationText || "",
+        info: receivedQuestionData.additionalInfo || "",
+        infoImage: receivedQuestionData.infoImage || null
+    });
+
+
+    const getSortingBaseData = () => ({
+        questionType: receivedQuestionData.questionType, // type name if you store it
+        question_type_id: getQuestionTypeId("Sorting"),  // your helper for IDs
+        courseId: receivedQuestionData.cs_id,
+        exam_type: receivedQuestionData.exam_type,
+        question: receivedQuestionData.question || "",
+        sortItems: receivedQuestionData.sortitems || [],
+        difficulty: form.difficulty || "",
+        explanationHeading: receivedQuestionData.explanationHeading || "",
+        explanationText: receivedQuestionData.explanationText || "",
+        info: receivedQuestionData.additionalInfo || "",
+        infoImage: receivedQuestionData.infoImage || null
+    });
+
+    const getFillInTheBlanksBaseData = () => ({
+        questionType: receivedQuestionData.questionType,
+        question_type_id: getQuestionTypeId('Fill in the Blanks'),
+        courseId: receivedQuestionData.cs_id,
+        question: receivedQuestionData.question || "",
+        answer: receivedQuestionData.answer || "",
+        exam_type: receivedQuestionData.exam_type,
+        FTBquestion_content: receivedQuestionData.FTBquestion_content,
+        FTBoptions: receivedQuestionData.FTBoptions,
+        difficulty: form.difficulty || "",
+        explanationHeading: receivedQuestionData.explanationHeading || "",
+        explanationText: receivedQuestionData.explanationText || "",
+        info: receivedQuestionData.additionalInfo || "",
+        infoImage: receivedQuestionData.infoImage || null
+    });
+
+    const getMultiRadioBaseData = () => ({
+        courseId: receivedQuestionData.cs_id,
+        questionType: receivedQuestionData.questionType,
+        question_type_id: getQuestionTypeId('Multiple Radio'),
+        exam_type: receivedQuestionData.exam_type,
+        question: receivedQuestionData.question || "",
+        difficulty: form.difficulty || "",
+        tabs: receivedQuestionData.tabs || [],
+        /* question_content:receivedQuestionData.question_content, */
+        question_content: receivedQuestionData.question_content || [],
+        radio_options: receivedQuestionData.radio_options || [],
+        explanationHeading: receivedQuestionData.explanationHeading || "",
+        explanationText: receivedQuestionData.explanationText || "",
+        info: receivedQuestionData.additionalInfo || "",
+        infoImage: receivedQuestionData.infoImage || null
+    });
+
+
+
+
+
+
+    // ✅ Main function - still same pattern
     const constructQuestionData = () => {
         const questionType = receivedQuestionData.questionType || 'MCQ';
-        const exam_type = receivedQuestionData.exam_type;
-        const cs_id = receivedQuestionData.cs_id;
-        // Base data common to all question types
-        const baseData = {
-            cs_id:cs_id,
-            exam_type: exam_type,
-            questionType: questionType,
-            question_type_id: getQuestionTypeId(questionType),
-            question: receivedQuestionData.question || "",
-            difficulty: form.difficulty,
-            subject: parseInt(form.subject),
-            lesson: parseInt(form.lesson),
-            clientNeedArea: parseInt(form.clientNeedArea),
-            clientNeedTopic: parseInt(form.clientNeedTopic),
-            exhibit: null, // No files in JSON mode
-            explanationHeading: receivedQuestionData.explanationHeading || "",
-            explanationText: receivedQuestionData.explanationText || "",
-            info: receivedQuestionData.additionalInfo || "",
-            infoImage: null // No files in JSON mode
-        };
 
-        // Question type specific data construction
         switch (questionType) {
             case 'MCQ':
-                return {
-                    ...baseData,
-                    answer: receivedQuestionData.correctAnswer || "",
-                    options: receivedQuestionData.options || []
-                };
-            // ... other question types remain the same as original
+                return getMCQBaseData();
+            case 'Dropdown':
+                return getDropdownBaseData();
+
+            case 'Drag Drop':
+                return getDragDropBaseData();
+
+            case 'Sorting':
+                return getSortingBaseData();
+
+            case 'Multiple Radio"':
+                return getMultiRadioBaseData();
+
+            case 'Fill in the Blanks':
+                return getFillInTheBlanksBaseData();
+
             default:
-                return {
-                    ...baseData,
-                    answer: receivedQuestionData.correctAnswer || "",
-                    options: receivedQuestionData.options || []
-                };
+                return getMCQBaseData(); // fallback to MCQ format
         }
     };
+
+
 
     const onBack = () => {
         // ✅ Preserve current meta data when going back (all serializable)
         const currentMetaData = {
             difficulty: form.difficulty,
-            subject: form.subject,
-            lesson: form.lesson,
-            clientNeedArea: form.clientNeedArea,
-            clientNeedTopic: form.clientNeedTopic
+
         };
 
         const dataToSendBack = {
@@ -388,7 +498,7 @@ const MetaInfoComponent = () => {
 
     // Validation function
     const isFormValid = () => {
-        return form.difficulty && form.subject && form.lesson && form.clientNeedArea && form.clientNeedTopic;
+        return form.difficulty;
     };
 
     // Show warning if trying to submit incomplete form
@@ -400,36 +510,7 @@ const MetaInfoComponent = () => {
         });
     };
 
-    // Options data (same as original)
-    const subjectOptions = [
-        { value: 1, label: "Fundamentals" },
-        { value: 2, label: "Pharmacology" },
-        { value: 3, label: "Adult Health" },
-        { value: 4, label: "Medical Surgical" },
-        { value: 5, label: "Critical Care" }
-    ];
 
-    const lessonOptions = [
-        { value: 1, label: "Skills / Procedures" },
-        { value: 2, label: "Dosage Calculation" },
-        { value: 3, label: "Patient Assessment" },
-        { value: 4, label: "Emergency Procedures" }
-    ];
-
-    const clientNeedAreaOptions = [
-        { value: 1, label: "Safety & Infection Control" },
-        { value: 2, label: "Physiological Integrity" },
-        { value: 3, label: "Pharmacological Therapies" },
-        { value: 4, label: "Management of Care" }
-    ];
-
-    const clientNeedTopicOptions = [
-        { value: 1, label: "Complications of Diagnostic Procedures" },
-        { value: 2, label: "Infection Prevention" },
-        { value: 3, label: "Dosage Admin" },
-        { value: 4, label: "Priority Setting" },
-        { value: 5, label: "Reduction of Risk" }
-    ];
 
     return (
         <Box p={3} maxWidth="800px" mx="auto">
@@ -527,77 +608,7 @@ const MetaInfoComponent = () => {
                     </FormControl>
                 </Grid>
 
-                <Grid item xs={12} sm={4}>
-                    <FormControl fullWidth>
-                        <InputLabel>Subject *</InputLabel>
-                        <Select
-                            value={form.subject}
-                            onChange={handleChange("subject")}
-                            label="Subject *"
-                            disabled={loading}
-                        >
-                            {subjectOptions.map((option) => (
-                                <MenuItem key={option.value} value={option.value}>
-                                    {option.label}
-                                </MenuItem>
-                            ))}
-                        </Select>
-                    </FormControl>
-                </Grid>
 
-                <Grid item xs={12} sm={4}>
-                    <FormControl fullWidth>
-                        <InputLabel>Lesson *</InputLabel>
-                        <Select
-                            value={form.lesson}
-                            onChange={handleChange("lesson")}
-                            label="Lesson *"
-                            disabled={loading}
-                        >
-                            {lessonOptions.map((option) => (
-                                <MenuItem key={option.value} value={option.value}>
-                                    {option.label}
-                                </MenuItem>
-                            ))}
-                        </Select>
-                    </FormControl>
-                </Grid>
-
-                <Grid item xs={12} sm={6}>
-                    <FormControl fullWidth>
-                        <InputLabel>Client Need Area *</InputLabel>
-                        <Select
-                            value={form.clientNeedArea}
-                            onChange={handleChange("clientNeedArea")}
-                            label="Client Need Area *"
-                            disabled={loading}
-                        >
-                            {clientNeedAreaOptions.map((option) => (
-                                <MenuItem key={option.value} value={option.value}>
-                                    {option.label}
-                                </MenuItem>
-                            ))}
-                        </Select>
-                    </FormControl>
-                </Grid>
-
-                <Grid item xs={12} sm={6}>
-                    <FormControl fullWidth>
-                        <InputLabel>Client Need Topic *</InputLabel>
-                        <Select
-                            value={form.clientNeedTopic}
-                            onChange={handleChange("clientNeedTopic")}
-                            label="Client Need Topic *"
-                            disabled={loading}
-                        >
-                            {clientNeedTopicOptions.map((option) => (
-                                <MenuItem key={option.value} value={option.value}>
-                                    {option.label}
-                                </MenuItem>
-                            ))}
-                        </Select>
-                    </FormControl>
-                </Grid>
             </Grid>
 
             {/* ✅ Enhanced Final Data Preview with Context information */}
@@ -618,18 +629,7 @@ const MetaInfoComponent = () => {
                     <Typography variant="body2">
                         • Difficulty: {form.difficulty || '❌ Required'}
                     </Typography>
-                    <Typography variant="body2">
-                        • Subject: {form.subject ? subjectOptions.find(s => s.value == form.subject)?.label : '❌ Required'}
-                    </Typography>
-                    <Typography variant="body2">
-                        • Lesson: {form.lesson ? lessonOptions.find(l => l.value == form.lesson)?.label : '❌ Required'}
-                    </Typography>
-                    <Typography variant="body2">
-                        • Client Need Area: {form.clientNeedArea ? clientNeedAreaOptions.find(c => c.value == form.clientNeedArea)?.label : '❌ Required'}
-                    </Typography>
-                    <Typography variant="body2">
-                        • Client Need Topic: {form.clientNeedTopic ? clientNeedTopicOptions.find(t => t.value == form.clientNeedTopic)?.label : '❌ Required'}
-                    </Typography>
+
                     <Typography variant="body2">
                         • Files in Context: {(hasQuestionFile ? 1 : 0) + (hasExplanationFile ? 1 : 0)} file(s)
                     </Typography>
