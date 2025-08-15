@@ -18,7 +18,6 @@ import UserDropdownComponent from "../UserDropdownComponent";
 import { logout } from '../../../features/user/userSlice';
 const NavBar = () => {
     const location = useLocation();
-
     // Define route-specific headings, subtitles, and icons
     const routeConfig = {
         "/student/question-bank": {
@@ -26,11 +25,6 @@ const NavBar = () => {
             subtitle: "Lorem Ipsum is simply dummy text of the printing and typesetting industry.",
             // icon: <FaThLarge />,
             showWave: false
-        },
-        "/student/my-statistics": {
-            title: "My Statistics",
-            subtitle: "Lorem Ipsum is simply dummy text of the printing and typesetting industry.",
-            // icon: <FaUserGraduate />
         },
         "/student/recorded-class": {
             title: "Recorded Classes",
