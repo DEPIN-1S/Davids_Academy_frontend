@@ -1,4 +1,3 @@
-// src/components/AdminComponents/AddTestComponent.js
 import React, { useState, useEffect } from "react";
 import {
     Box,
@@ -11,30 +10,34 @@ import {
     OutlinedInput,
     Checkbox,
     ListItemText,
-    useMediaQuery
+    useMediaQuery,
+    CircularProgress,
+    Alert,
 } from "@mui/material";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
 import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchCourses } from "../../features/courses/courseSlice";
-import { getMockTestQuestions } from "../../features/exam/examSlice";
+import { getMockTestQuestions, submitTest } from "../../features/exam/examSlice";
 
 export default function AddTestComponent() {
     const navigate = useNavigate();
     const dispatch = useDispatch();
     const isMobile = useMediaQuery("(max-width:600px)");
 
-    // ✅ Courses from courseReducer
+    // Selectors
     const { list: courses = [], loading: coursesLoading } = useSelector(
         (state) => state.course
     );
 
-    // ✅ Questions from examReducer
     const {
         mockTestQuestion: questions = [],
         mockTestQuestionLoading: questionLoading,
-        mockTestQuestionError: questionError
+        mockTestQuestionError: questionError,
+        loading: submitLoading,
+        error: submitError,
+        success: submitSuccess,
     } = useSelector((state) => state.exam);
 
     // Local state
@@ -48,6 +51,14 @@ export default function AddTestComponent() {
         dispatch(getMockTestQuestions());
     }, [dispatch]);
 
+    useEffect(() => {
+        if (submitSuccess) {
+            // Optionally reset or navigate on success
+            alert("Test created successfully!");
+            navigate("/admin/question-management");  // or wherever you want
+        }
+    }, [submitSuccess, navigate]);
+
     const handleBackClick = () => {
         navigate("/admin/question-management");
     };
@@ -57,14 +68,17 @@ export default function AddTestComponent() {
             alert("Please fill in all fields.");
             return;
         }
+
+        // Build payload matching your backend API keys
         const payload = {
+            fromDate: startDate,
+            toDate: endDate,
+            testTitle: selectedCourse,  // or whatever your API expects for test title
+            questionIds: selectedQuestionIds,
             courseId: selectedCourse,
-            startDate,
-            endDate,
-            questionIds: selectedQuestionIds
         };
-        console.log("Test Data To Submit:", payload);
-        navigate("/admin/tests/confirmation", { state: payload });
+
+        dispatch(submitTest(payload));
     };
 
     const handleQuestionSelect = (event) => {
@@ -73,26 +87,16 @@ export default function AddTestComponent() {
     };
 
     return (
-        <Box
-            sx={{
-                maxWidth: 600,
-                mx: "auto",
-                px: 2,
-                py: 4,
-                display: "flex",
-                flexDirection: "column",
-                gap: 3
-            }}
-        >
-            {/* Breadcrumb */}
+        <Box sx={{ maxWidth: 600, mx: "auto", px: 2, py: 4, display: "flex", flexDirection: "column", gap: 3 }}>
             <Typography variant="subtitle2" color="text.secondary">
                 Tests &nbsp;&gt;&nbsp; Add Test
             </Typography>
 
-            {/* Page Title */}
             <Typography variant="h5" fontWeight={600}>
                 Add New Test
             </Typography>
+
+            {submitError && <Alert severity="error">{submitError}</Alert>}
 
             {/* Course Dropdown */}
             <FormControl fullWidth>
@@ -100,12 +104,7 @@ export default function AddTestComponent() {
                     value={selectedCourse}
                     onChange={(e) => setSelectedCourse(e.target.value)}
                     displayEmpty
-                    sx={{
-                        borderRadius: 2,
-                        fontWeight: 500,
-                        bgcolor: "#f9f9f9",
-                        "& .MuiSelect-select": { padding: 2 }
-                    }}
+                    sx={{ borderRadius: 2, fontWeight: 500, bgcolor: "#f9f9f9", "& .MuiSelect-select": { padding: 2 } }}
                 >
                     <MenuItem value="" disabled>
                         Select Course
@@ -164,21 +163,8 @@ export default function AddTestComponent() {
             </FormControl>
 
             {/* Navigation Buttons */}
-            <Box
-                sx={{
-                    mt: 4,
-                    display: "flex",
-                    justifyContent: "space-between",
-                    flexDirection: isMobile ? "column" : "row",
-                    gap: 2
-                }}
-            >
-                <Button
-                    variant="outlined"
-                    startIcon={<ArrowBackIcon />}
-                    onClick={handleBackClick}
-                    fullWidth={isMobile}
-                >
+            <Box sx={{ mt: 4, display: "flex", justifyContent: "space-between", flexDirection: isMobile ? "column" : "row", gap: 2 }}>
+                <Button variant="outlined" startIcon={<ArrowBackIcon />} onClick={handleBackClick} fullWidth={isMobile}>
                     Back
                 </Button>
                 <Button
@@ -187,8 +173,9 @@ export default function AddTestComponent() {
                     onClick={handleNextClick}
                     sx={{ backgroundColor: "#FFD700", color: "#000" }}
                     fullWidth={isMobile}
+                    disabled={submitLoading}
                 >
-                    Save Test
+                    {submitLoading ? <CircularProgress size={24} color="inherit" /> : "Save Test"}
                 </Button>
             </Box>
         </Box>

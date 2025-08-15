@@ -47,3 +47,24 @@ export const fetchMockTestQuestion = async () => {
         throw error;
     }
 };
+// POST: Create a new test with all necessary details
+export const postTest = async (testData) => {
+    console.log('Test data', testData)
+    try {
+        const response = await fetch(`${baseUrl}/exam/tests`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify(testData),
+        });
+
+        if (!response.ok) {
+            throw new Error("Failed to create test");
+        }
+
+        return await response.json();
+    } catch (error) {
+        throw error;
+    }
+};

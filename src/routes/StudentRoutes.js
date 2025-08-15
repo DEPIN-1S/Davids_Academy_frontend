@@ -2,7 +2,6 @@ import React from "react";
 import { Route } from "react-router-dom";
 import ProtectedRoutes from "./ProtectedRoutes";
 import QuestionBankPage from "../pages/StudentPages/QuestionBankPage";
-import StatisticsPage from "../pages/StudentPages/StatisticsPage";
 import RecordedClassesPage from "../pages/StudentPages/RecordedClassesPage";
 import NotesPage from "../pages/StudentPages/NotesPage";
 import MockTestPage from "../pages/StudentPages/MockTestPage";
@@ -21,7 +20,6 @@ const StudentRoutes = () => (
     <>
         <Route element={<StudentLayout />}>
             <Route path="/student/question-bank" element={<ProtectedRoutes allowedRoles={['student']}><QuestionBankPage /></ProtectedRoutes>} />
-            <Route path="/student/my-statistics" element={<ProtectedRoutes allowedRoles={['student']}><StatisticsPage /></ProtectedRoutes>} />
             <Route path="/student/recorded-class" element={<ProtectedRoutes allowedRoles={['student']}><RecordedClassesPage /></ProtectedRoutes>} />
             <Route path="/student/notes" element={<ProtectedRoutes allowedRoles={['student']}><NotesPage /></ProtectedRoutes>} />
             <Route path="/student/mock-test" element={<ProtectedRoutes allowedRoles={['student']}><MockTestPage /></ProtectedRoutes>} />

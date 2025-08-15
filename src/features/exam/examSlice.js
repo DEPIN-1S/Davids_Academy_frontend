@@ -3,7 +3,7 @@ import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import {
     postQuestion,
     fetchQuestionTypes,
-    fetchMockTestQuestion as fetchMockTestQuestionAPI
+    fetchMockTestQuestion as fetchMockTestQuestionAPI, postTest
 } from "./examAPI";
 
 // Async thunk for posting any question type
@@ -38,6 +38,18 @@ export const getMockTestQuestions = createAsyncThunk(
     async (_, { rejectWithValue }) => {
         try {
             const data = await fetchMockTestQuestionAPI(); // returns array
+            return data;
+        } catch (error) {
+            return rejectWithValue(error.message);
+        }
+    }
+);
+// Async thunk for creating a new test
+export const submitTest = createAsyncThunk(
+    "exam/createTest",
+    async (testData, { rejectWithValue }) => {
+        try {
+            const data = await postTest(testData);
             return data;
         } catch (error) {
             return rejectWithValue(error.message);
@@ -114,7 +126,22 @@ const questionSlice = createSlice({
                 state.mockTestQuestionLoading = false;
                 state.mockTestQuestionError = action.payload;
                 state.mockTestQuestion = [];
-            });
+            }) // submitTest
+            .addCase(submitTest.pending, (state) => {
+                state.loading = true;
+                state.success = false;
+                state.error = null;
+            })
+            .addCase(submitTest.fulfilled, (state) => {
+                state.loading = false;
+                state.success = true;
+            })
+            .addCase(submitTest.rejected, (state, action) => {
+                state.loading = false;
+                state.error = action.payload;
+            })
+
+
     }
 });
 
