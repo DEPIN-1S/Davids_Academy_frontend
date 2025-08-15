@@ -23,13 +23,15 @@ import { useFileContext } from '../../context/FileContext'; // ✅ Import the Co
 const DropdownQuestionContent = () => {
     const navigate = useNavigate();
     const location = useLocation();
-
     // ✅ Use File Context instead of passing files through navigation
     const { addQuestionFile, questionFile, hasQuestionFile } = useFileContext();
 
     // Get any existing data from previous steps
     const existingData = location.state?.questionData || {};
     const questionType = location.state?.questionType || existingData.questionType || "Dropdown";
+    const cs_id = location.state?.cs_id || "";
+    const exam_type = location.state?.exam_type || "";
+    const question_type_id = location.state?.question_type_id || "";
 
     // Form state
     const [question, setQuestion] = useState(existingData.question || "");
@@ -213,6 +215,9 @@ const DropdownQuestionContent = () => {
 
         // ✅ Prepare ONLY serializable question data matching the required structure
         const questionData = {
+            cs_id: cs_id,
+            exam_type: exam_type,
+            question_type_id: question_type_id,
             questionType: questionType,
             question: question.trim(),
             tabs: tabs.filter(tab => tab.tabKey.trim() && tab.tabValue.trim()),
@@ -265,7 +270,10 @@ const DropdownQuestionContent = () => {
         navigate('/admin/question-type', {
             state: {
                 questionData: currentData,
-                fromStep: 'content'
+                fromStep: 'content',
+                cs_id: cs_id,
+                exam_type: exam_type,
+                question_type_id: question_type_id,
             }
         });
     };

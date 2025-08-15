@@ -59,6 +59,7 @@ const AnswerExplain = () => {
 
     // ✅ Log context status
     useEffect(() => {
+        console.log("previous question Data:::::", previousQuestionData);
         console.log('✅ Context Status:');
         console.log('📎 Question file in context:', hasQuestionFile ? questionFile?.name : 'None');
         console.log('📎 Explanation file in context:', hasExplanationFile ? explanationFile?.name : 'None');
@@ -136,11 +137,12 @@ const AnswerExplain = () => {
         if (!validateForm()) {
             return;
         }
+        console.log(" previous question data in answer explain ", previousQuestionData);
 
         // ✅ Create ONLY serializable data
         const mergedQuestionData = {
             // Previous step data
-            cs_id:previousQuestionData.cs_id,
+            cs_id: previousQuestionData.cs_id,
             exam_type: previousQuestionData.exam_type,
             question_type_id: previousQuestionData.question_type_id,
             questionType: previousQuestionData.questionType,
@@ -149,6 +151,20 @@ const AnswerExplain = () => {
             correctAnswer: previousQuestionData.correctAnswer,
             createdAt: previousQuestionData.createdAt,
             questionId: previousQuestionData.questionId,
+
+            //for dropdown data
+            tabs: previousQuestionData.tabs || [],
+            dropdowns: previousQuestionData.dropdowns || [],
+
+
+            //for drag and drop
+            drag_and_drop: previousQuestionData.drag_and_drop,
+            drag_drop_content: previousQuestionData.drag_drop_content,
+
+
+            //for sorting
+            sortitems: previousQuestionData.sortItems ,
+
 
             // Current explanation data
             explanationHeading: explanationHeading.trim(),

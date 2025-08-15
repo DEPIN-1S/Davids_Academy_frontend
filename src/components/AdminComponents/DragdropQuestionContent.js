@@ -21,16 +21,18 @@ import { CloudUpload, Delete, Image, PictureAsPdf, Description, ExpandMore, Drag
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useFileContext } from '../../context/FileContext'; // ✅ Import the Context
 
+
 const DragdropQuestionContent = () => {
     const navigate = useNavigate();
     const location = useLocation();
-
     // ✅ Use File Context instead of passing files through navigation
     const { addQuestionFile, questionFile, hasQuestionFile } = useFileContext();
-
     // Get any existing data from previous steps
     const existingData = location.state?.questionData || {};
     const questionType = location.state?.questionType || existingData.questionType || "Drag Drop";
+    const  cs_id = location.state?.cs_id || "";
+    const exam_type = location.state?.exam_type || "";
+    const question_type_id = location.state?.question_type_id || "";
 
     // Form state
     const [question, setQuestion] = useState(existingData.question || "");
@@ -47,7 +49,6 @@ const DragdropQuestionContent = () => {
     ]);
     const [selectedFile, setSelectedFile] = useState(null); // ✅ Local state for UI, Context for persistence
     const [errors, setErrors] = useState({});
-
     const fileInputRef = useRef(null);
 
     // ✅ Initialize with existing file from context if available
@@ -90,7 +91,6 @@ const DragdropQuestionContent = () => {
         }
         event.target.value = '';
     };
-
     const handleButtonClick = () => {
         fileInputRef.current?.click();
     };
@@ -207,10 +207,12 @@ const DragdropQuestionContent = () => {
         if (!validateForm()) {
             return;
         }
-
         // ✅ Prepare ONLY serializable question data
         const questionData = {
+            cs_id:cs_id,
+            exam_type:exam_type,
             questionType: questionType,
+            question_type_id:question_type_id,
             question: question.trim(),
             drag_drop_content: dragDropContent.trim(),
             tabs: tabs.filter(tab => tab.tabKey.trim() && tab.tabValue.trim()),
@@ -232,7 +234,6 @@ const DragdropQuestionContent = () => {
 
         console.log('✅ Navigating with serializable data only:', questionData);
         console.log('✅ File stored in Context:', hasQuestionFile ? 'Yes' : 'No');
-
         // ✅ Navigate with ONLY serializable data - NO file objects
         navigate('/admin/answer-explain', {
             state: {
@@ -263,7 +264,8 @@ const DragdropQuestionContent = () => {
         navigate('/admin/question-type', {
             state: {
                 questionData: currentData,
-                fromStep: 'content'
+                fromStep: 'content',
+                 cs_id:cs_id,
             }
         });
     };

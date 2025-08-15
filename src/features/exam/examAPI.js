@@ -6,8 +6,8 @@ export const postQuestion = async (questionData) => {
     try {
         console.log("inside submit question apiiii");
         console.log("🚀 API request started:", questionData);
+
         const response = await fetch(baseUrl + "/exam/question", {
-               
             method: "POST",
             headers: {
                 "Content-Type": "application/json"
@@ -19,15 +19,18 @@ export const postQuestion = async (questionData) => {
             throw new Error("Failed to post question");
         }
 
-        return await response.json();
+        const result = await response.json(); // ✅ store result
+
+        if (result?.message) {
+            console.log("✅ API Response Message:", result.message);
+        }
+
+        return result; // ✅ return after logging
     } catch (error) {
+        console.error("❌ API Error:", error);
         throw error;
     }
 };
-
-
-
-
 
 
 

@@ -129,12 +129,12 @@ const MetaInfoComponent = () => {
     // ✅ Submit using Context FormData for multipart support
     // Updated handleSubmitWithContextFormData function
     const handleSubmitWithContextFormData = async () => {
-         console.log("🔍 Context from MetaInfo:", {
-        hasQuestionFile,
-        hasExplanationFile,
-        questionFile,
-        explanationFile
-    });
+        console.log("🔍 Context from MetaInfo:", {
+            hasQuestionFile,
+            hasExplanationFile,
+            questionFile,
+            explanationFile
+        });
         const loadingToastId = toast.loading('📝 Adding question to Q-Bank...', {
             position: "top-right",
             hideProgressBar: false,
@@ -155,15 +155,16 @@ const MetaInfoComponent = () => {
                 question_type_id: getQuestionTypeId(receivedQuestionData.questionType),
                 question: receivedQuestionData.question,
                 difficulty: form.difficulty,
-                subject: parseInt(form.subject),
-                lesson: parseInt(form.lesson),
-                clientNeedArea: parseInt(form.clientNeedArea),
-                clientNeedTopic: parseInt(form.clientNeedTopic),
+
+                tabs: receivedQuestionData.tabs || [],
+                dropdowns: receivedQuestionData.dropdowns || [],
 
                 // Explanation fields
                 explanationHeading: receivedQuestionData.explanationHeading,
                 explanationText: receivedQuestionData.explanationText,
                 additionalInfo: receivedQuestionData.additionalInfo,
+
+
 
                 // ✅ Question type specific data
                 ...getQuestionTypeSpecificData(receivedQuestionData)
@@ -315,53 +316,103 @@ const MetaInfoComponent = () => {
         }
     };
 
-    // ✅ Construct question data for JSON fallback
+    // ✅ MCQ base structure
+    const getMCQBaseData = () => ({
+        questionType: receivedQuestionData.questionType,
+        courseId: receivedQuestionData.cs_id,
+        question_type_id: getQuestionTypeId('MCQ'),
+        question: receivedQuestionData.question || "",
+        exam_type: receivedQuestionData.exam_type,
+        exhibit: null,
+        difficulty: form.difficulty,
+
+        explanationHeading: receivedQuestionData.explanationHeading || "",
+        explanationText: receivedQuestionData.explanationText || "",
+        info: receivedQuestionData.additionalInfo || "",
+        infoImage: null,
+        answer: receivedQuestionData.correctAnswer || "",
+        options: receivedQuestionData.options || []
+    });
+
+
+    // ✅ Dropdown question data
+    const getDropdownBaseData = () => ({
+        questionType: receivedQuestionData.questionType,
+        question_type_id: getQuestionTypeId('Dropdown'),
+        courseId: receivedQuestionData.cs_id,
+        question: receivedQuestionData.question || "",
+        difficulty: form.difficulty,
+
+        exam_type: receivedQuestionData.exam_type,
+        tabs: receivedQuestionData.tabs || [],
+        dropdowns: receivedQuestionData.dropdowns || [],
+        explanationHeading: receivedQuestionData.explanationHeading || "",
+        explanationText: receivedQuestionData.explanationText || "",
+        info: receivedQuestionData.additionalInfo || "",
+        infoImage: null // or receivedQuestionData.infoImage if you want actual image link
+    });
+
+    const getDragDropBaseData = () => ({
+        questionType: receivedQuestionData.questionType,
+        question_type_id: getQuestionTypeId("Drag Drop"),
+        courseId: receivedQuestionData.cs_id,
+        exam_type: receivedQuestionData.exam_type,
+        question: receivedQuestionData.question || "",
+        drag_drop_content: receivedQuestionData.drag_drop_content || "",
+        difficulty: form.difficulty || "",
+        tabs: receivedQuestionData.tabs || [],
+        drag_and_drop: receivedQuestionData.drag_and_drop || [],
+        explanationHeading: receivedQuestionData.explanationHeading || "",
+        explanationText: receivedQuestionData.explanationText || "",
+        info: receivedQuestionData.additionalInfo || "",
+        infoImage: receivedQuestionData.infoImage || null
+    });
+
+
+    const getSortingBaseData = () => ({
+        questionType: receivedQuestionData.questionType, // type name if you store it
+        question_type_id: getQuestionTypeId("Sorting"),  // your helper for IDs
+        courseId: receivedQuestionData.cs_id,
+        exam_type: receivedQuestionData.exam_type,
+        question: receivedQuestionData.question || "",
+        sortItems: receivedQuestionData.sortitems || [],
+        difficulty: form.difficulty || "",
+        explanationHeading: receivedQuestionData.explanationHeading || "",
+        explanationText: receivedQuestionData.explanationText || "",
+        info: receivedQuestionData.additionalInfo || "",
+        infoImage: receivedQuestionData.infoImage || null
+    });
+
+
+
+
+    // ✅ Main function - still same pattern
     const constructQuestionData = () => {
         const questionType = receivedQuestionData.questionType || 'MCQ';
-        const exam_type = receivedQuestionData.exam_type;
-        const cs_id = receivedQuestionData.cs_id;
-        // Base data common to all question types
-        const baseData = {
-            questionType: questionType,
-            courseId: cs_id,
-            question_type_id: getQuestionTypeId(questionType),
-            question: receivedQuestionData.question || "",
-            exam_type: exam_type,
-            exhibit: null, // No files in JSON mode
-            difficulty: form.difficulty,
-            subject: parseInt(form.subject),
-            explanationHeading: receivedQuestionData.explanationHeading || "",
-            explanationText: receivedQuestionData.explanationText || "",
-            info: receivedQuestionData.additionalInfo || "",
-            infoImage: null // No files in JSON mode
-        };
 
-        // Question type specific data construction
         switch (questionType) {
             case 'MCQ':
-                return {
-                    ...baseData,
-                    answer: receivedQuestionData.correctAnswer || "",
-                    options: receivedQuestionData.options || []
-                };
-            // ... other question types remain the same as original
+                return getMCQBaseData();
+            case 'Dropdown':
+                return getDropdownBaseData();
+
+            case 'Drag Drop':
+                return getDragDropBaseData(); 
+
+            case 'Sorting':
+                return getSortingBaseData();
             default:
-                return {
-                    ...baseData,
-                    answer: receivedQuestionData.correctAnswer || "",
-                    options: receivedQuestionData.options || []
-                };
+                return getMCQBaseData(); // fallback to MCQ format
         }
     };
+
+
 
     const onBack = () => {
         // ✅ Preserve current meta data when going back (all serializable)
         const currentMetaData = {
             difficulty: form.difficulty,
-            subject: form.subject,
-            lesson: form.lesson,
-            clientNeedArea: form.clientNeedArea,
-            clientNeedTopic: form.clientNeedTopic
+
         };
 
         const dataToSendBack = {
@@ -414,36 +465,7 @@ const MetaInfoComponent = () => {
         });
     };
 
-    // Options data (same as original)
-    const subjectOptions = [
-        { value: 1, label: "Fundamentals" },
-        { value: 2, label: "Pharmacology" },
-        { value: 3, label: "Adult Health" },
-        { value: 4, label: "Medical Surgical" },
-        { value: 5, label: "Critical Care" }
-    ];
 
-    const lessonOptions = [
-        { value: 1, label: "Skills / Procedures" },
-        { value: 2, label: "Dosage Calculation" },
-        { value: 3, label: "Patient Assessment" },
-        { value: 4, label: "Emergency Procedures" }
-    ];
-
-    const clientNeedAreaOptions = [
-        { value: 1, label: "Safety & Infection Control" },
-        { value: 2, label: "Physiological Integrity" },
-        { value: 3, label: "Pharmacological Therapies" },
-        { value: 4, label: "Management of Care" }
-    ];
-
-    const clientNeedTopicOptions = [
-        { value: 1, label: "Complications of Diagnostic Procedures" },
-        { value: 2, label: "Infection Prevention" },
-        { value: 3, label: "Dosage Admin" },
-        { value: 4, label: "Priority Setting" },
-        { value: 5, label: "Reduction of Risk" }
-    ];
 
     return (
         <Box p={3} maxWidth="800px" mx="auto">
@@ -562,18 +584,7 @@ const MetaInfoComponent = () => {
                     <Typography variant="body2">
                         • Difficulty: {form.difficulty || '❌ Required'}
                     </Typography>
-                    <Typography variant="body2">
-                        • Subject: {form.subject ? subjectOptions.find(s => s.value == form.subject)?.label : '❌ Required'}
-                    </Typography>
-                    <Typography variant="body2">
-                        • Lesson: {form.lesson ? lessonOptions.find(l => l.value == form.lesson)?.label : '❌ Required'}
-                    </Typography>
-                    <Typography variant="body2">
-                        • Client Need Area: {form.clientNeedArea ? clientNeedAreaOptions.find(c => c.value == form.clientNeedArea)?.label : '❌ Required'}
-                    </Typography>
-                    <Typography variant="body2">
-                        • Client Need Topic: {form.clientNeedTopic ? clientNeedTopicOptions.find(t => t.value == form.clientNeedTopic)?.label : '❌ Required'}
-                    </Typography>
+
                     <Typography variant="body2">
                         • Files in Context: {(hasQuestionFile ? 1 : 0) + (hasExplanationFile ? 1 : 0)} file(s)
                     </Typography>

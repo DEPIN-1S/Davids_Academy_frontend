@@ -24,6 +24,9 @@ const SortQuestionContent = () => {
     // Get any existing data from previous steps
     const existingData = location.state?.questionData || {};
     const questionType = location.state?.questionType || existingData.questionType || "Sorting";
+    const cs_id = location.state?.cs_id || "";
+    const exam_type = location.state?.exam_type || "";
+    const question_type_id = location.state?.question_type_id || "";
 
     // Form state
     const [question, setQuestion] = useState(existingData.question || "");
@@ -158,6 +161,9 @@ const SortQuestionContent = () => {
         }
 
         const questionData = {
+            cs_id: cs_id,
+            exam_type: exam_type,
+            question_type_id: question_type_id,
             questionType: questionType,
             question: question.trim(),
             sortItems: sortItems.filter(item => item.sortItem.trim()).map((item, index) => ({
@@ -192,7 +198,10 @@ const SortQuestionContent = () => {
         navigate('/admin/question-type', {
             state: {
                 questionData: currentData,
-                fromStep: 'content'
+                fromStep: 'content',
+                cs_id: cs_id,
+                exam_type: exam_type,
+                question_type_id: question_type_id,
             }
         });
     };

@@ -26,9 +26,7 @@ const QManagementPage = () => {
 
 
     useEffect(() => {
-        dispatch(listQuestionTypes());
-        console.log("Question types ::::: ",questionTypes);
-        
+        dispatch(listQuestionTypes());   
     }, [dispatch]);
 
     const [activeTab, setActiveTab] = useState("Q-bank");
