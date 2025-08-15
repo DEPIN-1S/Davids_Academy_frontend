@@ -1,6 +1,11 @@
 // src/features/questions/questionSlice.js
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import { postQuestion, fetchQuestionTypes, } from "./examAPI";
+import {
+    postQuestion,
+    fetchQuestionTypes,
+    fetchMockTestQuestion as fetchMockTestQuestionAPI, postTest
+} from "./examAPI";
+
 
 // Async thunk for posting any question type
 export const submitQuestion = createAsyncThunk(
@@ -8,8 +13,6 @@ export const submitQuestion = createAsyncThunk(
     
     "questions/submitQuestion",
     async (payload, { rejectWithValue }) => {
-        console.log("inside submit question");
-        console.log("Inside submit Question::::::::");
         try {
             const data = await postQuestion(payload);
             return data;
@@ -18,10 +21,6 @@ export const submitQuestion = createAsyncThunk(
         }
     }
 );
-
-
-
-
 // Thunk for listing question types
 export const listQuestionTypes = createAsyncThunk(
     "questions/listQuestionTypes",
@@ -35,15 +34,45 @@ export const listQuestionTypes = createAsyncThunk(
     }
 );
 
+// Thunk for listing mock test questions
+export const getMockTestQuestions = createAsyncThunk(
+    "questions/fetchMockTestQuestion",
+    async (_, { rejectWithValue }) => {
+        try {
+            const data = await fetchMockTestQuestionAPI(); // returns array
+            return data;
+        } catch (error) {
+            return rejectWithValue(error.message);
+        }
+    }
+);
+// Async thunk for creating a new test
+export const submitTest = createAsyncThunk(
+    "exam/createTest",
+    async (testData, { rejectWithValue }) => {
+        try {
+            const data = await postTest(testData);
+            return data;
+        } catch (error) {
+            return rejectWithValue(error.message);
+        }
+    }
+);
+
 const questionSlice = createSlice({
     name: "questions",
     initialState: {
         loading: false,
         success: false,
         error: null,
+
         questionTypes: [],
         questionTypesLoading: false,
-        questionTypesError: null
+        questionTypesError: null,
+
+        mockTestQuestion: [],
+        mockTestQuestionLoading: false,
+        mockTestQuestionError: null
     },
     reducers: {
         resetStatus: (state) => {
@@ -81,9 +110,42 @@ const questionSlice = createSlice({
             .addCase(listQuestionTypes.rejected, (state, action) => {
                 state.questionTypesLoading = false;
                 state.questionTypesError = action.payload;
-            });
+            })
+
+            // list mock test questions
+            .addCase(getMockTestQuestions.pending, (state) => {
+                state.mockTestQuestionLoading = true;
+                state.mockTestQuestionError = null;
+                state.mockTestQuestion = []; // clear old data
+            })
+            .addCase(getMockTestQuestions.fulfilled, (state, action) => {
+                state.mockTestQuestionLoading = false;
+                state.mockTestQuestion = Array.isArray(action.payload)
+                    ? action.payload
+                    : [];
+            })
+            .addCase(getMockTestQuestions.rejected, (state, action) => {
+                state.mockTestQuestionLoading = false;
+                state.mockTestQuestionError = action.payload;
+                state.mockTestQuestion = [];
+            }) // submitTest
+            .addCase(submitTest.pending, (state) => {
+                state.loading = true;
+                state.success = false;
+                state.error = null;
+            })
+            .addCase(submitTest.fulfilled, (state) => {
+                state.loading = false;
+                state.success = true;
+            })
+            .addCase(submitTest.rejected, (state, action) => {
+                state.loading = false;
+                state.error = action.payload;
+            })
+
+
     }
 });
-export const { resetStatus } = questionSlice.actions;
 
+export const { resetStatus } = questionSlice.actions;
 export default questionSlice.reducer;

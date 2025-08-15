@@ -1,12 +1,7 @@
 // src/api/examApi.js
 const baseUrl = process.env.REACT_APP_API_URL;
-
-console.log(baseUrl);
 export const postQuestion = async (questionData) => {
     try {
-        console.log("inside submit question apiiii");
-        console.log("🚀 API request started:", questionData);
-
         const response = await fetch(baseUrl + "/exam/question", {
             method: "POST",
             headers: {
@@ -42,9 +37,43 @@ export const fetchQuestionTypes = async () => {
         if (!response.ok) {
             throw new Error("Failed to fetch question types");
         }
-        console.log(baseUrl + "/exam/list/question-types");
         const data = await response.json();
         return data.list; // ✅ return only the list array
+    } catch (error) {
+        throw error;
+    }
+};
+// list question as per type
+export const fetchMockTestQuestion = async () => {
+    try {
+        const response = await fetch(baseUrl + "/exam/list/questions/mocktest");
+
+        if (!response.ok) {
+            throw new Error("Failed to fetch question types");
+        }
+        const data = await response.json();
+        return data.list; // ✅ return only the list array
+    } catch (error) {
+        throw error;
+    }
+};
+// POST: Create a new test with all necessary details
+export const postTest = async (testData) => {
+    console.log('Test data', testData)
+    try {
+        const response = await fetch(`${baseUrl}/exam/tests`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify(testData),
+        });
+
+        if (!response.ok) {
+            throw new Error("Failed to create test");
+        }
+
+        return await response.json();
     } catch (error) {
         throw error;
     }

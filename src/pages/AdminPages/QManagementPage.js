@@ -41,40 +41,24 @@ const QManagementPage = () => {
             questionId: "Q0175",
             questionPreview: "Which medication is safest for...",
             type: "MCQ",
-            subject: "Fundamentals",
-            lesson: "Skills/Procedures",
-            clientNeedArea: "Reduction of Risk Potential",
-            clientNeedTopic: "Potential for Complications of Diagnostic Tests/Treatments/Procedures",
             difficulty: "Medium",
         },
         {
             questionId: "Q0175",
             questionPreview: "Which medication is safest for...",
             type: "MCQ",
-            subject: "Fundamentals",
-            lesson: "Skills/Procedures",
-            clientNeedArea: "Reduction of Risk Potential",
-            clientNeedTopic: "Potential for Complications of Diagnostic Tests/Treatments/Procedures",
             difficulty: "Medium",
         },
         {
             questionId: "Q0175",
             questionPreview: "Which medication is safest for...",
             type: "MCQ",
-            subject: "Fundamentals",
-            lesson: "Skills/Procedures",
-            clientNeedArea: "Reduction of Risk Potential",
-            clientNeedTopic: "Potential for Complications of Diagnostic Tests/Treatments/Procedures",
             difficulty: "Medium",
         },
         {
             questionId: "Q0175",
             questionPreview: "Which medication is safest for...",
             type: "MCQ",
-            subject: "Fundamentals",
-            lesson: "Skills/Procedures",
-            clientNeedArea: "Reduction of Risk Potential",
-            clientNeedTopic: "Potential for Complications of Diagnostic Tests/Treatments/Procedures",
             difficulty: "Medium",
         },
     ];
@@ -84,20 +68,11 @@ const QManagementPage = () => {
             questionId: "M001",
             questionPreview: "What is the correct sequence for...",
             type: "MCQ",
-            subject: "Pharmacology",
-            lesson: "Dosage Calculation",
-            clientNeedArea: "Pharmacological Therapies",
-            clientNeedTopic: "Dosage Admin",
             difficulty: "Hard",
         },
         {
             questionId: "M002",
             questionPreview: "Priority nursing intervention for...",
-            type: "MCQ",
-            subject: "Critical Care",
-            lesson: "Emergency Procedures",
-            clientNeedArea: "Management of Care",
-            clientNeedTopic: "Priority Setting",
             difficulty: "Hard",
         },
     ];
@@ -107,6 +82,9 @@ const QManagementPage = () => {
 
     const handleAddQuestionClick = () => {
         navigate('/admin/selectCourse');
+    };
+    const handleAddTestClick = () => {
+        navigate('/admin/add-test');
     };
 
     const handleView = (questionId) => {
@@ -179,7 +157,10 @@ const QManagementPage = () => {
                                         <span className="btn-text">Filter</span>
                                     </button>
                                 </div>
-
+                                <button className="add-btn primary" onClick={handleAddTestClick}>
+                                    <FaPlus />
+                                    <span className="btn-text">Add Test</span>
+                                </button>
                                 <button className="add-btn primary" onClick={handleAddQuestionClick}>
                                     <FaPlus />
                                     <span className="btn-text">Add Question</span>
@@ -198,10 +179,6 @@ const QManagementPage = () => {
                                                 <th>Q-ID</th>
                                                 <th>Preview</th>
                                                 <th>Type</th>
-                                                <th>Subject</th>
-                                                <th className="hide-md">Lesson</th>
-                                                <th className="hide-lg">Client Need Area</th>
-                                                <th className="hide-xl">Client Need Topic</th>
                                                 <th>Difficulty</th>
                                                 <th>Actions</th>
                                             </tr>
@@ -212,10 +189,6 @@ const QManagementPage = () => {
                                                     <td className="cell-qid">{q.questionId}</td>
                                                     <td className="cell-preview">{q.questionPreview}</td>
                                                     <td className="cell-type">{q.type}</td>
-                                                    <td className="cell-subject">{q.subject}</td>
-                                                    <td className="hide-md">{q.lesson}</td>
-                                                    <td className="hide-lg">{q.clientNeedArea}</td>
-                                                    <td className="hide-xl">{q.clientNeedTopic}</td>
                                                     <td className="cell-difficulty">{q.difficulty}</td>
                                                     <td className="cell-actions">
                                                         <div className="action-group">

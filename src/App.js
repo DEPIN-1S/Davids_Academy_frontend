@@ -10,7 +10,6 @@ import "./styles/Layout.css";
 import { FileProvider } from "./context/FileContext";
 const App = () => {
   const dispatch = useDispatch();
-
   useEffect(() => {
     dispatch(hydrateUser());
   }, [dispatch]);

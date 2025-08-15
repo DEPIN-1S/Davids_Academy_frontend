@@ -55,40 +55,13 @@ const QuestionBank = () => {
             },
           }}
           startIcon={<AddIcon />}
-          onClick={() => setShowModal(true)}
+          // onClick={() => setShowModal(true)}
         >
-          Create Test
+          Start Test
         </Button>
       </Box>
 
-      {/* Modal for CreateTestComponent */}
-      <Modal
-        open={showModal}
-        onClose={() => setShowModal(false)}
-        closeAfterTransition
-        BackdropComponent={Backdrop}
-        BackdropProps={{ timeout: 300 }}
-      >
-        <Fade in={showModal}>
-          <Box
-            sx={{
-              position: 'absolute',
-              top: '50%',
-              left: '50%',
-              transform: 'translate(-50%, -50%)',
-              bgcolor: 'background.paper',
-              boxShadow: 24,
-              borderRadius: '16px',
-              width: { xs: '90%', sm: 600 },
-              maxHeight: '90vh',
-              overflowY: 'auto',
-              p: 4,
-            }}
-          >
-            <CreateTestComponent handleClose={() => setShowModal(false)} />
-          </Box>
-        </Fade>
-      </Modal>
+
     </>
   );
 };

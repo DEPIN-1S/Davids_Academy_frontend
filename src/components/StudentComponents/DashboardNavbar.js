@@ -5,7 +5,6 @@ import { useLocation, useNavigate } from 'react-router-dom';
 
 const navItems = [
   { label: 'My Q-Bank', path: '/student/question-bank' },
-  { label: 'My Statistics', path: '/student/my-statistics' },
   { label: 'Recorded Classes', path: '/student/recorded-class' },
   { label: 'Notes', path: '/student/notes' },
   { label: 'Mock Test', path: '/student/mock-test' },

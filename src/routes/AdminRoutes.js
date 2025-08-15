@@ -26,6 +26,7 @@ import EnquireLeadComponent from "../components/AdminComponents/EnquireLeadCompo
 import ExamTypeComponent from "../components/AdminComponents/ExamTypeComponent";
 import SelectCourseComponent from "../components/AdminComponents/SelectCourseComponent";
 import { FileProvider } from '../context/FileContext';
+import AddTestComponent from "../components/AdminComponents/AddTestComponent";
 
 const AdminRoutes = () => (
     <>
@@ -45,9 +46,15 @@ const AdminRoutes = () => (
                     <AddStudentForm />
                 </ProtectedRoutes>
             } />
+
             <Route path="/admin/question-management" element={
                 <ProtectedRoutes allowedRoles={['admin']}>
                     <QManagementPage />
+                </ProtectedRoutes>
+            } />
+            <Route path="/admin/add-test" element={
+                <ProtectedRoutes allowedRoles={['admin']}>
+                    <AddTestComponent />
                 </ProtectedRoutes>
             } />
             <Route path="/admin/question-type" element={
@@ -55,7 +62,6 @@ const AdminRoutes = () => (
                     <QuestionTypeComponent />
                 </ProtectedRoutes>
             } />
-
             {/* ✅ Question Content Creation Routes */}
             <Route path="/admin/mcq-content" element={
                 <ProtectedRoutes allowedRoles={['admin']}>

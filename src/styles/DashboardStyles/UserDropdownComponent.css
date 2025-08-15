@@ -1,9 +1,11 @@
-.user-dropdown {
+/* Position the dropdown menu relative to its avatar container */
+.user-dropdown-wrapper {
   position: relative;
   display: inline-block;
   z-index: 1000;
 }
 
+/* Existing styles (can be left as-is) */
 .user-display {
   display: flex;
   align-items: center;
@@ -57,9 +59,10 @@
   color: #666;
 }
 
-.dropdown-menu {
+/* The dropdown menu is properly positioned now */
+.drop-menu {
   position: absolute;
-  top: 110%;
+  top: 110%; /* Places menu right below avatar/name bar */
   right: 0;
   background: white;
   border: 1px solid #ccc;
@@ -70,7 +73,7 @@
   animation: dropdownFade 0.25s ease;
 }
 
-.dropdown-menu button {
+.drop-menu button {
   background: none;
   border: none;
   color: #333;
@@ -82,7 +85,7 @@
   transition: background-color 0.2s ease;
 }
 
-.dropdown-menu button:hover {
+.drop-menu button:hover {
   background-color: #f4f4f4;
 }
 
@@ -97,17 +100,15 @@
   }
 }
 
-/* Optional: make dropdown responsive */
+/* Responsive option */
 @media (max-width: 480px) {
   .user-display {
     min-width: unset;
     padding: 6px 10px;
   }
-
   .user-meta {
     display: none;
   }
-
   .arrow {
     margin-left: auto;
   }
