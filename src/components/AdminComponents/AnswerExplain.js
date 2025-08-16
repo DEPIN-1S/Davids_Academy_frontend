@@ -161,8 +161,6 @@ const AnswerExplain = () => {
             drag_and_drop: previousQuestionData.drag_and_drop,
             drag_drop_content: previousQuestionData.drag_drop_content,
 
-
-
             //for sorting
             sortitems: previousQuestionData.sortItems,
 
@@ -170,6 +168,11 @@ const AnswerExplain = () => {
             question_content: previousQuestionData.question_content,
             radio_options: previousQuestionData.radio_options,
 
+
+            //for sentence highlight question
+            passage:previousQuestionData.passage,
+            highlightInstructions:previousQuestionData.highlightInstructions,
+            correctHighlights:previousQuestionData.correctHighlights,
 
             /* 
                         //for filling the blanks

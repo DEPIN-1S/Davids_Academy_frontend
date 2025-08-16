@@ -61,7 +61,8 @@ const MetaInfoComponent = () => {
         console.log('📎 Question file in context:', hasQuestionFile ? questionFile?.name : 'None');
         console.log('📎 Explanation file in context:', hasExplanationFile ? explanationFile?.name : 'None');
         console.log('📄 Received question data:', receivedQuestionData);
-        console.log("question_content:::", receivedQuestionData.question_content);
+        console.log("question_content:::", receivedQuestionData.passage, receivedQuestionData.highlightInstructions, receivedQuestionData.correctHighlights,);
+
     }, [hasQuestionFile, hasExplanationFile, questionFile, explanationFile, receivedQuestionData]);
 
     // Handle toast notifications based on Redux state
@@ -266,6 +267,17 @@ const MetaInfoComponent = () => {
                     drag_and_drop: questionData.drag_and_drop || []
                 };
 
+            case 'Sentence Highlight':
+                return {
+                    /* drag_drop_content: questionData.drag_drop_content || '',
+                    tabs: questionData.tabs || [],
+                    drag_and_drop: questionData.drag_and_drop || [] */
+
+                    passage: questionData.passage,
+                    highlightInstructions: questionData.highlightInstructions,
+                    correctHighlights: questionData.correctHighlights,
+                };
+
             default:
                 return {
                     correctAnswer: questionData.correctAnswer,
@@ -412,6 +424,31 @@ const MetaInfoComponent = () => {
         infoImage: receivedQuestionData.infoImage || null
     });
 
+    const getSentenceHighlightBaseData = () => ({
+        courseId: receivedQuestionData.cs_id,
+        questionType: "Sentence highlight",
+        question_type_id: getQuestionTypeId('Sentence Highlight'),
+        exam_type: receivedQuestionData.exam_type,
+        question: receivedQuestionData.question || "",
+        difficulty: form.difficulty || "",
+        tabs: receivedQuestionData.tabs || [],
+        highlightoptions: "highlightoptions",
+        explanationHeading: receivedQuestionData.explanationHeading || "",
+        explanationText: receivedQuestionData.explanationText || "",
+        info: receivedQuestionData.additionalInfo || "",
+        answer: receivedQuestionData.correctHighlights.join(","),
+        infoImage: receivedQuestionData.infoImage || null,
+        /*         answer: receivedQuestionData.correctHighlights, */
+        /* question_content:receivedQuestionData.question_content, */
+        /* question_content: receivedQuestionData.question_content || [], */
+        /*  radio_options: receivedQuestionData.radio_options || [], */
+
+
+        /*  passage: receivedQuestionData.passage,
+         highlightInstructions: receivedQuestionData.highlightInstructions,
+         correctHighlights: receivedQuestionData.correctHighlights, */
+    });
+
 
 
 
@@ -438,6 +475,9 @@ const MetaInfoComponent = () => {
 
             case 'Fill in the Blanks':
                 return getFillInTheBlanksBaseData();
+
+            case 'Sentence Highlight':
+                return getSentenceHighlightBaseData();
 
             default:
                 return getMCQBaseData(); // fallback to MCQ format
