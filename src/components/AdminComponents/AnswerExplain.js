@@ -60,8 +60,8 @@ const AnswerExplain = () => {
     // ✅ Log context status
     useEffect(() => {
         console.log("previous question Data:::::", previousQuestionData);
-        console.log('✅ Context Status:');
-        console.log('📎 Question file in context:', hasQuestionFile ? questionFile?.name : 'None');
+        console.log('Context Status:');
+        console.log('📎Question file in context:', hasQuestionFile ? questionFile?.name : 'None');
         console.log('📎 Explanation file in context:', hasExplanationFile ? explanationFile?.name : 'None');
     }, [hasQuestionFile, hasExplanationFile, questionFile, explanationFile]);
 

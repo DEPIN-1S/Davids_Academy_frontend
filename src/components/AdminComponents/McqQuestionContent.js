@@ -70,14 +70,12 @@ const McqQuestionContent = () => {
                 setErrors(prev => ({ ...prev, file: 'File size must be less than 10MB' }));
                 return;
             }
-
             // Validate file type
             const allowedTypes = ['image/jpeg', 'image/png', 'image/gif', 'application/pdf', 'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'];
             if (!allowedTypes.includes(file.type)) {
                 setErrors(prev => ({ ...prev, file: 'Only images, PDF, and Word documents are allowed' }));
                 return;
             }
-
             const fileData = {
                 file: file,
                 name: file.name,
@@ -86,12 +84,10 @@ const McqQuestionContent = () => {
                 url: URL.createObjectURL(file),
                 uploadedAt: new Date().toISOString()
             };
-
             // ✅ Store in both local state (for UI) and Context (for persistence)
             setSelectedFile(fileData);
             addQuestionFile(fileData); // Store in Context
             setErrors(prev => ({ ...prev, file: null }));
-
             console.log('File stored in Context:', fileData.name);
         }
         // Reset input value
@@ -116,12 +112,10 @@ const McqQuestionContent = () => {
         const newOptions = [...options];
         newOptions[index] = value;
         setOptions(newOptions);
-
         // Update correct answer if it was the changed option
         if (correctAnswer === options[index]) {
             setCorrectAnswer(value);
         }
-
         // Clear validation errors
         setErrors(prev => ({ ...prev, options: null }));
     };
@@ -136,12 +130,10 @@ const McqQuestionContent = () => {
         if (options.length > 2) {
             const newOptions = options.filter((_, i) => i !== index);
             setOptions(newOptions);
-
             // Reset correct answer if removed option was selected
             if (correctAnswer === options[index]) {
                 setCorrectAnswer("");
             }
-
             setErrors(prev => ({ ...prev, options: null }));
         }
     };
@@ -149,7 +141,6 @@ const McqQuestionContent = () => {
     // Validation (unchanged)
     const validateForm = () => {
         const newErrors = {};
-
         // Question validation
         if (!question.trim()) {
             newErrors.question = 'Question is required';
