@@ -35,7 +35,6 @@ export const createStudent = createAsyncThunk(
       const data = await addStudent(studentData, token);
       console.log("student data ::", studentData);
       console.log("Received data from API:", data);
-
       if (!data || data.success === false) {
         // Backend failed to save
         return rejectWithValue(data?.message || "Failed to create student");
@@ -54,7 +53,6 @@ export const removeStudent = createAsyncThunk(
     try {
       const token = localStorage.getItem("accessToken");
       const data = await deleteStudent(studentId, token);
-
       if (!data || data.result === false) { // ✅ match backend field
         return rejectWithValue(data?.message || "Failed to delete student");
       }

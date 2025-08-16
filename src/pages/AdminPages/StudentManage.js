@@ -37,6 +37,8 @@ const handleDelete = (studentId) => {
 
   useEffect(() => {
     dispatch(fetchStudents());
+    console.log(students);
+    
   }, [dispatch]);
 
   useEffect(() => {
