@@ -32,6 +32,9 @@ const FillinQuestionContent = () => {
 
     // Get any existing data from previous steps
     const existingData = location.state?.questionData || {};
+    const cs_id = location.state?.cs_id || "";
+    const exam_type = location.state?.exam_type || "";
+    const question_type_id = location.state?.question_type_id || "";
     const questionType = "Fill in the Blanks";
 
     // Form state
@@ -196,7 +199,11 @@ const FillinQuestionContent = () => {
     // ✅ Navigation handlers - NO files in navigation state
     const handleNext = () => {
         // ✅ Prepare ONLY serializable question data matching the required structure
+
         const questionData = {
+            cs_id: cs_id,
+            exam_type: exam_type,
+            question_type_id: question_type_id,
             questionType: questionType,
             question: question.trim(),
             answer: answer, // ✅ Generated from question content

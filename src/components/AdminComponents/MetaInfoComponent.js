@@ -190,6 +190,7 @@ const MetaInfoComponent = () => {
             // ✅ Submit to your multipart endpoint
             console.log("URL :::::: ", process.env.REACT_APP_API_URL);
             const response = await fetch(`${process.env.REACT_APP_API_URL}/exam/question`, {
+                
                 method: 'POST',
                 body: completeFormData
             });
@@ -392,15 +393,17 @@ const MetaInfoComponent = () => {
     });
 
     const getFillInTheBlanksBaseData = () => ({
-        questionType: receivedQuestionData.questionType,
-        question_type_id: getQuestionTypeId('Fill in the Blanks'),
         courseId: receivedQuestionData.cs_id,
-        question: receivedQuestionData.question || "",
-        answer: receivedQuestionData.answer || "",
+        questionType: receivedQuestionData.questionType,
         exam_type: receivedQuestionData.exam_type,
-        FTBquestion_content: receivedQuestionData.FTBquestion_content,
-        FTBoptions: receivedQuestionData.FTBoptions,
+        /*    question: receivedQuestionData.question_content || [], */
+        question: receivedQuestionData?.question_content?.[0]?.question_text,
+        question_type_id: getQuestionTypeId('Fill in the Blanks'),
+        /*      answer: receivedQuestionData.answer || "", */
+      answer: receivedQuestionData?.question_content?.[0]?.fill_blanks_answer,
         difficulty: form.difficulty || "",
+        question_content: receivedQuestionData.question_content, 
+        options: receivedQuestionData.options,
         explanationHeading: receivedQuestionData.explanationHeading || "",
         explanationText: receivedQuestionData.explanationText || "",
         info: receivedQuestionData.additionalInfo || "",
@@ -629,7 +632,7 @@ const MetaInfoComponent = () => {
                     <FormControl fullWidth>
                         <InputLabel>Difficulty *</InputLabel>
                         <Select
-                            value={form.difficulty}
+                            value={form.Easy}
                             onChange={handleChange("difficulty")}
                             label="Difficulty *"
                             disabled={loading}

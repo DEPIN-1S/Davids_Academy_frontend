@@ -137,7 +137,7 @@ const AnswerExplain = () => {
         if (!validateForm()) {
             return;
         }
-        console.log(" previous question data in answer explain ", previousQuestionData);
+      
 
         // ✅ Create ONLY serializable data
         const mergedQuestionData = {
@@ -170,9 +170,9 @@ const AnswerExplain = () => {
 
 
             //for sentence highlight question
-            passage:previousQuestionData.passage,
-            highlightInstructions:previousQuestionData.highlightInstructions,
-            correctHighlights:previousQuestionData.correctHighlights,
+         /*    passage: previousQuestionData.passage,
+            highlightInstructions: previousQuestionData.highlightInstructions,
+            correctHighlights: previousQuestionData.correctHighlights, */
 
             /* 
                         //for filling the blanks
@@ -322,7 +322,7 @@ const AnswerExplain = () => {
                         </Typography>
 
                         {/* Display Options */}
-                        {previousQuestionData.options && previousQuestionData.options.length > 0 && (
+                        {/* {previousQuestionData.options && previousQuestionData.options.length > 0 && (
                             <Box mb={2}>
                                 <Typography variant="subtitle2" gutterBottom>
                                     Answer Options:
@@ -342,7 +342,43 @@ const AnswerExplain = () => {
                                     </Typography>
                                 ))}
                             </Box>
+                        )} */}
+
+
+                        {/* Display Options */}
+                        {previousQuestionData.options && previousQuestionData.options.length > 0 && (
+                            <Box mb={2}>
+                                <Typography variant="subtitle2" gutterBottom>
+                                    Answer Options:
+                                </Typography>
+
+                                {previousQuestionData.options.map((option, index) => (
+                                    <Box key={index} ml={1} mb={1}>
+                                        {/* Heading */}
+                                        <Typography variant="body2" fontWeight="bold">
+                                            {String.fromCharCode(65 + index)}) {option.option_heading}
+                                        </Typography>
+
+                                        {/* Values under heading */}
+                                        {option.option_value?.map((val, valIndex) => (
+                                            <Typography
+                                                key={valIndex}
+                                                variant="body2"
+                                                sx={{
+                                                    color: val === previousQuestionData.correctAnswer ? 'success.main' : 'text.secondary',
+                                                    fontWeight: val === previousQuestionData.correctAnswer ? 'bold' : 'normal',
+                                                    ml: 2
+                                                }}
+                                            >
+                                                - {val}
+                                                {val === previousQuestionData.correctAnswer && " ✅ Correct"}
+                                            </Typography>
+                                        ))}
+                                    </Box>
+                                ))}
+                            </Box>
                         )}
+
 
                         {/* ✅ Display Previous Question File Info from Context */}
                         {hasQuestionFile && questionFile && (
