@@ -4,7 +4,7 @@ import QuestionHeaderComponent from './QuestionHeaderComponent';
 import QuestionFooterComponent from './QuestionFooterComponent';
 
 // Import your question components
-import MCQ from './RadioButtonQuestionComponent';
+import MCQ from './MCQQuestionComponent';
 import Dropdown from './DropdownQuestionComponent';
 import Sorting from './SortQuestionComponent';
 import FillIn from './FillInQuestionComponent';

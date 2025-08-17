@@ -13,33 +13,35 @@ import {
   useTheme,
 } from '@mui/material';
 
-const DropdownQuestionComponent = () => {
+const DropdownQuestionComponent = ({ question }) => {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
 
   const [activeTab, setActiveTab] = useState(0);
-  const [first, setFirst] = useState('');
-  const [second, setSecond] = useState('');
-  const [risk, setRisk] = useState('');
+  const [dropdownValues, setDropdownValues] = useState(() => {
+    // Initialize selected values as empty string for each dropdownField
+    const initialValues = {};
+    question.dropdownTexts.forEach((dt) => {
+      initialValues[dt.id] = '';
+    });
+    return initialValues;
+  });
   const [showAnswer, setShowAnswer] = useState(false);
-
-  const explanations = [
-    "Nurses' Note explanation: Includes general observations and nurse's documentation.",
-    'Laboratory explanation: Blood pressure medication and electrolyte changes are important.',
-    'Orders explanation: Review of medical orders including recent prescriptions.',
-  ];
 
   const handleTabChange = (event, newValue) => {
     setActiveTab(newValue);
   };
 
+  const handleDropdownChange = (id) => (event) => {
+    setDropdownValues((prev) => ({
+      ...prev,
+      [id]: event.target.value,
+    }));
+  };
+
   const handleReveal = () => {
     setShowAnswer(true);
   };
-
-  const subjectOptions = ['Age', 'Vital Signs', 'Medications'];
-  const secondaryOptions = ['Lab Values', 'Cognition', 'Medical History'];
-  const riskOptions = ['Fall Risk', 'Dehydration', 'Infection'];
 
   return (
     <Box
@@ -59,7 +61,7 @@ const DropdownQuestionComponent = () => {
         mb={2}
         sx={{ textAlign: 'center', color: '#2e3760' }}
       >
-        The following scenario applies to the next 1 items
+        {`The following scenario applies to the next ${question.dropdownTexts.length} items`}
       </Typography>
       <Typography
         variant="subtitle1"
@@ -67,7 +69,8 @@ const DropdownQuestionComponent = () => {
         mb={3}
         sx={{ color: '#555' }}
       >
-        The nurse in the emergency department (ED) is caring for a 78-year-old female client
+        {/* Optionally add a scenario or context here */}
+        {/* You can pass it via prop or add question.scenario if available */}
       </Typography>
 
       {/* Tabs */}
@@ -79,12 +82,12 @@ const DropdownQuestionComponent = () => {
         scrollButtons={isMobile ? 'auto' : false}
         sx={{ mb: 2 }}
       >
-        <Tab label="Nurses' Note" />
-        <Tab label="Laboratory" />
-        <Tab label="Orders" />
+        {question.tabsInfo.map((tab, i) => (
+          <Tab label={tab.tabKey} key={tab.id} />
+        ))}
       </Tabs>
 
-      {/* Explanation */}
+      {/* Explanation for active tab */}
       <Box
         sx={{
           backgroundColor: '#f8f9ff',
@@ -95,7 +98,7 @@ const DropdownQuestionComponent = () => {
         }}
       >
         <Typography variant="body1" sx={{ color: '#333' }}>
-          {explanations[activeTab]}
+          {question.tabsInfo[activeTab]?.tabValue || ''}
         </Typography>
       </Box>
 
@@ -118,27 +121,26 @@ const DropdownQuestionComponent = () => {
           justifyContent: 'center',
           alignItems: 'center',
           mb: 4,
+          flexWrap: 'wrap',
         }}
       >
-        <FormControl sx={{ minWidth: 160 }} size="small">
-          <InputLabel>Select</InputLabel>
-          <Select value={first} label="Select" onChange={(e) => setFirst(e.target.value)}>
-            {subjectOptions.map((opt) => (
-              <MenuItem key={opt} value={opt}>{opt}</MenuItem>
-            ))}
-          </Select>
-        </FormControl>
-
-        <Typography>And</Typography>
-
-        <FormControl sx={{ minWidth: 160 }} size="small">
-          <InputLabel>Select</InputLabel>
-          <Select value={second} label="Select" onChange={(e) => setSecond(e.target.value)}>
-            {secondaryOptions.map((opt) => (
-              <MenuItem key={opt} value={opt}>{opt}</MenuItem>
-            ))}
-          </Select>
-        </FormControl>
+        {question.dropdownTexts.map((dt) => (
+          <FormControl sx={{ minWidth: 160 }} size="small" key={dt.id}>
+            <InputLabel>{dt.dropdownField}</InputLabel>
+            <Select
+              value={dropdownValues[dt.id] || ''}
+              label={dt.dropdownField}
+              onChange={handleDropdownChange(dt.id)}
+              disabled={dt.blankOrNot === '0'}
+            >
+              {dt.dropdownoption.map((opt) => (
+                <MenuItem key={opt.id} value={opt.dropdownValue}>
+                  {opt.dropdownValue}
+                </MenuItem>
+              ))}
+            </Select>
+          </FormControl>
+        ))}
       </Box>
 
       <Typography
@@ -148,19 +150,11 @@ const DropdownQuestionComponent = () => {
         mb={2}
         sx={{ fontSize: isMobile ? '0.95rem' : '1.05rem', color: '#333' }}
       >
+        {/* Possibly a closing phrase, configurable or static */}
         this client is at highest risk for
       </Typography>
 
-      <Box textAlign="center" mb={4}>
-        <FormControl sx={{ minWidth: 250 }} size="small">
-          <InputLabel>Select</InputLabel>
-          <Select value={risk} label="Select" onChange={(e) => setRisk(e.target.value)}>
-            {riskOptions.map((opt) => (
-              <MenuItem key={opt} value={opt}>{opt}</MenuItem>
-            ))}
-          </Select>
-        </FormControl>
-      </Box>
+      {/* If needed, you can add another dropdown for risk or use last dropdown in dropdownTexts */}
 
       <Box textAlign="center">
         <Button
@@ -193,7 +187,11 @@ const DropdownQuestionComponent = () => {
           }}
         >
           <Typography variant="body1" fontWeight={500}>
-            ✅ Correct Answer: Based on the client&apos;s <b>Vital Signs</b> and <b>Cognition</b>, the highest risk is <b>Fall Risk</b>.
+            {/* You can customize this message or build dynamically */}
+            ✅ Correct Answer: Based on the client&apos;s{' '}
+            <b>{dropdownValues[question.dropdownTexts[0].id]}</b> and{' '}
+            <b>{dropdownValues[question.dropdownTexts[1].id]}</b>, the highest risk is{' '}
+            <b>{dropdownValues[question.dropdownTexts[2].id]}</b>.
           </Typography>
         </Box>
       )}

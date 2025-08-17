@@ -7,7 +7,7 @@ import NotesPage from "../pages/StudentPages/NotesPage";
 import MockTestPage from "../pages/StudentPages/MockTestPage";
 import PreviousTestPage from "../pages/StudentPages/PreviousTestPage";
 import RadioButtonQuestionPage from "../pages/StudentPages/RadioButtonQuestionPage";
-import RevealAnswerRadioPage from "../pages/StudentPages/RevealAnswerRadioPage";
+import RevealAnswerRadioPage from "../pages/StudentPages/RevealAnswerPage";
 import DropdownQuestionPage from "../pages/StudentPages/DropdownQuestionPage";
 import DragDropQuestionPage from "../pages/StudentPages/DragDropQuestionPage";
 import MultiRadioQuestionPage from "../pages/StudentPages/MultiRadioQuestionPage";
@@ -92,7 +92,11 @@ const StudentRoutes = () => (
 
             {/* question routers start */}
             {/* answer routes start */}
-            <Route path="/student/reveal-answer" element={<ProtectedRoutes allowedRoles={['student']}><RevealAnswerRadioPage /></ProtectedRoutes>} />
+            <Route path="/student/reveal-answer"
+                element={<ProtectedRoutes allowedRoles={['student']}>
+
+                    <RevealAnswerRadioPage />
+                </ProtectedRoutes>} />
             {/* answer routes end */}
 
             <Route path="/student/score" element={<ProtectedRoutes allowedRoles={['student']}><ScorePage /></ProtectedRoutes>} />
