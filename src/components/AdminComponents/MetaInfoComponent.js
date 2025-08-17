@@ -62,7 +62,6 @@ const MetaInfoComponent = () => {
         console.log('📎 Explanation file in context:', hasExplanationFile ? explanationFile?.name : 'None');
         console.log('📄 Received question data:', receivedQuestionData);
         console.log("question_content:::", receivedQuestionData.question_content);
-
     }, [hasQuestionFile, hasExplanationFile, questionFile, explanationFile, receivedQuestionData]);
 
     // Handle toast notifications based on Redux state
@@ -88,7 +87,6 @@ const MetaInfoComponent = () => {
                 navigate('/admin/question-management');
             }, 2000);
         }
-
         if (error) {
             toast.error(`❌ Failed to add question: ${error}`, {
                 position: "top-right",
@@ -102,7 +100,6 @@ const MetaInfoComponent = () => {
             });
         }
     }, [success, error, dispatch, navigate, clearFiles]);
-
     const handleChange = (field) => (event) => {
         setForm({ ...form, [field]: event.target.value });
     };
@@ -147,12 +144,12 @@ const MetaInfoComponent = () => {
             // ✅ Prepare complete question data matching your required structure
             const completeQuestionData = {
                 // Basic fields
-                cs_id: receivedQuestionData.cs_id,
+                courseId: receivedQuestionData.cs_id,
                 questionType: receivedQuestionData.questionType,
                 question_type_id: getQuestionTypeId(receivedQuestionData.questionType),
                 question: receivedQuestionData.question,
                 difficulty: form.difficulty,
-
+                exam_type: receivedQuestionData.exam_type,
                 //for drop down
                 tabs: receivedQuestionData.tabs || [],
                 dropdowns: receivedQuestionData.dropdowns || [],
@@ -166,7 +163,9 @@ const MetaInfoComponent = () => {
                 // Explanation fields
                 explanationHeading: receivedQuestionData.explanationHeading,
                 explanationText: receivedQuestionData.explanationText,
-                additionalInfo: receivedQuestionData.additionalInfo,
+                info: receivedQuestionData.additionalInfo,
+                answer: receivedQuestionData.correctAnswer || "",
+                options: receivedQuestionData.options || [],
 
                 //for filling the blanks 
                 FTBquestion_content: receivedQuestionData.FTBquestion_content,
@@ -175,33 +174,29 @@ const MetaInfoComponent = () => {
                 // ✅ Question type specific data
                 ...getQuestionTypeSpecificData(receivedQuestionData)
             };
-
             // ✅ Create FormData using Context
             const completeFormData = createCompleteFormData(completeQuestionData);
             console.log('🚀 Submitting with Context FormData (multipart/form-data)');
-            console.log('📦 FormData created from Context:');
-            for (let [key, value] of completeFormData.entries()) {
-                console.log(key, value);
+            console.log('📦 FormData created from Context::::', completeQuestionData);
+            console.log("📁 Adding files inside createCompleteFormData:");
+            if (questionFile?.file) {
+                console.log("🖼️ Question file:", questionFile.file);
+            }
+            if (explanationFile?.file) {
+                console.log("🖼️ Explanation file:", explanationFile.file);
             }
 
             // ✅ Submit to your multipart endpoint
             console.log("URL :::::: ", process.env.REACT_APP_API_URL);
             const response = await fetch(`${process.env.REACT_APP_API_URL}/exam/question`, {
                 method: 'POST',
-                headers: {
-                    'Authorization': `Bearer ${localStorage.getItem('token')}`,
-                    // Don't set Content-Type - let browser set multipart boundary
-                },
                 body: completeFormData
             });
-
             if (!response.ok) {
                 throw new Error(`HTTP error! status: ${response.status}`);
             }
-
             const result = await response.json();
             console.log('✅ Question submitted successfully:', result);
-
             toast.dismiss(loadingToastId);
             toast.success('🎉 Question successfully added to Q-Bank!', {
                 position: "top-right",
@@ -214,10 +209,9 @@ const MetaInfoComponent = () => {
                 clearFiles();
                 navigate('/admin/question-management');
             }, 2000);
-
         } catch (err) {
             toast.dismiss(loadingToastId);
-            console.error('Failed to submit question:', err);
+            console.error('Failed to submit questionssss:', err.message);
             toast.error(`❌ Failed to add question: ${err.message}`, {
                 position: "top-right",
                 autoClose: 5000,
@@ -345,7 +339,6 @@ const MetaInfoComponent = () => {
         courseId: receivedQuestionData.cs_id,
         question: receivedQuestionData.question || "",
         difficulty: form.difficulty,
-
         exam_type: receivedQuestionData.exam_type,
         tabs: receivedQuestionData.tabs || [],
         dropdowns: receivedQuestionData.dropdowns || [],

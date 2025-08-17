@@ -53,65 +53,52 @@ const AddStudentForm = () => {
         emailAddress: '',
         phoneNumber: '',
         password: '',
-        targetExam: 12,
+        targetExam: '12',
         classType: 'Online',
         autoGeneratePassword: false
     });
 
     const [errors, setErrors] = useState({});
     const [showPassword, setShowPassword] = useState(false);
+    const generatePasswordValue = (name) => {
+        if (!name) return '';
+        const cleanName = name.toLowerCase().replace(/\s+/g, '');
+        const randomNum = Math.floor(100 + Math.random() * 900); // always 3 digits
+        return `${cleanName}${randomNum}`;
+    };
 
-    // Handle form input changes
     const handleInputChange = (field) => (event) => {
         const value = event.target.value;
-        setFormData({
-            ...formData,
-            [field]: value
+        setFormData((prev) => {
+            const updated = { ...prev, [field]: value };
+            if (field === 'fullName' && prev.autoGeneratePassword) {
+                updated.password = generatePasswordValue(value);
+            }
+            return updated;
         });
-
-        // Clear error when user starts typing
-        if (errors[field]) {
-            setErrors(prev => ({ ...prev, [field]: null }));
-        }
-
-        // Auto-generate password if toggle is on
-        if (field === 'fullName' && formData.autoGeneratePassword) {
-            generatePassword(value);
-        }
     };
 
-    // Handle toggle changes
     const handleToggleChange = (field) => (event) => {
         const checked = event.target.checked;
-        setFormData({
-            ...formData,
-            [field]: checked
+        setFormData((prev) => {
+            const updated = { ...prev, [field]: checked };
+            if (field === 'autoGeneratePassword' && checked) {
+                updated.password = generatePasswordValue(prev.fullName);
+            }
+            if (field === 'autoGeneratePassword' && !checked) {
+                updated.password = '';
+            }
+            return updated;
         });
-
-        if (field === 'autoGeneratePassword' && checked) {
-            generatePassword(formData.fullName);
-        } else if (field === 'autoGeneratePassword' && !checked) {
-            setFormData(prev => ({ ...prev, password: '' }));
-        }
     };
 
-    // Generate password
-    const generatePassword = (name) => {
-        if (name) {
-            const cleanName = name.toLowerCase().replace(/\s+/g, '');
-            const randomNum = Math.floor(Math.random() * 1000);
-            const generatedPassword = `${cleanName}${randomNum}`;
-            setFormData(prev => ({ ...prev, password: generatedPassword }));
-        }
-    };
+
 
     // Form validation
     const validateForm = () => {
         const newErrors = {};
 
-        if (!formData.fullName.trim()) {
-            newErrors.fullName = 'Full name is required';
-        }
+        if (!formData.fullName.trim()) newErrors.fullName = 'Full name is required';
 
         if (!formData.emailAddress.trim()) {
             newErrors.emailAddress = 'Email address is required';
@@ -119,57 +106,49 @@ const AddStudentForm = () => {
             newErrors.emailAddress = 'Please enter a valid email address';
         }
 
-        if (!formData.phoneNumber.trim()) {
+        const digitsOnly = formData.phoneNumber.replace(/\D/g, '');
+        if (!digitsOnly) {
             newErrors.phoneNumber = 'Phone number is required';
-        } else if (!/^\+?[\d\s-()]+$/.test(formData.phoneNumber)) {
+        } else if (!/^\d{7,15}$/.test(digitsOnly)) {
             newErrors.phoneNumber = 'Please enter a valid phone number';
         }
 
-        if (!formData.password.trim()) {
-            newErrors.password = 'Password is required';
-        } else if (formData.password.length < 6) {
-            newErrors.password = 'Password must be at least 6 characters';
+        // Only validate password if we are NOT auto-generating
+        if (!formData.autoGeneratePassword) {
+            if (!formData.password.trim()) {
+                newErrors.password = 'Password is required';
+            } else if (formData.password.length < 6) {
+                newErrors.password = 'Password must be at least 6 characters';
+            }
         }
 
         setErrors(newErrors);
         return Object.keys(newErrors).length === 0;
     };
-
     console.log("inside function:::", formData);
 
 
 
     const handleSave = (e) => {
         e.preventDefault();
-        console.log("handle student adding");
 
-        if (validateForm()) {
-            const payload = {
-                fullname: formData.fullName,
-                email: formData.emailAddress,
-                phone: formData.phoneNumber,
-                target_exam: formData.targetExam,
-                class_type: formData.classType
-            };
+        if (!validateForm()) return;
 
-            // Only include one password-related field
-            if (formData.autoGeneratePassword) {
-                payload.password = true;
-            } else {
-                payload.password = formData.password;
-            }
+        const payload = {
+            fullname: formData.fullName,
+            email: formData.emailAddress,
+            phone: formData.phoneNumber,
+            target_exam: formData.targetExam,
+          /*   class_type: formData.classType, */
+            password: formData.password // always a string now
+        };
 
-            console.log("Sending payload to backend:", payload);
+        console.log("Sending payload to backend:", payload);
 
-            dispatch(createStudent(payload))
-                .unwrap()
-                .then(() => {
-                    console.log("Student added successfully");
-                })
-                .catch((error) => {
-                    console.error("Error adding student:", error);
-                });
-        }
+        dispatch(createStudent(payload))
+            .unwrap()
+            .then(() => console.log("Student added successfully"))
+            .catch((error) => console.error("Error adding student:", error));
     };
 
 
