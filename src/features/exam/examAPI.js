@@ -1,5 +1,7 @@
 // src/api/examApi.js
 const baseUrl = process.env.REACT_APP_API_URL;
+const accessToken = localStorage.getItem('accessToken');
+const refreshToken = localStorage.getItem('refreshToken');
 export const postQuestion = async (questionData) => {
     try {
         const response = await fetch(baseUrl + "/exam/question", {
@@ -26,9 +28,6 @@ export const postQuestion = async (questionData) => {
         throw error;
     }
 };
-
-
-
 // src/api/questionTypeApi.js
 export const fetchQuestionTypes = async () => {
     try {
@@ -74,6 +73,55 @@ export const postTest = async (testData) => {
         }
 
         return await response.json();
+    } catch (error) {
+        throw error;
+    }
+};
+export const fetchQBankQuestions = async () => {
+    try {
+        const response = await fetch(
+            process.env.REACT_APP_API_URL + "/student/questions/list",
+            {
+                method: "GET",
+                headers: {
+                    Authorization: `Bearer ${localStorage.getItem('accessToken')}`
+                }
+            }
+        );
+        if (!response.ok) {
+            throw new Error("Failed to fetch Q-Bank questions");
+        }
+        const data = await response.json();
+        // Response: { result: true, message: "...", data: [...] }
+        return data.data; // Return the array of question IDs
+    } catch (error) {
+        throw error;
+    }
+};
+
+export const fetchQBankQuestionData = async (questionId) => {
+    try {
+        const response = await fetch(
+            process.env.REACT_APP_API_URL + "/student/questions/data",
+            {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    Authorization: `Bearer ${localStorage.getItem('accessToken')}`
+
+                },
+                body: JSON.stringify({ questionId: questionId })
+            }
+        );
+
+        if (!response.ok) {
+            throw new Error("Failed to fetch Q-Bank question data");
+        }
+
+        const data = await response.json();
+        console.log('QuestionData from api', data)
+        // The question data is under data.data as per your example
+        return data.data;
     } catch (error) {
         throw error;
     }

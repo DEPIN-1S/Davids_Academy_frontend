@@ -40,7 +40,7 @@ export async function addStudent(studentData, token) {
 
 export async function deleteStudent(id, token) {
   console.log("Sending delete body:", { student_id: id });
-  
+
   const response = await fetch(
     `${process.env.REACT_APP_API_URL}/admin/student/update-status`,
     {

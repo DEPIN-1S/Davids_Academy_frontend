@@ -1,16 +1,16 @@
 import React from 'react';
-import DropSortQuestionComponent from '../../components/StudentComponents/DropSortQuestionComponent';
+import FillInQuestionComponent from '../../components/StudentComponents/FillInQuestionComponent';
 import QuestionHeaderComponent from '../../components/StudentComponents/QuestionHeaderComponent';
 import QuestionFooterComponent from '../../components/StudentComponents/QuestionFooterComponent';
-const DropSortQuestionPage = () => {
+const FillInQuestionPage = () => {
   return (
     <>
       <QuestionHeaderComponent />
-      <DropSortQuestionComponent />
+      <FillInQuestionComponent />
       <QuestionFooterComponent />
     </>
 
   );
 };
 
-export default DropSortQuestionPage;
+export default FillInQuestionPage;

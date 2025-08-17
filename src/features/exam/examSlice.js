@@ -1,16 +1,16 @@
-// src/features/questions/questionSlice.js
+// src/features/exam/examSlice.js
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import {
     postQuestion,
     fetchQuestionTypes,
-    fetchMockTestQuestion as fetchMockTestQuestionAPI, postTest
+    fetchMockTestQuestion as fetchMockTestQuestionAPI, postTest, fetchQBankQuestions, fetchQBankQuestionData
 } from "./examAPI";
 
 
 // Async thunk for posting any question type
 export const submitQuestion = createAsyncThunk(
- 
-    
+
+
     "questions/submitQuestion",
     async (payload, { rejectWithValue }) => {
         try {
@@ -58,6 +58,30 @@ export const submitTest = createAsyncThunk(
         }
     }
 );
+// Async thunk for creating a new test
+export const getQBankQuestions = createAsyncThunk(
+    "questions/fetchQBankQuestions",
+    async (_, { rejectWithValue }) => {
+        try {
+            const data = await fetchQBankQuestions(); // returns array
+            return data;
+        } catch (error) {
+            return rejectWithValue(error.message);
+        }
+    }
+);
+// Async Thunk for question bank data
+export const getQBankQuestionData = createAsyncThunk(
+    "questions/fetchQBankQuestionData",
+    async (questionId, { rejectWithValue }) => {
+        try {
+            const data = await fetchQBankQuestionData(questionId); // returns single question object
+            return data;
+        } catch (error) {
+            return rejectWithValue(error.message);
+        }
+    }
+);
 
 const questionSlice = createSlice({
     name: "questions",
@@ -72,7 +96,15 @@ const questionSlice = createSlice({
 
         mockTestQuestion: [],
         mockTestQuestionLoading: false,
-        mockTestQuestionError: null
+        mockTestQuestionError: null,
+
+        qBankQuestion: [],
+        qBankQuestionLoading: false,
+        qBankQuestionError: null,
+
+        qBankQuestionData: null,
+        qBankQuestionDataLoading: false,
+        qBankQuestionDataError: null,
     },
     reducers: {
         resetStatus: (state) => {
@@ -142,6 +174,38 @@ const questionSlice = createSlice({
                 state.loading = false;
                 state.error = action.payload;
             })
+            // qBankQuestion fetch
+            .addCase(getQBankQuestions.pending, (state) => {
+                state.qBankQuestionLoading = true;
+                state.qBankQuestionError = null;
+                state.qBankQuestion = [];
+            })
+            .addCase(getQBankQuestions.fulfilled, (state, action) => {
+                state.qBankQuestionLoading = false;
+                state.qBankQuestion = Array.isArray(action.payload)
+                    ? action.payload
+                    : [];
+            })
+            .addCase(getQBankQuestions.rejected, (state, action) => {
+                state.qBankQuestionLoading = false;
+                state.qBankQuestionError = action.payload;
+                state.qBankQuestion = [];
+            })
+            // get QBank data 
+            .addCase(getQBankQuestionData.pending, (state) => {
+                state.qBankQuestionDataLoading = true;
+                state.qBankQuestionDataError = null;
+                state.qBankQuestionData = null;
+            })
+            .addCase(getQBankQuestionData.fulfilled, (state, action) => {
+                state.qBankQuestionDataLoading = false;
+                state.qBankQuestionData = action.payload;
+            })
+            .addCase(getQBankQuestionData.rejected, (state, action) => {
+                state.qBankQuestionDataLoading = false;
+                state.qBankQuestionDataError = action.payload;
+                state.qBankQuestionData = null;
+            });
 
 
     }
