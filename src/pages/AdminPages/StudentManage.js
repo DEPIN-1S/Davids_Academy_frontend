@@ -25,7 +25,8 @@ const handleDelete = (studentId) => {
     dispatch(removeStudent(studentId))
       .unwrap()
       .then(() => {
-        console.log("Student deleted successfully");
+        console.log("Student status updated successfully");
+         dispatch(fetchStudents());
       })
       .catch((error) => {
         console.error("Failed to delete student:", error);

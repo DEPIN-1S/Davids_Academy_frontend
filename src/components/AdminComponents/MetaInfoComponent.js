@@ -61,7 +61,8 @@ const MetaInfoComponent = () => {
         console.log('📎 Question file in context:', hasQuestionFile ? questionFile?.name : 'None');
         console.log('📎 Explanation file in context:', hasExplanationFile ? explanationFile?.name : 'None');
         console.log('📄 Received question data:', receivedQuestionData);
-        console.log("question_content:::", receivedQuestionData.question_content);
+        console.log("question_content:::", receivedQuestionData.passage, receivedQuestionData.highlightInstructions, receivedQuestionData.correctHighlights,);
+
     }, [hasQuestionFile, hasExplanationFile, questionFile, explanationFile, receivedQuestionData]);
 
     // Handle toast notifications based on Redux state
@@ -141,54 +142,24 @@ const MetaInfoComponent = () => {
         });
         console.log("Full URL: ", `${process.env.REACT_APP_API_URL}/exam/question`);
         try {
-            // ✅ Prepare complete question data matching your required structure
-            const completeQuestionData = {
-                // Basic fields
-                courseId: receivedQuestionData.cs_id,
-                questionType: receivedQuestionData.questionType,
-                question_type_id: getQuestionTypeId(receivedQuestionData.questionType),
-                question: receivedQuestionData.question,
-                difficulty: form.difficulty,
-                exam_type: receivedQuestionData.exam_type,
-                //for drop down
-                tabs: receivedQuestionData.tabs || [],
-                dropdowns: receivedQuestionData.dropdowns || [],
 
-                //for drag and drop
-                drag_and_drop: receivedQuestionData.drag_and_drop || [],
+            // data structure according to question type
+            const completeQuestionData = constructQuestionFormData();
 
-                //for sorting
-                sortItems: receivedQuestionData.sortitems || [],
-
-                // Explanation fields
-                explanationHeading: receivedQuestionData.explanationHeading,
-                explanationText: receivedQuestionData.explanationText,
-                info: receivedQuestionData.additionalInfo,
-                answer: receivedQuestionData.correctAnswer || "",
-                options: receivedQuestionData.options || [],
-
-                //for filling the blanks 
-                FTBquestion_content: receivedQuestionData.FTBquestion_content,
-                FTBoptions: receivedQuestionData.FTBoptions,
-
-                // ✅ Question type specific data
-                ...getQuestionTypeSpecificData(receivedQuestionData)
-            };
             // ✅ Create FormData using Context
             const completeFormData = createCompleteFormData(completeQuestionData);
             console.log('🚀 Submitting with Context FormData (multipart/form-data)');
             console.log('📦 FormData created from Context::::', completeQuestionData);
             console.log("📁 Adding files inside createCompleteFormData:");
-            if (questionFile?.file) {
-                console.log("🖼️ Question file:", questionFile.file);
-            }
-            if (explanationFile?.file) {
-                console.log("🖼️ Explanation file:", explanationFile.file);
+            console.log("📦 Final FormData entries:");
+            for (let [key, value] of completeFormData.entries()) {
+                console.log(key, value);
             }
 
             // ✅ Submit to your multipart endpoint
             console.log("URL :::::: ", process.env.REACT_APP_API_URL);
             const response = await fetch(`${process.env.REACT_APP_API_URL}/exam/question`, {
+
                 method: 'POST',
                 body: completeFormData
             });
@@ -220,59 +191,159 @@ const MetaInfoComponent = () => {
         }
     };
 
-    // ✅ Helper function to get question type specific data
-    const getQuestionTypeSpecificData = (questionData) => {
-        const questionType = questionData.questionType;
+    //Data sets for fileContext
+
+    // ✅ MCQ base structure
+    const getMCQFormData = () => ({
+        questionType: receivedQuestionData.questionType,
+        courseId: receivedQuestionData.cs_id,
+        question_type_id: getQuestionTypeId('MCQ'),
+        question: receivedQuestionData.question || "",
+        exam_type: receivedQuestionData.exam_type,
+        difficulty: form.difficulty,
+        explanationHeading: receivedQuestionData.explanationHeading || "",
+        explanationText: receivedQuestionData.explanationText || "",
+        info: receivedQuestionData.additionalInfo || "",
+        answer: receivedQuestionData.correctAnswer || "",
+        options: receivedQuestionData.options || []
+    });
+
+
+    // ✅ Dropdown question data
+    const getDropdownFormData = () => ({
+        questionType: receivedQuestionData.questionType,
+        question_type_id: getQuestionTypeId('Dropdown'),
+        courseId: receivedQuestionData.cs_id,
+        question: receivedQuestionData.question || "",
+        difficulty: form.difficulty,
+        exam_type: receivedQuestionData.exam_type,
+        tabs: receivedQuestionData.tabs || [],
+        dropdowns: receivedQuestionData.dropdowns || [],
+        explanationHeading: receivedQuestionData.explanationHeading || "",
+        explanationText: receivedQuestionData.explanationText || "",
+        info: receivedQuestionData.additionalInfo || "",
+
+    });
+
+    const getDragDropFormData = () => ({
+        questionType: receivedQuestionData.questionType,
+        question_type_id: getQuestionTypeId("Drag Drop"),
+        courseId: receivedQuestionData.cs_id,
+        exam_type: receivedQuestionData.exam_type,
+        question: receivedQuestionData.question || "",
+        drag_drop_content: receivedQuestionData.drag_drop_content || "",
+        difficulty: form.difficulty || "",
+        tabs: receivedQuestionData.tabs || [],
+        drag_and_drop: receivedQuestionData.drag_and_drop || [],
+        explanationHeading: receivedQuestionData.explanationHeading || "",
+        explanationText: receivedQuestionData.explanationText || "",
+        info: receivedQuestionData.additionalInfo || "",
+
+    });
+
+
+    const getSortingFormData = () => ({
+        questionType: receivedQuestionData.questionType, // type name if you store it
+        question_type_id: getQuestionTypeId("Sorting"),  // your helper for IDs
+        courseId: receivedQuestionData.cs_id,
+        exam_type: receivedQuestionData.exam_type,
+        question: receivedQuestionData.question || "",
+        sortItems: receivedQuestionData.sortitems || [],
+        difficulty: form.difficulty || "",
+        explanationHeading: receivedQuestionData.explanationHeading || "",
+        explanationText: receivedQuestionData.explanationText || "",
+        info: receivedQuestionData.additionalInfo || "",
+
+    });
+
+    const getFillInTheBlanksFormData = () => ({
+        courseId: receivedQuestionData.cs_id,
+        questionType: receivedQuestionData.questionType,
+        exam_type: receivedQuestionData.exam_type,
+        /*    question: receivedQuestionData.question_content || [], */
+        question: receivedQuestionData?.question_content?.[0]?.question_text,
+        question_type_id: getQuestionTypeId('Fill in the Blanks'),
+        /*      answer: receivedQuestionData.answer || "", */
+        answer: receivedQuestionData?.question_content?.[0]?.fill_blanks_answer,
+        difficulty: form.difficulty || "",
+        question_content: receivedQuestionData.question_content,
+        options: receivedQuestionData.options,
+        explanationHeading: receivedQuestionData.explanationHeading || "",
+        explanationText: receivedQuestionData.explanationText || "",
+        info: receivedQuestionData.additionalInfo || "",
+
+    });
+
+    const getMultiRadioFormData = () => ({
+        courseId: receivedQuestionData.cs_id,
+        questionType: receivedQuestionData.questionType,
+        question_type_id: getQuestionTypeId('Multiple Radio'),
+        exam_type: receivedQuestionData.exam_type,
+        question: receivedQuestionData.question || "",
+        difficulty: form.difficulty || "",
+        tabs: receivedQuestionData.tabs || [],
+        /* question_content:receivedQuestionData.question_content, */
+        question_content: receivedQuestionData.question_content || [],
+        radio_options: receivedQuestionData.radio_options || [],
+        explanationHeading: receivedQuestionData.explanationHeading || "",
+        explanationText: receivedQuestionData.explanationText || "",
+        info: receivedQuestionData.additionalInfo || "",
+
+    });
+
+    const getSentenceHighlightFormData = () => ({
+        courseId: receivedQuestionData.cs_id,
+        questionType: "Sentence highlight",
+        question_type_id: getQuestionTypeId('Sentence Highlight'),
+        exam_type: receivedQuestionData.exam_type,
+        question: receivedQuestionData.question || "",
+        difficulty: form.difficulty || "",
+        tabs: receivedQuestionData.tabs || [],
+        highlightoptions: "highlightoptions",
+        explanationHeading: receivedQuestionData.explanationHeading || "",
+        explanationText: receivedQuestionData.explanationText || "",
+        info: receivedQuestionData.additionalInfo || "",
+        answer: receivedQuestionData.correctHighlights.join(","),
+
+        /*  answer: receivedQuestionData.correctHighlights, */
+        /* question_content:receivedQuestionData.question_content, */
+        /* question_content: receivedQuestionData.question_content || [], */
+        /*  radio_options: receivedQuestionData.radio_options || [], */
+        /*  passage: receivedQuestionData.passage,
+         highlightInstructions: receivedQuestionData.highlightInstructions,
+         correctHighlights: receivedQuestionData.correctHighlights, */
+    });
+
+
+    const constructQuestionFormData = () => {
+        const questionType = receivedQuestionData.questionType || 'MCQ';
 
         switch (questionType) {
             case 'MCQ':
-                return {
-                    correctAnswer: questionData.correctAnswer,
-                    options: questionData.options
-                };
-
+                return getMCQFormData();
             case 'Dropdown':
-                return {
-                    tabs: questionData.tabs || [],
-                    dropdowns: questionData.dropdowns || []
-                };
-
-            case 'Sorting':
-            case 'Sort':
-                return {
-                    sortItems: questionData.sortItems || []
-                };
-
-            case 'Fill in the Blanks':
-            case 'Fill in Blanks':
-                return {
-                    answer: questionData.answer || '',
-                    question_content: questionData.question_content || [],
-                    options: questionData.options || []
-                };
-
-            case 'Multiple Radio':
-                return {
-                    tabs: questionData.tabs || [],
-                    question_content: questionData.question_content || [],
-                    radio_options: questionData.radio_options || []
-                };
+                return getDropdownFormData();
 
             case 'Drag Drop':
-            case 'Drag and Drop':
-                return {
-                    drag_drop_content: questionData.drag_drop_content || '',
-                    tabs: questionData.tabs || [],
-                    drag_and_drop: questionData.drag_and_drop || []
-                };
+                return getDragDropFormData();
+
+            case 'Sorting':
+                return getSortingFormData();
+
+            case 'Multiple Radio"':
+                return getMultiRadioFormData();
+
+            case 'Fill in the Blanks':
+                return getFillInTheBlanksFormData();
+
+            case 'Sentence Highlight':
+                return getSentenceHighlightFormData();
 
             default:
-                return {
-                    correctAnswer: questionData.correctAnswer,
-                    options: questionData.options
-                };
+                return getMCQFormData(); // fallback to MCQ format
         }
     };
+
 
 
 
@@ -380,15 +451,17 @@ const MetaInfoComponent = () => {
     });
 
     const getFillInTheBlanksBaseData = () => ({
-        questionType: receivedQuestionData.questionType,
-        question_type_id: getQuestionTypeId('Fill in the Blanks'),
         courseId: receivedQuestionData.cs_id,
-        question: receivedQuestionData.question || "",
-        answer: receivedQuestionData.answer || "",
+        questionType: receivedQuestionData.questionType,
         exam_type: receivedQuestionData.exam_type,
-        FTBquestion_content: receivedQuestionData.FTBquestion_content,
-        FTBoptions: receivedQuestionData.FTBoptions,
+        /*    question: receivedQuestionData.question_content || [], */
+        question: receivedQuestionData?.question_content?.[0]?.question_text,
+        question_type_id: getQuestionTypeId('Fill in the Blanks'),
+        /*      answer: receivedQuestionData.answer || "", */
+        answer: receivedQuestionData?.question_content?.[0]?.fill_blanks_answer,
         difficulty: form.difficulty || "",
+        question_content: receivedQuestionData.question_content,
+        options: receivedQuestionData.options,
         explanationHeading: receivedQuestionData.explanationHeading || "",
         explanationText: receivedQuestionData.explanationText || "",
         info: receivedQuestionData.additionalInfo || "",
@@ -410,6 +483,31 @@ const MetaInfoComponent = () => {
         explanationText: receivedQuestionData.explanationText || "",
         info: receivedQuestionData.additionalInfo || "",
         infoImage: receivedQuestionData.infoImage || null
+    });
+
+    const getSentenceHighlightBaseData = () => ({
+        courseId: receivedQuestionData.cs_id,
+        questionType: "Sentence highlight",
+        question_type_id: getQuestionTypeId('Sentence Highlight'),
+        exam_type: receivedQuestionData.exam_type,
+        question: receivedQuestionData.question || "",
+        difficulty: form.difficulty || "",
+        tabs: receivedQuestionData.tabs || [],
+        highlightoptions: "highlightoptions",
+        explanationHeading: receivedQuestionData.explanationHeading || "",
+        explanationText: receivedQuestionData.explanationText || "",
+        info: receivedQuestionData.additionalInfo || "",
+        answer: receivedQuestionData.correctHighlights.join(","),
+        infoImage: receivedQuestionData.infoImage || null,
+        /*         answer: receivedQuestionData.correctHighlights, */
+        /* question_content:receivedQuestionData.question_content, */
+        /* question_content: receivedQuestionData.question_content || [], */
+        /*  radio_options: receivedQuestionData.radio_options || [], */
+
+
+        /*  passage: receivedQuestionData.passage,
+         highlightInstructions: receivedQuestionData.highlightInstructions,
+         correctHighlights: receivedQuestionData.correctHighlights, */
     });
 
 
@@ -438,6 +536,9 @@ const MetaInfoComponent = () => {
 
             case 'Fill in the Blanks':
                 return getFillInTheBlanksBaseData();
+
+            case 'Sentence Highlight':
+                return getSentenceHighlightBaseData();
 
             default:
                 return getMCQBaseData(); // fallback to MCQ format
@@ -589,7 +690,7 @@ const MetaInfoComponent = () => {
                     <FormControl fullWidth>
                         <InputLabel>Difficulty *</InputLabel>
                         <Select
-                            value={form.difficulty}
+                            value={form.Easy}
                             onChange={handleChange("difficulty")}
                             label="Difficulty *"
                             disabled={loading}
