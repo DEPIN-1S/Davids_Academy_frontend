@@ -3,6 +3,8 @@ const baseUrl = process.env.REACT_APP_API_URL;
 const accessToken = localStorage.getItem('accessToken');
 const refreshToken = localStorage.getItem('refreshToken');
 export const postQuestion = async (questionData) => {
+    console.log("question data in api call :::::",questionData);
+    
     try {
         const response = await fetch(baseUrl + "/exam/question", {
             method: "POST",

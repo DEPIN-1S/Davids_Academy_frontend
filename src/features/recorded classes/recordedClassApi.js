@@ -46,7 +46,7 @@ export async function createRecording(token, recordingData) {
     }
 
     const data = await response.json();
-    console.log("Response from backend:", data); // <-- ADD THIS
+    console.log("Response from backend::::::::::::::", data); 
     return data;
 }
 

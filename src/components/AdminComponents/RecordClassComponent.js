@@ -3,7 +3,7 @@ import { FaArrowLeft, FaArrowRight } from "react-icons/fa";
 import "../../styles/AdminStyles/RecordClassInfoComponent.css";
 import { useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
-import {addRecording} from "../../features/recorded classes/recordedClassSlice"
+import { addRecording } from "../../features/recorded classes/recordedClassSlice"
 const RecordedClassInfoComponent = ({ onNext, onBack }) => {
     const [formData, setFormData] = useState({
         classTitle: '',
@@ -50,20 +50,27 @@ const RecordedClassInfoComponent = ({ onNext, onBack }) => {
 
     const navigate = useNavigate()
     const dispatch = useDispatch();
-    
+
     const handleNext = () => {
         if (validateForm()) {
             dispatch(addRecording(formData))
                 .unwrap()
-                .then(() => {
-                    if (onNext) onNext(formData);
+                .then((res) => {
+                    console.log("Recording added successfully:", res);
+
+                    // show success message
+                    alert("Recorded class added successfully!");
+                   
+                    // navigate to listing page
                     navigate('/admin/recorded-class');
                 })
                 .catch((err) => {
                     console.error("Failed to create recording:", err);
+                    alert("Failed to add recorded class. Please try again.");
                 });
         }
     };
+
 
     const handleBack = () => {
         if (onBack) {

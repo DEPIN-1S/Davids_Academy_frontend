@@ -36,11 +36,11 @@ export const addRecording = createAsyncThunk(
                 fileScreenshot = base64ToFile(screenshotBase64, "screenshot.png");
             }
 
- 
+
             const payload = {
                 title: recordingData.classTitle,
-                course: 12,    
-                subject: "rec",  
+                course: 12,
+                subject: "rec",
                 duration: recordingData.classDuration,
                 tutor_name: recordingData.tutorName,
                 video_url: recordingData.videoUrl,
@@ -64,10 +64,16 @@ const recordingSlice = createSlice({
             .addCase(fetchRecordedClasses.pending, (state) => {
                 state.loading = true;
             })
-            .addCase(fetchRecordedClasses.fulfilled, (state, action) => {
+            /* .addCase(fetchRecordedClasses.fulfilled, (state, action) => {
                 state.loading = false;
                 state.list = action.payload;
+            }) */
+
+            .addCase(fetchRecordedClasses.fulfilled, (state, action) => {
+                state.loading = false;
+                state.list = action.payload.data || []; 
             })
+
             .addCase(fetchRecordedClasses.rejected, (state, action) => {
                 state.loading = false;
                 state.error = action.payload;
