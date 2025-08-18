@@ -8,11 +8,21 @@ import { fetchRecordedClasses } from "../../features/recorded classes/recordedCl
 const CourseManagement = () => {
     const dispatch = useDispatch();
     const navigate = useNavigate();
-    const { recordings, loading, error } = useSelector(
+    /* const { recordings, loading, error } = useSelector(
+        (state) => state.recordings
+    ); */
+
+    const { list: recordings, loading, error } = useSelector(
         (state) => state.recordings
     );
+
+
     useEffect(() => {
+        console.log("recordings:::", recordings);
+       
+
         const token = localStorage.getItem("accessToken");
+
         if (token) {
             dispatch(fetchRecordedClasses(token));
         }
@@ -49,22 +59,28 @@ const CourseManagement = () => {
             <div className="classes-grid">
                 {Array.isArray(recordings) && recordings.length > 0 ? (
                     recordings.map((cls) => (
-                        <div key={cls.id} className="class-card">
+                        <div key={cls.r_id} className="class-card">
                             <div className="card-thumbnail">
-                                <img src={cls.thumbnail} alt={cls.title} />
-                                {cls.isNew && <div className="new-badge">New</div>}
+                                
+ 
+                                <img
+                                    src={`${process.env.REACT_APP_API_URL}${cls.r_thumbnail}`}
+                                    alt={cls.r_title}
+                                />
+                                  
+
                                 <div
                                     className="play-overlay"
-                                    onClick={() => handlePlay(cls.id)}
+                                    onClick={() => handlePlay(cls.r_id)}
                                 >
                                     <div className="play-button">
                                         <FaPlay />
                                     </div>
                                 </div>
+
                                 <button
-                                    className={`playlist-btn ${cls.isInPlaylist ? "added" : ""
-                                        }`}
-                                    onClick={() => handleAddToPlaylist(cls.id)}
+                                    className={`playlist-btn ${cls.isInPlaylist ? "added" : ""}`}
+                                    onClick={() => handleAddToPlaylist(cls.r_id)}
                                 >
                                     <FaPlus />{" "}
                                     {cls.isInPlaylist ? "Added to playlist" : "Add to playlist"}
@@ -72,15 +88,15 @@ const CourseManagement = () => {
                             </div>
 
                             <div className="card-content">
-                                <h3 className="class-title">{cls.title}</h3>
+                                <h3 className="class-title">{cls.r_title}</h3>
                                 <div className="class-meta">
                                     <div className="meta-item">
                                         <FaClock className="meta-icon" />
-                                        <span>Duration: {cls.duration}</span>
+                                        <span>Duration: {cls.r_duration}</span>
                                     </div>
                                     <div className="meta-item">
                                         <FaUser className="meta-icon" />
-                                        <span>{cls.instructor}</span>
+                                        <span>{cls.r_tutor_name}</span>
                                     </div>
                                 </div>
                             </div>
@@ -89,6 +105,7 @@ const CourseManagement = () => {
                 ) : (
                     <p>No recorded classes found.</p>
                 )}
+
             </div>
         </div>
     );
