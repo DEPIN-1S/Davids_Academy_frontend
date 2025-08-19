@@ -1,5 +1,5 @@
 import React from 'react';
-import DashboardNavbar from '../../components/StudentComponents/DashboardNavbar';
+import DashboardNavbar from '../../components/StudentComponents/StudentNavbar';
 import PreviousTestComponent from '../../components/StudentComponents/PreviousTestComponent';
 const PreviousTestPage = () => {
   return (

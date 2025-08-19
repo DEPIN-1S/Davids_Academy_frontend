@@ -1,5 +1,5 @@
 import React from 'react';
-import DashboardNavbar from '../../components/StudentComponents/DashboardNavbar';
+import DashboardNavbar from '../../components/StudentComponents/StudentNavbar';
 import QuestionBank from '../../components/StudentComponents/QuestionBank';
 import '../../styles/DashboardStyles/QuestionBankPage.css';
 const QuestionBankPage = () => {

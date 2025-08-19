@@ -29,26 +29,10 @@ const PreviousTestComponent = () => {
 
   return (
     <div className="previous-tests-wrapper">
-      <div className="previous-tests-header">
-        <h2>Previous Tests</h2>
-        <span className="test-count">5 Test | 3 Pending</span>
-        <div className="dropdown-wrapper">
-          <Select
-            value={selectedType}
-            onChange={(e) => setSelectedType(e.target.value)}
-            size="small"
-          >
-            <MenuItem value="Mock Test">Mock Test</MenuItem>
-            <MenuItem value="Practice">Practice</MenuItem>
-            <MenuItem value="Assessment">Assessment</MenuItem>
-          </Select>
-        </div>
-      </div>
-
       <div className="test-table">
         <div className="test-table-header">
           <span>Test ID</span>
-          <span>Test Name</span>
+          <span>Test Title</span>
           <span>Date</span>
           <span>Total Questions</span>
           <span>Score</span>

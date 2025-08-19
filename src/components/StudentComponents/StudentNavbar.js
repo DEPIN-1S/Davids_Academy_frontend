@@ -7,10 +7,9 @@ const navItems = [
   { label: 'My Q-Bank', path: '/student/question-bank' },
   { label: 'Recorded Classes', path: '/student/recorded-class' },
   { label: 'Notes', path: '/student/notes' },
-  { label: 'Mock Test', path: '/student/mock-test' },
-  { label: 'Previous Tests', path: '/student/previous-tests' },
+  { label: ' Tests', path: '/student/tests' },
 ];
-const DashboardNavbar = () => {
+const StudentNavbar = () => {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
   const location = useLocation();
@@ -65,4 +64,4 @@ const DashboardNavbar = () => {
   );
 };
 
-export default DashboardNavbar;
+export default StudentNavbar;

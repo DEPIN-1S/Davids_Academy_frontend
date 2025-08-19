@@ -11,7 +11,7 @@ import { fetchTestQuestionsAPI } from "../../features/exam/examAPI";
 export const submitQuestion = createAsyncThunk(
     "questions/submitQuestion",
     async (payload, { rejectWithValue }) => {
-        console.log("data response in thunk ::::",payload);
+        console.log("data response in thunk ::::", payload);
         try {
             const data = await postQuestion(payload);
             return data;
@@ -231,9 +231,7 @@ const questionSlice = createSlice({
                 state.qBankQuestionDataLoading = false;
                 state.qBankQuestionDataError = action.payload;
                 state.qBankQuestionData = null;
-            });
-
-
+            })
             //for listing test questions
             .addCase(getTestQuestions.pending, (state) => {
                 state.testQuestionsLoading = true;
