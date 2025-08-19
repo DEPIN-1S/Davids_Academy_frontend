@@ -61,7 +61,7 @@ const MetaInfoComponent = () => {
         console.log('📎 Question file in context:', hasQuestionFile ? questionFile?.name : 'None');
         console.log('📎 Explanation file in context:', hasExplanationFile ? explanationFile?.name : 'None');
         console.log('📄 Received question data:', receivedQuestionData);
-        console.log("question_content:::", receivedQuestionData.passage, receivedQuestionData.highlightInstructions, receivedQuestionData.correctHighlights,);
+        console.log("question_content:::", receivedQuestionData.question_content);
 
     }, [hasQuestionFile, hasExplanationFile, questionFile, explanationFile, receivedQuestionData]);
 
@@ -283,7 +283,7 @@ const MetaInfoComponent = () => {
         difficulty: form.difficulty || "",
         tabs: receivedQuestionData.tabs || [],
         /* question_content:receivedQuestionData.question_content, */
-        question_content: receivedQuestionData.question_content || [],
+        question_content:receivedQuestionData.question_content,
         radio_options: receivedQuestionData.radio_options || [],
         explanationHeading: receivedQuestionData.explanationHeading || "",
         explanationText: receivedQuestionData.explanationText || "",
@@ -476,8 +476,7 @@ const MetaInfoComponent = () => {
         question: receivedQuestionData.question || "",
         difficulty: form.difficulty || "",
         tabs: receivedQuestionData.tabs || [],
-        /* question_content:receivedQuestionData.question_content, */
-        question_content: receivedQuestionData.question_content || [],
+        question_content:receivedQuestionData.question_content, 
         radio_options: receivedQuestionData.radio_options || [],
         explanationHeading: receivedQuestionData.explanationHeading || "",
         explanationText: receivedQuestionData.explanationText || "",

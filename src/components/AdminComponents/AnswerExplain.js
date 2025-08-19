@@ -468,7 +468,7 @@ const AnswerExplain = () => {
             />
 
             {/* Additional Info Heading */}
-            <Typography variant="h6" mb={1} color="secondary">
+            {/* <Typography variant="h6" mb={1} color="secondary">
                 Additional Information Heading
             </Typography>
             <TextField
@@ -479,7 +479,7 @@ const AnswerExplain = () => {
                 variant="outlined"
                 placeholder="e.g., Important Notes, Clinical Tips, Remember"
                 sx={{ mb: 3 }}
-            />
+            /> */}
 
             {/* Additional Info Text Area */}
             <Typography variant="h6" mb={1} color="secondary">
