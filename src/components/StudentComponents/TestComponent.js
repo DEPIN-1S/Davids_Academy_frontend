@@ -24,7 +24,7 @@ const testData = [
   // Repeat or fetch real data
 ];
 
-const PreviousTestComponent = () => {
+const TestComponent = () => {
   const [selectedType, setSelectedType] = React.useState('Mock Test');
 
   return (
@@ -60,4 +60,4 @@ const PreviousTestComponent = () => {
   );
 };
 
-export default PreviousTestComponent;
+export default TestComponent;
