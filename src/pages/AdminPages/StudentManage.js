@@ -5,13 +5,15 @@ import { useDispatch, useSelector } from "react-redux";
 import { fetchStudents } from "../../features/students/studentSlice";
 import AddStudentForm from "../../components/AdminComponents/AddStudentForm";
 import { removeStudent } from "../../features/students/studentSlice";
-
+import EditStudentForm from "../../components/AdminComponents/EditStudentForm"
+import { FaToggleOff } from "react-icons/fa";
 
 const StudentManage = () => {
   const dispatch = useDispatch();
   const { list, loading } = useSelector((state) => state.students);
   const [filterStatus, setFilterStatus] = useState("all");
   const [showAddForm, setShowAddForm] = useState(false);
+  const [showEditForm, setShowEditForm] = useState(false)
 
   // Filter logic
   const filteredStudents = list.filter((student) => {
@@ -20,26 +22,26 @@ const StudentManage = () => {
   });
 
 
-const handleDelete = (studentId) => {
-  if (window.confirm("Are you sure you want to delete this student?")) {
-    dispatch(removeStudent(studentId))
-      .unwrap()
-      .then(() => {
-        console.log("Student status updated successfully");
-         dispatch(fetchStudents());
-      })
-      .catch((error) => {
-        console.error("Failed to delete student:", error);
-        alert("Error deleting student");
-      });
-  }
-};
+  const handleDelete = (studentId) => {
+    if (window.confirm("Do you really want to update this student's status?")) {
+      dispatch(removeStudent(studentId))
+        .unwrap()
+        .then(() => {
+          console.log("Student status updated successfully");
+          dispatch(fetchStudents());
+        })
+        .catch((error) => {
+          console.error("Failed to update student status:", error);
+          alert("Error updating student status");
+        });
+    }
+  };
 
 
   useEffect(() => {
     dispatch(fetchStudents());
     console.log(students);
-    
+
   }, [dispatch]);
 
   useEffect(() => {
@@ -88,10 +90,10 @@ const handleDelete = (studentId) => {
                 <td>{student.status || "N/A"}</td>
                 <td className="action-buttons">
                   <button className="progress-btn">View Progress</button>
-                  <button className="delete-btn">
-                    <FaTrash onClick={() => handleDelete(student.id)} />
+                  <button className="delete-btn"> 
+                    <FaToggleOff onClick={() => handleDelete(student.id)} />
                   </button>
-                  <button className="edit-btn">
+                  <button className="edit-btn" onClick={() => setShowEditForm(true)} >
                     <FaEdit />
                   </button>
                 </td>
@@ -99,6 +101,16 @@ const handleDelete = (studentId) => {
             ))}
           </tbody>
         </table>
+        {
+          showEditForm && (
+            <div className="modal-overlay">
+              <div className="modal-content">
+                <EditStudentForm onClose={() => setShowEditForm(false)} />
+              </div>
+            </div>
+          )
+        }
+
 
         {/* Add Student Modal */}
         {showAddForm && (

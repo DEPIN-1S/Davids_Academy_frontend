@@ -15,19 +15,24 @@ import "../../styles/AdminStyles/QManagement.css";
 import { useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from "react-redux";
 import { listQuestionTypes } from "../../features/exam/examSlice";
+import { getTestQuestions } from "../../features/exam/examSlice";
 
 
 const QManagementPage = () => {
 
     const dispatch = useDispatch();
-    const { questionTypes, questionTypesLoading, questionTypesError } = useSelector(
+
+    // ✅ Notice we're pulling from state.exam, not state.questions
+    const { testQuestions, testQuestionsLoading, testQuestionsError } = useSelector(
         (state) => state.exam
     );
 
-
     useEffect(() => {
-        dispatch(listQuestionTypes());   
+        console.log("Listing test questions in question management page:: ",testQuestions);
+        
+        dispatch(getTestQuestions());
     }, [dispatch]);
+
 
     const [activeTab, setActiveTab] = useState("Q-bank");
     const [showModal, setShowModal] = useState(false);
@@ -76,6 +81,26 @@ const QManagementPage = () => {
             difficulty: "Hard",
         },
     ];
+
+    const TestData = [
+        {
+            questionId: "M001",
+            questionPreview: "What is the correct sequence for...",
+            type: "MCQ",
+            difficulty: "Hard",
+        },
+        {
+            questionId: "M002",
+            questionPreview: "Priority nursing intervention for...",
+            difficulty: "Hard",
+        },
+    ];
+
+
+
+    useEffect(() => {
+        dispatch(getTestQuestions());
+    }, [dispatch]);
 
     const questions = activeTab === "Q-bank" ? qBankData : mockTestData;
     const navigate = useNavigate();
@@ -131,6 +156,13 @@ const QManagementPage = () => {
                                         onClick={() => setActiveTab("Mock Test")}
                                     >
                                         Mock Test
+                                        <span className="tab-count">{mockTestData.length}</span>
+                                    </button>
+                                    <button
+                                        className={`tab-btn ${activeTab === "Test" ? "active" : ""}`}
+                                        onClick={() => setActiveTab("Test")}
+                                    >
+                                        Test
                                         <span className="tab-count">{mockTestData.length}</span>
                                     </button>
                                 </div>

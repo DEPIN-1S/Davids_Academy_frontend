@@ -19,7 +19,8 @@ export async function listStudents(token) {
 
 // Add student API function
 export async function addStudent(studentData, token) {
-  console.log("adding in studen api");
+  console.log("adding in student api");
+
   const response = await fetch(
     `${process.env.REACT_APP_API_URL}/admin/student/create`,
     {
@@ -31,16 +32,23 @@ export async function addStudent(studentData, token) {
       body: JSON.stringify(studentData),
     }
   );
-  if (!response.ok) {
-    throw new Error("Failed to add student");
+
+  const data = await response.json();
+  console.log("Backend response:", data);
+
+  if (!response.ok || data.result === false) {
+    // throw backend message instead of generic error
+    throw new Error(data.message || "Failed to add student");
   }
-  return await response.json();
+
+  return data;
 }
+
 
 
 export async function deleteStudent(id, token) {
   console.log("Sending delete body:", { student_id: id });
-  
+
   const response = await fetch(
     `${process.env.REACT_APP_API_URL}/admin/student/update-status`,
     {

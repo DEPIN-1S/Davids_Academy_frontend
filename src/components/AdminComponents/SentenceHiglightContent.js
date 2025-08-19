@@ -12,13 +12,16 @@ import {
     Accordion,
     AccordionSummary,
     AccordionDetails,
-    Paper
+    Paper,
+    InputLabel,
+    Select
 } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
 import { CloudUpload, Delete, Image, PictureAsPdf, Description, ExpandMore, Highlight } from '@mui/icons-material';
 import { useNavigate, useLocation } from 'react-router-dom';
+import { FormControl } from "react-bootstrap";
 
 const SentenceHighlightContent = () => {
     const navigate = useNavigate();
@@ -512,6 +515,33 @@ const SentenceHighlightContent = () => {
                     {errors.correctHighlights}
                 </Typography>
             )}
+
+
+            {/* <FormControl fullWidth margin="normal" error={!!errors.correctAnswer}>
+                <InputLabel>Select Correct Answer *</InputLabel>
+                <Select
+                    value={correctAnswer}
+                    onChange={(e) => {
+                        setCorrectAnswer(e.target.value);
+                        setErrors(prev => ({ ...prev, correctAnswer: null }));
+                    }}
+                    label="Select Correct Answer *"
+                >
+                    {options
+                        .filter(opt => opt.trim() !== "")
+                        .map((opt, idx) => (
+                            <MenuItem key={idx} value={opt}>
+                                {String.fromCharCode(65 + idx)}) {opt}
+                            </MenuItem>
+                        ))
+                    }
+                </Select>
+                {errors.correctAnswer && (
+                    <Typography color="error" variant="caption" sx={{ mt: 0.5 }}>
+                        {errors.correctAnswer}
+                    </Typography>
+                )}
+            </FormControl> */}
 
             {/* Preview Section */}
             <Card sx={{ mb: 3, bgcolor: 'grey.50' }}>

@@ -1,8 +1,7 @@
 // src/api/examApi.js
 const baseUrl = process.env.REACT_APP_API_URL;
 export const postQuestion = async (questionData) => {
-    console.log("question data in api call :::::",questionData);
-    
+    console.log("question data in api call :::::", questionData);
     try {
         const response = await fetch(baseUrl + "/exam/question", {
             method: "POST",
@@ -17,6 +16,7 @@ export const postQuestion = async (questionData) => {
         }
 
         const result = await response.json(); // ✅ store result
+        console.log("result response from api call ::::", result);
 
         if (result?.message) {
             console.log("✅ API Response Message:", result.message);
@@ -59,6 +59,28 @@ export const fetchMockTestQuestion = async () => {
         throw error;
     }
 };
+
+//for fetching test questions
+export async function fetchTestQuestionsAPI() {
+    console.log("Inside fetch test questions :::: ");
+
+    const response = await fetch(
+        "https://lunarsenterprises.com:6040/davidsacademy/student/test/list",
+        {
+            method: "GET",
+            headers: {
+                "Content-Type": "application/json",
+            },
+        }
+    );
+    if (!response.ok) {
+        throw new Error("Failed to fetch test questions");
+    }
+    return response.json(); // expects JSON array
+}
+
+
+
 // POST: Create a new test with all necessary details
 export const postTest = async (testData) => {
     console.log('Test data', testData)

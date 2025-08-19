@@ -5,14 +5,14 @@ import {
     fetchQuestionTypes,
     fetchMockTestQuestion as fetchMockTestQuestionAPI, postTest
 } from "./examAPI";
-
+import { fetchTestQuestionsAPI } from "../../features/exam/examAPI";
 
 // Async thunk for posting any question type
 export const submitQuestion = createAsyncThunk(
- 
-    
+
     "questions/submitQuestion",
     async (payload, { rejectWithValue }) => {
+        console.log("data response in thunk ::::",payload);
         try {
             const data = await postQuestion(payload);
             return data;
@@ -39,13 +39,32 @@ export const getMockTestQuestions = createAsyncThunk(
     "questions/fetchMockTestQuestion",
     async (_, { rejectWithValue }) => {
         try {
-            const data = await fetchMockTestQuestionAPI(); // returns array
+            const data = await fetchMockTestQuestionAPI();
             return data;
         } catch (error) {
             return rejectWithValue(error.message);
         }
     }
 );
+
+
+
+// for listing test questions
+export const getTestQuestions = createAsyncThunk(
+    "exam/fetchTestQuestions",
+    async (_, { rejectWithValue }) => {
+        try {
+            const data = await fetchTestQuestionsAPI(); // API call
+            return data;
+        } catch (error) {
+            return rejectWithValue(error.message);
+        }
+    }
+);
+
+
+
+
 // Async thunk for creating a new test
 export const submitTest = createAsyncThunk(
     "exam/createTest",
@@ -72,7 +91,12 @@ const questionSlice = createSlice({
 
         mockTestQuestion: [],
         mockTestQuestionLoading: false,
-        mockTestQuestionError: null
+        mockTestQuestionError: null,
+
+        testQuestions: [],
+        testQuestionsLoading: false,
+        testQuestionsError: null,
+
     },
     reducers: {
         resetStatus: (state) => {
@@ -128,6 +152,8 @@ const questionSlice = createSlice({
                 state.mockTestQuestionLoading = false;
                 state.mockTestQuestionError = action.payload;
                 state.mockTestQuestion = [];
+
+
             }) // submitTest
             .addCase(submitTest.pending, (state) => {
                 state.loading = true;
@@ -143,6 +169,24 @@ const questionSlice = createSlice({
                 state.error = action.payload;
             })
 
+
+            //for listing test questions
+            .addCase(getTestQuestions.pending, (state) => {
+                state.testQuestionsLoading = true;
+                state.testQuestionsError = null;
+                state.testQuestions = [];
+            })
+            .addCase(getTestQuestions.fulfilled, (state, action) => {
+                state.testQuestionsLoading = false;
+                state.testQuestions = Array.isArray(action.payload)
+                    ? action.payload
+                    : [];
+            })
+            .addCase(getTestQuestions.rejected, (state, action) => {
+                state.testQuestionsLoading = false;
+                state.testQuestionsError = action.payload;
+                state.testQuestions = [];
+            });
 
     }
 });
