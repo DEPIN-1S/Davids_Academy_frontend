@@ -37,7 +37,7 @@ const NavBar = () => {
             // icon: <FaClipboardList />
         },
         "/student/tests": {
-            title: "Previous Tests",
+            title: "Tests",
             subtitle: "Lorem Ipsum is simply dummy text of the printing and typesetting industry.",
             // icon: <FaPhone />
         }
