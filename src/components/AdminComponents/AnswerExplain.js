@@ -137,7 +137,7 @@ const AnswerExplain = () => {
         if (!validateForm()) {
             return;
         }
-      
+
 
         // ✅ Create ONLY serializable data
         const mergedQuestionData = {
@@ -170,9 +170,10 @@ const AnswerExplain = () => {
 
 
             //for sentence highlight question
-         /*    passage: previousQuestionData.passage,
+            passage: previousQuestionData.passage,
             highlightInstructions: previousQuestionData.highlightInstructions,
-            correctHighlights: previousQuestionData.correctHighlights, */
+            correctHighlights: previousQuestionData.correctHighlights,
+            answer: previousQuestionData.answer,
 
             /* 
                         //for filling the blanks

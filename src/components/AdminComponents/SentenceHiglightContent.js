@@ -14,14 +14,16 @@ import {
     AccordionDetails,
     Paper,
     InputLabel,
-    Select
+    Select,
+    MenuItem
 } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
 import { CloudUpload, Delete, Image, PictureAsPdf, Description, ExpandMore, Highlight } from '@mui/icons-material';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { FormControl } from "react-bootstrap";
+/* import { FormControl } from "react-bootstrap"; */
+import { FormControl } from "@mui/material";
 
 const SentenceHighlightContent = () => {
     const navigate = useNavigate();
@@ -44,6 +46,8 @@ const SentenceHighlightContent = () => {
     const [correctHighlights, setCorrectHighlights] = useState(existingData.correctHighlights || [""]);
     const [selectedFile, setSelectedFile] = useState(existingData.exhibit || null);
     const [errors, setErrors] = useState({});
+    const [answer, setAnswer] = useState(existingData?.answer || "")
+    /*     const [correctAnswer, setCorrectAnswer] = useState(existingQuestionData?.correctAnswer || ""); */
 
     const fileInputRef = useRef(null);
 
@@ -171,6 +175,7 @@ const SentenceHighlightContent = () => {
             question: question.trim(),
             tabs: tabs.filter(tab => tab.tabKey.trim() && tab.tabValue.trim()),
             passage: passage.trim(),
+            answer: answer.trim(),
             highlightInstructions: highlightInstructions.trim(),
             correctHighlights: correctHighlights.filter(highlight => highlight.trim()),
             exhibit: selectedFile,
@@ -517,13 +522,13 @@ const SentenceHighlightContent = () => {
             )}
 
 
-            {/* <FormControl fullWidth margin="normal" error={!!errors.correctAnswer}>
+            {/* <FormControl fullWidth margin="normal" error={!!errors.answer}>
                 <InputLabel>Select Correct Answer *</InputLabel>
                 <Select
-                    value={correctAnswer}
+                    value={answer}
                     onChange={(e) => {
-                        setCorrectAnswer(e.target.value);
-                        setErrors(prev => ({ ...prev, correctAnswer: null }));
+                        setAnswer(e.target.value);
+                        setErrors(prev => ({ ...prev, answer: null }));
                     }}
                     label="Select Correct Answer *"
                 >
@@ -531,7 +536,7 @@ const SentenceHighlightContent = () => {
                         .filter(opt => opt.trim() !== "")
                         .map((opt, idx) => (
                             <MenuItem key={idx} value={opt}>
-                                {String.fromCharCode(65 + idx)}) {opt}
+                                {String.fromCharCode(65 + idx)} {opt}
                             </MenuItem>
                         ))
                     }
@@ -542,6 +547,35 @@ const SentenceHighlightContent = () => {
                     </Typography>
                 )}
             </FormControl> */}
+
+            <Typography variant="h6" mb={1} color="primary">
+                Select Correct Highlight *
+            </Typography>
+            <FormControl fullWidth margin="normal" className="pb-4" error={!!errors.answer} >
+                <Select
+                    labelId="correct-answer-label"
+                    value={answer}
+                    onChange={(e) => {
+                        setAnswer(e.target.value);
+                        setErrors(prev => ({ ...prev, answer: null }));
+                    }}
+                >
+                    {correctHighlights
+                        .filter(h => h.trim() !== "")
+                        .map((highlight, idx) => (
+                            <MenuItem key={idx} value={highlight}>
+                                Highlight {idx + 1}: {highlight.length > 50 ? highlight.slice(0, 50) + "..." : highlight}
+                            </MenuItem>
+                        ))
+                    }
+                </Select>
+                {errors.correctAnswer && (
+                    <Typography color="error" variant="caption" sx={{ mt: 0.5 }}>
+                        {errors.correctAnswer}
+                    </Typography>
+                )}
+            </FormControl>
+
 
             {/* Preview Section */}
             <Card sx={{ mb: 3, bgcolor: 'grey.50' }}>
