@@ -37,6 +37,8 @@ const QuestionTypeComponent = () => {
 
     useEffect(() => {
         dispatch(listQuestionTypes());
+        console.log("Question types::: ",questionTypes);
+        
     }, [dispatch]);
 
     // ✅ Redirect back if no exam_type is received

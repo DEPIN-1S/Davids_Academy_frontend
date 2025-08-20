@@ -1,20 +1,18 @@
 import React, { useEffect, useState } from "react";
-import { FaTrash, FaEdit } from "react-icons/fa";
+import { FaTrash, FaEdit, FaToggleOff, FaToggleOn } from "react-icons/fa";
 import "../../styles/AdminStyles/StudentManage.css";
 import { useDispatch, useSelector } from "react-redux";
-import { fetchStudents } from "../../features/students/studentSlice";
+import { fetchStudents, removeStudent } from "../../features/students/studentSlice";
 import AddStudentForm from "../../components/AdminComponents/AddStudentForm";
-import { removeStudent } from "../../features/students/studentSlice";
-import EditStudentForm from "../../components/AdminComponents/EditStudentForm"
-import { FaToggleOff } from "react-icons/fa";
-import { FaToggleOn } from "react-icons/fa";
+import EditStudentForm from "../../components/AdminComponents/EditStudentForm";
 
 const StudentManage = () => {
   const dispatch = useDispatch();
   const { list, loading } = useSelector((state) => state.students);
+
   const [filterStatus, setFilterStatus] = useState("all");
   const [showAddForm, setShowAddForm] = useState(false);
-  const [showEditForm, setShowEditForm] = useState(false)
+  const [selectedStudentId, setSelectedStudentId] = useState(null); // ✅ holds studentId being edited
 
   // Filter logic
   const filteredStudents = list.filter((student) => {
@@ -22,14 +20,13 @@ const StudentManage = () => {
     return student.status?.toLowerCase() === filterStatus;
   });
 
-
   const handleDelete = (studentId) => {
     if (window.confirm("Do you really want to update this student's status?")) {
       dispatch(removeStudent(studentId))
         .unwrap()
         .then(() => {
           alert("Student status updated successfully ✅");
-          dispatch(fetchStudents()); // optional if your state is already updated
+          dispatch(fetchStudents());
         })
         .catch((error) => {
           alert(error.message || "Error updating student status");
@@ -37,11 +34,8 @@ const StudentManage = () => {
     }
   };
 
-
   useEffect(() => {
     dispatch(fetchStudents());
-    console.log(students);
-
   }, [dispatch]);
 
   useEffect(() => {
@@ -65,7 +59,9 @@ const StudentManage = () => {
           <option value="inactive">Inactive</option>
         </select>
 
-        <button className="add-student" onClick={() => setShowAddForm(true)} >+ Add Student</button>
+        <button className="add-student" onClick={() => setShowAddForm(true)}>
+          + Add Student
+        </button>
       </div>
 
       <div className="table-container">
@@ -90,10 +86,10 @@ const StudentManage = () => {
                 <td>{student.status || "N/A"}</td>
                 <td className="action-buttons">
                   <button className="progress-btn">View Progress</button>
-                 
+
                   {student.status === "active" ? (
                     <button
-                    className="active-btn"
+                      className="active-btn"
                       onClick={() => handleDelete(student.id)}
                     >
                       <FaToggleOn className="text-green-500" size={20} />
@@ -106,7 +102,12 @@ const StudentManage = () => {
                       <FaToggleOff className="text-gray-500" size={20} />
                     </button>
                   )}
-                  <button className="edit-btn" onClick={() => setShowEditForm(true)} >
+
+                  {/* ✅ Pass studentId here */}
+                  <button
+                    className="edit-btn"
+                    onClick={() => setSelectedStudentId(student.id)}
+                  >
                     <FaEdit />
                   </button>
                 </td>
@@ -115,21 +116,29 @@ const StudentManage = () => {
           </tbody>
         </table>
 
-        {
-          showEditForm && (
-            <div className="modal-overlay">
-              <div className="modal-content">
-                <EditStudentForm onClose={() => setShowEditForm(false)} />
-              </div>
+        {/* Edit Student Modal */}
+        {selectedStudentId && (
+          <div className="modal-overlay">
+            <div className="modal-content">
+              <EditStudentForm
+                studentId={selectedStudentId}
+                onClose={() => setSelectedStudentId(null)} // close on cancel/save
+              />
             </div>
-          )
-        }
+          </div>
+        )}
 
         {/* Add Student Modal */}
         {showAddForm && (
           <div className="modal-overlay">
             <div className="modal-content">
-              <AddStudentForm onClose={() => setShowAddForm(false)} />
+              <AddStudentForm
+                onClose={() => setShowAddForm(false)}
+                onSuccess={() => {
+                  dispatch(fetchStudents());
+                  setShowAddForm(false);
+                }}
+              />
             </div>
           </div>
         )}
@@ -139,3 +148,4 @@ const StudentManage = () => {
 };
 
 export default StudentManage;
+

@@ -17,6 +17,31 @@ export async function listStudents(token) {
 }
 
 
+export async function editStudent(studentData, token) {
+  const response = await fetch(
+    "https://lunarsenterprises.com:6040/davidsacademy/admin/student/edit",
+    {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(studentData),
+    }
+  );
+
+  const data = await response.json();
+
+  if (!response.ok || data.result === false) {
+    throw new Error(data.message || "Failed to edit student");
+  }
+
+  return data;
+}
+
+
+
+
 // Add student API function
 export async function addStudent(studentData, token) {
   console.log("adding in student api");

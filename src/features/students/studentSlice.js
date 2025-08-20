@@ -1,7 +1,8 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import { listStudents } from "../../features/students/studentApi";
+import { editStudent, listStudents } from "../../features/students/studentApi";
 import { addStudent } from '../../features/students/studentApi'
 import { deleteStudent } from "../../features/students/studentApi";
+
 
 
 export const fetchStudents = createAsyncThunk(
@@ -65,6 +66,26 @@ export const removeStudent = createAsyncThunk(
 );
 
 
+export const updateStudent = createAsyncThunk(
+  "students/updateStudent",
+  async (studentData, { rejectWithValue }) => {
+    try {
+      console.log("inside student edit slicee :::: ");
+      
+      const token = localStorage.getItem("accessToken");
+      const data = await editStudent(studentData, token);
+
+      if (!data || data.success === false || data.result === false) {
+        return rejectWithValue(data?.message || "Failed to update student");
+      }
+
+      return data.student || data;
+    } catch (error) {
+      return rejectWithValue(error.message);
+    }
+  }
+);
+
 
 const studentSlice = createSlice({
   name: "students",
@@ -89,12 +110,31 @@ const studentSlice = createSlice({
         state.error = action.payload;
       })
 
-   .addCase(removeStudent.fulfilled, (state, action) => {
-  state.list = state.list.filter(
-    (student) => student.id !== action.payload
-  );
-})
+      .addCase(removeStudent.fulfilled, (state, action) => {
+        state.list = state.list.filter(
+          (student) => student.id !== action.payload
+        );
+      })
 
+
+      .addCase(updateStudent.pending, (state) => {
+        state.loading = true;
+      })
+      .addCase(updateStudent.fulfilled, (state, action) => {
+        state.loading = false;
+        // update the list with the edited student
+        const updated = action.payload?.student;
+        if (updated) {
+          const index = state.list.findIndex(s => s.id === updated.id);
+          if (index !== -1) {
+            state.list[index] = updated;
+          }
+        }
+      })
+      .addCase(updateStudent.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+      });
 
 
 

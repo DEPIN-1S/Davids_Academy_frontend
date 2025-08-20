@@ -121,6 +121,9 @@ const AddCourseComponent = () => {
         if (!form.course_name.trim()) e.course_name = 'Title is required';
         if (!form.sub_title.trim()) e.sub_title = 'Subtitle is required';
         if (!form.description.trim()) e.description = 'description is required';
+        if (!id && !file) {
+            e.file = 'Course image is required';
+        }
         setErrors(e);
         return Object.keys(e).length === 0;
     };
@@ -235,7 +238,7 @@ const AddCourseComponent = () => {
                                 variant="outlined"
                                 startIcon={<CloudUpload />}
                                 onClick={() => fileInputRef.current && fileInputRef.current.click()}
-                                sx={{ textTransform: 'none', borderRadius: 2, mb: 2 }}
+                                sx={{ textTransform: 'none', borderRadius: 2,  }}
                             >
                                 Upload Course Image or PDF
                             </Button>
@@ -247,7 +250,7 @@ const AddCourseComponent = () => {
                                 style={{ display: 'none' }}
                             />
                             {errors.file && (
-                                <Box sx={{ mt: 1, color: "error.main", fontSize: "0.95rem" }}>{errors.file}</Box>
+                                <Box sx={{ color: "error.main", fontSize: "0.9rem" }}>{errors.file}</Box>
                             )}
                             {file && (
                                 <Card sx={{ mt: 2, border: '1px solid', borderColor: 'grey.200' }}>
