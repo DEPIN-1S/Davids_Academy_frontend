@@ -1,6 +1,6 @@
 import React from 'react';
-import DashboardNavbar from '../../components/StudentComponents/DashboardNavbar';
-import PreviousTestComponent from '../../components/StudentComponents/PreviousTestComponent';
+import DashboardNavbar from '../../components/StudentComponents/StudentNavbar';
+import PreviousTestComponent from '../../components/StudentComponents/TestComponent';
 const PreviousTestPage = () => {
   return (
     <section className='record-class-section'>

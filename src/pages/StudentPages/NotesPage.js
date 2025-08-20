@@ -1,5 +1,5 @@
 import React from 'react';
-import DashboardNavbar from '../../components/StudentComponents/DashboardNavbar';
+import DashboardNavbar from '../../components/StudentComponents/StudentNavbar';
 import NotesComponent from '../../components/StudentComponents/NotesComponent';
 const NotesPage = () => {
   return (

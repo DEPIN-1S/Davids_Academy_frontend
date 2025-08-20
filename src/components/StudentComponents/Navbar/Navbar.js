@@ -36,13 +36,8 @@ const NavBar = () => {
             subtitle: "Lorem Ipsum is simply dummy text of the printing and typesetting industry.",
             // icon: <FaClipboardList />
         },
-        "/student/mock-test": {
-            title: "Mock Test",
-            subtitle: "Lorem Ipsum is simply dummy text of the printing and typesetting industry.",
-            // icon: <FaVideo />
-        },
-        "/student/previous-tests": {
-            title: "Previous Tests",
+        "/student/tests": {
+            title: "Tests",
             subtitle: "Lorem Ipsum is simply dummy text of the printing and typesetting industry.",
             // icon: <FaPhone />
         }

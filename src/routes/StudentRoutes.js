@@ -23,8 +23,7 @@ const StudentRoutes = () => (
             <Route path="/student/question-bank" element={<ProtectedRoutes allowedRoles={['student']}><QuestionBankPage /></ProtectedRoutes>} />
             <Route path="/student/recorded-class" element={<ProtectedRoutes allowedRoles={['student']}><RecordedClassesPage /></ProtectedRoutes>} />
             <Route path="/student/notes" element={<ProtectedRoutes allowedRoles={['student']}><NotesPage /></ProtectedRoutes>} />
-            <Route path="/student/mock-test" element={<ProtectedRoutes allowedRoles={['student']}><MockTestPage /></ProtectedRoutes>} />
-            <Route path="/student/previous-tests" element={<ProtectedRoutes allowedRoles={['student']}><PreviousTestPage /></ProtectedRoutes>} />
+            <Route path="/student/tests" element={<ProtectedRoutes allowedRoles={['student']}><PreviousTestPage /></ProtectedRoutes>} />
             <Route path="/student/exam" element={<ProtectedRoutes allowedRoles={['student']}><ExamContainer /></ProtectedRoutes>} />
             {/* question routers end */}
             <Route
