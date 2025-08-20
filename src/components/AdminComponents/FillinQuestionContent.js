@@ -324,7 +324,7 @@ const FillinQuestionContent = () => {
             />
 
             {/* File Upload Section */}
-            <Box display="flex" justifyContent="flex-end" mt={1} mb={3} gap={1}>
+           {/*  <Box display="flex" justifyContent="flex-end" mt={1} mb={3} gap={1}>
                 <input
                     type="file"
                     ref={fileInputRef}
@@ -342,12 +342,12 @@ const FillinQuestionContent = () => {
                 </Button>
             </Box>
 
-            {/* File Error Display */}
+            
             {errors.file && (
                 <Alert severity="error" sx={{ mb: 2 }}>
                     {errors.file}
                 </Alert>
-            )}
+            )} */}
 
             {/* Display Uploaded File */}
             {selectedFile && (

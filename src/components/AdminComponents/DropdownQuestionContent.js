@@ -368,8 +368,8 @@ const DropdownQuestionContent = () => {
                 sx={{ mb: 3 }}
             />
 
-            {/* File Upload Section */}
-            <Box display="flex" justifyContent="flex-end" mt={1} mb={3} gap={1}>
+            
+            {/* <Box display="flex" justifyContent="flex-end" mt={1} mb={3} gap={1}>
                 <input
                     type="file"
                     ref={fileInputRef}
@@ -387,14 +387,12 @@ const DropdownQuestionContent = () => {
                 </Button>
             </Box>
 
-            {/* File Error Display */}
             {errors.file && (
                 <Alert severity="error" sx={{ mb: 2 }}>
                     {errors.file}
                 </Alert>
             )}
 
-            {/* Display Uploaded File */}
             {selectedFile && (
                 <Card sx={{ mb: 3 }}>
                     <CardContent sx={{ p: 2, '&:last-child': { pb: 2 } }}>
@@ -438,7 +436,7 @@ const DropdownQuestionContent = () => {
                         </Box>
                     </CardContent>
                 </Card>
-            )}
+            )} */}
 
             {/* Tabs Section */}
             <Accordion defaultExpanded sx={{ mb: 3 }}>

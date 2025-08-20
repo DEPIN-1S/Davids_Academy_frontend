@@ -235,19 +235,56 @@ const AnswerExplain = () => {
         });
     };
 
+    /*     const handleBack = () => {
+            // ✅ Preserve current explanation data (all serializable)
+            const dataToSendBack = {
+                // Previous data
+                exam_type: previousQuestionData.exam_type,
+                question_type_id: previousQuestionData.question_type_id,
+                questionType: previousQuestionData.questionType,
+                question: previousQuestionData.question,
+                options: previousQuestionData.options,
+                correctAnswer: previousQuestionData.correctAnswer,
+                createdAt: previousQuestionData.createdAt,
+                questionId: previousQuestionData.questionId,
+                cs_id: previousQuestionData.cs_id,
+    
+                // Current explanation data
+                explanationHeading: explanationHeading.trim(),
+                explanationText: explanationText.trim(),
+                additionalInfoHeading: additionalInfoHeading.trim(),
+                additionalInfo: additionalInfo.trim(),
+    
+                // Metadata
+                updatedAt: new Date().toISOString()
+            };
+    
+            navigate('/admin/mcq-content', {
+                state: {
+                    questionData: dataToSendBack,
+                    // ✅ Files are in Context, only pass metadata
+                    hasFile: hasQuestionFile,
+                    fileInfo: hasQuestionFile ? {
+                        name: questionFile?.name,
+                        type: questionFile?.type,
+                        size: questionFile?.size
+                    } : null,
+                    fromStep: 'explanation'
+                }
+            });
+        };
+     */
+
+
+
     const handleBack = () => {
         // ✅ Preserve current explanation data (all serializable)
         const dataToSendBack = {
-            // Previous data
-            exam_type: previousQuestionData.exam_type,
-            question_type_id: previousQuestionData.question_type_id,
-            questionType: previousQuestionData.questionType,
             question: previousQuestionData.question,
             options: previousQuestionData.options,
             correctAnswer: previousQuestionData.correctAnswer,
             createdAt: previousQuestionData.createdAt,
             questionId: previousQuestionData.questionId,
-            cs_id: previousQuestionData.cs_id,
 
             // Current explanation data
             explanationHeading: explanationHeading.trim(),
@@ -259,10 +296,14 @@ const AnswerExplain = () => {
             updatedAt: new Date().toISOString()
         };
 
+        // ✅ Navigate back with required top-level properties
         navigate('/admin/mcq-content', {
             state: {
+                exam_type: previousQuestionData.exam_type,
+                question_type_id: previousQuestionData.question_type_id,
+                questionType: previousQuestionData.questionType,
+                cs_id: previousQuestionData.cs_id,
                 questionData: dataToSendBack,
-                // ✅ Files are in Context, only pass metadata
                 hasFile: hasQuestionFile,
                 fileInfo: hasQuestionFile ? {
                     name: questionFile?.name,
@@ -273,6 +314,9 @@ const AnswerExplain = () => {
             }
         });
     };
+
+
+
 
     // Helper functions
     const getFileIcon = (fileType) => {
@@ -503,7 +547,7 @@ const AnswerExplain = () => {
             <Typography variant="h6" mb={1} color="primary">
                 Supporting Image/Document
             </Typography>
-            <Box display="flex" justifyContent="flex-start" mb={2}>
+          {/*   <Box display="flex" justifyContent="flex-start" mb={2}>
                 <input
                     type="file"
                     ref={fileInputRef}
@@ -521,12 +565,12 @@ const AnswerExplain = () => {
                 </Button>
             </Box>
 
-            {/* File Error Display */}
+            
             {errors.file && (
                 <Alert severity="error" sx={{ mb: 2 }}>
                     {errors.file}
                 </Alert>
-            )}
+            )} */}
 
             {/* Display Uploaded File */}
             {selectedFile && (

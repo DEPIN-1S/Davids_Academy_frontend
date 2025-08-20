@@ -232,7 +232,7 @@ const questionSlice = createSlice({
                 state.qBankQuestionDataError = action.payload;
                 state.qBankQuestionData = null;
             });
-
+/* 
 
             //for listing test questions
             .addCase(getTestQuestions.pending, (state) => {
@@ -250,7 +250,7 @@ const questionSlice = createSlice({
                 state.testQuestionsLoading = false;
                 state.testQuestionsError = action.payload;
                 state.testQuestions = [];
-            });
+            }); */
 
     }
 });
