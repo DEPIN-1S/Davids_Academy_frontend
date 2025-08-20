@@ -39,13 +39,10 @@ const AddStudentForm = () => {
     const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
     const isTablet = useMediaQuery(theme.breakpoints.down('md'));
     const { list: courses, loading: coursesLoading } = useSelector((state) => state.course);
-
     const dispatch = useDispatch();
     useEffect(() => {
         dispatch(fetchCourses());
     }, [dispatch]);
-
-
 
     // Form state
     const [formData, setFormData] = useState({

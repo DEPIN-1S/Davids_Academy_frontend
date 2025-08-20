@@ -40,11 +40,12 @@ const AdminRoutes = () => (
                     <StudentManage />
                 </ProtectedRoutes>
             } />
-            <Route path="/admin/student-form" element={
+            
+        {/*     <Route path="/admin/student-form" element={
                 <ProtectedRoutes allowedRoles={['admin']}>
                     <AddStudentForm />
                 </ProtectedRoutes>
-            } />
+            } /> */}
 
             <Route path="/admin/question-management" element={
                 <ProtectedRoutes allowedRoles={['admin']}>

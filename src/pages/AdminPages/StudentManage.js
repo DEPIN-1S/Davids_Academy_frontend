@@ -23,22 +23,6 @@ const StudentManage = () => {
   });
 
 
-  /* const handleDelete = (studentId) => {
-    if (window.confirm("Do you really want to update this student's status?")) {
-      dispatch(removeStudent(studentId))
-        .unwrap()
-        .then(() => {
-          console.log("Student status updated successfully");
-          dispatch(fetchStudents());
-        })
-        .catch((error) => {
-          console.error("Failed to update student status:", error);
-          alert("Error updating student status");
-        });
-    }
-  }; */
-
-
   const handleDelete = (studentId) => {
     if (window.confirm("Do you really want to update this student's status?")) {
       dispatch(removeStudent(studentId))
@@ -52,8 +36,6 @@ const StudentManage = () => {
         });
     }
   };
-
-
 
 
   useEffect(() => {
@@ -108,9 +90,7 @@ const StudentManage = () => {
                 <td>{student.status || "N/A"}</td>
                 <td className="action-buttons">
                   <button className="progress-btn">View Progress</button>
-                  {/* <button className="delete-btn" onClick={() => handleDelete(student.id)} >
-                    <FaToggleOff />
-                  </button> */}
+                 
                   {student.status === "active" ? (
                     <button
                     className="active-btn"
@@ -134,6 +114,7 @@ const StudentManage = () => {
             ))}
           </tbody>
         </table>
+
         {
           showEditForm && (
             <div className="modal-overlay">
@@ -143,7 +124,6 @@ const StudentManage = () => {
             </div>
           )
         }
-
 
         {/* Add Student Modal */}
         {showAddForm && (
