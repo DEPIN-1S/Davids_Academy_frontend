@@ -89,15 +89,14 @@ const studentSlice = createSlice({
         state.error = action.payload;
       })
 
-      //for deleting student
-     .addCase(removeStudent.fulfilled, (state, action) => {
-      state.students = state.students.filter(
-        (student) => student.id !== action.payload
-      );
-    })
-    .addCase(removeStudent.rejected, (state, action) => {
-      state.error = action.payload;
-    });
+   .addCase(removeStudent.fulfilled, (state, action) => {
+  state.list = state.list.filter(
+    (student) => student.id !== action.payload
+  );
+})
+
+
+
 
 
   },

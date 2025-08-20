@@ -46,7 +46,7 @@ export async function addStudent(studentData, token) {
 
 
 
-export async function deleteStudent(id, token) {
+/* export async function deleteStudent(id, token) {
   console.log("Sending delete body:", { student_id: id });
 
   const response = await fetch(
@@ -63,6 +63,32 @@ export async function deleteStudent(id, token) {
 
   const data = await response.json();
   console.log("Delete API parsed JSON:", data);
+  return data;
+}
+ */
+
+export async function deleteStudent(id, token) {
+  console.log("Sending delete body:", { student_id: id });
+
+  const response = await fetch(
+    `${process.env.REACT_APP_API_URL}/admin/student/update-status`,
+    {
+      method: "POST",
+      headers: {
+        "Authorization": `Bearer ${token}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ student_id: id }),
+    }
+  );
+
+  const data = await response.json();
+  console.log("Delete API parsed JSON:", data);
+
+  if (!response.ok || data.result === false) {
+    throw new Error(data.message || "Failed to update student status");
+  }
+
   return data;
 }
 

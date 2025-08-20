@@ -7,6 +7,7 @@ import AddStudentForm from "../../components/AdminComponents/AddStudentForm";
 import { removeStudent } from "../../features/students/studentSlice";
 import EditStudentForm from "../../components/AdminComponents/EditStudentForm"
 import { FaToggleOff } from "react-icons/fa";
+import { FaToggleOn } from "react-icons/fa";
 
 const StudentManage = () => {
   const dispatch = useDispatch();
@@ -22,7 +23,7 @@ const StudentManage = () => {
   });
 
 
-  const handleDelete = (studentId) => {
+  /* const handleDelete = (studentId) => {
     if (window.confirm("Do you really want to update this student's status?")) {
       dispatch(removeStudent(studentId))
         .unwrap()
@@ -35,7 +36,24 @@ const StudentManage = () => {
           alert("Error updating student status");
         });
     }
+  }; */
+
+
+  const handleDelete = (studentId) => {
+    if (window.confirm("Do you really want to update this student's status?")) {
+      dispatch(removeStudent(studentId))
+        .unwrap()
+        .then(() => {
+          alert("Student status updated successfully ✅");
+          dispatch(fetchStudents()); // optional if your state is already updated
+        })
+        .catch((error) => {
+          alert(error.message || "Error updating student status");
+        });
+    }
   };
+
+
 
 
   useEffect(() => {
@@ -90,9 +108,24 @@ const StudentManage = () => {
                 <td>{student.status || "N/A"}</td>
                 <td className="action-buttons">
                   <button className="progress-btn">View Progress</button>
-                  <button className="delete-btn"> 
-                    <FaToggleOff onClick={() => handleDelete(student.id)} />
-                  </button>
+                  {/* <button className="delete-btn" onClick={() => handleDelete(student.id)} >
+                    <FaToggleOff />
+                  </button> */}
+                  {student.status === "active" ? (
+                    <button
+                    className="active-btn"
+                      onClick={() => handleDelete(student.id)}
+                    >
+                      <FaToggleOn className="text-green-500" size={20} />
+                    </button>
+                  ) : (
+                    <button
+                      className="inactive-btn"
+                      onClick={() => handleDelete(student.id)}
+                    >
+                      <FaToggleOff className="text-gray-500" size={20} />
+                    </button>
+                  )}
                   <button className="edit-btn" onClick={() => setShowEditForm(true)} >
                     <FaEdit />
                   </button>

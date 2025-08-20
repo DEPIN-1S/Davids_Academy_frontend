@@ -283,7 +283,7 @@ const MetaInfoComponent = () => {
         difficulty: form.difficulty || "",
         tabs: receivedQuestionData.tabs || [],
         /* question_content:receivedQuestionData.question_content, */
-        question_content:receivedQuestionData.question_content,
+        question_content: receivedQuestionData.question_content,
         radio_options: receivedQuestionData.radio_options || [],
         explanationHeading: receivedQuestionData.explanationHeading || "",
         explanationText: receivedQuestionData.explanationText || "",
@@ -304,7 +304,6 @@ const MetaInfoComponent = () => {
         explanationText: receivedQuestionData.explanationText || "",
         info: receivedQuestionData.additionalInfo || "",
         answer: receivedQuestionData.correctHighlights.join(","),
-
         /*  answer: receivedQuestionData.correctHighlights, */
         /* question_content:receivedQuestionData.question_content, */
         /* question_content: receivedQuestionData.question_content || [], */
@@ -476,7 +475,7 @@ const MetaInfoComponent = () => {
         question: receivedQuestionData.question || "",
         difficulty: form.difficulty || "",
         tabs: receivedQuestionData.tabs || [],
-        question_content:receivedQuestionData.question_content, 
+        question_content: receivedQuestionData.question_content,
         radio_options: receivedQuestionData.radio_options || [],
         explanationHeading: receivedQuestionData.explanationHeading || "",
         explanationText: receivedQuestionData.explanationText || "",
@@ -486,17 +485,20 @@ const MetaInfoComponent = () => {
 
     const getSentenceHighlightBaseData = () => ({
         courseId: receivedQuestionData.cs_id,
-        questionType: "Sentence highlight",
+        questionType: "Sentence Highlight",
         question_type_id: getQuestionTypeId('Sentence Highlight'),
         exam_type: receivedQuestionData.exam_type,
         question: receivedQuestionData.question || "",
         difficulty: form.difficulty || "",
         tabs: receivedQuestionData.tabs || [],
-        highlightoptions: "highlightoptions",
+       /*  highlightInstructions: receivedQuestionData.highlightInstructions, */
+        /* highlightoptions: "highlightoptions", */
+        highlightoptions: receivedQuestionData.correctHighlights,
+        passage: receivedQuestionData.passage,
         explanationHeading: receivedQuestionData.explanationHeading || "",
         explanationText: receivedQuestionData.explanationText || "",
         info: receivedQuestionData.additionalInfo || "",
-        answer: receivedQuestionData.correctHighlights.join(","),
+        answer: receivedQuestionData.answer,
         infoImage: receivedQuestionData.infoImage || null,
         /*         answer: receivedQuestionData.correctHighlights, */
         /* question_content:receivedQuestionData.question_content, */
@@ -530,7 +532,7 @@ const MetaInfoComponent = () => {
             case 'Sorting':
                 return getSortingBaseData();
 
-            case 'Multiple Radio"':
+            case 'Multiple Radio':
                 return getMultiRadioBaseData();
 
             case 'Fill in the Blanks':
@@ -540,7 +542,8 @@ const MetaInfoComponent = () => {
                 return getSentenceHighlightBaseData();
 
             default:
-                return getMCQBaseData(); // fallback to MCQ format
+                console.warn(" Unknown questionType:", receivedQuestionData.questionType);
+                break;
         }
     };
 

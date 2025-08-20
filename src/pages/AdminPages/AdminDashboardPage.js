@@ -4,6 +4,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { fetchCourses } from "../../features/courses/courseSlice";
 import { fetchRecentEnquiries } from "../../features/contact/contactSlice";
 import { fetchStudents } from "../../features/students/studentSlice";
+import { useNavigate } from "react-router-dom";
 
 
 
@@ -16,6 +17,11 @@ const DashboardPage = () => {
 
   const studentCount = students.length;
   console.log("er4r34reet:::", recentEnquiries);
+
+  const navigate = useNavigate() 
+  const viewAllEnquiries =()=>{
+
+  }
 
   useEffect(() => {
     console.log("Dashboard useEffect triggered");
@@ -113,7 +119,7 @@ const DashboardPage = () => {
         <div className="enquiries-card">
           <div className="enquiries-header">
             <h2>Recent Enquiries</h2>
-            <button className="view-all-btn">View all</button>
+            <button className="view-all-btn" onClick={viewAllEnquiries()} >View all</button>
           </div>
 
          
