@@ -143,7 +143,7 @@ export const fetchQBankQuestionData = async (questionId) => {
         }
 
         const data = await response.json();
-        console.log('QuestionData from api', data)
+       
         // The question data is under data.data as per your example
         return data.data;
     } catch (error) {
