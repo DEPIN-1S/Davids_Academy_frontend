@@ -61,7 +61,7 @@ const MetaInfoComponent = () => {
         console.log('📎 Question file in context:', hasQuestionFile ? questionFile?.name : 'None');
         console.log('📎 Explanation file in context:', hasExplanationFile ? explanationFile?.name : 'None');
         console.log('📄 Received question data:', receivedQuestionData);
-        console.log("question_content:::", receivedQuestionData.question_content);
+        console.log("question type id:::", receivedQuestionData.question_type_id);
 
     }, [hasQuestionFile, hasExplanationFile, questionFile, explanationFile, receivedQuestionData]);
 
@@ -197,7 +197,7 @@ const MetaInfoComponent = () => {
     const getMCQFormData = () => ({
         questionType: receivedQuestionData.questionType,
         courseId: receivedQuestionData.cs_id,
-        question_type_id: getQuestionTypeId('MCQ'),
+        question_type_id: receivedQuestionData.question_type_id,
         question: receivedQuestionData.question || "",
         exam_type: receivedQuestionData.exam_type,
         difficulty: form.difficulty,
@@ -212,7 +212,7 @@ const MetaInfoComponent = () => {
     // ✅ Dropdown question data
     const getDropdownFormData = () => ({
         questionType: receivedQuestionData.questionType,
-        question_type_id: getQuestionTypeId('Dropdown'),
+        question_type_id: receivedQuestionData.question_type_id,
         courseId: receivedQuestionData.cs_id,
         question: receivedQuestionData.question || "",
         difficulty: form.difficulty,
@@ -227,7 +227,7 @@ const MetaInfoComponent = () => {
 
     const getDragDropFormData = () => ({
         questionType: receivedQuestionData.questionType,
-        question_type_id: getQuestionTypeId("Drag Drop"),
+        question_type_id: receivedQuestionData.question_type_id,
         courseId: receivedQuestionData.cs_id,
         exam_type: receivedQuestionData.exam_type,
         question: receivedQuestionData.question || "",
@@ -244,7 +244,7 @@ const MetaInfoComponent = () => {
 
     const getSortingFormData = () => ({
         questionType: receivedQuestionData.questionType, // type name if you store it
-        question_type_id: getQuestionTypeId("Sorting"),  // your helper for IDs
+        question_type_id: receivedQuestionData.question_type_id,  // your helper for IDs
         courseId: receivedQuestionData.cs_id,
         exam_type: receivedQuestionData.exam_type,
         question: receivedQuestionData.question || "",
@@ -262,7 +262,7 @@ const MetaInfoComponent = () => {
         exam_type: receivedQuestionData.exam_type,
         /*    question: receivedQuestionData.question_content || [], */
         question: receivedQuestionData?.question_content?.[0]?.question_text,
-        question_type_id: getQuestionTypeId('Fill in the Blanks'),
+        question_type_id: receivedQuestionData.question_type_id,
         /*      answer: receivedQuestionData.answer || "", */
         answer: receivedQuestionData?.question_content?.[0]?.fill_blanks_answer,
         difficulty: form.difficulty || "",
@@ -277,7 +277,7 @@ const MetaInfoComponent = () => {
     const getMultiRadioFormData = () => ({
         courseId: receivedQuestionData.cs_id,
         questionType: receivedQuestionData.questionType,
-        question_type_id: getQuestionTypeId('Multiple Radio'),
+        question_type_id: receivedQuestionData.question_type_id,
         exam_type: receivedQuestionData.exam_type,
         question: receivedQuestionData.question || "",
         difficulty: form.difficulty || "",
@@ -294,7 +294,7 @@ const MetaInfoComponent = () => {
     const getSentenceHighlightFormData = () => ({
         courseId: receivedQuestionData.cs_id,
         questionType: "Sentence highlight",
-        question_type_id: getQuestionTypeId('Sentence Highlight'),
+        question_type_id: receivedQuestionData.question_type_id,
         exam_type: receivedQuestionData.exam_type,
         question: receivedQuestionData.question || "",
         difficulty: form.difficulty || "",
@@ -345,7 +345,6 @@ const MetaInfoComponent = () => {
 
 
 
-
     // ✅ Fallback: Submit using JSON (if no files in Context)
     const handleSubmitWithJSON = async () => {
         // Show loading toast
@@ -388,7 +387,7 @@ const MetaInfoComponent = () => {
     const getMCQBaseData = () => ({
         questionType: receivedQuestionData.questionType,
         courseId: receivedQuestionData.cs_id,
-        question_type_id: getQuestionTypeId('MCQ'),
+        question_type_id: receivedQuestionData.question_type_id,
         question: receivedQuestionData.question || "",
         exam_type: receivedQuestionData.exam_type,
         exhibit: null,
@@ -405,7 +404,7 @@ const MetaInfoComponent = () => {
     // ✅ Dropdown question data
     const getDropdownBaseData = () => ({
         questionType: receivedQuestionData.questionType,
-        question_type_id: getQuestionTypeId('Dropdown'),
+        question_type_id: receivedQuestionData.question_type_id,
         courseId: receivedQuestionData.cs_id,
         question: receivedQuestionData.question || "",
         difficulty: form.difficulty,
@@ -420,7 +419,7 @@ const MetaInfoComponent = () => {
 
     const getDragDropBaseData = () => ({
         questionType: receivedQuestionData.questionType,
-        question_type_id: getQuestionTypeId("Drag Drop"),
+        question_type_id: receivedQuestionData.question_type_id,
         courseId: receivedQuestionData.cs_id,
         exam_type: receivedQuestionData.exam_type,
         question: receivedQuestionData.question || "",
@@ -436,8 +435,8 @@ const MetaInfoComponent = () => {
 
 
     const getSortingBaseData = () => ({
-        questionType: receivedQuestionData.questionType, // type name if you store it
-        question_type_id: getQuestionTypeId("Sorting"),  // your helper for IDs
+        questionType: receivedQuestionData.questionType, 
+        question_type_id: receivedQuestionData.question_type_id,  
         courseId: receivedQuestionData.cs_id,
         exam_type: receivedQuestionData.exam_type,
         question: receivedQuestionData.question || "",
@@ -455,7 +454,7 @@ const MetaInfoComponent = () => {
         exam_type: receivedQuestionData.exam_type,
         /*    question: receivedQuestionData.question_content || [], */
         question: receivedQuestionData?.question_content?.[0]?.question_text,
-        question_type_id: getQuestionTypeId('Fill in the Blanks'),
+        question_type_id: receivedQuestionData.question_type_id,
         /*      answer: receivedQuestionData.answer || "", */
         answer: receivedQuestionData?.question_content?.[0]?.fill_blanks_answer,
         difficulty: form.difficulty || "",
@@ -470,7 +469,7 @@ const MetaInfoComponent = () => {
     const getMultiRadioBaseData = () => ({
         courseId: receivedQuestionData.cs_id,
         questionType: receivedQuestionData.questionType,
-        question_type_id: getQuestionTypeId('Multiple Radio'),
+        question_type_id: receivedQuestionData.question_type_id,
         exam_type: receivedQuestionData.exam_type,
         question: receivedQuestionData.question || "",
         difficulty: form.difficulty || "",
@@ -485,8 +484,8 @@ const MetaInfoComponent = () => {
 
     const getSentenceHighlightBaseData = () => ({
         courseId: receivedQuestionData.cs_id,
-        questionType: "Sentence Highlight",
-        question_type_id: getQuestionTypeId('Sentence Highlight'),
+        questionType: receivedQuestionData.questionType,
+        question_type_id: receivedQuestionData.question_type_id,
         exam_type: receivedQuestionData.exam_type,
         question: receivedQuestionData.question || "",
         difficulty: form.difficulty || "",
@@ -500,19 +499,14 @@ const MetaInfoComponent = () => {
         info: receivedQuestionData.additionalInfo || "",
         answer: receivedQuestionData.answer,
         infoImage: receivedQuestionData.infoImage || null,
-        /*         answer: receivedQuestionData.correctHighlights, */
+        /* answer: receivedQuestionData.correctHighlights, */
         /* question_content:receivedQuestionData.question_content, */
         /* question_content: receivedQuestionData.question_content || [], */
-        /*  radio_options: receivedQuestionData.radio_options || [], */
-
-
-        /*  passage: receivedQuestionData.passage,
+        /* radio_options: receivedQuestionData.radio_options || [], */
+        /* passage: receivedQuestionData.passage,
          highlightInstructions: receivedQuestionData.highlightInstructions,
          correctHighlights: receivedQuestionData.correctHighlights, */
     });
-
-
-
 
 
 

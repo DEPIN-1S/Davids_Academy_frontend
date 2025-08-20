@@ -18,9 +18,9 @@ const DashboardPage = () => {
   const studentCount = students.length;
   console.log("er4r34reet:::", recentEnquiries);
 
-  const navigate = useNavigate() 
-  const viewAllEnquiries =()=>{
-
+  const navigate = useNavigate()
+  const viewAllEnquiries = () => {
+    
   }
 
   useEffect(() => {
@@ -122,7 +122,7 @@ const DashboardPage = () => {
             <button className="view-all-btn" onClick={viewAllEnquiries()} >View all</button>
           </div>
 
-         
+
           <div className="enquiry-list">
             {recentEnquiries.length > 0 ? (
               recentEnquiries.map(({ _id, cu_course_interested, cu_name, cu_status }) => (

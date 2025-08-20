@@ -46,6 +46,7 @@ const CourseManagementComponent = () => {
 
     useEffect(() => {
         dispatch(fetchCourses());
+        console.log("courses in course management ::::", displayCourses);
     }, [dispatch]);
 
     // If all deletion is done (deleteLoading false), clear the pending list
@@ -70,15 +71,25 @@ const CourseManagementComponent = () => {
         const confirmed = window.confirm("Are you sure you want to delete this course?");
         if (confirmed) {
             setPendingDeleteIds((prev) => [...prev, courseId]);
-            dispatch(removeCourse(courseId));
 
+            dispatch(removeCourse(courseId))
+                .unwrap()
+                .then(() => {
+                    alert("Course deleted successfully");
+                    dispatch(fetchCourses()); 
+                })
+                .catch((error) => {
+                    alert("Failed to delete course: ");
+                });
         }
     };
+
 
     // Display all courses except those being deleted right now
     const displayCourses = courses.filter(
         (course) => !pendingDeleteIds.includes(course.cs_id)
     );
+
 
     return (
         <Container maxWidth="xl" sx={{ py: { xs: 2, sm: 3, md: 4 } }}>
@@ -254,7 +265,7 @@ const CourseManagementComponent = () => {
                                             lineHeight: 1.3
                                         }}
                                     >
-                                        {course.name}
+                                        {course.cs_name}
                                     </Typography>
                                 </Box>
 

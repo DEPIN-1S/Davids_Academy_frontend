@@ -6,6 +6,8 @@ const baseUrl = process.env.REACT_APP_API_URL;
 export const addCourse = async (courseData) => {
     try {
         // courseData must be a FormData instance!
+        console.log("Cousrse data in api call",courseData);
+        
         const response = await fetch(baseUrl + "/course/create/course", {
             method: "POST",
             body: courseData, // will be sent as multipart/form-data
@@ -23,8 +25,12 @@ export const addCourse = async (courseData) => {
                     errRes?.error ||
                     JSON.stringify(errRes) ||
                     "Failed to add course";
+                    console.log("Error text:::",errorText);
+                    
             } catch {
                 errorText = response.statusText || "Failed to add course";
+                console.log("Errortext::::",errorText);
+                
             }
             throw new Error(errorText);
         }

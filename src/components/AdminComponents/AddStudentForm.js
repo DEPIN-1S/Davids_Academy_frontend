@@ -1,51 +1,26 @@
 import React, { useEffect, useState } from 'react';
 import { createStudent } from "../../features/students/studentSlice";
 import {
-    Box,
-    Typography,
-    Button,
-    TextField,
-    Card,
-    CardContent,
-    Container,
-    useTheme,
-    useMediaQuery,
-    Grid,
-    FormControl,
-    InputLabel,
-    Select,
-    MenuItem,
-    Switch,
-    FormControlLabel,
-    InputAdornment,
-    Alert
+    Box, Typography, Button, TextField, Card, CardContent, Container,
+    useTheme, useMediaQuery, Grid, FormControl, Select, MenuItem,
+    Switch, FormControlLabel, InputAdornment
 } from '@mui/material';
 import {
-    Save as SaveIcon,
-    Cancel as CancelIcon,
-    Phone as PhoneIcon,
-    Email as EmailIcon,
-    Person as PersonIcon,
-    School as SchoolIcon,
-    Class as ClassIcon
+    Save as SaveIcon, Cancel as CancelIcon, Email as EmailIcon,
+    Person as PersonIcon, School as SchoolIcon, Class as ClassIcon
 } from '@mui/icons-material';
-import { useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { fetchCourses } from '../../features/courses/courseSlice';
 
-const AddStudentForm = () => {
+const AddStudentForm = ({ onSuccess, onClose }) => {   // ✅ accept callbacks
     const theme = useTheme();
-    const navigate = useNavigate();
     const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
-    const isTablet = useMediaQuery(theme.breakpoints.down('md'));
-    const { list: courses, loading: coursesLoading } = useSelector((state) => state.course);
-
+    const { list: courses } = useSelector((state) => state.course);
     const dispatch = useDispatch();
+
     useEffect(() => {
         dispatch(fetchCourses());
     }, [dispatch]);
-
-
 
     // Form state
     const [formData, setFormData] = useState({
@@ -54,16 +29,15 @@ const AddStudentForm = () => {
         phoneNumber: '',
         password: '',
         targetExam: '12',
-        classType: 'Online',
         autoGeneratePassword: false
     });
-
     const [errors, setErrors] = useState({});
     const [showPassword, setShowPassword] = useState(false);
+
     const generatePasswordValue = (name) => {
         if (!name) return '';
         const cleanName = name.toLowerCase().replace(/\s+/g, '');
-        const randomNum = Math.floor(100 + Math.random() * 900); // always 3 digits
+        const randomNum = Math.floor(100 + Math.random() * 900);
         return `${cleanName}${randomNum}`;
     };
 
@@ -92,28 +66,21 @@ const AddStudentForm = () => {
         });
     };
 
-
-
     // Form validation
     const validateForm = () => {
         const newErrors = {};
-
         if (!formData.fullName.trim()) newErrors.fullName = 'Full name is required';
-
         if (!formData.emailAddress.trim()) {
             newErrors.emailAddress = 'Email address is required';
         } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.emailAddress)) {
             newErrors.emailAddress = 'Please enter a valid email address';
         }
-
         const digitsOnly = formData.phoneNumber.replace(/\D/g, '');
         if (!digitsOnly) {
             newErrors.phoneNumber = 'Phone number is required';
         } else if (!/^\d{7,15}$/.test(digitsOnly)) {
             newErrors.phoneNumber = 'Please enter a valid phone number';
         }
-
-        // Only validate password if we are NOT auto-generating
         if (!formData.autoGeneratePassword) {
             if (!formData.password.trim()) {
                 newErrors.password = 'Password is required';
@@ -121,17 +88,12 @@ const AddStudentForm = () => {
                 newErrors.password = 'Password must be at least 6 characters';
             }
         }
-
         setErrors(newErrors);
         return Object.keys(newErrors).length === 0;
     };
-    console.log("inside function:::", formData);
-
-
 
     const handleSave = (e) => {
         e.preventDefault();
-
         if (!validateForm()) return;
 
         const payload = {
@@ -139,52 +101,26 @@ const AddStudentForm = () => {
             email: formData.emailAddress,
             phone: formData.phoneNumber,
             target_exam: formData.targetExam,
-          /*   class_type: formData.classType, */
-            password: formData.password // always a string now
+            password: formData.password
         };
-
-        console.log("Sending payload to backend:", payload);
 
         dispatch(createStudent(payload))
             .unwrap()
-            .then(() => console.log("Student added successfully"))
+            .then(() => {
+                console.log("Student added successfully");
+                if (onSuccess) onSuccess();   // ✅ close modal after success
+            })
             .catch((error) => console.error("Error adding student:", error));
     };
 
-
-
     const handleCancel = () => {
-        navigate(-1); // Go back to previous page
+        if (onClose) onClose();
     };
 
     return (
         <Container maxWidth="md" sx={{ py: { xs: 2, sm: 3, md: 4 } }}>
             {/* Header */}
-            <Box sx={{ mb: { xs: 3, sm: 4 } }}>
-                <Typography
-                    variant="h4"
-                    component="h1"
-                    sx={{
-                        fontWeight: 600,
-                        fontSize: { xs: '1.75rem', sm: '2rem', md: '2.5rem' },
-                        color: 'text.primary',
-                        mb: 1,
-                        textAlign: { xs: 'center', sm: 'left' }
-                    }}
-                >
-                    Add New Student
-                </Typography>
-                <Typography
-                    variant="body1"
-                    sx={{
-                        color: 'text.secondary',
-                        fontSize: { xs: '0.9rem', sm: '1rem' },
-                        textAlign: { xs: 'center', sm: 'left' }
-                    }}
-                >
-                    Fill in the student's details to create their account and assign courses.
-                </Typography>
-            </Box>
+
 
             {/* Form Card */}
             <Card
@@ -196,7 +132,33 @@ const AddStudentForm = () => {
                 }}
             >
                 <CardContent sx={{ p: { xs: 3, sm: 4 } }}>
-                    <Grid container spacing={{ xs: 3, sm: 4 }}>
+
+                    <Box sx={{ mb: { xs: 3, sm: 3 } }}>
+                        <Typography
+                            variant="h4"
+                            component="h1"
+                            sx={{
+                                fontWeight: 600,
+                                fontSize: { xs: '1.75rem', sm: '2rem', md: '1.8rem' },
+                                color: 'text.primary',
+                                mb: 1,
+                                textAlign: { xs: 'center', sm: 'left' }
+                            }}
+                        >
+                            Add New Student
+                        </Typography>
+                        <Typography
+                            variant="body1"
+                            sx={{
+                                color: 'text.secondary',
+                                fontSize: { xs: '0.9rem', sm: '.9rem' },
+                                textAlign: { xs: 'center', sm: 'left' }
+                            }}
+                        >
+                            Fill in the student's details to create their account and assign courses.
+                        </Typography>
+                    </Box>
+                    <Grid container spacing={{ xs: 3, sm: 1 }}>
                         {/* Full Name */}
                         <Grid item xs={12} md={6}>
                             <Typography
@@ -418,41 +380,6 @@ const AddStudentForm = () => {
 
 
 
-                            </FormControl>
-                        </Grid>
-
-                        {/* Class Type */}
-                        <Grid item xs={12} md={6}>
-                            <Typography
-                                variant="h6"
-                                sx={{
-                                    fontWeight: 600,
-                                    mb: 1.5,
-                                    fontSize: { xs: '1rem', sm: '1.1rem' },
-                                    color: 'text.primary'
-                                }}
-                            >
-                                Class type
-                            </Typography>
-                            <FormControl fullWidth>
-                                <Select
-                                    value={formData.classType}
-                                    onChange={handleInputChange('classType')}
-                                    displayEmpty
-                                    sx={{
-                                        borderRadius: 2,
-                                        fontSize: { xs: '0.9rem', sm: '1rem' }
-                                    }}
-                                    startAdornment={
-                                        <InputAdornment position="start">
-                                            <ClassIcon sx={{ color: 'text.secondary', ml: 1 }} />
-                                        </InputAdornment>
-                                    }
-                                >
-                                    <MenuItem value="Online">Online</MenuItem>
-                                    <MenuItem value="Offline">Offline</MenuItem>
-                                    <MenuItem value="Hybrid">Hybrid</MenuItem>
-                                </Select>
                             </FormControl>
                         </Grid>
                     </Grid>

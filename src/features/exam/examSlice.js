@@ -249,7 +249,9 @@ const questionSlice = createSlice({
                 state.testQuestionsLoading = false;
                 state.testQuestionsError = action.payload;
                 state.testQuestions = [];
+
             });
+
     }
 });
 

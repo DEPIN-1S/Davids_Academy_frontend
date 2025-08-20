@@ -32,10 +32,7 @@ const CourseManagement = () => {
         console.log("Play class:", classId);
     };
 
-    const handleAddToPlaylist = (classId) => {
-        console.log("Add to playlist:", classId);
-    };
-
+  
     const handleAddClick = () => {
         navigate("/admin/upload-thumbnail");
     };
@@ -61,14 +58,11 @@ const CourseManagement = () => {
                     recordings.map((cls) => (
                         <div key={cls.r_id} className="class-card">
                             <div className="card-thumbnail">
-                                
- 
                                 <img
                                     src={`${process.env.REACT_APP_API_URL}${cls.r_thumbnail}`}
                                     alt={cls.r_title}
                                 />
                                   
-
                                 <div
                                     className="play-overlay"
                                     onClick={() => handlePlay(cls.r_id)}
@@ -78,13 +72,6 @@ const CourseManagement = () => {
                                     </div>
                                 </div>
 
-                                <button
-                                    className={`playlist-btn ${cls.isInPlaylist ? "added" : ""}`}
-                                    onClick={() => handleAddToPlaylist(cls.r_id)}
-                                >
-                                    <FaPlus />{" "}
-                                    {cls.isInPlaylist ? "Added to playlist" : "Add to playlist"}
-                                </button>
                             </div>
 
                             <div className="card-content">

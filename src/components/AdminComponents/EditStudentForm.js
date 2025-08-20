@@ -1,24 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { createStudent } from "../../features/students/studentSlice";
 import {
-    Box,
-    Typography,
-    Button,
-    TextField,
-    Card,
-    CardContent,
-    Container,
-    useTheme,
-    useMediaQuery,
-    Grid,
-    FormControl,
-    InputLabel,
-    Select,
-    MenuItem,
-    Switch,
-    FormControlLabel,
-    InputAdornment,
-    Alert
+    Box, Typography, Button, TextField, Card, CardContent, Container, useTheme, useMediaQuery, Grid, FormControl, InputLabel, Select, MenuItem,
+    Switch, FormControlLabel, InputAdornment, Alert
 } from '@mui/material';
 import {
     Save as SaveIcon,
@@ -32,20 +16,17 @@ import {
 import { useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { fetchCourses } from '../../features/courses/courseSlice';
+import { updateStudent } from '../../features/students/studentSlice';
+/* import { fetchStudents } from '../../features/students/studentSlice'; */
 
-const EditStudentForm = () => {
+const EditStudentForm = ({ studentId, onClose }) => {
     const theme = useTheme();
     const navigate = useNavigate();
+    const dispatch = useDispatch();
     const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
     const isTablet = useMediaQuery(theme.breakpoints.down('md'));
-    const { list: courses, loading: coursesLoading } = useSelector((state) => state.course);
-    
-
-    const dispatch = useDispatch();
-    useEffect(() => {
-        dispatch(fetchCourses());
-    }, [dispatch]);
-
+    const { list: courses } = useSelector((state) => state.course);
+    const { list: students } = useSelector((state) => state.students);
 
 
     // Form state
@@ -53,14 +34,35 @@ const EditStudentForm = () => {
         fullName: '',
         emailAddress: '',
         phoneNumber: '',
-        password: '',
         targetExam: '12',
-        classType: 'Online',
-        autoGeneratePassword: false
+
     });
 
+    useEffect(() => {
+        dispatch(fetchCourses());
+        // fetch student by id from redux or API
+        if (studentId) {
+            const student = students.find(s => s.id === studentId);
+            console.log("student in edit student page :::::", student);
+
+            if (student) {
+                setFormData({
+                    fullName: student.firstname,
+                    emailAddress: student.email,
+                    phoneNumber: student.mobile,
+                    targetExam: student.target_exam,
+                    password: student.password,
+                    status: student.status,
+                    role: student.role,
+                    id: student.id
+                });
+            }
+        }
+    }, [dispatch, studentId, students]);
+
+
+
     const [errors, setErrors] = useState({});
-    const [showPassword, setShowPassword] = useState(false);
     const generatePasswordValue = (name) => {
         if (!name) return '';
         const cleanName = name.toLowerCase().replace(/\s+/g, '');
@@ -79,28 +81,11 @@ const EditStudentForm = () => {
         });
     };
 
-    const handleToggleChange = (field) => (event) => {
-        const checked = event.target.checked;
-        setFormData((prev) => {
-            const updated = { ...prev, [field]: checked };
-            if (field === 'autoGeneratePassword' && checked) {
-                updated.password = generatePasswordValue(prev.fullName);
-            }
-            if (field === 'autoGeneratePassword' && !checked) {
-                updated.password = '';
-            }
-            return updated;
-        });
-    };
-
-
 
     // Form validation
     const validateForm = () => {
         const newErrors = {};
-
         if (!formData.fullName.trim()) newErrors.fullName = 'Full name is required';
-
         if (!formData.emailAddress.trim()) {
             newErrors.emailAddress = 'Email address is required';
         } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.emailAddress)) {
@@ -114,14 +99,6 @@ const EditStudentForm = () => {
             newErrors.phoneNumber = 'Please enter a valid phone number';
         }
 
-        // Only validate password if we are NOT auto-generating
-        if (!formData.autoGeneratePassword) {
-            if (!formData.password.trim()) {
-                newErrors.password = 'Password is required';
-            } else if (formData.password.length < 6) {
-                newErrors.password = 'Password must be at least 6 characters';
-            }
-        }
 
         setErrors(newErrors);
         return Object.keys(newErrors).length === 0;
@@ -136,20 +113,22 @@ const EditStudentForm = () => {
         if (!validateForm()) return;
 
         const payload = {
+            student_id: studentId, // important!
             fullname: formData.fullName,
             email: formData.emailAddress,
             phone: formData.phoneNumber,
             target_exam: formData.targetExam,
-          /*   class_type: formData.classType, */
-            password: formData.password // always a string now
         };
 
-        console.log("Sending payload to backend:", payload);
+        console.log("Updating student with payload:", payload);
 
-        dispatch(createStudent(payload))
+        dispatch(updateStudent(payload))
             .unwrap()
-            .then(() => console.log("Student added successfully"))
-            .catch((error) => console.error("Error adding student:", error));
+            .then(() => {
+                console.log("Student updated successfully");
+                onClose?.(); // close form after update
+            })
+            .catch((error) => console.error("Error updating student:", error));
     };
 
 
@@ -160,33 +139,6 @@ const EditStudentForm = () => {
 
     return (
         <Container maxWidth="md" sx={{ py: { xs: 2, sm: 3, md: 4 } }}>
-            {/* Header */}
-            <Box sx={{ mb: { xs: 3, sm: 4 } }}>
-                <Typography
-                    variant="h4"
-                    component="h1"
-                    sx={{
-                        fontWeight: 600,
-                        fontSize: { xs: '1.75rem', sm: '2rem', md: '2.5rem' },
-                        color: 'text.primary',
-                        mb: 1,
-                        textAlign: { xs: 'center', sm: 'left' }
-                    }}
-                >
-                    Add New Student
-                </Typography>
-                <Typography
-                    variant="body1"
-                    sx={{
-                        color: 'text.secondary',
-                        fontSize: { xs: '0.9rem', sm: '1rem' },
-                        textAlign: { xs: 'center', sm: 'left' }
-                    }}
-                >
-                    Fill in the student's details to create their account and assign courses.
-                </Typography>
-            </Box>
-
             {/* Form Card */}
             <Card
                 sx={{
@@ -197,6 +149,32 @@ const EditStudentForm = () => {
                 }}
             >
                 <CardContent sx={{ p: { xs: 3, sm: 4 } }}>
+
+                    <Box sx={{ mb: { xs: 3, sm: 4 } }}>
+                        <Typography
+                            variant="h4"
+                            component="h1"
+                            sx={{
+                                fontWeight: 600,
+                                fontSize: { xs: '1.75rem', sm: '2rem', md: '1.8rem' },
+                                color: 'text.primary',
+                                mb: 1,
+                                textAlign: { xs: 'center', sm: 'left' }
+                            }}
+                        >
+                            Edit Student
+                        </Typography>
+                        <Typography
+                            variant="body1"
+                            sx={{
+                                color: 'text.secondary',
+                                fontSize: { xs: '0.9rem', sm: '.9rem' },
+                                textAlign: { xs: 'center', sm: 'left' }
+                            }}
+                        >
+                            Fill in the student's details to create their account and assign courses.
+                        </Typography>
+                    </Box>
                     <Grid container spacing={{ xs: 3, sm: 4 }}>
                         {/* Full Name */}
                         <Grid item xs={12} md={6}>
@@ -316,67 +294,6 @@ const EditStudentForm = () => {
                             />
                         </Grid>
 
-                        {/* Create Password */}
-                        <Grid item xs={12} md={6}>
-                            <Typography
-                                variant="h6"
-                                sx={{
-                                    fontWeight: 600,
-                                    mb: 1.5,
-                                    fontSize: { xs: '1rem', sm: '1.1rem' },
-                                    color: 'text.primary'
-                                }}
-                            >
-                                Create Password*
-                            </Typography>
-                            <TextField
-                                fullWidth
-                                type={showPassword ? 'text' : 'password'}
-                                placeholder="Enter new password for the student"
-                                value={formData.password}
-                                onChange={handleInputChange('password')}
-                                error={!!errors.password}
-                                helperText={errors.password}
-                                disabled={formData.autoGeneratePassword}
-                                sx={{
-                                    '& .MuiOutlinedInput-root': {
-                                        borderRadius: 2,
-                                        fontSize: { xs: '0.9rem', sm: '1rem' }
-                                    }
-                                }}
-                            />
-
-                            {/* Auto-generate Password Toggle */}
-                            <Box sx={{ mt: 1.5 }}>
-                                <FormControlLabel
-                                    control={
-                                        <Switch
-                                            checked={formData.autoGeneratePassword}
-                                            onChange={handleToggleChange('autoGeneratePassword')}
-                                            sx={{
-                                                '& .MuiSwitch-switchBase.Mui-checked': {
-                                                    color: '#4CAF50',
-                                                },
-                                                '& .MuiSwitch-switchBase.Mui-checked + .MuiSwitch-track': {
-                                                    backgroundColor: '#4CAF50',
-                                                }
-                                            }}
-                                        />
-                                    }
-                                    label={
-                                        <Typography
-                                            variant="body2"
-                                            sx={{
-                                                fontSize: { xs: '0.85rem', sm: '0.9rem' },
-                                                color: 'text.secondary'
-                                            }}
-                                        >
-                                            Auto-generate new password
-                                        </Typography>
-                                    }
-                                />
-                            </Box>
-                        </Grid>
 
                         {/* Target Exam */}
                         <Grid item xs={12} md={6}>
@@ -422,40 +339,6 @@ const EditStudentForm = () => {
                             </FormControl>
                         </Grid>
 
-                        {/* Class Type */}
-                        <Grid item xs={12} md={6}>
-                            <Typography
-                                variant="h6"
-                                sx={{
-                                    fontWeight: 600,
-                                    mb: 1.5,
-                                    fontSize: { xs: '1rem', sm: '1.1rem' },
-                                    color: 'text.primary'
-                                }}
-                            >
-                                Class type
-                            </Typography>
-                            <FormControl fullWidth>
-                                <Select
-                                    value={formData.classType}
-                                    onChange={handleInputChange('classType')}
-                                    displayEmpty
-                                    sx={{
-                                        borderRadius: 2,
-                                        fontSize: { xs: '0.9rem', sm: '1rem' }
-                                    }}
-                                    startAdornment={
-                                        <InputAdornment position="start">
-                                            <ClassIcon sx={{ color: 'text.secondary', ml: 1 }} />
-                                        </InputAdornment>
-                                    }
-                                >
-                                    <MenuItem value="Online">Online</MenuItem>
-                                    <MenuItem value="Offline">Offline</MenuItem>
-                                    <MenuItem value="Hybrid">Hybrid</MenuItem>
-                                </Select>
-                            </FormControl>
-                        </Grid>
                     </Grid>
                 </CardContent>
             </Card>

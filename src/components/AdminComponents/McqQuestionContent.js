@@ -52,6 +52,8 @@ const McqQuestionContent = () => {
 
     // ✅ Redirect back if required data is missing
     React.useEffect(() => {
+        console.log("Question type id in mcqContent :::: ",question_type_id);
+        
         if (!exam_type || !question_type_id || !questionTypeName || !cs_id) {
             navigate("/admin/question-type");
         }
