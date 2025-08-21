@@ -547,7 +547,7 @@ const AnswerExplain = () => {
             <Typography variant="h6" mb={1} color="primary">
                 Supporting Image/Document
             </Typography>
-          {/*   <Box display="flex" justifyContent="flex-start" mb={2}>
+             <Box display="flex" justifyContent="flex-start" mb={2}>
                 <input
                     type="file"
                     ref={fileInputRef}
@@ -570,7 +570,7 @@ const AnswerExplain = () => {
                 <Alert severity="error" sx={{ mb: 2 }}>
                     {errors.file}
                 </Alert>
-            )} */}
+            )} 
 
             {/* Display Uploaded File */}
             {selectedFile && (

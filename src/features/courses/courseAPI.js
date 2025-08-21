@@ -45,6 +45,8 @@ export const addCourse = async (courseData) => {
 
 // LIST COURSES (all) (GET)
 export const listCourses = async () => {
+    console.log("list courses in api call ");
+    
     try {
         const response = await fetch(baseUrl + "/course/list/courses", {
             method: "GET"

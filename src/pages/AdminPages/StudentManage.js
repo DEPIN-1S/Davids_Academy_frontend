@@ -41,6 +41,8 @@ const StudentManage = () => {
   useEffect(() => {
     if (!loading) {
       console.log("Student count:", list.length);
+      console.log("students in student manage :::: ",list);
+      
     }
   }, [loading, list]);
 
@@ -82,7 +84,7 @@ const StudentManage = () => {
                 <td>{student.id}</td>
                 <td>{student.firstname} {student.lastname}</td>
                 <td>{student.email}</td>
-                <td>{student.course || "N/A"}</td>
+                <td>{student.cs_name || "N/A"}</td>
                 <td>{student.status || "N/A"}</td>
                 <td className="action-buttons">
                   <button className="progress-btn">View Progress</button>

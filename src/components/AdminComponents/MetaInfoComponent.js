@@ -151,7 +151,7 @@ const MetaInfoComponent = () => {
             console.log('🚀 Submitting with Context FormData (multipart/form-data)');
             console.log('📦 FormData created from Context::::', completeQuestionData);
             console.log("📁 Adding files inside createCompleteFormData:");
-            console.log("📦 Final FormData entries:");
+            console.log("📦Final FormData entries:");
             for (let [key, value] of completeFormData.entries()) {
                 console.log(key, value);
             }
@@ -159,10 +159,12 @@ const MetaInfoComponent = () => {
             // ✅ Submit to your multipart endpoint
             console.log("URL :::::: ", process.env.REACT_APP_API_URL);
             const response = await fetch(`${process.env.REACT_APP_API_URL}/exam/question`, {
-
+            
                 method: 'POST',
                 body: completeFormData
             });
+            
+            
             if (!response.ok) {
                 throw new Error(`HTTP error! status: ${response.status}`);
             }
