@@ -8,30 +8,44 @@
 /* Header */
 .classes-header {
   display: flex;
-  justify-content: flex-end;
-  margin-bottom: 2rem;
+}
+
+.recorded-class-header{
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-bottom: 20px;
+ 
 }
 
 .add-questions-btn {
-  background: #ffc107;
-  color: #000;
+  background: #ff9800;
+  color: #fff;
   border: none;
-  padding: 0.75rem 1.5rem;
-  border-radius: 25px;
-  font-weight: 600;
+  padding: 0.5rem 1rem;       
+  border-radius: 6px;        
+  font-weight: 500;
   cursor: pointer;
-  display: flex;
+  display: inline-flex;
   align-items: center;
-  gap: 0.5rem;
-  font-size: 0.9rem;
-  transition: all 0.3s ease;
+  justify-content: center;
+  gap: 0.4rem;
+  font-size: 0.85rem;         
+  height: 38px;              
 }
 
 .add-questions-btn:hover {
-  background: #ffb300;
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(255, 193, 7, 0.3);
+  background: #f57c00;
 }
+
+.add-questions-btn:active {
+  background: #e65100;
+}
+
+.add-questions-btn svg {
+  font-size: 0.85rem;
+}
+
 
 /* Grid Layout */
 .classes-grid {
@@ -195,6 +209,8 @@
   font-size: 0.8rem;
 }
 
+
+
 /* Responsive Design */
 @media (max-width: 768px) {
   .recorded-classes-container {
@@ -228,4 +244,57 @@
     padding: 0.625rem 1.25rem;
     font-size: 0.85rem;
   }
+}
+
+.recorded-class-delete-btn {
+  background: #34495e;
+  color: white;
+  font-size: 16px;
+  font-weight: 600;
+  padding: 12px 28px;
+  border: none;
+  border-radius: 12px;
+  cursor: pointer;
+  box-shadow: 0 6px 15px rgba(0, 0, 0, 0.15);
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.recorded-class-delete-btn:hover {
+  transform: translateY(-3px);
+}
+
+.recorded-class-delete-btn:active {
+  transform: scale(0.95);
+}
+
+
+.search-container {
+  width: 100%;
+  max-width: 400px;
+  margin: 20px 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.search-input {
+  width: 100%;
+  padding: 10px 14px;
+  font-size: 14px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  background: #fff;
+  outline: none;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.search-input::placeholder {
+  color: #aaa;
+}
+
+.search-input:focus {
+  border-color: #2c3e50;
+  box-shadow: 0 0 4px rgba(74, 144, 226, 0.3);
 }

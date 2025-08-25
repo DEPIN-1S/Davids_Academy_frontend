@@ -158,13 +158,14 @@ const MetaInfoComponent = () => {
 
             // ✅ Submit to your multipart endpoint
             console.log("URL :::::: ", process.env.REACT_APP_API_URL);
+            console.log("copleter form data ", completeFormData);
             const response = await fetch(`${process.env.REACT_APP_API_URL}/exam/question`, {
-            
+
                 method: 'POST',
                 body: completeFormData
             });
-            
-            
+
+
             if (!response.ok) {
                 throw new Error(`HTTP error! status: ${response.status}`);
             }
@@ -295,17 +296,19 @@ const MetaInfoComponent = () => {
 
     const getSentenceHighlightFormData = () => ({
         courseId: receivedQuestionData.cs_id,
-        questionType: "Sentence highlight",
+        questionType: receivedQuestionData.questionType,
         question_type_id: receivedQuestionData.question_type_id,
         exam_type: receivedQuestionData.exam_type,
         question: receivedQuestionData.question || "",
         difficulty: form.difficulty || "",
         tabs: receivedQuestionData.tabs || [],
-        highlightoptions: "highlightoptions",
+        highlightoptions: receivedQuestionData.correctHighlights,
+        passage: receivedQuestionData.passage,
         explanationHeading: receivedQuestionData.explanationHeading || "",
         explanationText: receivedQuestionData.explanationText || "",
         info: receivedQuestionData.additionalInfo || "",
-        answer: receivedQuestionData.correctHighlights.join(","),
+        answer: receivedQuestionData.answer,
+      
         /*  answer: receivedQuestionData.correctHighlights, */
         /* question_content:receivedQuestionData.question_content, */
         /* question_content: receivedQuestionData.question_content || [], */
@@ -437,8 +440,8 @@ const MetaInfoComponent = () => {
 
 
     const getSortingBaseData = () => ({
-        questionType: receivedQuestionData.questionType, 
-        question_type_id: receivedQuestionData.question_type_id,  
+        questionType: receivedQuestionData.questionType,
+        question_type_id: receivedQuestionData.question_type_id,
         courseId: receivedQuestionData.cs_id,
         exam_type: receivedQuestionData.exam_type,
         question: receivedQuestionData.question || "",
@@ -492,8 +495,6 @@ const MetaInfoComponent = () => {
         question: receivedQuestionData.question || "",
         difficulty: form.difficulty || "",
         tabs: receivedQuestionData.tabs || [],
-       /*  highlightInstructions: receivedQuestionData.highlightInstructions, */
-        /* highlightoptions: "highlightoptions", */
         highlightoptions: receivedQuestionData.correctHighlights,
         passage: receivedQuestionData.passage,
         explanationHeading: receivedQuestionData.explanationHeading || "",
@@ -501,6 +502,8 @@ const MetaInfoComponent = () => {
         info: receivedQuestionData.additionalInfo || "",
         answer: receivedQuestionData.answer,
         infoImage: receivedQuestionData.infoImage || null,
+        /*  highlightInstructions: receivedQuestionData.highlightInstructions, */
+        /* highlightoptions: "highlightoptions", */
         /* answer: receivedQuestionData.correctHighlights, */
         /* question_content:receivedQuestionData.question_content, */
         /* question_content: receivedQuestionData.question_content || [], */

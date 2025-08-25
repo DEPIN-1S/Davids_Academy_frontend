@@ -11,9 +11,7 @@ const RecordedClassInfoComponent = ({ onNext, onBack }) => {
         tutorName: '',
         videoUrl: ''
     });
-
     const [errors, setErrors] = useState({});
-
     const handleInputChange = (e) => {
         const { name, value } = e.target;
         setFormData(prev => ({
@@ -50,7 +48,6 @@ const RecordedClassInfoComponent = ({ onNext, onBack }) => {
 
     const navigate = useNavigate()
     const dispatch = useDispatch();
-
     const handleNext = () => {
         if (validateForm()) {
             dispatch(addRecording(formData))
@@ -70,7 +67,6 @@ const RecordedClassInfoComponent = ({ onNext, onBack }) => {
                 });
         }
     };
-
 
     const handleBack = () => {
         if (onBack) {

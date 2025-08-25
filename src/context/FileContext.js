@@ -15,42 +15,8 @@ export const FileProvider = ({ children }) => {
 
 
 
-    // ✅ Updated to match your required data structure
-    /*  const createCompleteFormData = (questionData) => {
-         console.log("question data inside fileContext", questionData);
-         const formData = new FormData();
-         formData.append('questionType', questionData.questionType || '');
-         formData.append('courseId', questionData.courseId || '')
-         formData.append('question_type_id', questionData.question_type_id || '');
-         formData.append('question', questionData.question || '');
-         formData.append('difficulty', questionData.difficulty || '');
-         formData.append('exam_type', questionData.exam_type)
-         formData.append('explanationHeading', questionData.explanationHeading || '');
-         formData.append('explanationText', questionData.explanationText || '');
-         formData.append('info', questionData.info || '');
-         formData.append('dropdowns', questionData.dropdowns);
-         formData.append('drag_and_drop', questionData.drag_and_drop)
-         formData.append('sortItems', questionData.sortItems)
-         formData.append('tabs', questionData.tabs || [])
-         formData.append('options', questionData.options || [])
-         formData.append('answer',questionData.answer)
- 
- 
-       
- 
-         if (questionFile?.file) {
-             formData.append('exhibit', questionFile.file, questionFile.name);
-         }
- 
-         if (explanationFile?.file) {
-             formData.append('infoImage', explanationFile.file, explanationFile.name);
-         }
- 
-         return formData;
-     }; */
 
-
-    const createCompleteFormData = (questionData) => {
+    /* const createCompleteFormData = (questionData) => {
         const formData = new FormData();
 
         console.log("explanation file in file context:::", explanationFile);
@@ -183,6 +149,153 @@ export const FileProvider = ({ children }) => {
         }
 
         return formData;
+    }; */
+
+
+
+    const createCompleteFormData = (questionData) => {
+        const formData = new FormData();
+
+        console.log("explanation file in file context:::", explanationFile);
+        console.log("question file in file context:::", questionFile);
+
+        switch (questionData.questionType) {
+            case "MCQ":
+                formData.append("questionType", questionData.questionType);
+                formData.append("courseId", questionData.courseId);
+                formData.append("question_type_id", questionData.question_type_id);
+                formData.append("question", questionData.question);
+                formData.append("exam_type", questionData.exam_type);
+                formData.append("difficulty", questionData.difficulty);
+                formData.append("explanationHeading", questionData.explanationHeading);
+                formData.append("explanationText", questionData.explanationText);
+                formData.append("info", questionData.info);
+                formData.append("answer", questionData.answer);
+                formData.append("options", JSON.stringify(questionData.options || [])); // ✅ FIX
+                break;
+
+            case "Dropdown":
+                formData.append("questionType", questionData.questionType);
+                formData.append("question_type_id", questionData.question_type_id);
+                formData.append("courseId", questionData.courseId);
+                formData.append("question", questionData.question);
+                formData.append("difficulty", questionData.difficulty);
+                formData.append("exam_type", questionData.exam_type);
+                formData.append("tabs", JSON.stringify(questionData.tabs || []));
+                formData.append("dropdowns", JSON.stringify(questionData.dropdowns || []));
+                formData.append("explanationHeading", questionData.explanationHeading);
+                formData.append("explanationText", questionData.explanationText);
+                formData.append("info", questionData.info);
+                break;
+
+            case "Drag Drop":
+                formData.append("questionType", questionData.questionType);
+                formData.append("question_type_id", questionData.question_type_id);
+                formData.append("courseId", questionData.courseId);
+                formData.append("exam_type", questionData.exam_type);
+                formData.append("question", questionData.question);
+                formData.append("drag_drop_content", questionData.drag_drop_content);
+                formData.append("difficulty", questionData.difficulty);
+                formData.append("tabs", JSON.stringify(questionData.tabs || []));
+                formData.append("drag_and_drop", JSON.stringify(questionData.drag_and_drop || []));
+                formData.append("explanationHeading", questionData.explanationHeading);
+                formData.append("explanationText", questionData.explanationText);
+                formData.append("info", questionData.info);
+                break;
+
+            case "Sorting":
+                formData.append("questionType", questionData.questionType);
+                formData.append("question_type_id", questionData.question_type_id);
+                formData.append("courseId", questionData.courseId);
+                formData.append("exam_type", questionData.exam_type);
+                formData.append("question", questionData.question);
+                formData.append("sortItems", JSON.stringify(questionData.sortItems || []));
+                formData.append("difficulty", questionData.difficulty);
+                formData.append("explanationHeading", questionData.explanationHeading);
+                formData.append("explanationText", questionData.explanationText);
+                formData.append("info", questionData.info);
+                break;
+
+            case "Fill in the Blanks":
+                formData.append("courseId", questionData.courseId);
+                formData.append("questionType", questionData.questionType);
+                formData.append("exam_type", questionData.exam_type);
+                formData.append("question", questionData.question);
+                formData.append("question_type_id", questionData.question_type_id);
+                formData.append("answer", questionData.answer);
+                formData.append("difficulty", questionData.difficulty);
+                formData.append("question_content", JSON.stringify(questionData.question_content || []));
+                formData.append("options", JSON.stringify(questionData.options || []));
+                formData.append("explanationHeading", questionData.explanationHeading);
+                formData.append("explanationText", questionData.explanationText);
+                formData.append("info", questionData.info);
+                break;
+
+            case "Multiple Radio":
+                formData.append("courseId", questionData.courseId);
+                formData.append("questionType", questionData.questionType);
+                formData.append("question_type_id", questionData.question_type_id);
+                formData.append("exam_type", questionData.exam_type);
+                formData.append("question", questionData.question);
+                formData.append("difficulty", questionData.difficulty);
+                formData.append("tabs", JSON.stringify(questionData.tabs || []));
+                formData.append("question_content", JSON.stringify(questionData.question_content || []));
+                formData.append("radio_options", JSON.stringify(questionData.radio_options || []));
+                formData.append("explanationHeading", questionData.explanationHeading);
+                formData.append("explanationText", questionData.explanationText);
+                formData.append("info", questionData.info);
+                break;
+
+            case "Sentence Highlight": // ✅ FIX case sensitivity
+                /* formData.append("courseId", questionData.courseId);
+                formData.append("questionType", questionData.questionType);
+                formData.append("question_type_id", questionData.question_type_id);
+                formData.append("exam_type", questionData.exam_type);
+                formData.append("question", questionData.question);
+                formData.append("difficulty", questionData.difficulty);
+                formData.append("tabs", questionData.tabs);
+                formData.append("highlightoptions", questionData.highlightoptions);
+                formData.append("passage",questionData.passage);
+                formData.append("explanationHeading", questionData.explanationHeading);
+                formData.append("explanationText", questionData.explanationText);
+                formData.append("info", questionData.info);
+                formData.append("answer", questionData.answer);
+                break;
+                
+ */
+
+                formData.append("courseId", questionData.courseId ?? "");
+                formData.append("questionType", questionData.questionType ?? "");
+                formData.append("question_type_id", questionData.question_type_id ?? "");
+                formData.append("exam_type", questionData.exam_type ?? "");
+                formData.append("question", questionData.question ?? "");
+                formData.append("difficulty", questionData.difficulty ?? "");
+                formData.append("tabs", JSON.stringify(questionData.tabs || []));
+                formData.append("highlightoptions", JSON.stringify(questionData.highlightoptions || []));
+                formData.append("answer", JSON.stringify(questionData.answer || []));
+                formData.append("passage", questionData.passage ?? "");
+                formData.append("explanationHeading", questionData.explanationHeading ?? "");
+                formData.append("explanationText", questionData.explanationText ?? "");
+                formData.append("info", questionData.info ?? "");
+
+            default:
+                console.warn(" Unknown questionType:", questionData.questionType);
+                break;
+        }
+
+        // if (questionFile?.file) {
+        //     formData.append("exhibit", questionFile.file, questionFile.file.name);
+        // }
+
+        if (explanationFile?.file) {
+            formData.append("infoimage", explanationFile.file, explanationFile.file.name);
+        }
+
+        for (let [key, value] of formData.entries()) {
+            console.log("📦 FormData entry:", key, value);
+        }
+
+        return formData;
     };
 
 
@@ -219,53 +332,3 @@ export const useFileContext = () => {
     return context;
 };
 
-
-
-
-/*  case "Dropdown": {
-                formData.append("questionType", questionData.questionType);
-                formData.append("courseId", questionData.courseId);
-                formData.append("question_type_id", questionData.question_type_id);
-                formData.append("question", questionData.question);
-                formData.append("dropdowns", JSON.stringify(questionData.dropdowns || []));
-                formData.append("tabs", JSON.stringify(questionData.tabs || []));
-                break;
-            }
-
-            case "Drag Drop": {
-                formData.append("questionType", questionData.questionType);
-                formData.append("courseId", questionData.courseId);
-                formData.append("question_type_id", questionData.question_type_id);
-                formData.append("question", questionData.question);
-                formData.append("drag_and_drop", JSON.stringify(questionData.drag_and_drop || []));
-                formData.append("tabs", JSON.stringify(questionData.tabs || []));
-                break;
-            }
-
-            case "Sorting": {
-                formData.append("questionType", questionData.questionType);
-                formData.append("courseId", questionData.courseId);
-                formData.append("question_type_id", questionData.question_type_id);
-                formData.append("question", questionData.question);
-                formData.append("sortItems", JSON.stringify(questionData.sortItems || []));
-                break;
-            }
-
-            case "Fill in the Blanks": {
-                formData.append("questionType", questionData.questionType);
-                formData.append("courseId", questionData.courseId);
-                formData.append("question_type_id", questionData.question_type_id);
-                formData.append("question", questionData.question);
-                formData.append("question_content", JSON.stringify(questionData.question_content || []));
-                formData.append("answer", questionData.answer || "");
-                break;
-            }
-
-            case "Sentence Highlight": {
-                formData.append("questionType", questionData.questionType);
-                formData.append("courseId", questionData.courseId);
-                formData.append("question_type_id", questionData.question_type_id);
-                formData.append("question", questionData.question);
-                formData.append("answer", JSON.stringify(questionData.correctHighlights || []));
-                break;
-            } */
