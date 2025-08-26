@@ -235,56 +235,47 @@ const AnswerExplain = () => {
         });
     };
 
-    /*     const handleBack = () => {
-            // ✅ Preserve current explanation data (all serializable)
-            const dataToSendBack = {
-                // Previous data
-                exam_type: previousQuestionData.exam_type,
-                question_type_id: previousQuestionData.question_type_id,
-                questionType: previousQuestionData.questionType,
-                question: previousQuestionData.question,
-                options: previousQuestionData.options,
-                correctAnswer: previousQuestionData.correctAnswer,
-                createdAt: previousQuestionData.createdAt,
-                questionId: previousQuestionData.questionId,
-                cs_id: previousQuestionData.cs_id,
-    
-                // Current explanation data
-                explanationHeading: explanationHeading.trim(),
-                explanationText: explanationText.trim(),
-                additionalInfoHeading: additionalInfoHeading.trim(),
-                additionalInfo: additionalInfo.trim(),
-    
-                // Metadata
-                updatedAt: new Date().toISOString()
-            };
-    
-            navigate('/admin/mcq-content', {
-                state: {
-                    questionData: dataToSendBack,
-                    // ✅ Files are in Context, only pass metadata
-                    hasFile: hasQuestionFile,
-                    fileInfo: hasQuestionFile ? {
-                        name: questionFile?.name,
-                        type: questionFile?.type,
-                        size: questionFile?.size
-                    } : null,
-                    fromStep: 'explanation'
-                }
-            });
-        };
-     */
-
-
 
     const handleBack = () => {
-        // ✅ Preserve current explanation data (all serializable)
         const dataToSendBack = {
+            /* question: previousQuestionData.question,
+            options: previousQuestionData.options,
+            correctAnswer: previousQuestionData.correctAnswer,
+            createdAt: previousQuestionData.createdAt,
+            questionId: previousQuestionData.questionId, */
+
+            cs_id: previousQuestionData.cs_id,
+            exam_type: previousQuestionData.exam_type,
+            question_type_id: previousQuestionData.question_type_id,
+            questionType: previousQuestionData.questionType,
             question: previousQuestionData.question,
             options: previousQuestionData.options,
             correctAnswer: previousQuestionData.correctAnswer,
             createdAt: previousQuestionData.createdAt,
             questionId: previousQuestionData.questionId,
+
+            //for dropdown data
+            tabs: previousQuestionData.tabs || [],
+            dropdowns: previousQuestionData.dropdowns || [],
+
+
+            //for drag and drop
+            drag_and_drop: previousQuestionData.drag_and_drop,
+            drag_drop_content: previousQuestionData.drag_drop_content,
+
+            //for sorting
+            sortitems: previousQuestionData.sortItems,
+
+            //for multiple radio
+            question_content: previousQuestionData.question_content,
+            radio_options: previousQuestionData.radio_options,
+
+
+            //for sentence highlight question
+            passage: previousQuestionData.passage,
+            highlightInstructions: previousQuestionData.highlightInstructions,
+            correctHighlights: previousQuestionData.correctHighlights,
+            answer: previousQuestionData.answer,
 
             // Current explanation data
             explanationHeading: explanationHeading.trim(),
@@ -296,8 +287,40 @@ const AnswerExplain = () => {
             updatedAt: new Date().toISOString()
         };
 
-        // ✅ Navigate back with required top-level properties
-        navigate('/admin/mcq-content', {
+        // ✅ Pick route based on questionType
+        let route = "/admin/mcq-content"; // default
+        switch (previousQuestionData.questionType) {
+            case "MCQ":
+                route = "/admin/mcq-content";
+                break;
+            case "Fill in the Blanks":
+                route = "/admin/fill-content";
+                break;
+            case "Sentence Highlight":
+                route = "/admin/sentence-content";
+                break;
+            case "Dropdown":
+                route = "/admin/dropdown-content";
+                break;
+
+            case "Sorting":
+                route = "/admin/sort-content";
+                break;
+
+            case "Multiple Radio":
+                route = "/admin/multiradio-content";
+                break;
+
+            case "Drag Drop":
+                route = "/admin/dragdrop-content";
+                break;
+            // add more cases as needed
+            default:
+                route = "/admin/mcq-content";
+        }
+
+        // ✅ Navigate with preserved state
+        navigate(route, {
             state: {
                 exam_type: previousQuestionData.exam_type,
                 question_type_id: previousQuestionData.question_type_id,
@@ -305,15 +328,18 @@ const AnswerExplain = () => {
                 cs_id: previousQuestionData.cs_id,
                 questionData: dataToSendBack,
                 hasFile: hasQuestionFile,
-                fileInfo: hasQuestionFile ? {
-                    name: questionFile?.name,
-                    type: questionFile?.type,
-                    size: questionFile?.size
-                } : null,
-                fromStep: 'explanation'
+                fileInfo: hasQuestionFile
+                    ? {
+                        name: questionFile?.name,
+                        type: questionFile?.type,
+                        size: questionFile?.size
+                    }
+                    : null,
+                fromStep: "explanation"
             }
         });
     };
+
 
 
 
@@ -547,7 +573,7 @@ const AnswerExplain = () => {
             <Typography variant="h6" mb={1} color="primary">
                 Supporting Image/Document
             </Typography>
-             <Box display="flex" justifyContent="flex-start" mb={2}>
+            <Box display="flex" justifyContent="flex-start" mb={2}>
                 <input
                     type="file"
                     ref={fileInputRef}
@@ -565,12 +591,12 @@ const AnswerExplain = () => {
                 </Button>
             </Box>
 
-            
+
             {errors.file && (
                 <Alert severity="error" sx={{ mb: 2 }}>
                     {errors.file}
                 </Alert>
-            )} 
+            )}
 
             {/* Display Uploaded File */}
             {selectedFile && (

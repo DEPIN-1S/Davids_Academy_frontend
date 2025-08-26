@@ -263,10 +263,8 @@ const MetaInfoComponent = () => {
         courseId: receivedQuestionData.cs_id,
         questionType: receivedQuestionData.questionType,
         exam_type: receivedQuestionData.exam_type,
-        /*    question: receivedQuestionData.question_content || [], */
         question: receivedQuestionData?.question_content?.[0]?.question_text,
         question_type_id: receivedQuestionData.question_type_id,
-        /*      answer: receivedQuestionData.answer || "", */
         answer: receivedQuestionData?.question_content?.[0]?.fill_blanks_answer,
         difficulty: form.difficulty || "",
         question_content: receivedQuestionData.question_content,
@@ -274,7 +272,6 @@ const MetaInfoComponent = () => {
         explanationHeading: receivedQuestionData.explanationHeading || "",
         explanationText: receivedQuestionData.explanationText || "",
         info: receivedQuestionData.additionalInfo || "",
-
     });
 
     const getMultiRadioFormData = () => ({
@@ -308,7 +305,7 @@ const MetaInfoComponent = () => {
         explanationText: receivedQuestionData.explanationText || "",
         info: receivedQuestionData.additionalInfo || "",
         answer: receivedQuestionData.answer,
-      
+
         /*  answer: receivedQuestionData.correctHighlights, */
         /* question_content:receivedQuestionData.question_content, */
         /* question_content: receivedQuestionData.question_content || [], */

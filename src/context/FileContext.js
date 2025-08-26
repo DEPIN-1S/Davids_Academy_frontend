@@ -247,22 +247,7 @@ export const FileProvider = ({ children }) => {
                 break;
 
             case "Sentence Highlight": // ✅ FIX case sensitivity
-                /* formData.append("courseId", questionData.courseId);
-                formData.append("questionType", questionData.questionType);
-                formData.append("question_type_id", questionData.question_type_id);
-                formData.append("exam_type", questionData.exam_type);
-                formData.append("question", questionData.question);
-                formData.append("difficulty", questionData.difficulty);
-                formData.append("tabs", questionData.tabs);
-                formData.append("highlightoptions", questionData.highlightoptions);
-                formData.append("passage",questionData.passage);
-                formData.append("explanationHeading", questionData.explanationHeading);
-                formData.append("explanationText", questionData.explanationText);
-                formData.append("info", questionData.info);
-                formData.append("answer", questionData.answer);
-                break;
-                
- */
+               
 
                 formData.append("courseId", questionData.courseId ?? "");
                 formData.append("questionType", questionData.questionType ?? "");

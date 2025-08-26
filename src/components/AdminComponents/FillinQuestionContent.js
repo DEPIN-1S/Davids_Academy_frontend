@@ -248,13 +248,15 @@ const FillinQuestionContent = () => {
             question_content: questionContent,
             options: options,
             answer: answer,
+           
             // ✅ No file objects in navigation state
         };
 
         navigate('/admin/question-type', {
             state: {
                 questionData: currentData,
-                fromStep: 'content'
+                fromStep: 'content',
+                 cs_id:cs_id
             }
         });
     };
