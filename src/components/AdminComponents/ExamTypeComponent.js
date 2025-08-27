@@ -18,7 +18,7 @@ const ExamTypeComponent = () => {
     const navigate = useNavigate();
     const isMobile = useMediaQuery("(max-width:600px)");
     const location = useLocation();
-    const { cs_id } = location.state
+    const cs_id = location.state?.cs_id || "";
     // Hardcoded exam types - no state needed for this array
     const examTypes = ['Mock Test', 'Q-Bank'];
 

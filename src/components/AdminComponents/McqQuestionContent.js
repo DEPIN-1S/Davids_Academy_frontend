@@ -52,8 +52,8 @@ const McqQuestionContent = () => {
 
     // ✅ Redirect back if required data is missing
     React.useEffect(() => {
-        console.log("Question type id in mcqContent :::: ",question_type_id);
-        
+        console.log("Question type id in mcqContent :::: ", question_type_id);
+
         if (!exam_type || !question_type_id || !questionTypeName || !cs_id) {
             navigate("/admin/question-type");
         }
@@ -370,7 +370,7 @@ const McqQuestionContent = () => {
             />
 
             {/* File Upload Section */}
-            {/*   <Box display="flex" justifyContent="flex-end" mt={1} mb={3} gap={1}>
+            <Box display="flex" justifyContent="flex-end" mt={1} mb={3} gap={1}>
                 <input
                     type="file"
                     ref={fileInputRef}
@@ -386,7 +386,7 @@ const McqQuestionContent = () => {
                 >
                     {selectedFile ? 'Change Exhibit' : '+ Add Exhibit'}
                 </Button>
-            </Box> */}
+            </Box>
 
             {/* File Error Display */}
             {errors.file && (

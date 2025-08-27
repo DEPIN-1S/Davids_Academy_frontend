@@ -1,14 +1,15 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import "../styles/ContactPage.css";
 import { submitContact } from "../features/contact/contactSlice";
 import { useDispatch, useSelector } from "react-redux";
+import { fetchCourses } from '../features/courses/courseSlice'
 
 const ContactPage = () => {
   const dispatch = useDispatch();
   const { submitLoading, submitSuccess, submitError } = useSelector(
     (state) => state.contact
   );
-
+  const { list: courses, loading: coursesLoading } = useSelector((state) => state.course);
   const [contactFormData, setContactFormData] = useState({
     name: "",
     email: "",
@@ -18,6 +19,11 @@ const ContactPage = () => {
   });
 
   const [errors, setErrors] = useState({});
+  useEffect(() => {
+    console.log("courses in contact page ::", courses);
+
+    dispatch(fetchCourses());
+  }, [dispatch]);
 
   const validateForm = () => {
     const newErrors = {};
@@ -131,6 +137,7 @@ const ContactPage = () => {
 
           {/* Course */}
           <label htmlFor="course_interested">Course Interested In</label>
+
           <select
             id="course_interested"
             name="course_interested"
@@ -144,10 +151,9 @@ const ContactPage = () => {
             className={errors.course_interested ? "error-input" : ""}
           >
             <option value="">Select a course</option>
-            <option value="NCLEX">NCLEX</option>
-            <option value="prometric">PROMETRIC</option>
-            <option value="cgfns">CGFNS</option>
-            <option value="ielts">IELTS</option>
+            {courses.map((courses, index) => (
+              <option value={courses.cs_id} >{courses.cs_name}</option>
+            ))}
           </select>
           {errors.course_interested && (
             <p className="error-text">{errors.course_interested}</p>

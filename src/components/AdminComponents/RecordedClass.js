@@ -1,28 +1,27 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { FaPlay, FaPlus, FaUser, FaClock } from "react-icons/fa";
 import "../../styles/AdminStyles/CourseManagement.css";
 import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchRecordedClasses } from "../../features/recorded classes/recordedClassSlice";
+import { deleteRecordedClass } from "../../features/recorded classes/recordedClassSlice";
 
 const CourseManagement = () => {
     const dispatch = useDispatch();
     const navigate = useNavigate();
-    /* const { recordings, loading, error } = useSelector(
-        (state) => state.recordings
-    ); */
-
+    const [query, setQuery] = useState("");
     const { list: recordings, loading, error } = useSelector(
         (state) => state.recordings
     );
+    const { list } = useSelector((state) => state.recordings);
+    const handleDelete = (id) => {
+        dispatch(deleteRecordedClass(id));
+    };
 
 
     useEffect(() => {
         console.log("recordings:::", recordings);
-       
-
         const token = localStorage.getItem("accessToken");
-
         if (token) {
             dispatch(fetchRecordedClasses(token));
         }
@@ -32,7 +31,11 @@ const CourseManagement = () => {
         console.log("Play class:", classId);
     };
 
-  
+    const deleteRecordedClass = () => {
+
+    }
+
+
     const handleAddClick = () => {
         navigate("/admin/upload-thumbnail");
     };
@@ -47,11 +50,23 @@ const CourseManagement = () => {
 
     return (
         <div className="recorded-classes-container">
-            <div className="classes-header">
-                <button className="add-questions-btn" onClick={handleAddClick}>
-                    <FaPlus /> Add Questions
-                </button>
+            <div className="recorded-class-header" >
+                <div className="search-container">
+                    <input
+                        type="text"
+                        value={query}
+                        onChange={(e) => setQuery(e.target.value)}
+                        placeholder="Search..."
+                        className="search-input"
+                    />
+                </div>
+               
+                    <button className="add-questions-btn" onClick={handleAddClick}>
+                        <FaPlus /> Add Questions
+                    </button>
+                
             </div>
+
 
             <div className="classes-grid">
                 {Array.isArray(recordings) && recordings.length > 0 ? (
@@ -62,7 +77,7 @@ const CourseManagement = () => {
                                     src={`${process.env.REACT_APP_API_URL}${cls.r_thumbnail}`}
                                     alt={cls.r_title}
                                 />
-                                  
+
                                 <div
                                     className="play-overlay"
                                     onClick={() => handlePlay(cls.r_id)}
@@ -85,7 +100,13 @@ const CourseManagement = () => {
                                         <FaUser className="meta-icon" />
                                         <span>{cls.r_tutor_name}</span>
                                     </div>
+
+                                    <button onClick={() => handleDelete(cls.recording_id)} className="recorded-class-delete-btn">
+                                        Delete class
+                                    </button>
+
                                 </div>
+
                             </div>
                         </div>
                     ))

@@ -1,5 +1,5 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import { createRecording, listRecordedClasses, base64ToFile } from "./recordedClassApi";
+import { createRecording, listRecordedClasses, base64ToFile, DeleteRecordedClass } from "./recordedClassApi";
 
 // Fetch list
 export const fetchRecordedClasses = createAsyncThunk(
@@ -20,6 +20,23 @@ export const fetchRecordedClasses = createAsyncThunk(
     }
 );
 
+export const deleteRecordedClass = createAsyncThunk(
+    "recordings/deleteRecordedClass", // ← better to rename to match slice
+    async (recording_id, { rejectWithValue }) => {
+        try {
+            const data = await DeleteRecordedClass(recording_id);
+
+            if (!data || data.result === false) {
+                return rejectWithValue(
+                    data?.message || "Failed to delete recorded class"
+                );
+            }
+            return recording_id; // pass back the id so reducer can remove it
+        } catch (error) {
+            return rejectWithValue(error.message || "Something went wrong");
+        }
+    }
+);
 
 // Add new recording
 export const addRecording = createAsyncThunk(
@@ -71,7 +88,7 @@ const recordingSlice = createSlice({
 
             .addCase(fetchRecordedClasses.fulfilled, (state, action) => {
                 state.loading = false;
-                state.list = action.payload.data || []; 
+                state.list = action.payload.data || [];
             })
 
             .addCase(fetchRecordedClasses.rejected, (state, action) => {
@@ -87,6 +104,12 @@ const recordingSlice = createSlice({
             })
             .addCase(addRecording.rejected, (state, action) => {
                 state.loading = false;
+                state.error = action.payload;
+            })
+            .addCase(deleteRecordedClass.fulfilled, (state, action) => {
+                state.list = state.list.filter((rec) => rec.id !== action.payload);
+            })
+            .addCase(deleteRecordedClass.rejected, (state, action) => {
                 state.error = action.payload;
             });
     }

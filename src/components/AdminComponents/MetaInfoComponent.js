@@ -151,18 +151,21 @@ const MetaInfoComponent = () => {
             console.log('🚀 Submitting with Context FormData (multipart/form-data)');
             console.log('📦 FormData created from Context::::', completeQuestionData);
             console.log("📁 Adding files inside createCompleteFormData:");
-            console.log("📦 Final FormData entries:");
+            console.log("📦Final FormData entries:");
             for (let [key, value] of completeFormData.entries()) {
                 console.log(key, value);
             }
 
             // ✅ Submit to your multipart endpoint
             console.log("URL :::::: ", process.env.REACT_APP_API_URL);
+            console.log("copleter form data ", completeFormData);
             const response = await fetch(`${process.env.REACT_APP_API_URL}/exam/question`, {
 
                 method: 'POST',
                 body: completeFormData
             });
+
+
             if (!response.ok) {
                 throw new Error(`HTTP error! status: ${response.status}`);
             }
@@ -260,10 +263,8 @@ const MetaInfoComponent = () => {
         courseId: receivedQuestionData.cs_id,
         questionType: receivedQuestionData.questionType,
         exam_type: receivedQuestionData.exam_type,
-        /*    question: receivedQuestionData.question_content || [], */
         question: receivedQuestionData?.question_content?.[0]?.question_text,
         question_type_id: receivedQuestionData.question_type_id,
-        /*      answer: receivedQuestionData.answer || "", */
         answer: receivedQuestionData?.question_content?.[0]?.fill_blanks_answer,
         difficulty: form.difficulty || "",
         question_content: receivedQuestionData.question_content,
@@ -271,7 +272,6 @@ const MetaInfoComponent = () => {
         explanationHeading: receivedQuestionData.explanationHeading || "",
         explanationText: receivedQuestionData.explanationText || "",
         info: receivedQuestionData.additionalInfo || "",
-
     });
 
     const getMultiRadioFormData = () => ({
@@ -293,17 +293,19 @@ const MetaInfoComponent = () => {
 
     const getSentenceHighlightFormData = () => ({
         courseId: receivedQuestionData.cs_id,
-        questionType: "Sentence highlight",
+        questionType: receivedQuestionData.questionType,
         question_type_id: receivedQuestionData.question_type_id,
         exam_type: receivedQuestionData.exam_type,
         question: receivedQuestionData.question || "",
         difficulty: form.difficulty || "",
         tabs: receivedQuestionData.tabs || [],
-        highlightoptions: "highlightoptions",
+        highlightoptions: receivedQuestionData.correctHighlights,
+        passage: receivedQuestionData.passage,
         explanationHeading: receivedQuestionData.explanationHeading || "",
         explanationText: receivedQuestionData.explanationText || "",
         info: receivedQuestionData.additionalInfo || "",
-        answer: receivedQuestionData.correctHighlights.join(","),
+        answer: receivedQuestionData.answer,
+
         /*  answer: receivedQuestionData.correctHighlights, */
         /* question_content:receivedQuestionData.question_content, */
         /* question_content: receivedQuestionData.question_content || [], */
@@ -435,8 +437,8 @@ const MetaInfoComponent = () => {
 
 
     const getSortingBaseData = () => ({
-        questionType: receivedQuestionData.questionType, 
-        question_type_id: receivedQuestionData.question_type_id,  
+        questionType: receivedQuestionData.questionType,
+        question_type_id: receivedQuestionData.question_type_id,
         courseId: receivedQuestionData.cs_id,
         exam_type: receivedQuestionData.exam_type,
         question: receivedQuestionData.question || "",
@@ -490,8 +492,6 @@ const MetaInfoComponent = () => {
         question: receivedQuestionData.question || "",
         difficulty: form.difficulty || "",
         tabs: receivedQuestionData.tabs || [],
-       /*  highlightInstructions: receivedQuestionData.highlightInstructions, */
-        /* highlightoptions: "highlightoptions", */
         highlightoptions: receivedQuestionData.correctHighlights,
         passage: receivedQuestionData.passage,
         explanationHeading: receivedQuestionData.explanationHeading || "",
@@ -499,6 +499,8 @@ const MetaInfoComponent = () => {
         info: receivedQuestionData.additionalInfo || "",
         answer: receivedQuestionData.answer,
         infoImage: receivedQuestionData.infoImage || null,
+        /*  highlightInstructions: receivedQuestionData.highlightInstructions, */
+        /* highlightoptions: "highlightoptions", */
         /* answer: receivedQuestionData.correctHighlights, */
         /* question_content:receivedQuestionData.question_content, */
         /* question_content: receivedQuestionData.question_content || [], */

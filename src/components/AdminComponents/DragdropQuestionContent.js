@@ -42,11 +42,16 @@ const DragdropQuestionContent = () => {
     ]);
     const [dragAndDrop, setDragAndDrop] = useState(existingData.drag_and_drop || [
         {
-            option_heading: "Action to take",
+            option_heading: "",
             question_answer: "",
             option_value: [""]
         }
     ]);
+
+
+    
+
+
     const [selectedFile, setSelectedFile] = useState(null); // ✅ Local state for UI, Context for persistence
     const [errors, setErrors] = useState({});
     const fileInputRef = useRef(null);
@@ -258,6 +263,7 @@ const DragdropQuestionContent = () => {
             drag_drop_content: dragDropContent.trim(),
             tabs: tabs,
             drag_and_drop: dragAndDrop,
+         
             // ✅ No file objects in navigation state
         };
 
@@ -265,7 +271,7 @@ const DragdropQuestionContent = () => {
             state: {
                 questionData: currentData,
                 fromStep: 'content',
-                 cs_id:cs_id,
+                 cs_id
             }
         });
     };
@@ -548,7 +554,7 @@ const DragdropQuestionContent = () => {
                                     <TextField
                                         fullWidth
                                         label="Section Heading"
-                                        value={section.option_heading}
+                                         value={section.option_heading}
                                         onChange={(e) => handleDragDropHeadingChange(sectionIndex, e.target.value)}
                                         placeholder="e.g., Action to take, Parameter to Monitor"
                                         size="small"

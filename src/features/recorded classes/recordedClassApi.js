@@ -14,6 +14,34 @@ export async function listRecordedClasses(token) {
 }
 
 
+//For deleting recorded class
+export async function DeleteRecordedClass(recording_id) {
+    console.log("Inside delete recording api::");
+    
+    try {
+        const response = await fetch(
+            `https://lunarsenterprises.com:6040/davidsacademy/admin/record/delete`,
+            {
+                method: "DELETE",
+                headers: {
+                    "Content-Type": "application/json", 
+                },
+                body: JSON.stringify({ recording_id }),
+            }
+        );
+
+        if (!response.ok) {
+            console.log(response);
+            throw new Error("Failed to delete recorded class");
+        }
+
+        return await response.json();
+    } catch (error) {
+        console.log("Response from delete recorded class ::: ", error);
+        throw error;
+    }
+}
+
 
 export async function createRecording(token, recordingData) {
     console.log("Inside add recording API");
@@ -46,7 +74,7 @@ export async function createRecording(token, recordingData) {
     }
 
     const data = await response.json();
-    console.log("Response from backend::::::::::::::", data); 
+    console.log("Response from backend::::::::::::::", data);
     return data;
 }
 

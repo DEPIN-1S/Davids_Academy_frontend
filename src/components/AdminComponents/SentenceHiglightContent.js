@@ -157,6 +157,7 @@ const SentenceHighlightContent = () => {
             newErrors.correctHighlights = 'At least one correct highlight text is required';
         }
 
+
         setErrors(newErrors);
         return Object.keys(newErrors).length === 0;
     };
@@ -209,7 +210,8 @@ const SentenceHighlightContent = () => {
         navigate('/admin/question-type', {
             state: {
                 questionData: currentData,
-                fromStep: 'content'
+                fromStep: 'content',
+                cs_id:cs_id
             }
         });
     };
@@ -551,7 +553,7 @@ const SentenceHighlightContent = () => {
             <Typography variant="h6" mb={1} color="primary">
                 Select Correct Highlight *
             </Typography>
-            <FormControl fullWidth margin="normal" className="pb-4" error={!!errors.answer} >
+            {/*  <FormControl fullWidth margin="normal" className="pb-4" error={!!errors.answer} >
                 <Select
                     labelId="correct-answer-label"
                     value={answer}
@@ -559,6 +561,7 @@ const SentenceHighlightContent = () => {
                         setAnswer(e.target.value);
                         setErrors(prev => ({ ...prev, answer: null }));
                     }}
+                    
                 >
                     {correctHighlights
                         .filter(h => h.trim() !== "")
@@ -569,6 +572,40 @@ const SentenceHighlightContent = () => {
                         ))
                     }
                 </Select>
+                {errors.correctAnswer && (
+                    <Typography color="error" variant="caption" sx={{ mt: 0.5 }}>
+                        {errors.correctAnswer}
+                    </Typography>
+                )}
+            </FormControl> */}
+
+            <FormControl fullWidth margin="normal" className="pb-4" error={!!errors.answer}>
+                <Select
+                    displayEmpty
+                    value={answer}
+                    onChange={(e) => {
+                        setAnswer(e.target.value);
+                        setErrors(prev => ({ ...prev, answer: null }));
+                    }}
+                    renderValue={(selected) => {
+                        if (selected === "") {
+                            return <span style={{ color: "#999" }}>Select correct highlight from the options</span>;
+                        }
+                        return selected;
+                    }}
+                >
+
+
+                    {correctHighlights
+                        .filter(h => h.trim() !== "")
+                        .map((highlight, idx) => (
+                            <MenuItem key={idx} value={highlight}>
+                                Highlight {idx + 1}:{" "}
+                                {highlight.length > 50 ? highlight.slice(0, 50) + "..." : highlight}
+                            </MenuItem>
+                        ))}
+                </Select>
+
                 {errors.correctAnswer && (
                     <Typography color="error" variant="caption" sx={{ mt: 0.5 }}>
                         {errors.correctAnswer}
