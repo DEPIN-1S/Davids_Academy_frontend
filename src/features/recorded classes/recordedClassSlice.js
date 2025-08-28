@@ -1,24 +1,20 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import { createRecording, listRecordedClasses, base64ToFile, DeleteRecordedClass } from "./recordedClassApi";
 
-// Fetch list
+
 export const fetchRecordedClasses = createAsyncThunk(
     "recordings/fetchRecordedClasses",
-    async (_, { rejectWithValue }) => {
+    async ({ token, page = 1, limit = 10 }, { rejectWithValue }) => {
         try {
-            const token = localStorage.getItem("accessToken");
-            console.log("Token ::::::", token);
-
-            const response = await listRecordedClasses(token);
-            console.log("API Response ::::::", response); // 👈 Check the raw response
-
-            return response; // return to Redux state
+            const response = await listRecordedClasses(token, page, limit);
+            return response;
         } catch (error) {
-            console.error("Error fetching recorded classes:", error);
             return rejectWithValue(error.message);
         }
     }
 );
+
+
 
 export const deleteRecordedClass = createAsyncThunk(
     "recordings/deleteRecordedClass", // ← better to rename to match slice
@@ -74,27 +70,43 @@ export const addRecording = createAsyncThunk(
 
 const recordingSlice = createSlice({
     name: "recordings",
-    initialState: { list: [], loading: false, error: null },
+    /* initialState: { list: [], loading: false, error: null }, */
+    initialState: {
+        list: [],
+        loading: false,
+        error: null,
+        page: 1,
+        limit: 10,
+        totalPages: 1,
+        totalItems: 0,
+    },
+
     reducers: {},
     extraReducers: (builder) => {
         builder
+
+            //for fetching recorded class
             .addCase(fetchRecordedClasses.pending, (state) => {
                 state.loading = true;
             })
-            /* .addCase(fetchRecordedClasses.fulfilled, (state, action) => {
-                state.loading = false;
-                state.list = action.payload;
-            }) */
 
             .addCase(fetchRecordedClasses.fulfilled, (state, action) => {
                 state.loading = false;
                 state.list = action.payload.data || [];
+
+                if (action.payload.pagination) {
+                    state.page = action.payload.pagination.page;
+                    state.limit = action.payload.pagination.limit;
+                    state.totalPages = action.payload.pagination.totalPages;
+                    state.total = action.payload.pagination.total;
+                }
             })
 
             .addCase(fetchRecordedClasses.rejected, (state, action) => {
                 state.loading = false;
                 state.error = action.payload;
             })
+
             .addCase(addRecording.pending, (state) => {
                 state.loading = true;
             })
