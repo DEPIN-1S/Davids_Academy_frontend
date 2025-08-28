@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { FaTrash, FaEdit, FaPlus, FaSearch } from "react-icons/fa";
-import {adminFetchQBankQuestions, adminFetchMockTestQuestions, adminFetchTestQuestions, getTestQuestions,} from "../../features/exam/examSlice";
+import { adminFetchQBankQuestions, adminFetchMockTestQuestions, adminFetchTestQuestions, getTestQuestions, } from "../../features/exam/examSlice";
 import "../../styles/AdminStyles/QManagement.css";
 import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
@@ -24,7 +24,7 @@ const QManagementPage = () => {
         adminTestTotalPages,
     } = useSelector((state) => state.exam);
 
-    
+
     const [qBankPage, setQBankPage] = useState(1);
     const [mockPage, setMockPage] = useState(1);
     const [testPage, setTestPage] = useState(1);
@@ -33,8 +33,8 @@ const QManagementPage = () => {
     // ✅ Fetch when page changes
     useEffect(() => {
         console.log("Fetching Q-bank page:", qBankPage);
-        console.log(" ✅ Fetching Q bank questions :::",adminQBankQuestions);
-        
+        console.log(" ✅ Fetching Q bank questions :::", adminQBankQuestions);
+
         dispatch(adminFetchQBankQuestions({ page: qBankPage, limit }));
     }, [dispatch, qBankPage]);
 
@@ -219,24 +219,25 @@ const QManagementPage = () => {
                                 ))}
                             </tbody>
                         </table>
-                        {/* ✅ Pagination for active tab */}
-                        <div className="pagination-controls">
-                            <button disabled={getCurrentPage() === 1} onClick={handlePrev}>
-                                Prev
-                            </button>
-                            <span>
-                                Page {getCurrentPage()} of {getTotalPages() || 1}
-                            </span>
-                            <button
-                                disabled={getCurrentPage() === getTotalPages()}
-                                onClick={handleNext}
-                            >
-                                Next
-                            </button>
-                        </div>
+
                     </div>
 
 
+                </div>
+                {/* ✅ Pagination for active tab */}
+                <div className="pagination-controls">
+                    <button disabled={getCurrentPage() === 1} onClick={handlePrev}>
+                        Prev
+                    </button>
+                    <span>
+                        Page {getCurrentPage()} of {getTotalPages() || 1}
+                    </span>
+                    <button
+                        disabled={getCurrentPage() === getTotalPages()}
+                        onClick={handleNext}
+                    >
+                        Next
+                    </button>
                 </div>
             </div>
         </div>
