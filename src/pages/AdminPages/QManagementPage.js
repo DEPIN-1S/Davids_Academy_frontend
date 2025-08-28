@@ -1,6 +1,13 @@
 import React, { useEffect, useState } from "react";
 import { FaTrash, FaEdit, FaPlus, FaFilter, FaSearch } from "react-icons/fa";
 import QuestionFlowManager from "../../components/AdminComponents/QuestionFlowManager";
+import { adminFetchQBankQuestions } from "../../features/exam/examSlice";
+import { adminFetchMockTestQuestions } from "../../features/exam/examSlice";
+import { adminFetchTestQuestions } from "../../features/exam/examSlice"
+
+
+
+
 import {
     Dialog,
     DialogTitle,
@@ -20,25 +27,39 @@ const QManagementPage = () => {
     const dispatch = useDispatch();
 
     // Pull test questions from redux state
-    const { testQuestions, testQuestionsLoading, testQuestionsError } = useSelector(
-        (state) => state.exam
-    );
+    const {
+        adminQBankQuestions,
+        adminQBankQuestionsLoading,
+        adminQBankQuestionsError,
+    } = useSelector((state) => state.exam);
 
-    // Sample static data for demo
-    const qBankData = [
-        {
-            questionId: "Q0175",
-            questionPreview: "Which medication is safest for...",
-            type: "MCQ",
-            difficulty: "Medium",
-        },
-        {
-            questionId: "Q0176",
-            questionPreview: "What is the mechanism of action of...",
-            type: "MCQ",
-            difficulty: "Medium",
-        },
-    ];
+    const {
+        adminMockTestQuestions,
+        adminMockTestQuestionsLoading,
+        adminMockTestQuestionsError
+    } = useSelector((state) => state.exam);
+
+    const {
+        adminTestQuestions,
+        adminTestQuestionsLoading,
+        adminTestQuestionsError
+    } = useSelector(state => state.exam);
+
+
+
+
+    useEffect(() => {
+        dispatch(adminFetchQBankQuestions());
+        dispatch(adminFetchMockTestQuestions());
+        dispatch(adminFetchTestQuestions());
+    }, [dispatch]);
+
+    useEffect(() => {
+        console.log("✅ Test Questions :::", adminTestQuestions);
+        console.log("mock test questions ::" ,adminMockTestQuestions, );
+        
+    }, [adminQBankQuestions, adminMockTestQuestions, adminTestQuestions]);
+
 
     const mockTestData = [
         {
@@ -115,13 +136,19 @@ const QManagementPage = () => {
     };
 
     // Data source based on tab
-    const questions = activeTab === "Q-bank" ? qBankData : activeTab === "Mock Test" ? mockTestData : [];
+    /*     const questions = activeTab === "Q-bank" ? qBankData : activeTab === "Mock Test" ? mockTestData : []; */
+    const questions = activeTab === "Q-bank" ? adminQBankQuestions : adminMockTestQuestions;
+
+
     // Filter questions (skip filtering for Test tab)
-    const filteredQuestions = activeTab === "Test" ? testTableData : questions.filter(q =>
-        q.questionId.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        q.questionPreview.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        (q.subject ? q.subject.toLowerCase().includes(searchTerm.toLowerCase()) : false)
-    );
+    const filteredQuestions = activeTab === "Test"
+        ? adminTestQuestions
+        : questions.filter(q =>
+            (q.questionId?.toLowerCase() || "").includes(searchTerm.toLowerCase()) ||
+            (q.questionPreview?.toLowerCase() || "").includes(searchTerm.toLowerCase()) ||
+            (q.subject?.toLowerCase() || "").includes(searchTerm.toLowerCase())
+        );
+
 
     return (
         <div className="q-management-page">
@@ -142,14 +169,14 @@ const QManagementPage = () => {
                                         onClick={() => setActiveTab("Q-bank")}
                                     >
                                         Q-bank
-                                        <span className="tab-count">{qBankData.length}</span>
+                                        <span className="tab-count">{adminQBankQuestions.length}</span>
                                     </button>
                                     <button
                                         className={`tab-btn ${activeTab === "Mock Test" ? "active" : ""}`}
                                         onClick={() => setActiveTab("Mock Test")}
                                     >
                                         Mock Test
-                                        <span className="tab-count">{mockTestData.length}</span>
+                                        <span className="tab-count">{adminMockTestQuestions.length}</span>
                                     </button>
                                     <button
                                         className={`tab-btn ${activeTab === "Test" ? "active" : ""}`}
@@ -214,8 +241,15 @@ const QManagementPage = () => {
                                             <tbody>
                                                 {filteredQuestions.map((q, index) => (
                                                     <tr key={index} className={index % 2 === 1 ? "row-even" : "row-odd"}>
-                                                        <td className="cell-qid">{q.questionId}</td>
-                                                        <td className="cell-preview">{q.questionPreview}</td>
+                                                        <td className="cell-qid">{q.id}</td>
+                                                        <td className="cell-preview">
+                                                            {q.question
+                                                                ? q.question.length > 150
+                                                                    ? q.question.substring(0, 150) + "..."
+                                                                    : q.question
+                                                                : q.questionPreview || ""}
+                                                        </td>
+
                                                         <td className="cell-type">{q.type}</td>
                                                         <td className="cell-difficulty">{q.difficulty}</td>
                                                         <td className="cell-actions">
@@ -273,6 +307,52 @@ const QManagementPage = () => {
                             )}
 
                             {/* Test Tab Table */}
+                            {/* {activeTab === "Test" && (
+                                <div className="table-container">
+                                    <div className="desktop-table">
+                                        <table className="exam-table">
+                                            <thead>
+                                                <tr>
+                                                    <th>Test Title</th>
+                                                    <th>Start Date</th>
+                                                    <th>End Date</th>
+                                                    <th>Actions</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                               
+                                                    {adminTestQuestions?.list?.map((test) => (
+                                                        <tr key={test.id}>
+                                                            <td>{test.testTitle}</td>
+                                                            <td>{test.fromDate}</td>
+                                                            <td>{test.toDate}</td>
+                                                            <td>
+                                                                <button
+                                                                    className="btn-icon-action btn-edit"
+                                                                    title="Edit"
+                                                                    onClick={() => handleEdit(test.id)}
+                                                                >
+                                                                    <FaEdit />
+                                                                </button>
+                                                                <button
+                                                                    className="btn-icon-action btn-delete"
+                                                                    title="Delete"
+                                                                    onClick={() => handleDelete(test.id)}
+                                                                >
+                                                                    <FaTrash />
+                                                                </button>
+                                                            </td>
+                                                        </tr>
+                                                    ))}
+                                               
+
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            )} */}
+
+
                             {activeTab === "Test" && (
                                 <div className="table-container">
                                     <div className="desktop-table">
@@ -286,34 +366,48 @@ const QManagementPage = () => {
                                                 </tr>
                                             </thead>
                                             <tbody>
-                                                {testTableData.map((test) => (
-                                                    <tr key={test.id}>
-                                                        <td>{test.title}</td>
-                                                        <td>{test.startDate}</td>
-                                                        <td>{test.endDate}</td>
-                                                        <td>
-                                                            <button
-                                                                className="btn-icon-action btn-edit"
-                                                                title="Edit"
-                                                                onClick={() => handleEdit(test.id)}
-                                                            >
-                                                                <FaEdit />
-                                                            </button>
-                                                            <button
-                                                                className="btn-icon-action btn-delete"
-                                                                title="Delete"
-                                                                onClick={() => handleDelete(test.id)}
-                                                            >
-                                                                <FaTrash />
-                                                            </button>
-                                                        </td>
-                                                    </tr>
-                                                ))}
+
+
+                                                {
+                                                    adminTestQuestions.length > 0 ? (
+                                                        adminTestQuestions.map((test) => (
+                                                            <tr key={test.id}>
+                                                                <td>{test.testTitle}</td>
+                                                                <td>{test.fromDate}</td>
+                                                                <td>{test.toDate}</td>
+                                                                <td>
+                                                                    <button
+                                                                        className="btn-icon-action btn-edit"
+                                                                        title="Edit"
+                                                                        onClick={() => handleEdit(test.id)}
+                                                                    >
+                                                                        <FaEdit />
+                                                                    </button>
+                                                                    <button
+                                                                        className="btn-icon-action btn-delete"
+                                                                        title="Delete"
+                                                                        onClick={() => handleDelete(test.id)}
+                                                                    >
+                                                                        <FaTrash />
+                                                                    </button>
+                                                                </td>
+                                                            </tr>
+                                                        ))
+                                                    ) : (
+                                                        <tr>
+                                                            <td colSpan="4" style={{ textAlign: "center" }}>
+                                                                No tests found
+                                                            </td>
+                                                        </tr>
+                                                    )
+                                                }
                                             </tbody>
+
                                         </table>
                                     </div>
                                 </div>
                             )}
+
                         </div>
 
                         {/* Empty State */}

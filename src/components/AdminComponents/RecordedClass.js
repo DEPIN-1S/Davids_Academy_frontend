@@ -62,7 +62,7 @@ const CourseManagement = () => {
                 </div>
                
                     <button className="add-questions-btn" onClick={handleAddClick}>
-                        <FaPlus /> Add Questions
+                        <FaPlus /> Add Recorded Class
                     </button>
                 
             </div>

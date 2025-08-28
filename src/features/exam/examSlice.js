@@ -5,7 +5,69 @@ import {
     fetchQuestionTypes,
     fetchMockTestQuestion as fetchMockTestQuestionAPI, postTest, fetchQBankQuestions, fetchQBankQuestionData
 } from "./examAPI";
+import { adminGetQBankQuestions, adminGetMockTestQuestions, adminGetTestQuestions } from "./examAPI";
 import { fetchTestQuestionsAPI } from "../../features/exam/examAPI";
+
+
+
+// Thunk for admin fetching Q-Bank questions
+export const adminFetchQBankQuestions = createAsyncThunk(
+    "admin/fetchQBankQuestions",
+    async (_, { rejectWithValue }) => {
+        try {
+            const data = await adminGetQBankQuestions();
+            // ✅ only return the array part
+            return data.list || [];
+        } catch (error) {
+            return rejectWithValue(error.message);
+        }
+    }
+);
+
+
+// Thunk for admin fetching Mock Test questions
+export const adminFetchMockTestQuestions = createAsyncThunk(
+    "admin/fetchMockTestQuestions",
+    async (_, { rejectWithValue }) => {
+        try {
+            const data = await adminGetMockTestQuestions();
+            return data.list || [];
+        } catch (error) {
+            return rejectWithValue(error.message);
+        }
+    }
+);
+
+
+// Async thunk for fetching Test questions
+/* export const adminFetchTestQuestions = createAsyncThunk(
+    "exam/fetchTestQuestions",
+    async (_, { rejectWithValue }) => {
+        try {
+            const data = await adminGetTestQuestions(); // call your API function
+            return data;
+        } catch (error) {
+            return rejectWithValue(error.message);
+        }
+    }
+); */
+
+
+// Thunk for fetching admin test questions
+export const adminFetchTestQuestions = createAsyncThunk(
+  "admin/fetchTestQuestions",
+  async (_, { rejectWithValue }) => {
+    try {
+      const data = await adminGetTestQuestions();
+      return data.list; // ✅ return only the array
+    } catch (error) {
+      return rejectWithValue(error.message);
+    }
+  }
+);
+
+
+
 
 // Async thunk for posting any question type
 export const submitQuestion = createAsyncThunk(
@@ -47,7 +109,6 @@ export const getMockTestQuestions = createAsyncThunk(
 );
 
 
-
 // for listing test questions
 export const getTestQuestions = createAsyncThunk(
     "exam/fetchTestQuestions",
@@ -60,8 +121,6 @@ export const getTestQuestions = createAsyncThunk(
         }
     }
 );
-
-
 
 
 // Async thunk for creating a new test
@@ -116,7 +175,6 @@ const questionSlice = createSlice({
         mockTestQuestionLoading: false,
         mockTestQuestionError: null,
 
-
         testQuestions: [],
         testQuestionsLoading: false,
         testQuestionsError: null,
@@ -128,6 +186,20 @@ const questionSlice = createSlice({
         qBankQuestionData: null,
         qBankQuestionDataLoading: false,
         qBankQuestionDataError: null,
+
+        //for fetching question bank question
+        adminQBankQuestions: [],
+        adminQBankQuestionsLoading: false,
+        adminQBankQuestionsError: null,
+
+        //for fetching mock-test question
+        adminMockTestQuestions: [],
+        adminMockTestQuestionsLoading: false,
+        adminMockTestQuestionsError: null,
+
+        adminTestQuestions: [],
+        adminTestQuestionsLoading: false,
+        adminTestQuestionsError: null,
 
     },
     reducers: {
@@ -233,6 +305,7 @@ const questionSlice = createSlice({
                 state.qBankQuestionData = null;
 
             })
+
             //for listing test questions
             .addCase(getTestQuestions.pending, (state) => {
                 state.testQuestionsLoading = true;
@@ -250,7 +323,61 @@ const questionSlice = createSlice({
                 state.testQuestionsError = action.payload;
                 state.testQuestions = [];
 
+            })
+
+            // Admin Q-Bank questions
+            .addCase(adminFetchQBankQuestions.pending, (state) => {
+                state.adminQBankQuestionsLoading = true;
+                state.adminQBankQuestionsError = null;
+                state.adminQBankQuestions = [];
+            })
+            .addCase(adminFetchQBankQuestions.fulfilled, (state, action) => {
+                state.adminQBankQuestionsLoading = false;
+                state.adminQBankQuestions = Array.isArray(action.payload)
+                    ? action.payload
+                    : [];
+            })
+            .addCase(adminFetchQBankQuestions.rejected, (state, action) => {
+                state.adminQBankQuestionsLoading = false;
+                state.adminQBankQuestionsError = action.payload;
+                state.adminQBankQuestions = [];
+            })
+
+            // Admin Mock Test questions
+            .addCase(adminFetchMockTestQuestions.pending, (state) => {
+                state.adminMockTestQuestionsLoading = true;
+                state.adminMockTestQuestionsError = null;
+                state.adminMockTestQuestions = [];
+            })
+            .addCase(adminFetchMockTestQuestions.fulfilled, (state, action) => {
+                state.adminMockTestQuestionsLoading = false;
+                state.adminMockTestQuestions = Array.isArray(action.payload)
+                    ? action.payload
+                    : [];
+            })
+            .addCase(adminFetchMockTestQuestions.rejected, (state, action) => {
+                state.adminMockTestQuestionsLoading = false;
+                state.adminMockTestQuestionsError = action.payload;
+                state.adminMockTestQuestions = [];
+            })
+
+
+            .addCase(adminFetchTestQuestions.pending, (state) => {
+                state.adminTestQuestionsLoading = true;
+                state.adminTestQuestionsError = null;
+                state.adminTestQuestions = [];
+            })
+            .addCase(adminFetchTestQuestions.fulfilled, (state, action) => {
+                state.adminTestQuestionsLoading = false;
+                state.adminTestQuestions = action.payload; 
+            })
+            .addCase(adminFetchTestQuestions.rejected, (state, action) => {
+                state.adminTestQuestionsLoading = false;
+                state.adminTestQuestionsError = action.payload;
+                state.adminTestQuestions = [];
             });
+
+
 
     }
 });
