@@ -68,19 +68,19 @@ export const fetchMockTestQuestion = async () => {
 export async function fetchTestQuestionsAPI() {
     console.log("Inside fetch test questions :::: ");
 
-   /*  const response = await fetch(
-        "https://lunarsenterprises.com:6040/davidsacademy/student/test/list",
-        {
-            method: "GET",
-            headers: {
-                "Content-Type": "application/json",
-            },
-        }
-    );
-    if (!response.ok) {
-        throw new Error("Failed to fetch test questions");
-    }
-    return response.json(); // expects JSON array */
+    /*  const response = await fetch(
+         "https://lunarsenterprises.com:6040/davidsacademy/student/test/list",
+         {
+             method: "GET",
+             headers: {
+                 "Content-Type": "application/json",
+             },
+         }
+     );
+     if (!response.ok) {
+         throw new Error("Failed to fetch test questions");
+     }
+     return response.json(); // expects JSON array */
 }
 
 
@@ -148,7 +148,7 @@ export const fetchQBankQuestionData = async (questionId) => {
         }
 
         const data = await response.json();
-       
+
         // The question data is under data.data as per your example
         return data.data;
     } catch (error) {
@@ -157,22 +157,22 @@ export const fetchQBankQuestionData = async (questionId) => {
 };
 
 
-
-// ✅ Fetch Q-Bank Questions in admin side
-export const adminGetQBankQuestions = async () => {
-    
+// ✅ Fetch Question Bank Test Questions in admin side
+export const adminGetQBankQuestions = async (page = 1, limit = 10) => {
     try {
-        const response = await fetch(
-            baseUrl + "/exam/list/questions/page?exam_type=q-bank",
-            { method: "GET" }
-        );
+        const url = `${baseUrl}/exam/list/questions/${page}?exam_type=q-bank&limit=${limit}`;
+        console.log("Fetching URL:", url);
+
+        const response = await fetch(url, {
+            method: "GET"
+        });
 
         if (!response.ok) {
             throw new Error("Failed to fetch Q-Bank questions");
         }
 
         const result = await response.json();
-        
+        console.log("✅ Get Question Bank Question ::: ", result);
 
         return result;
     } catch (error) {
@@ -182,22 +182,22 @@ export const adminGetQBankQuestions = async () => {
 };
 
 
-
 // ✅ Fetch Mock Test Questions in admin side
-export const adminGetMockTestQuestions = async () => {
- 
+export const adminGetMockTestQuestions = async (page = 1, limit = 10) => {
     try {
-        const response = await fetch(
-            baseUrl + "/exam/list/questions/page?exam_type=mock test", // adjust if backend uses different keyword
-            { method: "GET" }
-        );
+        const url = `${baseUrl}/exam/list/questions/${page}?exam_type=mock test&limit=${limit}`;
+        console.log("Fetching URL:", url);
+
+        const response = await fetch(url, {
+            method: "GET"
+        });
 
         if (!response.ok) {
             throw new Error("Failed to fetch Mock Test questions");
         }
 
         const result = await response.json();
-        
+        console.log("✅ Get Mock Test Questions ::: ", result);
 
         return result;
     } catch (error) {
@@ -210,27 +210,27 @@ export const adminGetMockTestQuestions = async () => {
 
 // fetch test questions in admin side
 export async function adminGetTestQuestions(page = 1) {
-  try {
-    const response = await fetch(
-      `https://lunarsenterprises.com:6040/davidsacademy/exam/list/test/${page}`,
-      {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-        },
-      }
-    );
+    try {
+        const response = await fetch(
+            `https://lunarsenterprises.com:6040/davidsacademy/exam/list/test/${page}`,
+            {
+                method: "GET",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+            }
+        );
 
-    if (!response.ok) {
-      throw new Error(`Failed to fetch test questions: ${response.status}`);
+        if (!response.ok) {
+            throw new Error(`Failed to fetch test questions: ${response.status}`);
+        }
+
+        const data = await response.json();
+        return data; // full response
+    } catch (error) {
+        console.error("admin Test API Error:", error);
+        throw error;
     }
-
-    const data = await response.json();
-    return data; // full response
-  } catch (error) {
-    console.error("admin Test API Error:", error);
-    throw error;
-  }
 }
 
 

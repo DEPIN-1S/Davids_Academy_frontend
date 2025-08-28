@@ -16,17 +16,31 @@
 }
 
 .add-student {
-  padding: 6px 14px;
+  /* padding: 6px 14px;
   border: none;
   border-radius: 20px;
   background-color: #f5b700;
   color: white;
   font-weight: 500;
+  cursor: pointer; */
+  background: #ff9800;
+  color: #fff;
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 6px;
+  font-weight: 500;
   cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  font-size: 0.85rem;
+  height: 38px;
 }
 
 .add-student:hover {
-  opacity: 0.9;
+  background: #f57c00;
+  
 }
 
 .modal-overlay {
@@ -46,15 +60,18 @@
   width: 100%;
   padding: 20px;
   font-family: Arial, sans-serif;
-  overflow-x: auto; /* Enable horizontal scroll */
+  overflow-x: auto;
+  /* Enable horizontal scroll */
   overflow-y: hidden;
 }
 
 .student-table {
   border-collapse: collapse;
   text-align: center;
-  width: max-content; /* Allow expanding */
-  min-width: 100%; /* Fill container at least */
+  width: max-content;
+  /* Allow expanding */
+  min-width: 100%;
+  /* Fill container at least */
 }
 
 .student-table th {
@@ -98,6 +115,7 @@
   border-radius: 4px;
   cursor: pointer;
 }
+
 .active-btn {
   background-color: #fff;
   color: greenyellow;

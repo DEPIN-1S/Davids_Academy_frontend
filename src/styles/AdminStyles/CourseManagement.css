@@ -321,7 +321,7 @@
 }
 
 .pagination-controls button:hover:not(:disabled) {
-  background-color: #e65100;
+  background-color: #f57c00;
   transform: translateY(-1px);
 }
 
