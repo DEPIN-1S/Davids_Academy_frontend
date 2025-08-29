@@ -10,9 +10,10 @@ const CourseManagement = () => {
     const dispatch = useDispatch();
     const navigate = useNavigate();
     const [query, setQuery] = useState("");
-    const { list: recordings, loading, error } = useSelector(
+    const { list: recordings, loading, error, page, totalPages, limit } = useSelector(
         (state) => state.recordings
     );
+
     const { list } = useSelector((state) => state.recordings);
     const handleDelete = (id) => {
         dispatch(deleteRecordedClass(id));
@@ -20,12 +21,17 @@ const CourseManagement = () => {
 
 
     useEffect(() => {
-        console.log("recordings:::", recordings);
         const token = localStorage.getItem("accessToken");
         if (token) {
-            dispatch(fetchRecordedClasses(token));
+            dispatch(fetchRecordedClasses({ token, page: 1, limit: 10 }));
         }
     }, [dispatch]);
+
+    const handlePageChange = (newPage) => {
+        const token = localStorage.getItem("accessToken");
+        dispatch(fetchRecordedClasses({ token, page: newPage, limit }));
+    };
+
 
     const handlePlay = (classId) => {
         console.log("Play class:", classId);
@@ -60,11 +66,11 @@ const CourseManagement = () => {
                         className="search-input"
                     />
                 </div>
-               
-                    <button className="add-questions-btn" onClick={handleAddClick}>
-                        <FaPlus /> Add Questions
-                    </button>
-                
+
+                <button className="add-questions-btn" onClick={handleAddClick}>
+                    <FaPlus /> Add Recorded Class
+                </button>
+
             </div>
 
 
@@ -115,6 +121,24 @@ const CourseManagement = () => {
                 )}
 
             </div>
+            <div className="pagination-controls">
+                <button
+                    disabled={page === 1}
+                    onClick={() => handlePageChange(page - 1)}
+                >
+                    Prev
+                </button>
+
+                <span> Page {page} of {totalPages} </span>
+
+                <button
+                    disabled={page === totalPages}
+                    onClick={() => handlePageChange(page + 1)}
+                >
+                    Next
+                </button>
+            </div>
+
         </div>
     );
 };

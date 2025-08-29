@@ -5,7 +5,64 @@ import {
     fetchQuestionTypes,
     fetchMockTestQuestion as fetchMockTestQuestionAPI, postTest, fetchQBankQuestions, fetchQBankQuestionData
 } from "./examAPI";
+import { adminGetQBankQuestions, adminGetMockTestQuestions, adminGetTestQuestions } from "./examAPI";
 import { fetchTestQuestionsAPI } from "../../features/exam/examAPI";
+
+
+
+// Thunk for admin fetching Q-Bank questions
+export const adminFetchQBankQuestions = createAsyncThunk(
+    "admin/fetchQBankQuestions",
+    async ({ page = 1, limit = 10 }, { rejectWithValue }) => {
+        try {
+            const data = await adminGetQBankQuestions(page, limit);
+            // Return everything, not just list (so reducer knows totalPages, count, etc.)
+            return {
+                list: data.list || [],
+                page: data.page,
+                totalPages: data.totalPages,
+                totalCount: data.totalCount,
+            };
+        } catch (error) {
+            return rejectWithValue(error.message);
+        }
+    }
+);
+
+
+
+// Thunk for admin fetching Mock Test questions
+export const adminFetchMockTestQuestions = createAsyncThunk(
+    "admin/fetchMockTestQuestions",
+    async ({ page = 1, limit = 10 }, { rejectWithValue }) => {
+        try {
+            const data = await adminGetMockTestQuestions(page, limit);
+            return {
+                list: data.list || [],
+                page: data.page,
+                totalPages: data.totalPages,
+                totalCount: data.totalCount,
+            };
+        } catch (error) {
+            return rejectWithValue(error.message);
+        }
+    }
+);
+
+
+// Thunk for fetching admin test questions
+export const adminFetchTestQuestions = createAsyncThunk(
+    "admin/fetchTestQuestions",
+    async (_, { rejectWithValue }) => {
+        try {
+            const data = await adminGetTestQuestions();
+            return data.list; // ✅ return only the array
+        } catch (error) {
+            return rejectWithValue(error.message);
+        }
+    }
+);
+
 
 // Async thunk for posting any question type
 export const submitQuestion = createAsyncThunk(
@@ -47,7 +104,6 @@ export const getMockTestQuestions = createAsyncThunk(
 );
 
 
-
 // for listing test questions
 export const getTestQuestions = createAsyncThunk(
     "exam/fetchTestQuestions",
@@ -60,8 +116,6 @@ export const getTestQuestions = createAsyncThunk(
         }
     }
 );
-
-
 
 
 // Async thunk for creating a new test
@@ -116,7 +170,6 @@ const questionSlice = createSlice({
         mockTestQuestionLoading: false,
         mockTestQuestionError: null,
 
-
         testQuestions: [],
         testQuestionsLoading: false,
         testQuestionsError: null,
@@ -128,6 +181,26 @@ const questionSlice = createSlice({
         qBankQuestionData: null,
         qBankQuestionDataLoading: false,
         qBankQuestionDataError: null,
+
+        // For QBank
+        adminQBankQuestions: [],
+        adminQBankQuestionsLoading: false,
+        adminQBankQuestionsError: null,
+        adminQBankCurrentPage: 1,
+        adminQBankTotalPages: 1,
+        adminQBankTotalCount: 0,
+
+        // For Mock Test
+        adminMockTestQuestions: [],
+        adminMockTestQuestionsLoading: false,
+        adminMockTestQuestionsError: null,
+        adminMockTestCurrentPage: 1,
+        adminMockTestTotalPages: 1,
+        adminMockTestTotalCount: 0,
+
+        adminTestQuestions: [],
+        adminTestQuestionsLoading: false,
+        adminTestQuestionsError: null,
 
     },
     reducers: {
@@ -233,6 +306,7 @@ const questionSlice = createSlice({
                 state.qBankQuestionData = null;
 
             })
+
             //for listing test questions
             .addCase(getTestQuestions.pending, (state) => {
                 state.testQuestionsLoading = true;
@@ -250,6 +324,59 @@ const questionSlice = createSlice({
                 state.testQuestionsError = action.payload;
                 state.testQuestions = [];
 
+            })
+
+            .addCase(adminFetchQBankQuestions.pending, (state) => {
+                state.adminQBankQuestionsLoading = true;
+                state.adminQBankQuestionsError = null;
+                // 👇 Do NOT clear questions here (avoids table flicker)
+            })
+            .addCase(adminFetchQBankQuestions.fulfilled, (state, action) => {
+                state.adminQBankQuestionsLoading = false;
+                state.adminQBankQuestions = action.payload.list;
+                state.adminQBankCurrentPage = action.payload.page || 1;
+                state.adminQBankTotalPages = action.payload.totalPages || 1;
+                state.adminQBankTotalCount = action.payload.totalCount || 0;
+            })
+            .addCase(adminFetchQBankQuestions.rejected, (state, action) => {
+                state.adminQBankQuestionsLoading = false;
+                state.adminQBankQuestionsError = action.payload;
+            })
+
+            // Admin Mock Test questions 
+            .addCase(adminFetchMockTestQuestions.pending, (state) => {
+                state.adminMockTestQuestionsLoading = true;
+                state.adminMockTestQuestionsError = null;
+            })
+            
+            .addCase(adminFetchMockTestQuestions.fulfilled, (state, action) => {
+                state.adminMockTestQuestionsLoading = false;
+                state.adminMockTestQuestions = action.payload.list || [];
+                state.adminMockTestCurrentPage = action.payload.page || 1;
+                state.adminMockTestTotalPages = action.payload.totalPages || 1;
+                state.adminMockTestTotalCount = action.payload.totalCount || 0;
+            })
+
+            .addCase(adminFetchMockTestQuestions.rejected, (state, action) => {
+                state.adminMockTestQuestionsLoading = false;
+                state.adminMockTestQuestionsError = action.payload;
+            })
+
+
+            //for fetching test question in admin side 
+            .addCase(adminFetchTestQuestions.pending, (state) => {
+                state.adminTestQuestionsLoading = true;
+                state.adminTestQuestionsError = null;
+                state.adminTestQuestions = [];
+            })
+            .addCase(adminFetchTestQuestions.fulfilled, (state, action) => {
+                state.adminTestQuestionsLoading = false;
+                state.adminTestQuestions = action.payload;
+            })
+            .addCase(adminFetchTestQuestions.rejected, (state, action) => {
+                state.adminTestQuestionsLoading = false;
+                state.adminTestQuestionsError = action.payload;
+                state.adminTestQuestions = [];
             });
 
     }

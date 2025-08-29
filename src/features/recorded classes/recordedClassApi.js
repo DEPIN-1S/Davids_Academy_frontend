@@ -1,17 +1,22 @@
-export async function listRecordedClasses(token) {
-    const response = await fetch(`https://lunarsenterprises.com:6040/davidsacademy/admin/record/list`, {
-        method: "POST",
-        headers: {
-            "Authorization": `Bearer ${token}`,
-            "Content-Type": "application/json",
-        }
-    });
-
-    if (!response.ok) {
-        throw new Error("Failed to fetch recorded classes");
+export async function listRecordedClasses(token, page = 1, limit = 10) {
+  const response = await fetch(
+    `https://lunarsenterprises.com:6040/davidsacademy/admin/record/list`,
+    {
+      method: "POST",
+      headers: {
+        "Authorization": `Bearer ${token}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ page, limit })   // 👈 pass pagination info
     }
-    return await response.json();
+  );
+
+  if (!response.ok) {
+    throw new Error("Failed to fetch recorded classes");
+  }
+  return await response.json();
 }
+
 
 
 //For deleting recorded class

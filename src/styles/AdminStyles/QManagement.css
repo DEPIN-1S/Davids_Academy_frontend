@@ -102,13 +102,17 @@
 }
 
 .tab-count {
-  background: var(--primary-blue);
+  background: #ff9800;
   color: white;
   font-size: 0.75rem;
-  padding: 0.25rem 0.5rem;
+  width: 30px;
+  height: 30px;
   border-radius: 12px;
   min-width: 20px;
   text-align: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 /* Action Bar */
@@ -169,7 +173,7 @@
 }
 
 .add-btn.primary {
-  background: var(--primary-blue);
+  background: #ff9800;
   color: white;
   border: none;
   padding: 0.75rem 1.5rem;
