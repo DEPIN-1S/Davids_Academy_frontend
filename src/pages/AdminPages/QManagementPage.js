@@ -6,7 +6,8 @@ import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-
+import VisibilityIcon from "@mui/icons-material/Visibility";
+import { Button } from "@mui/material";
 
 const QManagementPage = () => {
     const dispatch = useDispatch();
@@ -246,7 +247,7 @@ const QManagementPage = () => {
                                                 </button>
                                                 <button
                                                     className="btn-icon-action btn-delete"
-                                                    
+
                                                 >
                                                     <FaTrash />
                                                 </button>
@@ -266,6 +267,8 @@ const QManagementPage = () => {
                                         <th>Type</th>
                                         <th>Difficulty</th>
                                         <th>Actions</th>
+                                        <th></th>
+                                        
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -291,7 +294,28 @@ const QManagementPage = () => {
                                                 >
                                                     <FaTrash />
                                                 </button>
+
+
                                             </td>
+                                            <td>
+                                                <Button
+                                                    variant="text"
+                                                    sx={{
+                                                        px: 1.8,
+                                                        py: .8,
+                                                        bgcolor: "#2c3e50",
+                                                        color: "white",
+                                                        textTransform: "none",
+                                                        display: "flex",       // ✅ Ensure flex layout
+                                                        alignItems: "center",  // ✅ Align icon and text
+                                                    }}
+                                                    startIcon={<VisibilityIcon />}
+                                                >
+                                                    View
+                                                </Button>
+                                            </td>
+
+
                                         </tr>
                                     ))}
                                 </tbody>

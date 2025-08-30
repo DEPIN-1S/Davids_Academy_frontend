@@ -18,34 +18,44 @@ export async function listRecordedClasses(token, page = 1, limit = 10) {
 }
 
 
-
-//For deleting recorded class
+//Delete recorded class
 export async function DeleteRecordedClass(recording_id) {
-    console.log("Inside delete recording api::");
-    
+    console.log("Inside delete recording api::", recording_id);
+
+    const token = localStorage.getItem("accessToken");
+    console.log("Token found:", token);
+
     try {
         const response = await fetch(
             `https://lunarsenterprises.com:6040/davidsacademy/admin/record/delete`,
             {
-                method: "DELETE",
+                method: "POST",
                 headers: {
-                    "Content-Type": "application/json", 
+                    "Content-Type": "application/json",
+                    "Authorization": `Bearer ${token}`
                 },
                 body: JSON.stringify({ recording_id }),
             }
         );
 
+        console.log("API Response Status:", response.status);
+
         if (!response.ok) {
-            console.log(response);
+            const errorText = await response.text();
+            console.log("Error Response Body:", errorText);
             throw new Error("Failed to delete recorded class");
         }
 
-        return await response.json();
+        const data = await response.json();
+        console.log("API Success Response:", data);
+        return data;
     } catch (error) {
-        console.log("Response from delete recorded class ::: ", error);
+        console.log("Catch Block Error:", error);
         throw error;
     }
 }
+
+
 
 
 export async function createRecording(token, recordingData) {

@@ -17,22 +17,23 @@ export const fetchRecordedClasses = createAsyncThunk(
 
 
 export const deleteRecordedClass = createAsyncThunk(
-    "recordings/deleteRecordedClass", // ← better to rename to match slice
+    "recordings/deleteRecordedClass",
     async (recording_id, { rejectWithValue }) => {
         try {
             const data = await DeleteRecordedClass(recording_id);
 
             if (!data || data.result === false) {
-                return rejectWithValue(
-                    data?.message || "Failed to delete recorded class"
-                );
+                return rejectWithValue(data?.message || "Failed to delete recorded class");
             }
-            return recording_id; // pass back the id so reducer can remove it
+
+            return recording_id; // reducer uses this to remove item
         } catch (error) {
             return rejectWithValue(error.message || "Something went wrong");
         }
     }
 );
+
+
 
 // Add new recording
 export const addRecording = createAsyncThunk(
@@ -118,12 +119,16 @@ const recordingSlice = createSlice({
                 state.loading = false;
                 state.error = action.payload;
             })
+
+
+
             .addCase(deleteRecordedClass.fulfilled, (state, action) => {
                 state.list = state.list.filter((rec) => rec.id !== action.payload);
             })
             .addCase(deleteRecordedClass.rejected, (state, action) => {
                 state.error = action.payload;
             });
+
     }
 });
 

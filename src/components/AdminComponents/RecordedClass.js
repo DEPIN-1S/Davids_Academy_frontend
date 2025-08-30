@@ -15,8 +15,21 @@ const CourseManagement = () => {
     );
 
     const { list } = useSelector((state) => state.recordings);
+
     const handleDelete = (id) => {
-        dispatch(deleteRecordedClass(id));
+        console.log("list :::", list);
+        console.log("Recording Id :::", id);
+        const token = localStorage.getItem("accessToken");
+        dispatch(deleteRecordedClass(id))
+
+            .unwrap()
+            .then(() => {
+                alert("Recorded class deleted successfully!");
+                dispatch(fetchRecordedClasses({ token, page: 1, limit: 10 }));
+            })
+            .catch((error) => {
+                alert("Failed to delete recorded class: " + error.message);
+            });
     };
 
 
@@ -33,13 +46,10 @@ const CourseManagement = () => {
     };
 
 
-    const handlePlay = (classId) => {
-        console.log("Play class:", classId);
+    const handlePlay = (youtube_url) => {
+        console.log("URL :::", youtube_url);
     };
 
-    const deleteRecordedClass = () => {
-
-    }
 
 
     const handleAddClick = () => {
@@ -86,7 +96,7 @@ const CourseManagement = () => {
 
                                 <div
                                     className="play-overlay"
-                                    onClick={() => handlePlay(cls.r_id)}
+                                    onClick={() => handlePlay(cls.r_video_url)}
                                 >
                                     <div className="play-button">
                                         <FaPlay />
@@ -107,7 +117,7 @@ const CourseManagement = () => {
                                         <span>{cls.r_tutor_name}</span>
                                     </div>
 
-                                    <button onClick={() => handleDelete(cls.recording_id)} className="recorded-class-delete-btn">
+                                    <button onClick={() => handleDelete(cls.r_id)} className="recorded-class-delete-btn">
                                         Delete class
                                     </button>
 
