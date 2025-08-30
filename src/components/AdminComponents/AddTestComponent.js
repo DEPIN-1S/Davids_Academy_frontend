@@ -199,7 +199,7 @@ function AddTest() {
                 >
                   <TableCell>{q.id}</TableCell>
                   <TableCell>{q.question}</TableCell>
-                  <TableCell>{q.type}</TableCell>
+                  <TableCell>{q.questionType}</TableCell>
                   <TableCell>{q.difficulty}</TableCell>
                   <TableCell>
                     <Button
