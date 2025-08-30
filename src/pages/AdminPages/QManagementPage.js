@@ -1,9 +1,12 @@
 import React, { useEffect, useState } from "react";
 import { FaTrash, FaEdit, FaPlus, FaSearch } from "react-icons/fa";
-import { adminFetchQBankQuestions, adminFetchMockTestQuestions, adminFetchTestQuestions, getTestQuestions, } from "../../features/exam/examSlice";
+import { adminFetchQBankQuestions, adminFetchMockTestQuestions, adminFetchTestQuestions, getTestQuestions, adminDeleteQBankQuestion } from "../../features/exam/examSlice";
 import "../../styles/AdminStyles/QManagement.css";
 import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
+import { toast, ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+
 
 const QManagementPage = () => {
     const dispatch = useDispatch();
@@ -21,8 +24,9 @@ const QManagementPage = () => {
 
     const {
         adminTestQuestions,
-        adminTestTotalPages,
+        adminTestQuestionsTotalPages,
     } = useSelector((state) => state.exam);
+
 
 
     const [qBankPage, setQBankPage] = useState(1);
@@ -43,7 +47,11 @@ const QManagementPage = () => {
     }, [dispatch, mockPage]);
 
     useEffect(() => {
+        console.log("✅ Fetching Test questions :::", testPage);
+
         dispatch(adminFetchTestQuestions({ page: testPage, limit }));
+        console.log("Fetching test questions limit ::: ", limit, testPage);
+
     }, [dispatch, testPage]);
 
     useEffect(() => {
@@ -59,7 +67,25 @@ const QManagementPage = () => {
     const handleAddQuestionClick = () => navigate("/admin/selectCourse");
     const handleAddTestClick = () => navigate("/admin/add-test");
     const handleEdit = (id) => console.log("Edit:", id);
-    const handleDelete = (id) => console.log("Delete:", id);
+
+
+
+    const handleDelete = (id) => {
+        console.log("Deleting:", id);
+        dispatch(adminDeleteQBankQuestion(id))
+            .unwrap()
+            .then(() => {
+                alert("Question deleted successfully")
+
+                // refresh lists
+                dispatch(adminFetchMockTestQuestions({ page: mockPage, limit }));
+                dispatch(adminFetchQBankQuestions({ page: qBankPage, limit }));
+            })
+            .catch((err) => {
+                alert("Failed to delete question")
+            });
+    };
+
 
     // Data source based on tab
     const questions =
@@ -93,7 +119,7 @@ const QManagementPage = () => {
             setQBankPage(qBankPage + 1);
         if (activeTab === "Mock Test" && mockPage < adminMockTestTotalPages)
             setMockPage(mockPage + 1);
-        if (activeTab === "Test" && testPage < adminTestTotalPages)
+        if (activeTab === "Test" && testPage < adminTestQuestionsTotalPages)
             setTestPage(testPage + 1);
     };
 
@@ -106,7 +132,7 @@ const QManagementPage = () => {
     const getTotalPages = () => {
         if (activeTab === "Q-bank") return adminQBankTotalPages;
         if (activeTab === "Mock Test") return adminMockTestTotalPages;
-        return adminTestTotalPages;
+        return adminTestQuestionsTotalPages;
     };
 
     return (
@@ -157,73 +183,123 @@ const QManagementPage = () => {
                                 />
                             </div>
                         </div>
-                        {activeTab === "Test" ? (
+
+
+                        {activeTab === "Test" && (
                             <button className="add-btn primary" onClick={handleAddTestClick}>
                                 <FaPlus />
                                 <span className="btn-text">Add Test</span>
                             </button>
-                        ) : (
-                            <button
-                                className="add-btn primary"
-                                onClick={handleAddQuestionClick}
-                            >
+                        )}
+
+                        {activeTab === "Mock Test" && (
+                            <button className="add-btn primary" onClick={handleAddQuestionClick}>
+                                <FaPlus />
+                                <span className="btn-text">Add Mock Test</span>
+                            </button>
+                        )}
+
+                        {activeTab === "Q-bank" && (
+                            <button className="add-btn primary" onClick={handleAddQuestionClick}>
                                 <FaPlus />
                                 <span className="btn-text">Add Question</span>
                             </button>
                         )}
+
                     </div>
                 </div>
 
                 {/* Table */}
                 <div className="table-section">
                     <div className="table-container">
-                        <table className="exam-table">
-                            <thead>
-                                <tr>
-                                    <th>Q-ID</th>
-                                    <th>Preview</th>
-                                    <th>Type</th>
-                                    <th>Difficulty</th>
-                                    <th>Actions</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {filteredQuestions.map((q, index) => (
-                                    <tr
-                                        key={index}
-                                        className={index % 2 === 1 ? "row-even" : "row-odd"}
-                                    >
-                                        <td>{q.id}</td>
-                                        <td>
-                                            {q.question?.length > 150
-                                                ? q.question.substring(0, 150) + "..."
-                                                : q.question}
-                                        </td>
-                                        <td>{q.type}</td>
-                                        <td>{q.difficulty}</td>
-                                        <td>
-                                            <button
-                                                className="btn-icon-action btn-edit"
-                                                onClick={() => handleEdit(q.id)}
-                                            >
-                                                <FaEdit />
-                                            </button>
-                                            <button
-                                                className="btn-icon-action btn-delete"
-                                                onClick={() => handleDelete(q.id)}
-                                            >
-                                                <FaTrash />
-                                            </button>
-                                        </td>
+                        {activeTab === "Test" ? (
+                            // ✅ Separate Table for Test Section
+                            <table className="exam-table">
+                                <thead>
+                                    <tr>
+                                        <th>Test ID</th>
+                                        <th>Course</th>
+                                        <th>Test Title</th>
+                                        <th>From Date</th>
+                                        <th>To Date</th>
+                                        <th>Actions</th>
                                     </tr>
-                                ))}
-                            </tbody>
-                        </table>
+                                </thead>
+                                <tbody>
+                                    {adminTestQuestions.map((t, index) => (
+                                        <tr
+                                            key={index}
+                                            className={index % 2 === 1 ? "row-even" : "row-odd"}
+                                        >
+                                            <td>{t.id}</td>
+                                            <td>{t.cs_name}</td>
+                                            <td>{t.testTitle}</td>
+                                            <td>{new Date(t.fromDate).toLocaleDateString("en-GB")}</td>
+                                            <td>{new Date(t.toDate).toLocaleDateString("en-GB")}</td>
 
+                                            <td>
+                                                <button
+                                                    className="btn-icon-action btn-edit"
+                                                    onClick={() => handleEdit(t.id)}
+                                                >
+                                                    <FaEdit />
+                                                </button>
+                                                <button
+                                                    className="btn-icon-action btn-delete"
+                                                    
+                                                >
+                                                    <FaTrash />
+                                                </button>
+                                            </td>
+                                        </tr>
+                                    ))}
+                                </tbody>
+                            </table>
+                        ) : (
+                            // ✅ Existing Table for Q-bank & Mock Test
+                            <table className="exam-table">
+                                <thead>
+                                    <tr>
+                                        <th>Q-ID</th>
+                                        <th>Course</th>
+                                        <th>Preview</th>
+                                        <th>Type</th>
+                                        <th>Difficulty</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {filteredQuestions.map((q, index) => (
+                                        <tr
+                                            key={index}
+                                            className={index % 2 === 1 ? "row-even" : "row-odd"}
+                                        >
+                                            <td>{q.id}</td>
+                                            <td>{q.cs_name}</td>
+                                            <td>
+                                                {q.question?.length > 150
+                                                    ? q.question.substring(0, 150) + "..."
+                                                    : q.question}
+                                            </td>
+                                            <td>{q.questionType}</td>
+                                            <td>{q.difficulty}</td>
+                                            <td>
+
+                                                <button
+                                                    className="btn-icon-action btn-delete"
+                                                    onClick={() => handleDelete(q.id)}
+                                                >
+                                                    <FaTrash />
+                                                </button>
+                                            </td>
+                                        </tr>
+                                    ))}
+                                </tbody>
+                            </table>
+                        )}
                     </div>
-
-
                 </div>
+
                 {/* ✅ Pagination for active tab */}
                 <div className="pagination-controls">
                     <button disabled={getCurrentPage() === 1} onClick={handlePrev}>

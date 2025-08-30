@@ -3,10 +3,56 @@ import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import {
     postQuestion,
     fetchQuestionTypes,
-    fetchMockTestQuestion as fetchMockTestQuestionAPI, postTest, fetchQBankQuestions, fetchQBankQuestionData
+    fetchMockTestQuestion as fetchMockTestQuestionAPI, fetchQBankQuestions, fetchQBankQuestionData
 } from "./examAPI";
 import { adminGetQBankQuestions, adminGetMockTestQuestions, adminGetTestQuestions } from "./examAPI";
 import { fetchTestQuestionsAPI } from "../../features/exam/examAPI";
+import { adminDeleteQuestion } from "../../features/exam/examAPI";
+import { fetchMockTestQuestionsByCourseId } from "../../features/exam/examAPI"
+import { adminCreateTest } from "../../features/exam/examAPI";
+
+
+
+// Thunk for deleting a Q-Bank & mock test questions
+export const adminDeleteQBankQuestion = createAsyncThunk(
+    "admin/deleteQBankQuestion",
+    async (id, { rejectWithValue }) => {
+        try {
+            const result = await adminDeleteQuestion(id);
+            return result; // { success: true, id }
+        } catch (error) {
+            return rejectWithValue(error.message);
+        }
+    }
+);
+
+
+
+// Thunk to fetch mock test questions by courseId
+export const adminFetchMockTestQuestionsByCourseId = createAsyncThunk(
+    "exam/fetchMockTestQuestionsByCourseId",
+    async (courseId, { rejectWithValue }) => {
+        try {
+            return await fetchMockTestQuestionsByCourseId(courseId);
+        } catch (error) {
+            return rejectWithValue(error.message);
+        }
+    }
+);
+
+
+// Thunk for creating test by admin
+export const adminCreateTestThunk = createAsyncThunk(
+    "exam/adminCreateTest",
+    async (testData, { rejectWithValue }) => {
+        try {
+            const data = await adminCreateTest(testData); // 👈 API function call
+            return data;
+        } catch (err) {
+            return rejectWithValue(err.message);
+        }
+    }
+);
 
 
 
@@ -53,15 +99,21 @@ export const adminFetchMockTestQuestions = createAsyncThunk(
 // Thunk for fetching admin test questions
 export const adminFetchTestQuestions = createAsyncThunk(
     "admin/fetchTestQuestions",
-    async (_, { rejectWithValue }) => {
+    async ({ page = 1, limit = 10 }, { rejectWithValue }) => {
         try {
-            const data = await adminGetTestQuestions();
-            return data.list; // ✅ return only the array
+            const data = await adminGetTestQuestions(page, limit);
+            return {
+                list: data.list || [],
+                page: data.page,
+                totalPages: data.totalPages,
+                totalCount: data.totalCount,
+            }
         } catch (error) {
             return rejectWithValue(error.message);
         }
     }
 );
+
 
 
 // Async thunk for posting any question type
@@ -77,6 +129,7 @@ export const submitQuestion = createAsyncThunk(
         }
     }
 );
+
 // Thunk for listing question types
 export const listQuestionTypes = createAsyncThunk(
     "questions/listQuestionTypes",
@@ -118,18 +171,7 @@ export const getTestQuestions = createAsyncThunk(
 );
 
 
-// Async thunk for creating a new test
-export const submitTest = createAsyncThunk(
-    "exam/createTest",
-    async (testData, { rejectWithValue }) => {
-        try {
-            const data = await postTest(testData);
-            return data;
-        } catch (error) {
-            return rejectWithValue(error.message);
-        }
-    }
-);
+
 // Async thunk for creating a new test
 export const getQBankQuestions = createAsyncThunk(
     "questions/fetchQBankQuestions",
@@ -198,9 +240,27 @@ const questionSlice = createSlice({
         adminMockTestTotalPages: 1,
         adminMockTestTotalCount: 0,
 
+
+        //for test questions
         adminTestQuestions: [],
         adminTestQuestionsLoading: false,
         adminTestQuestionsError: null,
+        adminTestQuestionsCurrentPage: 1,
+        adminTestQuestionsTotalPages: 1,
+        adminTestQuestionsTotalCount: 0,
+
+
+
+        //for fetching admin fetching Mock Test questions by course Id
+        adminMockTestQuestionsByCourseId: [],
+        adminMockTestQuestionsByCourseIdLoading: false,
+        adminMockTestQuestionsByCourseIdError: null,
+
+        //for creating test
+        adminCreateTestResult: null,   // stores API response
+        adminCreateTestLoading: false, // loading flag
+        adminCreateTestError: null,
+
 
     },
     reducers: {
@@ -227,6 +287,27 @@ const questionSlice = createSlice({
                 state.error = action.payload;
             })
 
+
+
+            //Delete Question
+            .addCase(adminDeleteQBankQuestion.pending, (state) => {
+                state.loading = true;
+                state.error = null;
+            })
+            .addCase(adminDeleteQBankQuestion.fulfilled, (state, action) => {
+                state.loading = false;
+                state.adminQBankQuestions = state.adminQBankQuestions.filter(
+                    (q) => q.id !== action.payload.id   // ✅ use id from payload
+                );
+            })
+
+            .addCase(adminDeleteQBankQuestion.rejected, (state, action) => {
+                state.loading = false;
+                state.error = action.payload;
+            })
+
+
+
             // listQuestionTypes
             .addCase(listQuestionTypes.pending, (state) => {
                 state.questionTypesLoading = true;
@@ -240,6 +321,24 @@ const questionSlice = createSlice({
                 state.questionTypesLoading = false;
                 state.questionTypesError = action.payload;
             })
+
+
+
+            //fetch mock test questions by courseId
+            .addCase(adminFetchMockTestQuestionsByCourseId.pending, (state) => {
+                state.adminMockTestQuestionsByCourseIdLoading = true;
+                state.adminMockTestQuestionsByCourseIdError = null;
+            })
+            .addCase(adminFetchMockTestQuestionsByCourseId.fulfilled, (state, action) => {
+                state.adminMockTestQuestionsByCourseIdLoading = false;
+                state.adminMockTestQuestionsByCourseId = action.payload; // ✅ questions array
+            })
+            .addCase(adminFetchMockTestQuestionsByCourseId.rejected, (state, action) => {
+                state.adminMockTestQuestionsByCourseIdLoading = false;
+                state.adminMockTestQuestionsByCourseIdError = action.payload;
+            })
+
+
 
             // list mock test questions
             .addCase(getMockTestQuestions.pending, (state) => {
@@ -258,21 +357,10 @@ const questionSlice = createSlice({
                 state.mockTestQuestionError = action.payload;
                 state.mockTestQuestion = [];
 
+            })
 
-            }) // submitTest
-            .addCase(submitTest.pending, (state) => {
-                state.loading = true;
-                state.success = false;
-                state.error = null;
-            })
-            .addCase(submitTest.fulfilled, (state) => {
-                state.loading = false;
-                state.success = true;
-            })
-            .addCase(submitTest.rejected, (state, action) => {
-                state.loading = false;
-                state.error = action.payload;
-            })
+
+
             // qBankQuestion fetch
             .addCase(getQBankQuestions.pending, (state) => {
                 state.qBankQuestionLoading = true;
@@ -290,6 +378,9 @@ const questionSlice = createSlice({
                 state.qBankQuestionError = action.payload;
                 state.qBankQuestion = [];
             })
+
+
+
             // get QBank data 
             .addCase(getQBankQuestionData.pending, (state) => {
                 state.qBankQuestionDataLoading = true;
@@ -306,6 +397,7 @@ const questionSlice = createSlice({
                 state.qBankQuestionData = null;
 
             })
+
 
             //for listing test questions
             .addCase(getTestQuestions.pending, (state) => {
@@ -326,10 +418,12 @@ const questionSlice = createSlice({
 
             })
 
+
+            //for fetching questions in question bank in admin side
             .addCase(adminFetchQBankQuestions.pending, (state) => {
                 state.adminQBankQuestionsLoading = true;
                 state.adminQBankQuestionsError = null;
-                // 👇 Do NOT clear questions here (avoids table flicker)
+
             })
             .addCase(adminFetchQBankQuestions.fulfilled, (state, action) => {
                 state.adminQBankQuestionsLoading = false;
@@ -343,12 +437,14 @@ const questionSlice = createSlice({
                 state.adminQBankQuestionsError = action.payload;
             })
 
-            // Admin Mock Test questions 
+
+
+            // for fetchng Admin Mock Test questions 
             .addCase(adminFetchMockTestQuestions.pending, (state) => {
                 state.adminMockTestQuestionsLoading = true;
                 state.adminMockTestQuestionsError = null;
             })
-            
+
             .addCase(adminFetchMockTestQuestions.fulfilled, (state, action) => {
                 state.adminMockTestQuestionsLoading = false;
                 state.adminMockTestQuestions = action.payload.list || [];
@@ -367,17 +463,35 @@ const questionSlice = createSlice({
             .addCase(adminFetchTestQuestions.pending, (state) => {
                 state.adminTestQuestionsLoading = true;
                 state.adminTestQuestionsError = null;
-                state.adminTestQuestions = [];
             })
             .addCase(adminFetchTestQuestions.fulfilled, (state, action) => {
                 state.adminTestQuestionsLoading = false;
-                state.adminTestQuestions = action.payload;
+                state.adminTestQuestions = action.payload.list || [];
+                state.adminTestQuestionsCurrentPage = action.payload.page || 1;
+                state.adminTestQuestionsTotalPages = action.payload.totalPages || 1;
+                state.adminTestQuestionsTotalCount = action.payload.totalCount || 0;
             })
             .addCase(adminFetchTestQuestions.rejected, (state, action) => {
                 state.adminTestQuestionsLoading = false;
                 state.adminTestQuestionsError = action.payload;
                 state.adminTestQuestions = [];
-            });
+            })
+
+
+
+            //for creating test in admin side 
+            .addCase(adminCreateTestThunk.pending, (state) => {
+                state.adminCreateTestLoading = true;
+                state.adminCreateTestError = null;
+            })
+            .addCase(adminCreateTestThunk.fulfilled, (state, action) => {
+                state.adminCreateTestLoading = false;
+                state.adminCreateTestResult = action.payload;
+            })
+            .addCase(adminCreateTestThunk.rejected, (state, action) => {
+                state.adminCreateTestLoading = false;
+                state.adminCreateTestError = action.payload || "Failed to create test";
+            })
 
     }
 });
