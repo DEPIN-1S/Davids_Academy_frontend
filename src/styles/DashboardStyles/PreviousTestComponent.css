@@ -58,7 +58,7 @@
   background-color: #f0f0f5;
 }
 
-.action-btn {
+/* .action-btn {
   padding: 6px 14px;
   border: none;
   border-radius: 8px;
@@ -66,14 +66,27 @@
   cursor: pointer;
   font-size: 13px;
   color: white;
-}
+} */
 
 .action-btn.stats {
   background-color: #f2c200;
 }
 
+
+
 .action-btn.resume {
-  background-color: #e0a800;
+  background-color: #4CAF50; /* Green for Resume */
+  color: white;
+}
+.action-btn.start {
+  background-color: #2196F3; /* Blue for Start Test */
+  color: white;
+}
+.action-btn {
+  padding: 5px 10px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
 }
 
 @media (max-width: 768px) {
