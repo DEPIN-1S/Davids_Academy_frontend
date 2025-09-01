@@ -13,14 +13,56 @@ const CourseManagement = () => {
     const { list: recordings, loading, error, page, totalPages, limit } = useSelector(
         (state) => state.recordings
     );
-
+    const isLiveVideo = (url) => url.includes("/live/");
     const { list } = useSelector((state) => state.recordings);
+    const [selectedVideo, setSelectedVideo] = useState(null);
+
+
     const handleDelete = (id) => {
-        dispatch(deleteRecordedClass(id));
+        console.log("list :::", list);
+        console.log("Recording Id :::", id);
+        const token = localStorage.getItem("accessToken");
+        dispatch(deleteRecordedClass(id))
+
+            .unwrap()
+            .then(() => {
+                alert("Recorded class deleted successfully!");
+                dispatch(fetchRecordedClasses({ token, page: 1, limit: 10 }));
+            })
+            .catch((error) => {
+                alert("Failed to delete recorded class: " + error.message);
+            });
     };
 
 
+    const formatYoutubeUrl = (url) => {
+        if (!url) return "";
+
+        // Live video → cannot embed, open in new tab
+        if (url.includes("/live/")) return url;
+
+        // Shortened URL: https://youtu.be/VIDEO_ID
+        if (url.includes("youtu.be")) {
+            const videoId = url.split("/").pop().split("?")[0];
+            return `https://www.youtube.com/embed/${videoId}`;
+        }
+
+        // Normal YouTube URL: https://www.youtube.com/watch?v=VIDEO_ID
+        if (url.includes("watch?v=")) {
+            return url.replace("watch?v=", "embed/").split("&")[0]; // remove extra params
+        }
+
+        // Already embed URL
+        if (url.includes("embed")) return url;
+
+        return url;
+    };
+
+
+
     useEffect(() => {
+        console.log("Recordings Fetched ::::",recordings);
+        
         const token = localStorage.getItem("accessToken");
         if (token) {
             dispatch(fetchRecordedClasses({ token, page: 1, limit: 10 }));
@@ -33,13 +75,14 @@ const CourseManagement = () => {
     };
 
 
-    const handlePlay = (classId) => {
-        console.log("Play class:", classId);
+    const handlePlay = (videoUrl) => {
+        if (isLiveVideo(videoUrl)) {
+            window.open(videoUrl, "_blank");
+        } else {
+            const embedUrl = formatYoutubeUrl(videoUrl);
+            setSelectedVideo(embedUrl);
+        }
     };
-
-    const deleteRecordedClass = () => {
-
-    }
 
 
     const handleAddClick = () => {
@@ -80,13 +123,13 @@ const CourseManagement = () => {
                         <div key={cls.r_id} className="class-card">
                             <div className="card-thumbnail">
                                 <img
-                                    src={`${process.env.REACT_APP_API_URL}${cls.r_thumbnail}`}
+                                    src={`https://lunarsenterprises.com:6040/${cls.r_thumbnail}`}
                                     alt={cls.r_title}
                                 />
 
                                 <div
                                     className="play-overlay"
-                                    onClick={() => handlePlay(cls.r_id)}
+                                    onClick={() => handlePlay(cls.r_video_url)}
                                 >
                                     <div className="play-button">
                                         <FaPlay />
@@ -107,7 +150,7 @@ const CourseManagement = () => {
                                         <span>{cls.r_tutor_name}</span>
                                     </div>
 
-                                    <button onClick={() => handleDelete(cls.recording_id)} className="recorded-class-delete-btn">
+                                    <button onClick={() => handleDelete(cls.r_id)} className="recorded-class-delete-btn">
                                         Delete class
                                     </button>
 
@@ -138,6 +181,27 @@ const CourseManagement = () => {
                     Next
                 </button>
             </div>
+            {selectedVideo && (
+                <div className="video-modal">
+                    <div className="video-modal-content">
+                        <button
+                            className="video-modal-close"
+                            onClick={() => setSelectedVideo(null)}
+                        >
+                            ✕
+                        </button>
+                        <iframe
+                            width="100%"
+                            height="450"
+                            src={selectedVideo}
+                            frameBorder="0"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                            allowFullScreen
+                            title="YouTube Video"
+                        ></iframe>
+                    </div>
+                </div>
+            )}
 
         </div>
     );

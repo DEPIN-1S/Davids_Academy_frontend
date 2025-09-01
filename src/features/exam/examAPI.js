@@ -32,6 +32,46 @@ export const postQuestion = async (questionData) => {
     }
 };
 
+//for deleting questions
+export const adminDeleteQuestion = async (id) => {
+    try {
+        const url = `${baseUrl}/exam/questions/${id}`;
+        const response = await fetch(url, { method: "DELETE" });
+
+        if (!response.ok) {
+            throw new Error(`Failed to delete question with ID ${id}`);
+        }
+
+        return { success: true, id }; // ✅ return the deleted id
+    } catch (error) {
+        throw error;
+    }
+};
+
+
+
+
+
+//for fetching mock test questing to create test
+export const fetchMockTestQuestionsByCourseId = async (courseId) => {
+    try {
+        const response = await fetch(
+            `${baseUrl}/exam/list/mock-test-questions?courseId=${courseId}`
+        );
+
+        if (!response.ok) {
+            throw new Error("Failed to fetch mock test questions");
+        }
+
+        const data = await response.json();
+        return data.list; // ✅ only return array of questions
+    } catch (error) {
+        throw error;
+    }
+};
+
+
+
 
 // src/api/questionTypeApi.js
 export const fetchQuestionTypes = async () => {
@@ -86,9 +126,9 @@ export async function fetchTestQuestionsAPI() {
 
 
 // POST: Create a new test with all necessary details
-export const postTest = async (testData) => {
-    console.log('Test data', testData)
+export const adminCreateTest = async (testData) => {
     try {
+        console.log("✅Test data in api call ::: ", testData);
         const response = await fetch(`${baseUrl}/exam/tests`, {
             method: "POST",
             headers: {
@@ -101,11 +141,16 @@ export const postTest = async (testData) => {
             throw new Error("Failed to create test");
         }
 
-        return await response.json();
+        return await response.json(); // server response with test details
     } catch (error) {
         throw error;
     }
 };
+
+
+
+
+
 export const fetchQBankQuestions = async () => {
     try {
         const response = await fetch(
@@ -182,6 +227,7 @@ export const adminGetQBankQuestions = async (page = 1, limit = 10) => {
 };
 
 
+
 // ✅ Fetch Mock Test Questions in admin side
 export const adminGetMockTestQuestions = async (page = 1, limit = 10) => {
     try {
@@ -209,9 +255,12 @@ export const adminGetMockTestQuestions = async (page = 1, limit = 10) => {
 
 
 // fetch test questions in admin side
-export async function adminGetTestQuestions(page = 1) {
+export async function adminGetTestQuestions(page = 1, limit = 10) {
     try {
+        console.log("✅ Inside admin test questions :: ");
+
         const response = await fetch(
+            /*  ${baseUrl}/exam/list/questions/${page}?exam_type=mock test&limit=${limit}`; */
             `https://lunarsenterprises.com:6040/davidsacademy/exam/list/test/${page}`,
             {
                 method: "GET",
@@ -226,7 +275,10 @@ export async function adminGetTestQuestions(page = 1) {
         }
 
         const data = await response.json();
+        console.log("Data by pagig of test ::::::::::", data);
         return data; // full response
+
+
     } catch (error) {
         console.error("admin Test API Error:", error);
         throw error;
