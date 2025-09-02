@@ -18,7 +18,7 @@ const DropdownQuestionComponent = ({ question }) => {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
 
-  // ✅ ALL HOOKS MUST BE CALLED FIRST - BEFORE ANY CONDITIONS OR EARLY RETURNS
+
   const [activeTab, setActiveTab] = useState(0);
   const [dropdownValues, setDropdownValues] = useState({});
   const [showAnswer, setShowAnswer] = useState(false);
@@ -37,7 +37,7 @@ const DropdownQuestionComponent = ({ question }) => {
       }
     });
     setDropdownValues(initialValues);
-  }, [question, dropdownTexts]); // Re-run when question changes
+  }, [question, dropdownTexts]); 
 
   // Now we can do conditional logic AFTER all hooks are called
   if (!question) {
@@ -59,7 +59,7 @@ const DropdownQuestionComponent = ({ question }) => {
     setShowAnswer(true);
   };
 
-  // Early return for no dropdown data - AFTER all hooks
+  
   if (!dropdownTexts || dropdownTexts.length === 0) {
     return (
       <Box sx={{ padding: 2, textAlign: 'center' }}>
@@ -104,11 +104,11 @@ const DropdownQuestionComponent = ({ question }) => {
         </Typography>
       )}
 
-      {/* Tabs - only render if tabsInfo exists and has items */}
+     
       {tabsInfo && tabsInfo.length > 0 && (
         <>
           <Tabs
-            value={Math.min(activeTab, tabsInfo.length - 1)} // Prevent index out of bounds
+            value={Math.min(activeTab, tabsInfo.length - 1)} 
             onChange={handleTabChange}
             centered={!isMobile}
             variant={isMobile ? 'scrollable' : 'standard'}
@@ -120,7 +120,7 @@ const DropdownQuestionComponent = ({ question }) => {
             ))}
           </Tabs>
 
-          {/* Explanation for active tab */}
+         
           <Box
             sx={{
               backgroundColor: '#f8f9ff',
@@ -160,7 +160,7 @@ const DropdownQuestionComponent = ({ question }) => {
         }}
       >
         {dropdownTexts.map((dt, index) => {
-          // Safe access to dropdown data
+         
           if (!dt) return null;
           
           const dropdownId = dt.id || index;
