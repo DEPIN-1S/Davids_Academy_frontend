@@ -11,7 +11,7 @@ const QuestionHeaderComponent = ({
   qid = '6051',
   user = 'Micheal Carter',
   time = '00:04:59',
-  examTitle = '' // optional exam title prop for extra info
+  examTitle = ''
 }) => {
   return (
     <Box className="question-header-container">
@@ -23,9 +23,9 @@ const QuestionHeaderComponent = ({
               {examTitle}
             </Typography>
           )}
-          <Typography variant="subtitle2">QID: {qid}</Typography>
+          <Typography variant="subtitle2" align="left"  >QID: {qid}</Typography>
         </div>
-        <Typography variant="body2" className="user">{user}</Typography>
+        {/* <Typography variant="body2" className="user">{user}</Typography> */}
       </div>
 
       <div className="header-progress">
@@ -39,11 +39,11 @@ const QuestionHeaderComponent = ({
         <Typography variant="body2" className="time-elapsed">Time Elapsed : {time}</Typography>
       </div>
 
-      <div className="header-actions">
+      {/* <div className="header-actions">
         <IconButton><EditNoteIcon sx={{ color: '#fff' }} /></IconButton>
         <IconButton><MenuIcon sx={{ color: '#fff' }} /></IconButton>
         <IconButton><FlagIcon sx={{ color: '#fff' }} /></IconButton>
-      </div>
+      </div> */}
     </Box>
   );
 };

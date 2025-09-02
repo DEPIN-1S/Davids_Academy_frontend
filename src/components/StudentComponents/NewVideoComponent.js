@@ -47,38 +47,29 @@ const formatYoutubeUrl = (url) => {
   return url;
 };
 
-const NewVideoComponent = ({ courseId, subjectId }) => {
+const NewVideoComponent = () => {
   const dispatch = useDispatch();
   const { list: recordings, loading, error, page, totalPages, limit } = useSelector((state) => state.studentRecordings);
   const [selectedVideo, setSelectedVideo] = useState(null);
 
   useEffect(() => {
-    const token = localStorage.getItem('accessToken');
+    const token = sessionStorage.getItem('accessToken');
     if (token) {
+     
       dispatch(fetchStudentRecordedClasses({ 
         token, 
-        searchQuery: '', 
         page: 1, 
-        limit: 10, 
-        courseId, 
-        subjectId 
+        limit: 10
       }));
     }
-  }, [dispatch, courseId, subjectId]);
-
-  // Debug: Log the data structure
-  console.log('All recordings:', recordings);
-  console.log('First recording:', recordings?.[0]);
+  }, [dispatch]);
 
   const handlePageChange = (event, newPage) => {
-    const token = localStorage.getItem('accessToken');
+    const token = sessionStorage.getItem('accessToken');
     dispatch(fetchStudentRecordedClasses({ 
       token, 
-      searchQuery: '', 
       page: newPage, 
-      limit, 
-      courseId, 
-      subjectId 
+      limit
     }));
   };
 
@@ -87,24 +78,15 @@ const NewVideoComponent = ({ courseId, subjectId }) => {
     setSelectedVideo(embedUrl);
   };
 
-  // More flexible filtering for "new" recordings
+  // Filter for new recordings (created in last 7 days)
   const newRecordings = recordings?.filter((rec) => {
-    // Option 1: Check for 'new', 'isNew', or 'is_new' flag
-    if (rec.new === true || rec.isNew === true || rec.is_new === true) return true;
-    
-    // Option 2: Check if created in the last 7 days
-    const dateFields = ['created_at', 'r_created_at', 'createdAt', 'date_created'];
-    for (let field of dateFields) {
-      if (rec[field]) {
-        const createdDate = new Date(rec[field]);
-        const weekAgo = new Date();
-        weekAgo.setDate(weekAgo.getDate() - 7);
-        if (createdDate > weekAgo) return true;
-      }
+    if (rec.r_created_at) {
+      const createdDate = new Date(rec.r_created_at);
+      const weekAgo = new Date();
+      weekAgo.setDate(weekAgo.getDate() - 7);
+      return createdDate > weekAgo;
     }
-    
-    // Option 3: For testing - show all recordings (remove this later)
-    return true;
+    return true; // Show all if no date
   }) || [];
 
   if (loading) return <CircularProgress sx={{ display: 'block', margin: '20px auto' }} />;
@@ -114,27 +96,27 @@ const NewVideoComponent = ({ courseId, subjectId }) => {
     <div style={{ padding: '20px' }}>
       <Typography variant="h5" gutterBottom>New</Typography>
       <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
-        Total recordings: {recordings?.length || 0} | Showing: {newRecordings.length}
+        Total recordings: {recordings?.length || 0} | New this week: {newRecordings.length}
       </Typography>
       
       {newRecordings.length > 0 ? (
         <>
           <Grid container spacing={2}>
             {newRecordings.map((rec) => (
-              <Grid item xs={12} sm={6} md={4} key={rec.r_id || rec.id}>
+              <Grid item xs={12} sm={6} md={4} key={rec.r_id}>
                 <Card sx={{ position: 'relative' }}>
                   <Box sx={{ position: 'relative' }}>
                     <CardMedia
                       component="img"
                       height="140"
-                      image={rec.r_thumbnail ? `https://lunarsenterprises.com:6040/${rec.r_thumbnail}` : 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzAwIiBoZWlnaHQ9IjE0MCIgdmlld0JveD0iMCAwIDMwMCAxNDAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIzMDAiIGhlaWdodD0iMTQwIiBmaWxsPSIjZjVmNWY1Ii8+Cjx0ZXh0IHg9IjE1MCIgeT0iNzAiIGZvbnQtZmFtaWx5PSJBcmlhbCwgc2Fucy1zZXJpZiIgZm9udC1zaXplPSIxNCIgZmlsbD0iIzk5OTk5OSIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZHk9Ii4zZW0iPk5vIEltYWdlPC90ZXh0Pgo8L3N2Zz4K'}
-                      alt={rec.r_title || rec.title || 'Video'}
+                      image={`https://lunarsenterprises.com:6040${rec.r_thumbnail}`}
+                      alt={rec.r_title}
                       onError={(e) => {
                         e.target.src = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzAwIiBoZWlnaHQ9IjE0MCIgdmlld0JveD0iMCAwIDMwMCAxNDAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIzMDAiIGhlaWdodD0iMTQwIiBmaWxsPSIjZjVmNWY1Ii8+Cjx0ZXh0IHg9IjE1MCIgeT0iNzAiIGZvbnQtZmFtaWx5PSJBcmlhbCwgc2Fucy1zZXJpZiIgZm9udC1zaXplPSIxNCIgZmlsbD0iIzk5OTk5OSIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZHk9Ii4zZW0iPk5vIEltYWdlPC90ZXh0Pgo8L3N2Zz4K';
                       }}
                     />
                     <IconButton 
-                      onClick={() => handlePlay(rec.r_video_url || rec.video_url || rec.url)}
+                      onClick={() => handlePlay(rec.r_video_url)}
                       sx={{ 
                         position: 'absolute', 
                         top: '50%', 
@@ -151,22 +133,16 @@ const NewVideoComponent = ({ courseId, subjectId }) => {
                     </IconButton>
                   </Box>
                   <CardContent>
-                    <Typography variant="h6" noWrap>
-                      {rec.r_title || rec.title || 'Untitled Video'}
+                    <Typography variant="h6" noWrap>{rec.r_title}</Typography>
+                    <Typography variant="body2" color="text.secondary">
+                      Duration: {rec.r_duration}
                     </Typography>
                     <Typography variant="body2" color="text.secondary">
-                      Duration: {rec.r_duration || rec.duration || 'N/A'}
+                      By: {rec.r_tutor_name}
                     </Typography>
-                    <Typography variant="body2" color="text.secondary">
-                      By: {rec.r_tutor_name || rec.tutor_name || rec.instructor || 'Unknown'}
+                    <Typography variant="caption" color="text.secondary">
+                      Created: {new Date(rec.r_created_at).toLocaleDateString()}
                     </Typography>
-                    <Button 
-                      startIcon={<AddIcon />} 
-                      size="small" 
-                      sx={{ mt: 1 }}
-                    >
-                      Add to playlist
-                    </Button>
                   </CardContent>
                 </Card>
               </Grid>
@@ -184,11 +160,13 @@ const NewVideoComponent = ({ courseId, subjectId }) => {
       ) : (
         <Box sx={{ textAlign: 'center', py: 4 }}>
           <Typography variant="body1" color="text.secondary">
-            No new recordings found.
+            {recordings?.length > 0 ? 'No new recordings this week.' : 'No recordings found.'}
           </Typography>
-          <Typography variant="body2" color="text.secondary" sx={{ mt: 1 }}>
-            {recordings?.length > 0 ? `${recordings.length} total recordings available` : 'No recordings loaded'}
-          </Typography>
+          {recordings?.length > 0 && (
+            <Typography variant="body2" color="text.secondary" sx={{ mt: 1 }}>
+              {recordings.length} total recordings available (all older than 7 days)
+            </Typography>
+          )}
         </Box>
       )}
       

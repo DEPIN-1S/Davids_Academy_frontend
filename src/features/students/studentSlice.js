@@ -9,7 +9,7 @@ export const fetchStudents = createAsyncThunk(
   "students/fetchStudents",
   async (_, { rejectWithValue }) => {
     try {
-      const token = localStorage.getItem("accessToken");
+      const token = sessionStorage.getItem("accessToken");
       console.log("Access toke in student list", token);
 
       const data = await listStudents(token);
@@ -32,7 +32,7 @@ export const createStudent = createAsyncThunk(
   "students/createStudent",
   async (studentData, { rejectWithValue }) => {
     try {
-      const token = localStorage.getItem("accessToken");
+      const token = sessionStorage.getItem("accessToken");
       const data = await addStudent(studentData, token);
       console.log("student data ::", studentData);
       console.log("Received data from API:", data);
@@ -52,7 +52,7 @@ export const removeStudent = createAsyncThunk(
   "students/removeStudent",
   async (studentId, { rejectWithValue }) => {
     try {
-      const token = localStorage.getItem("accessToken");
+      const token = sessionStorage.getItem("accessToken");
       const data = await deleteStudent(studentId, token);
       if (!data || data.result === false) { // ✅ match backend field
         return rejectWithValue(data?.message || "Failed to delete student");
@@ -72,7 +72,7 @@ export const updateStudent = createAsyncThunk(
     try {
       console.log("inside student edit slicee :::: ");
       
-      const token = localStorage.getItem("accessToken");
+      const token = sessionStorage.getItem("accessToken");
       const data = await editStudent(studentData, token);
 
       if (!data || data.success === false || data.result === false) {

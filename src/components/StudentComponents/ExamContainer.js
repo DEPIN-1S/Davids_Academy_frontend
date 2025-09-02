@@ -467,20 +467,20 @@ const handleAnswerSubmit = async (questionId, is_correct, mark) => {
 
 
 // Update your DebugInfo component to show the actual question IDs:
-const DebugInfo = () => (
-    <div style={{ background: '#f0f0f0', padding: '10px', margin: '10px 0', fontSize: '12px' }}>
-        <strong>Debug Info:</strong><br/>
-        Test Mode: {isTestMode ? 'Yes' : 'No'}<br/>
-        Test ID: {testId}<br/>
-        Question IDs: {JSON.stringify(questionIds)}<br/>
-        Current Index: {currentIndex}<br/>
-        Current Question ID: {questionIds && questionIds[currentIndex]}<br/>
-        Current Question: {currentQuestion ? 'Loaded' : 'Not loaded'}<br/>
-        Loading: {loading ? 'Yes' : 'No'}<br/>
-        Error: {error || 'None'}<br/>
-        <strong>Expected Question ID:</strong> {questionIds && questionIds[currentIndex]} (should be 78, 74, 73, etc.)
-    </div>
-);
+// const DebugInfo = () => (
+//     <div style={{ background: '#f0f0f0', padding: '10px', margin: '10px 0', fontSize: '12px' }}>
+//         <strong>Debug Info:</strong><br/>
+//         Test Mode: {isTestMode ? 'Yes' : 'No'}<br/>
+//         Test ID: {testId}<br/>
+//         Question IDs: {JSON.stringify(questionIds)}<br/>
+//         Current Index: {currentIndex}<br/>
+//         Current Question ID: {questionIds && questionIds[currentIndex]}<br/>
+//         Current Question: {currentQuestion ? 'Loaded' : 'Not loaded'}<br/>
+//         Loading: {loading ? 'Yes' : 'No'}<br/>
+//         Error: {error || 'None'}<br/>
+//         <strong>Expected Question ID:</strong> {questionIds && questionIds[currentIndex]} (should be 78, 74, 73, etc.)
+//     </div>
+// );
 
 
 
@@ -498,7 +498,7 @@ return (
         />
         
         {/* TEMPORARY DEBUG INFO */}
-        <DebugInfo />
+        {/* <DebugInfo /> */}
         
         <div style={{ marginTop: '2rem' }}>
             {(isTestMode ? loading : qBankQuestionDataLoading) ? (

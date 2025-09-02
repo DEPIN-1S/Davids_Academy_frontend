@@ -355,9 +355,10 @@ export const fetchTestQuestions = async (test_id) => {
 export const fetchTestQuestionData = async (test_id, questionId) => {
     try {
         const token = getToken();
+        console.log('Fetching question data for:', { test_id, questionId });
         
         const response = await fetch(
-            `${baseUrl}/student/test/question/data`, // Your real endpoint
+            `${baseUrl}/student/test/question/data`,
             {
                 method: 'POST',
                 headers: {
@@ -365,20 +366,33 @@ export const fetchTestQuestionData = async (test_id, questionId) => {
                     'Content-Type': 'application/json',
                 },
                 body: JSON.stringify({
-                    // Use the exact parameter names your API expects
-                    test_id: parseInt(test_id),
-                    question_id: parseInt(questionId),
-                    // Add any other required parameters
+                    test_id: String(test_id),        // String format
+                    questionId: String(questionId)   // camelCase, not snake_case
+                    // No headings_id needed!
                 }),
             }
         );
 
+        if (!response.ok) {
+            const errorText = await response.text();
+            console.error('API Error Response:', errorText);
+            throw new Error(`Failed to fetch test question data: ${response.status} ${response.statusText}`);
+        }
+
         const data = await response.json();
-        return data.data || data;
+        console.log("Question data received:", data);
+        
+        if (data.result && data.data) {
+            return data.data;
+        } else {
+            throw new Error(data.message || 'No question data received');
+        }
     } catch (error) {
+        console.error('fetchTestQuestionData error:', error);
         throw error;
     }
 };
+
 
 
 

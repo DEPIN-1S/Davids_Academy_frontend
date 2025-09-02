@@ -48,34 +48,28 @@ const formatYoutubeUrl = (url) => {
   return url;
 };
 
-const ContinueWatchingComponent = ({ courseId, subjectId }) => {
+const ContinueWatchingComponent = () => {
   const dispatch = useDispatch();
   const { list: recordings, loading, error, page, totalPages, limit } = useSelector((state) => state.studentRecordings);
   const [selectedVideo, setSelectedVideo] = useState(null);
 
   useEffect(() => {
-    const token = localStorage.getItem('accessToken');
+    const token = sessionStorage.getItem('accessToken');
     if (token) {
       dispatch(fetchStudentRecordedClasses({ 
         token, 
-        searchQuery: '', 
         page: 1, 
-        limit: 10, 
-        courseId, 
-        subjectId 
+        limit: 10
       }));
     }
-  }, [dispatch, courseId, subjectId]);
+  }, [dispatch]);
 
   const handlePageChange = (event, newPage) => {
-    const token = localStorage.getItem('accessToken');
+    const token = sessionStorage.getItem('accessToken');
     dispatch(fetchStudentRecordedClasses({ 
       token, 
-      searchQuery: '', 
       page: newPage, 
-      limit, 
-      courseId, 
-      subjectId 
+      limit
     }));
   };
 
@@ -175,13 +169,6 @@ const ContinueWatchingComponent = ({ courseId, subjectId }) => {
                         )}%
                       </Typography>
                     )}
-                    <Button 
-                      startIcon={<AddIcon />} 
-                      size="small" 
-                      sx={{ mt: 1 }}
-                    >
-                      Add to playlist
-                    </Button>
                   </CardContent>
                 </Card>
               </Grid>
