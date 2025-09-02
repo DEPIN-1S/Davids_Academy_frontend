@@ -1,0 +1,148 @@
+import React, { useState } from "react";
+import QuestionHeader from "./QuestionHeader";
+
+
+function MultiRadioQuestionView() {
+  // 🔹 Static Question Data
+  const question = {
+    question: "Which intervention should the nurse take first?",
+    tabsInfo: [
+      { tabKey: "History", tabValue: "Patient has history of asthma and hypertension." },
+      { tabKey: "Assessment", tabValue: "Patient presents with shortness of breath and wheezing." },
+      { tabKey: "Labs", tabValue: "O2 saturation: 85%, BP: 140/90 mmHg." },
+    ],
+    clientfindings: [
+      { id: 1, client_findings: "Shortness of breath" },
+      { id: 2, client_findings: "Wheezing" },
+      { id: 3, client_findings: "High blood pressure" },
+    ],
+    radioOption: [
+      { answer: "Priority" },
+      { answer: "Secondary" },
+      { answer: "Not Relevant" },
+    ],
+    explanation: [
+      { heading: "Explanation", explanation: "Oxygen therapy should be the first priority to stabilize the patient." },
+    ],
+    additionalInfo: [
+      { info: "Asthma exacerbations require immediate airway support.", image: "/images/asthma.png" },
+    ],
+  };
+
+  const [activeTab, setActiveTab] = useState(question.tabsInfo[0].tabKey);
+  const [answers, setAnswers] = useState({});
+  const [showReveal, setShowReveal] = useState(false);
+
+  // Extract static data
+  const notesTabs = question.tabsInfo.map((tab) => tab.tabKey);
+  const clientFindings = question.clientfindings;
+  const answerGroups = Array.from(new Set(question.radioOption.map((opt) => opt.answer)));
+
+  const tabContent = question.tabsInfo.reduce((acc, tab) => {
+    acc[tab.tabKey] = tab.tabValue;
+    return acc;
+  }, {});
+
+  const explanationHeading = question.explanation[0]?.heading || "Explanation";
+  const explanationParagraphs = question.explanation.map((exp) => exp.explanation);
+  const additionalInfoParagraphs = question.additionalInfo.map((info) => info.info);
+  const additionalInfoImage = question.additionalInfo[0]?.image || null;
+
+  const handleTabClick = (tab) => {
+    setActiveTab(tab);
+  };
+
+  const handleSelect = (findingIndex, group) => {
+    setAnswers((prev) => ({ ...prev, [findingIndex]: group }));
+  };
+
+  const handleReveal = () => {
+    setShowReveal(true);
+  };
+
+  return (
+    <>
+    {/*  <QuestionHeader  /> */}
+      <div className="multi-radio-container">
+        <div className="heading">
+          <h4>{question.question}</h4>
+          
+        </div>
+
+        {/* Tabs */}
+        <div className="tabs">
+          {notesTabs.map((tab) => (
+            <button
+              key={tab}
+              className={`tab-button ${activeTab === tab ? "active" : ""}`}
+              onClick={() => handleTabClick(tab)}
+            >
+              {tab}
+            </button>
+          ))}
+        </div>
+
+        {/* Tab Content */}
+        <div className="note-box">
+          <p>{tabContent[activeTab]}</p>
+        </div>
+
+        {/* Radio Table */}
+        <div className="table-wrapper">
+          <table className="radio-table">
+            <thead>
+              <tr>
+                <th>Client findings</th>
+                {answerGroups.map((group) => (
+                  <th key={group}>{group}</th>
+                ))}
+              </tr>
+            </thead>
+            <tbody>
+              {clientFindings.map((finding, idx) => (
+                <tr key={finding.id || idx}>
+                  <td>{finding.client_findings}</td>
+                  {answerGroups.map((group) => (
+                    <td key={group}>
+                      <input
+                        type="radio"
+                        name={`finding-${idx}`}
+                        value={group}
+                        checked={answers[idx] === group}
+                        onChange={() => handleSelect(idx, group)}
+                        disabled={showReveal}
+                      />
+                    </td>
+                  ))}
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+
+        {/* Reveal Answer Button */}
+        {/*  {!showReveal && (
+        <div className="reveal-btn-wrap">
+          <button className="reveal-btn" onClick={handleReveal}>
+            Reveal Answer
+          </button>
+        </div>
+      )} */}
+
+        {/* Reveal Answer Section */}
+        {/* {showReveal && (
+        <RevealAnswerComponent
+          questionText={question.question}
+          explanationHeading={explanationHeading}
+          explanationParagraphs={explanationParagraphs}
+          additionalInfoHeading="Additional Info"
+          additionalInfoParagraphs={additionalInfoParagraphs}
+          additionalInfoImage={additionalInfoImage}
+        />
+      )} */}
+      </div>
+    </>
+  );
+}
+
+export default MultiRadioQuestionView;

@@ -26,6 +26,13 @@ import EnquireLeadComponent from "../components/AdminComponents/EnquireLeadCompo
 import ExamTypeComponent from "../components/AdminComponents/ExamTypeComponent";
 import SelectCourseComponent from "../components/AdminComponents/SelectCourseComponent";
 import AddTestComponent from "../components/AdminComponents/AddTestComponent";
+import McqQuestionView from "../Admin Question View/McqQuestionView";
+import DragDropQuestionView from "../Admin Question View/DragDropQuestionView";
+import DropDownQuestionView from "../Admin Question View/DropDownQuestionView";
+import MultiRadioQuestionView from "../Admin Question View/MultiRadioQuestionView";
+import SentenceHighlightQuestionView from "../Admin Question View/SentenceHighlightQuestionView";
+import FillinTheBlanksQuestionView from "../Admin Question View/FillinTheBlanksQuestionView";
+import SortingQuestionView from "../Admin Question View/SortingQuestionView";
 
 const AdminRoutes = () => (
     <>
@@ -40,8 +47,8 @@ const AdminRoutes = () => (
                     <StudentManage />
                 </ProtectedRoutes>
             } />
-            
-        {/*     <Route path="/admin/student-form" element={
+
+            {/*     <Route path="/admin/student-form" element={
                 <ProtectedRoutes allowedRoles={['admin']}>
                     <AddStudentForm />
                 </ProtectedRoutes>
@@ -98,7 +105,7 @@ const AdminRoutes = () => (
                     <FillinQuestionContent />
                 </ProtectedRoutes>
             } />
-            
+
 
             {/* ✅ Question Management Flow Routes */}
             <Route path="/admin/answer-explain" element={
@@ -108,9 +115,9 @@ const AdminRoutes = () => (
             } />
             <Route path="/admin/meta-info" element={
                 <ProtectedRoutes allowedRoles={['admin']}>
-                
+
                     <MetaInfoComponent />
-                   
+
                 </ProtectedRoutes>
             } />
             <Route path="/admin/create-question" element={
@@ -171,6 +178,50 @@ const AdminRoutes = () => (
                     <EnquireLeadComponent />
                 </ProtectedRoutes>
             } />
+
+            {/* Question view */}
+             <Route path="/admin/MCQ-question-view" element={
+                <ProtectedRoutes allowedRoles={['admin']}>
+                    <McqQuestionView />
+                </ProtectedRoutes>
+            } />
+
+              <Route path="/admin/DragDrop-question-view" element={
+                <ProtectedRoutes allowedRoles={['admin']}>
+                    <DragDropQuestionView />
+                </ProtectedRoutes>
+            } />
+
+              <Route path="/admin/DropDown-question-view" element={
+                <ProtectedRoutes allowedRoles={['admin']}>
+                    <DropDownQuestionView />
+                </ProtectedRoutes>
+            } />
+
+              <Route path="/admin/MultiRadio-question-view" element={
+                <ProtectedRoutes allowedRoles={['admin']}>
+                    <MultiRadioQuestionView />
+                </ProtectedRoutes>
+            } />
+
+               <Route path="/admin/FillinTheBlanksQuestion-question-view" element={
+                <ProtectedRoutes allowedRoles={['admin']}>
+                    <FillinTheBlanksQuestionView/>
+                </ProtectedRoutes>
+            } /> 
+
+              <Route path="/admin/SentenceHighlight-question-view" element={
+                <ProtectedRoutes allowedRoles={['admin']}>
+                    <SentenceHighlightQuestionView/>
+                </ProtectedRoutes>
+            } />
+
+              <Route path="/admin/Sorting-question-view" element={
+                <ProtectedRoutes allowedRoles={['admin']}>
+                    <SortingQuestionView/>
+                </ProtectedRoutes>
+            } />
+
         </Route>
     </>
 );

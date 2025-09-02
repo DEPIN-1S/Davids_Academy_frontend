@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { FaTrash, FaEdit, FaToggleOff, FaToggleOn } from "react-icons/fa";
+import { FaEdit, FaToggleOff, FaToggleOn } from "react-icons/fa";
 import "../../styles/AdminStyles/StudentManage.css";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchStudents, removeStudent } from "../../features/students/studentSlice";
@@ -8,17 +8,30 @@ import EditStudentForm from "../../components/AdminComponents/EditStudentForm";
 
 const StudentManage = () => {
   const dispatch = useDispatch();
-  const { list, loading } = useSelector((state) => state.students);
+  const { list, loading, totalPages, currentPage, total } = useSelector(
+    (state) => state.students
+  );
 
+  const [page, setPage] = useState(1);
   const [filterStatus, setFilterStatus] = useState("all");
   const [showAddForm, setShowAddForm] = useState(false);
-  const [selectedStudentId, setSelectedStudentId] = useState(null); // ✅ holds studentId being edited
+  const [selectedStudentId, setSelectedStudentId] = useState(null);
+
+  // Fetch students whenever page changes
+  useEffect(() => {
+    dispatch(fetchStudents({ page, limit: 10 }));
+    console.log("Students list from Redux:", list)
+
+  }, [dispatch, page]);
 
   // Filter logic
-  const filteredStudents = list.filter((student) => {
-    if (filterStatus === "all") return true;
-    return student.status?.toLowerCase() === filterStatus;
-  });
+  const filteredStudents = Array.isArray(list)
+    ? list.filter((student) =>
+      filterStatus === "all"
+        ? true
+        : student.status?.toLowerCase() === filterStatus
+    )
+    : [];
 
   const handleDelete = (studentId) => {
     if (window.confirm("Do you really want to update this student's status?")) {
@@ -26,7 +39,7 @@ const StudentManage = () => {
         .unwrap()
         .then(() => {
           alert("Student status updated successfully ✅");
-          dispatch(fetchStudents());
+          dispatch(fetchStudents({ page, limit: 10 }));
         })
         .catch((error) => {
           alert(error.message || "Error updating student status");
@@ -34,23 +47,16 @@ const StudentManage = () => {
     }
   };
 
-  useEffect(() => {
-    dispatch(fetchStudents());
-  }, [dispatch]);
+  const handlePageChange = (newPage) => {
+    setPage(newPage);
+  };
 
-  useEffect(() => {
-    if (!loading) {
-      console.log("Student count:", list.length);
-      console.log("students in student manage :::: ",list);
-      
-    }
-  }, [loading, list]);
-
-  const students = Array.isArray(filteredStudents) && !loading ? filteredStudents : [];
+  const students = !loading ? filteredStudents : [];
 
   return (
     <>
       <div className="table-header">
+        <h3>Total Students: {total || 0}</h3>
         <select
           className="status-dropdown"
           value={filterStatus}
@@ -79,44 +85,72 @@ const StudentManage = () => {
             </tr>
           </thead>
           <tbody>
-            {students.map((student, index) => (
-              <tr key={index} className={index % 2 === 1 ? "striped" : ""}>
-                <td>{student.id}</td>
-                <td>{student.firstname} {student.lastname}</td>
-                <td>{student.email}</td>
-                <td>{student.cs_name || "N/A"}</td>
-                <td>{student.status || "N/A"}</td>
-                <td className="action-buttons">
-                  <button className="progress-btn">View Progress</button>
+            {!loading && students.length > 0 ? (
+              students.map((student, index) => (
+                <tr key={student.id || index} className={index % 2 === 1 ? "striped" : ""}>
+                  <td>{student.id}</td>
+                  <td>{student.firstname} {student.lastname}</td>
+                  <td>{student.email}</td>
+                  <td>{student.cs_name || "N/A"}</td>
+                  <td>{student.status || "N/A"}</td>
+                  <td className="action-buttons">
+                    <button className="progress-btn">View Progress</button>
 
-                  {student.status === "active" ? (
-                    <button
-                      className="active-btn"
-                      onClick={() => handleDelete(student.id)}
-                    >
-                      <FaToggleOn className="text-green-500" size={20} />
-                    </button>
-                  ) : (
-                    <button
-                      className="inactive-btn"
-                      onClick={() => handleDelete(student.id)}
-                    >
-                      <FaToggleOff className="text-gray-500" size={20} />
-                    </button>
-                  )}
+                    {student.status === "active" ? (
+                      <button
+                        className="active-btn"
+                        onClick={() => handleDelete(student.id)}
+                      >
+                        <FaToggleOn className="text-green-500" size={20} />
+                      </button>
+                    ) : (
+                      <button
+                        className="inactive-btn"
+                        onClick={() => handleDelete(student.id)}
+                      >
+                        <FaToggleOff className="text-gray-500" size={20} />
+                      </button>
+                    )}
 
-                  {/* ✅ Pass studentId here */}
-                  <button
-                    className="edit-btn"
-                    onClick={() => setSelectedStudentId(student.id)}
-                  >
-                    <FaEdit />
-                  </button>
+                    <button
+                      className="edit-btn"
+                      onClick={() => setSelectedStudentId(student.id)}
+                    >
+                      <FaEdit />
+                    </button>
+                  </td>
+                </tr>
+              ))
+            ) : (
+              <tr>
+                <td colSpan="6" style={{ textAlign: "center" }}>
+                  {loading ? "Loading students..." : "No students found"}
                 </td>
               </tr>
-            ))}
+            )}
           </tbody>
         </table>
+
+        {/* ✅ Pagination controls */}
+        <div className="pagination-controls">
+          <button
+            disabled={page === 1}
+            onClick={() => handlePageChange(page - 1)}
+          >
+            Prev
+          </button>
+
+          <span>
+            Page {currentPage || 1} of {totalPages || 1}
+          </span>
+
+          <button
+            disabled={page === totalPages}
+            onClick={() => handlePageChange(page + 1)}
+          >
+            Next
+          </button>
+        </div>
 
         {/* Edit Student Modal */}
         {selectedStudentId && (
@@ -124,7 +158,7 @@ const StudentManage = () => {
             <div className="modal-content">
               <EditStudentForm
                 studentId={selectedStudentId}
-                onClose={() => setSelectedStudentId(null)} // close on cancel/save
+                onClose={() => setSelectedStudentId(null)}
               />
             </div>
           </div>
@@ -137,7 +171,7 @@ const StudentManage = () => {
               <AddStudentForm
                 onClose={() => setShowAddForm(false)}
                 onSuccess={() => {
-                  dispatch(fetchStudents());
+                  dispatch(fetchStudents({ page, limit: 10 }));
                   setShowAddForm(false);
                 }}
               />
@@ -150,4 +184,3 @@ const StudentManage = () => {
 };
 
 export default StudentManage;
-

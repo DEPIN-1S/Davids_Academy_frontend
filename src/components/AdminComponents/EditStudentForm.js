@@ -34,7 +34,7 @@ const EditStudentForm = ({ studentId, onClose }) => {
         fullName: '',
         emailAddress: '',
         phoneNumber: '',
-        targetExam: '12',
+        targetExam: '',
 
     });
 

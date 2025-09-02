@@ -49,6 +49,24 @@ export const adminDeleteQuestion = async (id) => {
 };
 
 
+// api/admin.js
+export const apiDeleteTest = async (id) => {
+    try {
+        console.log("inside admin delete test API");
+        const url = `${baseUrl}/exam/tests/${id}`;
+        const response = await fetch(url, { method: "DELETE" });
+
+        if (!response.ok) {
+            throw new Error(`Failed to delete test with ID ${id}`);
+        }
+
+        return { success: true, id };
+    } catch (error) {
+        console.error("Error deleting test:", error);
+        throw error;
+    }
+};
+
 
 
 
@@ -225,8 +243,6 @@ export const adminGetQBankQuestions = async (page = 1, limit = 10) => {
         throw error;
     }
 };
-
-
 
 // ✅ Fetch Mock Test Questions in admin side
 export const adminGetMockTestQuestions = async (page = 1, limit = 10) => {

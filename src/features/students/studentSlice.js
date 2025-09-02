@@ -7,25 +7,21 @@ import { deleteStudent } from "../../features/students/studentApi";
 
 export const fetchStudents = createAsyncThunk(
   "students/fetchStudents",
-  async (_, { rejectWithValue }) => {
+  async ({ page, limit }, { rejectWithValue }) => {
     try {
       const token = localStorage.getItem("accessToken");
-      console.log("Access toke in student list", token);
+      const response = await listStudents(token, page, limit);
 
-      const data = await listStudents(token);
-      if (Array.isArray(data)) {
-        return data;
-      } else if (Array.isArray(data.list)) {
-        return data.list;
-      } else if (Array.isArray(data.data)) {
-        return data.data;
-      }
-      return [];
+      console.log("📦 Full API Response:", response);
+
+      return response; // { data: [...], pagination: {...}, result, message }
     } catch (error) {
       return rejectWithValue(error.message);
     }
   }
 );
+
+
 
 
 export const createStudent = createAsyncThunk(
@@ -66,20 +62,24 @@ export const removeStudent = createAsyncThunk(
 );
 
 
+
 export const updateStudent = createAsyncThunk(
   "students/updateStudent",
   async (studentData, { rejectWithValue }) => {
     try {
-      console.log("inside student edit slicee :::: ");
-      
+      console.log("inside student edit thunk ::: ", studentData);
+
       const token = localStorage.getItem("accessToken");
+      if (!token) return rejectWithValue("No access token found");
+
       const data = await editStudent(studentData, token);
+      console.log("Edit student API response:", data);
 
       if (!data || data.success === false || data.result === false) {
         return rejectWithValue(data?.message || "Failed to update student");
       }
 
-      return data.student || data;
+      return data.student || data; // make sure your reducer can use this
     } catch (error) {
       return rejectWithValue(error.message);
     }
@@ -93,6 +93,9 @@ const studentSlice = createSlice({
     list: [],
     loading: false,
     error: null,
+    totalPages: 1,
+    currentPage: 1,
+    total: 0,
   },
   reducers: {},
   extraReducers: (builder) => {
@@ -103,12 +106,17 @@ const studentSlice = createSlice({
       })
       .addCase(fetchStudents.fulfilled, (state, action) => {
         state.loading = false;
-        state.list = action.payload;
+        state.list = action.payload.data || [];   // or .list depending on API
+        state.totalPages = action.payload.pagination.totalPages;
+        state.currentPage = action.payload.pagination.page;
+        state.total = action.payload.pagination.total;
       })
+
       .addCase(fetchStudents.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
       })
+
 
       .addCase(removeStudent.fulfilled, (state, action) => {
         state.list = state.list.filter(
@@ -117,28 +125,24 @@ const studentSlice = createSlice({
       })
 
 
-      .addCase(updateStudent.pending, (state) => {
+   .addCase(updateStudent.pending, (state) => {
         state.loading = true;
+        state.error = null;
       })
       .addCase(updateStudent.fulfilled, (state, action) => {
         state.loading = false;
-        // update the list with the edited student
-        const updated = action.payload?.student;
+        const updated = action.payload;
         if (updated) {
-          const index = state.list.findIndex(s => s.id === updated.id);
+          const index = state.list.findIndex((s) => s.id === updated.id);
           if (index !== -1) {
-            state.list[index] = updated;
+            state.list[index] = { ...state.list[index], ...updated };
           }
         }
       })
       .addCase(updateStudent.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
-      });
-
-
-
-
+      })
   },
 });
 
