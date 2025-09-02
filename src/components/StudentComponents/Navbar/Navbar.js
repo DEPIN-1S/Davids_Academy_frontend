@@ -22,23 +22,23 @@ const NavBar = () => {
     const routeConfig = {
         "/student/question-bank": {
             title: "Question Bank",
-            subtitle: "Lorem Ipsum is simply dummy text of the printing and typesetting industry.",
+            subtitle: " Practice, learn, and improve with our curated set of questions designed to match real exam patterns and enhance your preparation.",
             // icon: <FaThLarge />,
             showWave: false
         },
         "/student/recorded-class": {
             title: "Recorded Classes",
-            subtitle: "Lorem Ipsum is simply dummy text of the printing and typesetting industry.",
+            subtitle: " Practice, learn, and improve with our curated set of questions designed to match real exam patterns and enhance your preparation.",
             // icon: <FaBook />
         },
         "/student/notes": {
             title: "Notes",
-            subtitle: "Lorem Ipsum is simply dummy text of the printing and typesetting industry.",
+            subtitle: " Practice, learn, and improve with our curated set of questions designed to match real exam patterns and enhance your preparation.",
             // icon: <FaClipboardList />
         },
         "/student/tests": {
-            title: "Tests",
-            subtitle: "Lorem Ipsum is simply dummy text of the printing and typesetting industry.",
+            title: "Mock Tests",
+            subtitle: " Practice, learn, and improve with our curated set of questions designed to match real exam patterns and enhance your preparation.",
             // icon: <FaPhone />
         }
     };
