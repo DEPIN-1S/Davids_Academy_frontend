@@ -13,6 +13,9 @@ export const loginUser = async (credentials) => {
     throw new Error(json.message || 'Login failed');
   }
 
+  sessionStorage.setItem('accessToken', json.data.accessToken);
+  sessionStorage.setItem('refreshToken', json.data.refreshToken);
+  
   return {
     user: {
       id: json.data.id,

@@ -1,7 +1,16 @@
 // src/api/examApi.js
 const baseUrl = process.env.REACT_APP_API_URL;
-const accessToken = localStorage.getItem('accessToken');
-const refreshToken = localStorage.getItem('refreshToken');
+const accessToken = sessionStorage.getItem('accessToken');
+const refreshToken = sessionStorage.getItem('refreshToken');
+
+
+const getToken = () => {
+  const token = sessionStorage.getItem('accessToken');
+  if (!token) {
+    throw new Error('No authentication token found. Please log in.');
+  }
+  return token;
+};
 
 export const postQuestion = async (questionData) => {
     console.log("question data in api call :::::", questionData);
@@ -176,7 +185,7 @@ export const fetchQBankQuestions = async () => {
             {
                 method: "GET",
                 headers: {
-                    Authorization: `Bearer ${localStorage.getItem('accessToken')}`
+                    Authorization: `Bearer ${sessionStorage.getItem('accessToken')}`
                 }
             }
         );
@@ -199,7 +208,7 @@ export const fetchQBankQuestionData = async (questionId) => {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
-                    Authorization: `Bearer ${localStorage.getItem('accessToken')}`
+                    Authorization: `Bearer ${sessionStorage.getItem('accessToken')}`
 
                 },
                 body: JSON.stringify({ questionId: questionId })
@@ -303,3 +312,178 @@ export async function adminGetTestQuestions(page = 1, limit = 10) {
 
 
 
+export const fetchStudentTests = async (type = 'all') => {
+  try {
+    const token = getToken();
+    const response = await fetch(
+      `${baseUrl}/student/test/list?type=${type}`,
+      {
+        method: 'GET',
+        headers: {
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+      }
+    );
+    if (!response.ok) {
+      throw new Error('Failed to fetch student tests');
+    }
+    const data = await response.json();
+    // Assuming response structure: { data: [...] } based on TestComponent transformation
+    return data.data || [];
+  } catch (error) {
+    throw error;
+  }
+};
+
+// List all questions in a specific test (POST based on provided testapis)
+export const fetchTestQuestions = async (test_id) => {
+    try {
+        const token = getToken();
+        const response = await fetch(
+            `${baseUrl}/student/test/questions`,
+            {
+                method: 'POST',
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ test_id }),
+            }
+        );
+
+        if (!response.ok) {
+            throw new Error(`Failed to fetch test questions: ${response.status}`);
+        }
+
+        const data = await response.json();
+        console.log("Test questions with headings:", data);
+        
+        // Return both question IDs and any heading information
+        return data.data || data.list || data;
+    } catch (error) {
+        throw error;
+    }
+};
+
+
+
+export const fetchTestQuestionData = async (test_id, questionId) => {
+    try {
+        const token = getToken();
+        console.log('Fetching question data for:', { test_id, questionId });
+        
+        const response = await fetch(
+            `${baseUrl}/student/test/question/data`,
+            {
+                method: 'POST',
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    test_id: String(test_id),        // String format
+                    questionId: String(questionId)   // camelCase, not snake_case
+                    // No headings_id needed!
+                }),
+            }
+        );
+
+        if (!response.ok) {
+            const errorText = await response.text();
+            console.error('API Error Response:', errorText);
+            throw new Error(`Failed to fetch test question data: ${response.status} ${response.statusText}`);
+        }
+
+        const data = await response.json();
+        console.log("Question data received:", data);
+        
+        if (data.result && data.data) {
+            return data.data;
+        } else {
+            throw new Error(data.message || 'No question data received');
+        }
+    } catch (error) {
+        console.error('fetchTestQuestionData error:', error);
+        throw error;
+    }
+};
+
+
+
+
+// // Temporary mock data for testing
+// export const fetchTestQuestionData = async (test_id, questionId) => {
+//     console.log('🚧 Using mock data for question:', questionId);
+    
+//     // Return mock question data
+//     return {
+//         id: questionId,
+//         question_type: 'MCQ',
+//         question_text: `Mock question ${questionId}`,
+//         options: [
+//             { id: 1, text: 'Option A' },
+//             { id: 2, text: 'Option B' },
+//             { id: 3, text: 'Option C' },
+//             { id: 4, text: 'Option D' }
+//         ],
+//         correct_answer: 1
+//     };
+// };
+
+
+
+
+
+
+// Submit test question (POST based on provided testapis)
+export const submitTestQuestion = async (test_id, questionId, is_correct, mark) => {
+  try {
+    const token = getToken();
+    const response = await fetch(
+      `${baseUrl}/student/test/question/submit`,
+      {
+        method: 'POST',
+        headers: {
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ test_id, questionId, is_correct, mark }),
+      }
+    );
+    if (!response.ok) {
+      throw new Error('Failed to submit test question');
+    }
+    const data = await response.json();
+    // Return full response for any messages or results
+    return data;
+  } catch (error) {
+    throw error;
+  }
+};
+
+// Submit entire test (POST based on provided testapis)
+export const submitTest = async (test_id) => {
+  try {
+    const token = getToken();
+    const response = await fetch(
+      `${baseUrl}/student/test/submit`,
+      {
+        method: 'POST',
+        headers: {
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ test_id }),
+      }
+    );
+    if (!response.ok) {
+      throw new Error('Failed to submit test');
+    }
+    const data = await response.json();
+    // Return full response
+    return data;
+  } catch (error) {
+    throw error;
+  }
+};

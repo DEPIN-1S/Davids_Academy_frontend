@@ -9,12 +9,11 @@ export const fetchStudents = createAsyncThunk(
   "students/fetchStudents",
   async ({ page, limit }, { rejectWithValue }) => {
     try {
-      const token = localStorage.getItem("accessToken");
+
+      const token = sessionStorage.getItem("accessToken");
       const response = await listStudents(token, page, limit);
-
-      console.log("📦 Full API Response:", response);
-
       return response; // { data: [...], pagination: {...}, result, message }
+
     } catch (error) {
       return rejectWithValue(error.message);
     }
@@ -28,7 +27,7 @@ export const createStudent = createAsyncThunk(
   "students/createStudent",
   async (studentData, { rejectWithValue }) => {
     try {
-      const token = localStorage.getItem("accessToken");
+      const token = sessionStorage.getItem("accessToken");
       const data = await addStudent(studentData, token);
       console.log("student data ::", studentData);
       console.log("Received data from API:", data);
@@ -48,7 +47,7 @@ export const removeStudent = createAsyncThunk(
   "students/removeStudent",
   async (studentId, { rejectWithValue }) => {
     try {
-      const token = localStorage.getItem("accessToken");
+      const token = sessionStorage.getItem("accessToken");
       const data = await deleteStudent(studentId, token);
       if (!data || data.result === false) { // ✅ match backend field
         return rejectWithValue(data?.message || "Failed to delete student");
@@ -67,14 +66,9 @@ export const updateStudent = createAsyncThunk(
   "students/updateStudent",
   async (studentData, { rejectWithValue }) => {
     try {
-      console.log("inside student edit thunk ::: ", studentData);
-
-      const token = localStorage.getItem("accessToken");
+     const token = sessionStorage.getItem("accessToken");
       if (!token) return rejectWithValue("No access token found");
-
       const data = await editStudent(studentData, token);
-      console.log("Edit student API response:", data);
-
       if (!data || data.success === false || data.result === false) {
         return rejectWithValue(data?.message || "Failed to update student");
       }
