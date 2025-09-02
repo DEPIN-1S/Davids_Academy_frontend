@@ -9,11 +9,12 @@ const RecordClassesPage = () => {
   return (
     <section className='record-class-section'>
       <DashboardNavbar />
-      <NewVideoComponent courseId={1} subjectId={1} />
-      <ContinueWatchingComponent courseId={1} subjectId={1} />
+      <NewVideoComponent  />
+      {/* <ContinueWatchingComponent /> */}
       {/* <PlaylistComponent /> */}
     </section>
   );
 };
 
 export default RecordClassesPage;
+ 
