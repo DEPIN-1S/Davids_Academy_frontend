@@ -5,22 +5,33 @@ import { fetchCourses } from "../../features/courses/courseSlice";
 import { fetchRecentEnquiries } from "../../features/contact/contactSlice";
 import { fetchStudents } from "../../features/students/studentSlice";
 import { useNavigate } from "react-router-dom";
-
-
-
+import { adminFetchTestQuestions } from "../../features/exam/examSlice"
+import { fetchMockTestQuestion } from "../../features/exam/examAPI";
 
 const DashboardPage = () => {
   const dispatch = useDispatch();
   const { list: courses, loading: coursesLoading } = useSelector((state) => state.course);
-  const { list: students, loading: studentsLoading, error: studentsError } = useSelector((state) => state.students);
-  const { recentEnquiries, loading, error } = useSelector((state) => state.contact);
+  const {
+    list: students,
+    loading: studentsLoading,
+    error: studentsError,
+    total,
+    totalPages,
+  } = useSelector((state) => state.students);
 
-  const studentCount = students.length;
+  const { recentEnquiries, loading, error } = useSelector((state) => state.contact);
+  const studentCount = total;
   console.log("er4r34reet:::", recentEnquiries);
 
   const navigate = useNavigate()
+
+  const {
+    adminTestQuestions,
+    adminTestQuestionsTotalCount 
+  } = useSelector((state) => state.exam);
+
   const viewAllEnquiries = () => {
-    
+
   }
 
   useEffect(() => {
@@ -28,6 +39,9 @@ const DashboardPage = () => {
     dispatch(fetchCourses());
     dispatch(fetchStudents());
     dispatch(fetchRecentEnquiries());
+    dispatch(adminFetchTestQuestions())
+    console.log("fetch test question in admin dashboard  ::: ",adminTestQuestions);
+    
   }, [dispatch]);
 
 
@@ -41,7 +55,7 @@ const DashboardPage = () => {
     { title: "Total Courses", value: coursesLoading ? "Loading..." : courses.length, subtitle: "Available for student" },
     {
       title: "Tests Created",
-      value: 145,
+      value:  adminTestQuestionsTotalCount,
       change: "12%",
       subtitle: "increase in 30 days",
     },

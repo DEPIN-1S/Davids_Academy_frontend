@@ -1,20 +1,32 @@
-export async function listStudents(token) {
-  const response = await fetch(`${process.env.REACT_APP_API_URL}/admin/student/list`, {
-    method: "POST",
-    headers: {
-      "Authorization": `Bearer ${token}`,
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({ type: "all" })
-  });
+export async function listStudents(token, page = 1, limit = 10) {
+  const response = await fetch(
+    `${process.env.REACT_APP_API_URL}/admin/student/list`,
+    {
+      method: "POST",
+      headers: {
+        "Authorization": `Bearer ${token}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        type: "all",
+        page,   // ✅ send current page
+        limit,  // ✅ send limit per page
+      }),
+    }
+  );
 
   if (!response.ok) {
     throw new Error("Failed to fetch students");
   }
 
   const data = await response.json();
-  return data;
+
+  // ✅ Debug log to see exactly what backend sends
+  console.log("📦 Students API Response:", data);
+
+  return data; // should look like { list: [], totalPages: X, currentPage: Y }
 }
+
 
 
 export async function editStudent(studentData, token) {
@@ -30,14 +42,23 @@ export async function editStudent(studentData, token) {
     }
   );
 
-  const data = await response.json();
+  let data;
+  try {
+    console.log("Inside studenet edit api");
+    
+    data = await response.json();
+  } catch (err) {
+    console.error("Failed to parse JSON from response:", err);
+    throw new Error("Invalid response from server");
+  }
 
   if (!response.ok || data.result === false) {
     throw new Error(data.message || "Failed to edit student");
   }
 
-  return data;
+  return data; // or return data.student if you only need updated student
 }
+
 
 
 
