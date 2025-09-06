@@ -1,20 +1,18 @@
-import React from 'react';
-import '../../styles/DashboardStyles/QuestionFooterComponent.css';
-import { Box, Button, Typography } from '@mui/material';
-import LogoutIcon from '@mui/icons-material/Logout';
-import PauseIcon from '@mui/icons-material/Pause';
-import ArrowBackIosNewIcon from '@mui/icons-material/ArrowBackIosNew';
-import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
+import React from "react";
+import "../../styles/DashboardStyles/QuestionFooterComponent.css";
+import { Box, Button, Typography } from "@mui/material";
+import LogoutIcon from "@mui/icons-material/Logout";
+import ArrowBackIosNewIcon from "@mui/icons-material/ArrowBackIosNew";
+import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
 
 const QuestionFooterComponent = ({
   onEnd,
-  onPause,
   onNext,
   onPrevious,
   disablePrevious = false,
   disableNext = false,
   questionNumber,
-  totalQuestions
+  totalQuestions,
 }) => {
   return (
     <Box className="question-footer">
@@ -25,18 +23,11 @@ const QuestionFooterComponent = ({
           className="footer-button"
           color="error"
         >
-          End
-        </Button>
-        <Button
-          startIcon={<PauseIcon />}
-          onClick={onPause}
-          className="footer-button"
-        >
-          Pause
+          End Test
         </Button>
       </div>
 
-      <div className="center-info" style={{ alignSelf: 'center' }}>
+      <div className="center-info" style={{ alignSelf: "center" }}>
         {questionNumber && totalQuestions && (
           <Typography variant="body2" color="textSecondary">
             Question {questionNumber} of {totalQuestions}
@@ -48,7 +39,7 @@ const QuestionFooterComponent = ({
         <Button
           startIcon={<ArrowBackIosNewIcon />}
           onClick={onPrevious}
-          className="footer-button"
+          className="footer-button" // Consistent class name
           disabled={disablePrevious}
         >
           Previous
@@ -56,7 +47,7 @@ const QuestionFooterComponent = ({
         <Button
           endIcon={<ArrowForwardIosIcon />}
           onClick={onNext}
-          className="footer-button"
+          className="footer-button" // Consistent class name
           disabled={disableNext}
         >
           Next
