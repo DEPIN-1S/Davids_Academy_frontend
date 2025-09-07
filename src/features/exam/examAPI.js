@@ -360,6 +360,9 @@ export const fetchTestQuestions = async (test_id) => {
         console.log("Test questions with headings:", data);
         
         // Return both question IDs and any heading information
+         // Deduplicate IDs to prevent repeats
+    //    const uniqueIds = [...new Set(data.data?.map(item => item.questionId).filter(id => id))];
+    //  return uniqueIds.length > 0 ? uniqueIds : [];
         return data.data || data.list || data;
     } catch (error) {
         throw error;
@@ -412,24 +415,7 @@ export const fetchTestQuestionData = async (test_id, questionId) => {
 
 
 
-// // Temporary mock data for testing
-// export const fetchTestQuestionData = async (test_id, questionId) => {
-//     console.log('🚧 Using mock data for question:', questionId);
-    
-//     // Return mock question data
-//     return {
-//         id: questionId,
-//         question_type: 'MCQ',
-//         question_text: `Mock question ${questionId}`,
-//         options: [
-//             { id: 1, text: 'Option A' },
-//             { id: 2, text: 'Option B' },
-//             { id: 3, text: 'Option C' },
-//             { id: 4, text: 'Option D' }
-//         ],
-//         correct_answer: 1
-//     };
-// };
+
 
 
 

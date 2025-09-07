@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { Box, Typography, Button, List, ListItem, ListItemText } from '@mui/material';
 import {
   DndContext,
   closestCenter,
@@ -9,26 +10,37 @@ import {
 } from '@dnd-kit/core';
 import {
   SortableContext,
-  sortableKeyboardCoordinates,  
+  sortableKeyboardCoordinates,
   verticalListSortingStrategy,
   arrayMove,
 } from '@dnd-kit/sortable';
 import SortableItemComponent from './SortTableItemComponent';
-import RevealAnswerComponent from './RevealAnswerComponent'; // Adjust path as needed
-import '../../styles/DashboardStyles/SortQuestionComponent.css';
+import RevealAnswerComponent from './RevealAnswerComponent';
 
-const SortQuestionComponent = ({ question }) => {
-  // Build user-sortable steps from API data (randomized)
-  const initialUserSteps = (question.sortingoptions || [])
-    .map(opt => ({
+const SortQuestionComponent = ({ question, onSubmit }) => {
+  // Extract data from question prop
+  const {
+    id: questionId,
+    question: questionText,
+    sortingoptions = [],
+    explanation = [],
+    additionalInfo = [],
+  } = question || {};
+
+  // Initialize sortable items (randomized)
+  const initialUserSteps = sortingoptions
+    .map((opt) => ({
       id: String(opt.id),
       text: opt.sortItem,
       order: opt.itemOrder ?? null,
     }))
-    .sort(() => Math.random() - 0.5); // Randomize for user challenge
+    .sort(() => Math.random() - 0.5);
 
   const [steps, setSteps] = useState(initialUserSteps);
   const [showReveal, setShowReveal] = useState(false);
+  const [userAnswer, setUserAnswer] = useState('');
+  const [correctAnswer, setCorrectAnswer] = useState('');
+  const [isCorrect, setIsCorrect] = useState(false);
 
   // Sensors for DND Kit
   const sensors = useSensors(
@@ -36,7 +48,7 @@ const SortQuestionComponent = ({ question }) => {
     useSensor(KeyboardSensor, { coordinateGetter: sortableKeyboardCoordinates })
   );
 
-  // On drag end, update order
+  // Handle drag end to update order
   const handleDragEnd = (event) => {
     const { active, over } = event;
     if (active?.id && over?.id && active.id !== over.id) {
@@ -46,86 +58,167 @@ const SortQuestionComponent = ({ question }) => {
     }
   };
 
+  // Handle reveal (submission and show answers)
   const handleReveal = () => {
+    // Correct order based on itemOrder
+    const correctOrder = sortingoptions
+      .map((opt) => ({
+        id: String(opt.id),
+        text: opt.sortItem,
+        order: typeof opt.itemOrder !== 'undefined' ? opt.itemOrder : 9999,
+      }))
+      .sort((a, b) => a.order - b.order);
+
+    // User’s submitted order (text values in order)
+    const userAnswerStr = steps.map((step) => step.text).join(', ');
+    const correctAnswerStr = correctOrder.map((step) => step.text).join(', ');
+
+    // Compare user order with correct order (check if IDs match in sequence)
+    const correctStatus = steps.every((step, index) => step.id === correctOrder[index].id);
+    const mark = correctStatus ? (question?.marks || 5) : 0;
+
+    // Call onSubmit from ExamContainer
+    onSubmit(questionId, correctStatus, mark, userAnswerStr);
+
+    // Set states for reveal
+    setUserAnswer(userAnswerStr);
+    setCorrectAnswer(correctAnswerStr);
+    setIsCorrect(correctStatus);
     setShowReveal(true);
   };
 
-  // The correct order (from itemOrder, fallback to insertion if missing)
-  const correctOrder = (question.sortingoptions || [])
-    .map(opt => ({
-      id: String(opt.id),
-      text: opt.sortItem,
-      order: typeof opt.itemOrder !== 'undefined' ? opt.itemOrder : 9999, // fallback large number
-    }))
-    .sort((a, b) => a.order - b.order);
-
-  // Explanation and Additional Info
-  const explanationHeading = question.explanation?.[0]?.heading || 'Explanation';
-  const explanationParagraphs = question.explanation?.map((e) => e.explanation) || [];
-  const additionalInfoHeading = 'Additional Info';
-  const additionalInfoParagraphs = question.additionalInfo?.map((info) => info.info) || [];
-  const additionalInfoImage = question.additionalInfo?.[0]?.image || null;
+  // Loading or no data state
+  if (!question || !sortingoptions.length) {
+    return (
+      <Box sx={{ padding: 2, textAlign: 'center' }}>
+        <Typography>No sorting question data available</Typography>
+      </Box>
+    );
+  }
 
   return (
-    <div className="sort-question-container">
-      <h4 className="sort-heading">{question.question}</h4>
-      <p className="sort-subheading">
+    <Box sx={{ padding: '2rem', maxWidth: '950px', margin: '2rem auto' }}>
+      <Typography variant="h6" fontWeight={700} textAlign="center" mb={2}>
+        {questionText}
+      </Typography>
+      <Typography variant="body1" textAlign="center" mb={4}>
         Place the following actions in the order in which they should be performed, starting from first to last.
-      </p>
+      </Typography>
 
-      {/* Drag-and-drop Sort List: Only before Reveal */}
+      {/* Drag-and-drop Sort List */}
       {!showReveal && (
-        <div className="sort-box">
+        <Box
+          sx={{
+            maxWidth: "600px",
+            margin: "0 auto",
+            mb: 4,
+            p: 2,
+            border: "1px solid #ccc",    
+            borderRadius: "10px",
+            backgroundColor: "#fafafa",
+          }}
+        >
           <DndContext
             sensors={sensors}
             collisionDetection={closestCenter}
             onDragEnd={handleDragEnd}
           >
-            <SortableContext items={steps.map((step) => step.id)} strategy={verticalListSortingStrategy}>
+            <SortableContext
+              items={steps.map((step) => step.id)}
+              strategy={verticalListSortingStrategy}
+            >
               {steps.map((step, idx) => (
-                <SortableItemComponent
+                <Box
                   key={step.id}
-                  id={step.id}
-                  text={step.text}
-                  index={idx}
-                />
+                  sx={{
+                    border: "1px solid #e0e0e0",  
+                    borderRadius: "8px",
+                    p: 1.5,
+                    mb: 1.5,                      
+                    backgroundColor: "white",
+                    boxShadow: "0 2px 4px rgba(0,0,0,0.05)",
+                    cursor: "grab",
+                    "&:last-child": { mb: 0 },    
+                    "&:hover": {
+                      borderColor: "#1976d2",     
+                      backgroundColor: "#f5faff",
+                    },
+                  }}
+                >
+                  <SortableItemComponent
+                    id={step.id}
+                    text={step.text}
+                    index={idx}
+                  />
+                </Box>
               ))}
             </SortableContext>
           </DndContext>
-        </div>
+        </Box>
       )}
 
-      {/* Reveal Button */}
-      {!showReveal && (
-        <div className="reveal-btn-wrap">
-          <button className="reveal-btn" onClick={handleReveal}>
-            Reveal Answer
-          </button>
-        </div>
-      )}
 
-      {/* Answer Reveal Section */}
-      {showReveal && (
-        <RevealAnswerComponent
-          questionText={question.question}
-          explanationHeading={explanationHeading}
-          explanationParagraphs={explanationParagraphs}
-          additionalInfoHeading={additionalInfoHeading}
-          additionalInfoParagraphs={additionalInfoParagraphs}
-          additionalInfoImage={additionalInfoImage}
+      {/* Submit Button */}
+      <Box textAlign="center">
+        <Button
+          variant="contained"
+          onClick={handleReveal}
+          sx={{
+            backgroundColor: '#f4c300',
+            color: '#000',
+            fontWeight: 600,
+            padding: '0.6rem 2.5rem',
+            borderRadius: '10px',
+            '&:hover': {
+              backgroundColor: '#e0b000',
+            },
+          }}
         >
-          <div className="sort-box" style={{ marginBottom: '2rem' }}>
-            <ol>
-              {correctOrder.map((step, idx) => (
-                <li key={step.id} className="sorted-item">
-                  {step.text}
-                </li>
-              ))}
-            </ol>
-          </div>
-        </RevealAnswerComponent>
+          Reveal Answer
+        </Button>
+      </Box>
+
+      {/* Reveal Section */}
+      {showReveal && (
+        <Box sx={{ mt: 4 }}>
+          <Typography variant="subtitle1" fontWeight={600} mb={1} color="#2E3760">
+            Your Answer:
+          </Typography>
+          <List dense>
+            {userAnswer.split(', ').map((item, idx) => (
+              <ListItem key={idx} disablePadding>
+                <ListItemText primary={item} />
+              </ListItem>
+            ))}
+          </List>
+
+          <Typography variant="subtitle1" fontWeight={600} mt={2} mb={1} color="#35b564ff">
+            Correct Answer:
+          </Typography>
+          <List dense>
+            {correctAnswer.split(', ').map((item, idx) => (
+              <ListItem key={idx} disablePadding>
+                <ListItemText primary={item} />
+              </ListItem>
+            ))}
+          </List>
+
+          <Typography variant="subtitle1" fontWeight={600} mt={2} mb={1} color={isCorrect ? 'green' : 'red'}>
+            {isCorrect ? '✅ Correct!' : '❌ Incorrect'}
+          </Typography>
+
+
+          <RevealAnswerComponent
+            questionText={questionText}
+            explanationHeading={explanation[0]?.heading || 'Explanation'}
+            explanationParagraphs={explanation.map((exp) => exp.explanation) || []}
+            additionalInfoHeading='Additional Info'
+            additionalInfoParagraphs={additionalInfo.map((info) => info.info) || []}
+            additionalInfoImage={additionalInfo[0]?.image || null}
+          />
+        </Box>
       )}
-    </div>
+    </Box>
   );
 };
 

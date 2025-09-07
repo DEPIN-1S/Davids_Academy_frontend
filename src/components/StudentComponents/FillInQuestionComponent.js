@@ -1,87 +1,118 @@
 import React, { useState } from 'react';
-import {
-  DndContext,
-  closestCenter,
-  useSensor,
-  useSensors,
-  PointerSensor,
-  KeyboardSensor,
-} from '@dnd-kit/core';
-import {
-  SortableContext,
-  verticalListSortingStrategy,
-  arrayMove,
-  sortableKeyboardCoordinates,
-} from '@dnd-kit/sortable';
-import SortableItemComponent from './SortTableItemComponent'; // Make sure this supports `id` prop
-import '../../styles/DashboardStyles/DropSortQuestionComponent.css';
+import { Box, Typography, TextField, Button, List, ListItem, ListItemText } from '@mui/material';
+import RevealAnswerComponent from './RevealAnswerComponent';
 
-const DropSortQuestionComponent = () => {
-  const [risk, setRisk] = useState('');
-  const [condition, setCondition] = useState('');
+const FillInQuestionComponent = ({ question, onSubmit }) => {
+  const {
+    id: questionId,
+    question: questionText,
+    explanation = [],
+    additionalInfo = [],
+  } = question || {};
 
-  const [steps, setSteps] = useState([
-    'Administer high-flow oxygen via a non-rebreather mask.',
-    'Administer high-flow oxygen via a non-rebreather mask.',
-    'Administer high-flow oxygen via a non-rebreather mask.',
-  ]);
+  const [userAnswers, setUserAnswers] = useState({});
+  const [showReveal, setShowReveal] = useState(false);
+  const [userAnswerStr, setUserAnswerStr] = useState('');
+  const [correctAnswerStr, setCorrectAnswerStr] = useState('');
+  const [isCorrect, setIsCorrect] = useState(false);
 
-  const sensors = useSensors(
-    useSensor(PointerSensor),
-    useSensor(KeyboardSensor, {
-      coordinateGetter: sortableKeyboardCoordinates,
-    })
-  );
+  // Identify blanks and prepare state
+  const blanks = (questionText.match(/____/g) || []).map((_, idx) => `blank${idx}`);
+  const correctAnswers = question?.answer?.split(',') || []; // Assume comma-separated correct answers
 
-  const handleDragEnd = (event) => {
-    const { active, over } = event;
-
-    if (active.id !== over.id) {
-      setSteps((prev) => {
-        const oldIndex = prev.indexOf(active.id);
-        const newIndex = prev.indexOf(over.id);
-        return arrayMove(prev, oldIndex, newIndex);
-      });
-    }
+  const handleInputChange = (blankId) => (event) => {
+    setUserAnswers((prev) => ({ ...prev, [blankId]: event.target.value }));
   };
 
+  const handleReveal = () => {
+    const userAns = blanks.map((blank, idx) => userAnswers[blank] || 'Not filled').join(', ');
+    const correctAns = correctAnswers.join(', ');
+    const correctStatus = blanks.every((blank, idx) => userAnswers[blank]?.trim() === correctAnswers[idx]?.trim());
+    const mark = correctStatus ? (question?.marks || 5) : 0;
+
+    onSubmit(questionId, correctStatus, mark, userAns);
+
+    setUserAnswerStr(userAns);
+    setCorrectAnswerStr(correctAns);
+    setIsCorrect(correctStatus);
+    setShowReveal(true);
+  };
+
+  if (!question || !questionText) {
+    return <Typography>No fill-in question data available</Typography>;
+  }
+
   return (
-    <div className="dropsort-container">
-      <h4 className="dropsort-question">
-        The nurse knows that the client is at risk for developing&nbsp;
-        <select value={risk} onChange={(e) => setRisk(e.target.value)}>
-          <option value="">Select</option>
-          <option value="pulmonary edema">Pulmonary Edema</option>
-          <option value="cardiogenic shock">Cardiogenic Shock</option>
-        </select>
-        &nbsp;and&nbsp;
-        <select value={condition} onChange={(e) => setCondition(e.target.value)}>
-          <option value="">Select</option>
-          <option value="respiratory failure">Respiratory Failure</option>
-          <option value="arrhythmia">Arrhythmia</option>
-        </select>
-        &nbsp;if the condition is not managed.
-      </h4>
-
-      <div className="sort-box">
-        <DndContext
-          sensors={sensors}
-          collisionDetection={closestCenter}
-          onDragEnd={handleDragEnd}
+    <Box sx={{ padding: '2rem', maxWidth: '950px', margin: '2rem auto' }}>
+      <Typography variant="h6" fontWeight={700} textAlign="center" mb={2}>
+        {questionText.split('____').map((part, idx) => (
+          <React.Fragment key={idx}>
+            {part}
+            {idx < blanks.length && (
+              <TextField
+                key={blanks[idx]}
+                size="small"
+                value={userAnswers[blanks[idx]] || ''}
+                onChange={handleInputChange(blanks[idx])}
+                sx={{ mx: 1, width: '150px' }}
+                disabled={showReveal}
+              />
+            )}
+          </React.Fragment>
+        ))}
+      </Typography>
+      <Box textAlign="center" mt={4}>
+        <Button
+          variant="contained"
+          onClick={handleReveal}
+          sx={{ backgroundColor: '#f4c300', color: '#000', '&:hover': { backgroundColor: '#e0b000' } }}
+          disabled={showReveal}
         >
-          <SortableContext items={steps} strategy={verticalListSortingStrategy}>
-            {steps.map((step) => (
-              <SortableItemComponent key={step} id={step} />
-            ))}
-          </SortableContext>
-        </DndContext>
-      </div>
+          Reveal Answer
+        </Button>
+      </Box>
 
-      <div className="reveal-btn-wrap">
-        <button className="reveal-btn">Reveal Answer</button>
-      </div>
-    </div>
+      {showReveal && (
+        <Box sx={{ mt: 4 }}>
+          <Typography variant="subtitle1" fontWeight={600} mb={1} color="#2E3760">
+            Your Answer:
+          </Typography>
+          <List dense>
+            {userAnswerStr.split(', ').map((item, idx) => (
+              <ListItem key={idx} disablePadding>
+                <ListItemText primary={item} />
+              </ListItem>
+            ))}
+          </List>
+
+          <Typography variant="subtitle1" fontWeight={600} mt={2} mb={1} color="#2E3760">
+            Correct Answer:
+          </Typography>
+          <List dense>
+            {correctAnswerStr.split(', ').map((item, idx) => (
+              <ListItem key={idx} disablePadding>
+                <ListItemText primary={item} />
+              </ListItem>
+            ))}
+          </List>
+
+          <Typography variant="subtitle1" fontWeight={600} mt={2} mb={1} color={isCorrect ? 'green' : 'red'}>
+            {isCorrect ? '✅ Correct!' : '❌ Incorrect'}
+          </Typography>
+
+          
+          <RevealAnswerComponent
+            questionText={questionText}
+            explanationHeading={explanation[0]?.heading || 'Explanation'}
+            explanationParagraphs={explanation.map((exp) => exp.explanation) || []}
+            additionalInfoHeading='Additional Info'
+            additionalInfoParagraphs={additionalInfo.map((info) => info.info) || []}
+            additionalInfoImage={additionalInfo[0]?.image || null}
+          />
+        </Box>
+      )}
+    </Box>
   );
 };
 
-export default DropSortQuestionComponent;
+export default FillInQuestionComponent;
