@@ -110,7 +110,6 @@ function MultiRadioQuestionView() {
         </Box> */}
         <div className="heading">
           <h4> {questionData?.data?.question}</h4>
-
         </div>
 
         {/* Tabs */}
