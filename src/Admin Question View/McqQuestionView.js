@@ -37,20 +37,8 @@ function McqQuestionView() {
   const difficulty = questionData.data.difficulty;
   const question_type = questionData.data.question_type;
   const mcqoptions = questionData?.data?.mcqoptions || [];
-  const answer = 'Vitamin A';
-  const explanation = [
-    {
-      heading: 'Explanation',
-      explanation:
-        'Night blindness is primarily due to Vitamin A deficiency, which is essential for the production of rhodopsin in the retina.',
-    },
-  ];
-  
-  const additionalInfo = [
-    {
-      info: 'Vitamin A deficiency is also associated with xerophthalmia and corneal damage.',
-    },
-  ];
+
+ 
 
   const handleChange = (event) => {
     setSelectedOption(event.target.value);

@@ -17,6 +17,7 @@ import SortableItemComponentQuestionView from './SortableItemComponentQuestionVi
 import { useParams } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { getQuestionData } from '../features/exam/examSlice'
+import { Box, Typography } from '@mui/material';
 
 /* import RevealAnswerComponent from './RevealAnswerComponent'; */
 
@@ -38,7 +39,9 @@ function SortingQuestionView() {
   const [steps, setSteps] = useState([]);
   const question = questionData?.data || {};
   const sortingOptions = question?.sortingoptions || [];
-
+const mark = questionData.data.marks;
+  const difficulty = questionData.data.difficulty;
+  const question_type = questionData.data.question_type;
   useEffect(() => {
     if (sortingOptions.length > 0) {
       // shuffle for user interaction
@@ -70,13 +73,30 @@ function SortingQuestionView() {
 
   return (
     <div className="sort-question-container">
+      <Box sx={{
+        display: "flex",
+        justifyContent: "space-between",
+        alignItems: "center",
+        width: "100%",
+        pb: 5,
+      }} >
+        <Typography >
+          Mark :{mark}
+        </Typography>
+        <Typography >
+          Difficulty :{difficulty}
+        </Typography>
+        <Typography >
+          Question Type : {question_type}
+        </Typography>
+      </Box>
       <h4 className="sort-heading">{question?.question}</h4>
       {/* <p className="sort-subheading">
         Place the following actions in the order in which they should be performed, starting from first to last.
       </p> */}
 
       {/* Drag-and-drop before reveal */}
-        {!showReveal && (
+      {!showReveal && (
         <div className="sort-box">
           <DndContext
             sensors={sensors}
@@ -91,7 +111,7 @@ function SortingQuestionView() {
                 <SortableItemComponentQuestionView
                   key={step.id}
                   id={step.id}
-                  text={step.sortItem} 
+                  text={step.sortItem}
                   index={idx}
                 />
               ))}

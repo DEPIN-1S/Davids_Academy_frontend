@@ -1,12 +1,14 @@
-
-
 import React, { useEffect, useState } from 'react';
-import { Box, Typography, Paper, Grid } from '@mui/material';
+import { Box, Typography, Paper, Grid, useMediaQuery } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { DragDropContext, Droppable, Draggable } from '@hello-pangea/dnd';
 import { useParams } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { getQuestionData } from '../features/exam/examSlice';
+
+import Tabs from '@mui/material/Tabs';
+import Tab from '@mui/material/Tab';
+
 
 const StyledDropZone = styled(Paper)(({ theme }) => ({
   minHeight: 120,
@@ -26,8 +28,16 @@ function DragDropQuestionView() {
       dispatch(getQuestionData(questionId));
     }
   }, [dispatch, questionId]);
-
+  const [activeTab, setActiveTab] = useState(0);
   const [zones, setZones] = useState({});
+  // ✅ Static Tabs Info
+  const mark = questionData.data.marks;
+  const difficulty = questionData.data.difficulty;
+  const question_type = questionData.data.question_type;
+
+  const handleTabChange = (event, newValue) => {
+    setActiveTab(newValue);
+  };
 
   useEffect(() => {
     if (questionData?.data?.dropdownquestiontext) {
@@ -38,6 +48,10 @@ function DragDropQuestionView() {
       });
       setZones(newZones);
     }
+  }, [questionData]);
+
+  useEffect(() => {
+    console.log("Updated Drag drop question data in state:", questionData);
   }, [questionData]);
 
   const onDragEnd = (result) => {
@@ -53,57 +67,98 @@ function DragDropQuestionView() {
   };
 
   return (
-    <Box p={3}>
-      <Typography variant="h6" fontWeight={700} textAlign="center" mb={3}>
-        {questionData?.data?.dropdownquestiontext?.[0]?.text || 'Loading...'}
+    <Box >
+      <Box sx={{
+        display: "flex",
+        justifyContent: "space-between",
+        alignItems: "center",
+        width: "100%",
+        pb: 3,
+      }} >
+        <Typography >
+          Mark :{mark}
+        </Typography>
+        <Typography >
+          Difficulty :{difficulty}
+        </Typography>
+        <Typography >
+          Question Type : {question_type}
+        </Typography>
+      </Box>
+      <Typography variant="h6" fontWeight={700} textAlign="center" mb={2}>
+        {questionData?.data?.question}
       </Typography>
+
+      <Tabs
+        value={activeTab}
+        onChange={handleTabChange}
+
+        sx={{ mb: 2 }}
+      >
+        {questionData?.data?.tabsInfo.map((tab) => (
+          <Tab label={tab.tabKey} key={tab.id} />
+        ))}
+      </Tabs>
+
+      <Box
+        sx={{
+          backgroundColor: '#f8f9ff',
+          borderRadius: '10px',
+          padding: '1rem',
+          mb: 2,
+          minHeight: '100px',
+        }}
+      >
+        <Typography variant="body1" sx={{ color: '#333' }}>
+          {questionData?.data?.tabsInfo?.[activeTab]?.tabValue}
+        </Typography>
+      </Box>
 
       <DragDropContext onDragEnd={onDragEnd}>
         {/* Target Zones from API */}
-        <Grid container spacing={3} justifyContent="center" mb={4}>
+        <Grid container spacing={3} justifyContent="center" mb={2}>
           {(questionData?.data?.headings || []).map((heading) => (
             <Grid item xs={12} sm={6} md={3} key={heading.id}>
               <Typography fontWeight={600} mb={1} textAlign="center">
                 {heading.headings}
               </Typography>
-             <Droppable droppableId={heading.id.toString()}>
-  {(dropProvided) => (
-    <StyledDropZone ref={dropProvided.innerRef} {...dropProvided.droppableProps}>
-      {(zones[heading.id] || []).map((item, index) => (
-        <Draggable
-          key={item.id.toString()}
-          draggableId={item.id.toString()}
-          index={index}
-        >
-          {(dragProvided, snapshot) => (
-            <Box
-              ref={dragProvided.innerRef}
-              {...dragProvided.draggableProps}
-              {...dragProvided.dragHandleProps}
-              sx={{
-                backgroundColor: snapshot.isDragging ? '#e0f7fa' : '#fff',
-                borderRadius: 1,
-                p: 1,
-                mb: 1,
-                boxShadow: 1,
-                fontSize: '0.9rem',
-                minWidth: 300,
-                maxWidth: '100%',
-              }}
-            >
-              {item.options_value}
-            </Box>
-          )}
-        </Draggable>
-      ))}
-      {dropProvided.placeholder}
-    </StyledDropZone>
-  )}
-</Droppable>
+              <Droppable droppableId={heading.id.toString()}>
+                {(dropProvided) => (
+                  <StyledDropZone ref={dropProvided.innerRef} {...dropProvided.droppableProps}>
+                    {(zones[heading.id] || []).map((item, index) => (
+                      <Draggable
+                        key={item.id.toString()}
+                        draggableId={item.id.toString()}
+                        index={index}
+                      >
+                        {(dragProvided, snapshot) => (
+                          <Box
+                            ref={dragProvided.innerRef}
+                            {...dragProvided.draggableProps}
+                            {...dragProvided.dragHandleProps}
+                            sx={{
+                              backgroundColor: snapshot.isDragging ? '#e0f7fa' : '#fff',
+                              borderRadius: 1,
+                              p: 1,
+                              mb: 1,
+                              boxShadow: 1,
+                              fontSize: '0.9rem',
+                              minWidth: 300,
+                              maxWidth: '100%',
+                            }}
+                          >
+                            {item.options_value}
+                          </Box>
+                        )}
+                      </Draggable>
+                    ))}
+                    {dropProvided.placeholder}
+                  </StyledDropZone>
+                )}
+              </Droppable>
 
             </Grid>
           ))}
-
         </Grid>
 
         {/* Source Items */}
