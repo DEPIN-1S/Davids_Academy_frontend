@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   Box,
   Typography,
@@ -12,10 +12,26 @@ import {
   useMediaQuery,
   useTheme,
 } from '@mui/material';
+import { useParams } from 'react-router-dom';
+import {getQuestionData} from '../features/exam/examSlice'
+import { useDispatch, useSelector } from 'react-redux';
 
 function DropDownQuestionView() {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
+  const { questionId } = useParams()
+  const { questionData, loading, error } = useSelector((state) => state.exam);
+  const dispatch = useDispatch();
+  console.log("Question id in params", questionId);
+  useEffect(() => {
+      if (questionId) {
+        console.log("Dispatching thunk with questionId:", questionId);
+        dispatch(getQuestionData(questionId));
+      }
+    }, [dispatch, questionId]);
+    useEffect(() => {
+      console.log("Updated questionData in state:", questionData);
+    }, [questionData]);
 
   // ✅ Static Tabs Info
   const tabsInfo = [

@@ -14,7 +14,8 @@ import {
     CircularProgress,
     Card,
     CardContent,
-    Chip
+    Chip,
+    TextField
 } from "@mui/material";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import LibraryAddCheckIcon from "@mui/icons-material/LibraryAddCheck";
@@ -52,7 +53,8 @@ const MetaInfoComponent = () => {
         subject: receivedQuestionData.subject || "",
         lesson: receivedQuestionData.lesson || "",
         clientNeedArea: receivedQuestionData.clientNeedArea || "",
-        clientNeedTopic: receivedQuestionData.clientNeedTopic || ""
+        clientNeedTopic: receivedQuestionData.clientNeedTopic || "",
+        marks: receivedQuestionData.marks || "",
     });
 
     // ✅ Debug: Log context status
@@ -208,7 +210,8 @@ const MetaInfoComponent = () => {
         explanationText: receivedQuestionData.explanationText || "",
         info: receivedQuestionData.additionalInfo || "",
         answer: receivedQuestionData.correctAnswer || "",
-        options: receivedQuestionData.options || []
+        options: receivedQuestionData.options || [],
+        marks: form.marks
     });
 
 
@@ -225,6 +228,7 @@ const MetaInfoComponent = () => {
         explanationHeading: receivedQuestionData.explanationHeading || "",
         explanationText: receivedQuestionData.explanationText || "",
         info: receivedQuestionData.additionalInfo || "",
+        marks: form.marks,
 
     });
 
@@ -241,6 +245,7 @@ const MetaInfoComponent = () => {
         explanationHeading: receivedQuestionData.explanationHeading || "",
         explanationText: receivedQuestionData.explanationText || "",
         info: receivedQuestionData.additionalInfo || "",
+        marks: form.marks,
 
     });
 
@@ -256,6 +261,7 @@ const MetaInfoComponent = () => {
         explanationHeading: receivedQuestionData.explanationHeading || "",
         explanationText: receivedQuestionData.explanationText || "",
         info: receivedQuestionData.additionalInfo || "",
+        marks: form.marks
 
     });
 
@@ -272,6 +278,7 @@ const MetaInfoComponent = () => {
         explanationHeading: receivedQuestionData.explanationHeading || "",
         explanationText: receivedQuestionData.explanationText || "",
         info: receivedQuestionData.additionalInfo || "",
+        marks: form.marks
     });
 
     const getMultiRadioFormData = () => ({
@@ -288,6 +295,7 @@ const MetaInfoComponent = () => {
         explanationHeading: receivedQuestionData.explanationHeading || "",
         explanationText: receivedQuestionData.explanationText || "",
         info: receivedQuestionData.additionalInfo || "",
+        marks: form.marks
 
     });
 
@@ -305,7 +313,7 @@ const MetaInfoComponent = () => {
         explanationText: receivedQuestionData.explanationText || "",
         info: receivedQuestionData.additionalInfo || "",
         answer: receivedQuestionData.answer,
-
+        marks: form.marks
         /*  answer: receivedQuestionData.correctHighlights, */
         /* question_content:receivedQuestionData.question_content, */
         /* question_content: receivedQuestionData.question_content || [], */
@@ -399,7 +407,8 @@ const MetaInfoComponent = () => {
         info: receivedQuestionData.additionalInfo || "",
         infoImage: null,
         answer: receivedQuestionData.correctAnswer || "",
-        options: receivedQuestionData.options || []
+        options: receivedQuestionData.options || [],
+        marks: form.marks
     });
 
 
@@ -416,7 +425,8 @@ const MetaInfoComponent = () => {
         explanationHeading: receivedQuestionData.explanationHeading || "",
         explanationText: receivedQuestionData.explanationText || "",
         info: receivedQuestionData.additionalInfo || "",
-        infoImage: null // or receivedQuestionData.infoImage if you want actual image link
+        infoImage: null, // or receivedQuestionData.infoImage if you want actual image link
+        marks: form.marks
     });
 
     const getDragDropBaseData = () => ({
@@ -432,7 +442,8 @@ const MetaInfoComponent = () => {
         explanationHeading: receivedQuestionData.explanationHeading || "",
         explanationText: receivedQuestionData.explanationText || "",
         info: receivedQuestionData.additionalInfo || "",
-        infoImage: receivedQuestionData.infoImage || null
+        infoImage: receivedQuestionData.infoImage || null,
+        marks: form.marks
     });
 
 
@@ -447,7 +458,8 @@ const MetaInfoComponent = () => {
         explanationHeading: receivedQuestionData.explanationHeading || "",
         explanationText: receivedQuestionData.explanationText || "",
         info: receivedQuestionData.additionalInfo || "",
-        infoImage: receivedQuestionData.infoImage || null
+        infoImage: receivedQuestionData.infoImage || null,
+        marks: form.marks
     });
 
     const getFillInTheBlanksBaseData = () => ({
@@ -465,7 +477,8 @@ const MetaInfoComponent = () => {
         explanationHeading: receivedQuestionData.explanationHeading || "",
         explanationText: receivedQuestionData.explanationText || "",
         info: receivedQuestionData.additionalInfo || "",
-        infoImage: receivedQuestionData.infoImage || null
+        infoImage: receivedQuestionData.infoImage || null,
+        marks: form.marks
     });
 
     const getMultiRadioBaseData = () => ({
@@ -481,7 +494,8 @@ const MetaInfoComponent = () => {
         explanationHeading: receivedQuestionData.explanationHeading || "",
         explanationText: receivedQuestionData.explanationText || "",
         info: receivedQuestionData.additionalInfo || "",
-        infoImage: receivedQuestionData.infoImage || null
+        infoImage: receivedQuestionData.infoImage || null,
+        marks: form.marks
     });
 
     const getSentenceHighlightBaseData = () => ({
@@ -499,6 +513,7 @@ const MetaInfoComponent = () => {
         info: receivedQuestionData.additionalInfo || "",
         answer: receivedQuestionData.answer,
         infoImage: receivedQuestionData.infoImage || null,
+        marks: form.marks
         /*  highlightInstructions: receivedQuestionData.highlightInstructions, */
         /* highlightoptions: "highlightoptions", */
         /* answer: receivedQuestionData.correctHighlights, */
@@ -685,8 +700,8 @@ const MetaInfoComponent = () => {
             {/* Select Fields */}
             <Grid container spacing={2}>
                 <Grid item xs={12} sm={4}>
-                    <FormControl fullWidth>
-                        <InputLabel>Difficulty *</InputLabel>
+                    <FormControl style={{ width: 200 }}  >
+                        <InputLabel>Difficulty</InputLabel>
                         <Select
                             value={form.Easy}
                             onChange={handleChange("difficulty")}
@@ -697,9 +712,21 @@ const MetaInfoComponent = () => {
                             <MenuItem value="Medium">Medium</MenuItem>
                             <MenuItem value="Hard">Hard</MenuItem>
                         </Select>
-                    </FormControl>
-                </Grid>
 
+                    </FormControl>
+
+
+                </Grid>
+                <TextField style={{ width: 200 }}
+                    fullWidth
+                    id="marks"
+                    name="marks"
+                    label="Marks *"
+                    type="number"
+                    value={form.marks}
+                    onChange={handleChange("marks")}
+                    disabled={loading}
+                />
 
             </Grid>
 
@@ -721,7 +748,9 @@ const MetaInfoComponent = () => {
                     <Typography variant="body2">
                         • Difficulty: {form.difficulty || '❌ Required'}
                     </Typography>
-
+                    <Typography variant="body2">
+                        • Marks: {form.marks || '❌ Required'}
+                    </Typography>
                     <Typography variant="body2">
                         • Files in Context: {(hasQuestionFile ? 1 : 0) + (hasExplanationFile ? 1 : 0)} file(s)
                     </Typography>

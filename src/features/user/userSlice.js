@@ -66,15 +66,15 @@ const userSlice = createSlice({
       state.role = null;
 
       // ✅ Clear all auth storage keys
-      localStorage.removeItem('user');
-      localStorage.removeItem('accessToken');
-      localStorage.removeItem('refreshToken');
+      sessionStorage.removeItem('user');
+      sessionStorage.removeItem('accessToken');
+      sessionStorage.removeItem('refreshToken');
     },
     hydrateUser: (state) => {
       try {
-        const userStr = localStorage.getItem('user');
-        const accessToken = localStorage.getItem('accessToken');
-        const refreshToken = localStorage.getItem('refreshToken');
+        const userStr = sessionStorage.getItem('user');
+        const accessToken = sessionStorage.getItem('accessToken');
+        const refreshToken = sessionStorage.getItem('refreshToken');
 
         if (!userStr || userStr === 'undefined' || !accessToken) {
           return; // No saved user data
@@ -91,9 +91,9 @@ const userSlice = createSlice({
         state.accessToken = null;
         state.refreshToken = null;
         state.role = null;
-        localStorage.removeItem('user');
-        localStorage.removeItem('accessToken');
-        localStorage.removeItem('refreshToken');
+        sessionStorage.removeItem('user');
+        sessionStorage.removeItem('accessToken');
+        sessionStorage.removeItem('refreshToken');
       }
     },
   },
@@ -111,9 +111,9 @@ const userSlice = createSlice({
         state.refreshToken = action.payload.refreshToken;
         state.role = action.payload.user?.role || null;
 
-        localStorage.setItem('user', JSON.stringify(action.payload.user));
-        localStorage.setItem('accessToken', action.payload.accessToken);
-        localStorage.setItem('refreshToken', action.payload.refreshToken);
+        sessionStorage.setItem('user', JSON.stringify(action.payload.user));
+        sessionStorage.setItem('accessToken', action.payload.accessToken);
+        sessionStorage.setItem('refreshToken', action.payload.refreshToken);
       })
       .addCase(login.rejected, (state, action) => {
         state.loading = false;
@@ -132,9 +132,9 @@ const userSlice = createSlice({
         state.refreshToken = action.payload.refreshToken;
         state.role = action.payload.user?.role || null;
 
-        localStorage.setItem('user', JSON.stringify(action.payload.user));
-        localStorage.setItem('accessToken', action.payload.accessToken);
-        localStorage.setItem('refreshToken', action.payload.refreshToken);
+        sessionStorage.setItem('user', JSON.stringify(action.payload.user));
+        sessionStorage.setItem('accessToken', action.payload.accessToken);
+        sessionStorage.setItem('refreshToken', action.payload.refreshToken);
       })
       .addCase(createUser.rejected, (state, action) => {
         state.loading = false;
@@ -153,9 +153,9 @@ const userSlice = createSlice({
         state.refreshToken = action.payload.refreshToken;
         state.role = action.payload.user?.role || null;
 
-        localStorage.setItem('user', JSON.stringify(action.payload.user));
-        localStorage.setItem('accessToken', action.payload.accessToken);
-        localStorage.setItem('refreshToken', action.payload.refreshToken);
+        sessionStorage.setItem('user', JSON.stringify(action.payload.user));
+        sessionStorage.setItem('accessToken', action.payload.accessToken);
+        sessionStorage.setItem('refreshToken', action.payload.refreshToken);
       })
       .addCase(verifyOtp.rejected, (state, action) => {
         state.loading = false;

@@ -1,9 +1,25 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import QuestionHeader from "./QuestionHeader";
+import { useDispatch, useSelector } from "react-redux";
+import { useParams } from "react-router-dom";
+import { getQuestionData } from "../features/exam/examSlice";
 
 
 function MultiRadioQuestionView() {
   // 🔹 Static Question Data
+  const { questionId } = useParams()
+  const dispatch = useDispatch();
+  const { questionData, loading, error } = useSelector((state) => state.exam);
+  useEffect(() => {
+    if (questionId) {
+      console.log("Dispatching thunk with questionId:", questionId);
+      dispatch(getQuestionData(questionId));
+    }
+  }, [dispatch, questionId]);
+  useEffect(() => {
+    console.log("Updated questionData in state:", questionData);
+  }, [questionData]);
+
   const question = {
     question: "Which intervention should the nurse take first?",
     tabsInfo: [
@@ -62,11 +78,11 @@ function MultiRadioQuestionView() {
 
   return (
     <>
-    {/*  <QuestionHeader  /> */}
+      {/*  <QuestionHeader  /> */}
       <div className="multi-radio-container">
         <div className="heading">
           <h4>{question.question}</h4>
-          
+
         </div>
 
         {/* Tabs */}

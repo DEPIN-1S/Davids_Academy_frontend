@@ -34,7 +34,7 @@ export const fetchRecentEnquiries = createAsyncThunk(
         try {
             console.log("Thunk called ✅");
             console.log("inside fetchrecentenquiriees")
-            const token = localStorage.getItem("accessToken");
+            const token = sessionStorage.getItem("accessToken");
             const data = await listRecentEnquiries(token);
             console.log("recent enquiries:", token);
             if (Array.isArray(data)) {

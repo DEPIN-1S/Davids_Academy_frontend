@@ -11,6 +11,7 @@ import { Button } from "@mui/material";
 import McqQuestionView from "../../Admin Question View/McqQuestionView";
 import { Modal, Box } from "@mui/material";
 
+
 const QManagementPage = () => {
     const dispatch = useDispatch();
     const navigate = useNavigate();
@@ -42,19 +43,22 @@ const QManagementPage = () => {
     const handleViewQuestion = (questionData) => {
         console.log("Question Data in question view", questionData);
         const { questionType } = questionData;
+        const  questionId  = questionData.id;
+        console.log("question Id :::",questionId);
+        
 
         switch (questionType) {
             case 'MCQ':
-                navigate('/admin/MCQ-question-view');
+                navigate(`/admin/MCQ-question-view/${questionId}`);
                 break;
             case 'Dropdown':
-                navigate('/admin/DropDown-question-view');
+                navigate(`/admin/DropDown-question-view/${questionId}`);
                 break;
             case 'Drag Drop':
-                navigate('/admin/DragDrop-question-view');
+                navigate(`/admin/DragDrop-question-view/${questionId}`);
                 break;
             case 'Multiple Radio':
-                navigate('/admin/MultiRadio-question-view');
+                navigate(`/admin/MultiRadio-question-view/${questionId}`);
                 break;
             case 'Fill in the Blanks':
                 navigate('/admin/FillinTheBlanksQuestion-question-view');
@@ -63,7 +67,7 @@ const QManagementPage = () => {
                 navigate('/admin/SentenceHighlight-question-view');
                 break;
             case 'Sorting':
-                navigate('/admin/Sorting-question-view');
+                navigate(`/admin/Sorting-question-view/${questionId}`);
                 break;
             default:
                 console.warn('Unknown question type:', questionType);
@@ -140,7 +144,6 @@ const QManagementPage = () => {
                 alert("Failed to delete test");
             });
     };
-
 
 
     // Data source based on tab
@@ -397,9 +400,6 @@ const QManagementPage = () => {
                     </button>
                 </div>
             </div>
-
-
-
         </div>
     );
 };

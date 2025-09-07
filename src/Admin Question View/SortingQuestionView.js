@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import {
   DndContext,
   closestCenter,
@@ -14,39 +14,38 @@ import {
   arrayMove,
 } from '@dnd-kit/sortable';
 import SortableItemComponentQuestionView from './SortableItemComponentQuestionView';
+import { useParams } from 'react-router-dom';
+import { useDispatch, useSelector } from 'react-redux';
+import { getQuestionData } from '../features/exam/examSlice'
+
 /* import RevealAnswerComponent from './RevealAnswerComponent'; */
 
 function SortingQuestionView() {
-  // ✅ Static data
-  const staticQuestion = {
-    question: "Arrange the steps for performing CPR in the correct order.",
-    sortingoptions: [
-      { id: 1, sortItem: "Check the scene for safety", itemOrder: 1 },
-      { id: 2, sortItem: "Call emergency services", itemOrder: 2 },
-      { id: 3, sortItem: "Begin chest compressions", itemOrder: 3 },
-      { id: 4, sortItem: "Give rescue breaths", itemOrder: 4 },
-    ],
-    explanation: [
-      {
-        heading: "Why this order matters",
-        explanation:
-          "Ensuring safety first avoids putting yourself at risk. Calling for help ensures advanced care is on the way, while chest compressions and breaths maintain oxygen flow.",
-      },
-    ],
-    additionalInfo: [
-      {
-        info: "Always follow the latest medical guidelines for CPR.",
-        image: null,
-      },
-    ],
-  };
+  const { questionId } = useParams()
+  const dispatch = useDispatch();
+  const { questionData, loading, error } = useSelector((state) => state.exam);
+  console.log("Question id in params", questionId);
+  const exhibit = 'https://via.placeholder.com/600x250.png?text=Exhibit+Image';
+  useEffect(() => {
+    if (questionId) {
+      console.log("Dispatching thunk with questionId:", questionId);
+      dispatch(getQuestionData(questionId));
+    }
+  }, [dispatch, questionId]);
+  useEffect(() => {
+    console.log("Updated SortingQuestionData in state:", questionData);
+  }, [questionData]);
+  const [steps, setSteps] = useState([]);
+  const question = questionData?.data || {};
+  const sortingOptions = question?.sortingoptions || [];
 
-  // Shuffle user steps
-  const initialUserSteps = [...staticQuestion.sortingoptions].sort(
-    () => Math.random() - 0.5
-  );
+  useEffect(() => {
+    if (sortingOptions.length > 0) {
+      // shuffle for user interaction
+      setSteps([...sortingOptions].sort(() => Math.random() - 0.5));
+    }
+  }, [sortingOptions]);
 
-  const [steps, setSteps] = useState(initialUserSteps);
   const [showReveal, setShowReveal] = useState(false);
 
   // Sensors for DND Kit
@@ -69,20 +68,15 @@ function SortingQuestionView() {
     setShowReveal(true);
   };
 
-  // Correct order (sorted by itemOrder)
-  const correctOrder = [...staticQuestion.sortingoptions].sort(
-    (a, b) => a.itemOrder - b.itemOrder
-  );
-
   return (
     <div className="sort-question-container">
-      <h4 className="sort-heading">{staticQuestion.question}</h4>
-      <p className="sort-subheading">
+      <h4 className="sort-heading">{question?.question}</h4>
+      {/* <p className="sort-subheading">
         Place the following actions in the order in which they should be performed, starting from first to last.
-      </p>
+      </p> */}
 
       {/* Drag-and-drop before reveal */}
-      {!showReveal && (
+        {!showReveal && (
         <div className="sort-box">
           <DndContext
             sensors={sensors}
@@ -97,7 +91,7 @@ function SortingQuestionView() {
                 <SortableItemComponentQuestionView
                   key={step.id}
                   id={step.id}
-                  text={step.text}
+                  text={step.sortItem} 
                   index={idx}
                 />
               ))}
@@ -107,7 +101,7 @@ function SortingQuestionView() {
       )}
 
       {/* Reveal Button */}
-     {/*  {!showReveal && (
+      {/*  {!showReveal && (
         <div className="reveal-btn-wrap">
           <button className="reveal-btn" onClick={handleReveal}>
             Reveal Answer
