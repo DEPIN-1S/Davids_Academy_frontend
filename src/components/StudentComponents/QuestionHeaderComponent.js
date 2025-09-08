@@ -36,7 +36,7 @@ const QuestionHeaderComponent = ({
             style={{ width: `${(questionNumber / totalQuestions) * 100}%` }}
           />
         </div>
-        <Typography variant="body2" className="time-elapsed">Time Elapsed : {time}</Typography>
+        {/* <Typography variant="body2" className="time-elapsed">Time Elapsed : {time}</Typography> */}
       </div>
 
       {/* <div className="header-actions">

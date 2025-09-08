@@ -83,7 +83,7 @@ const RevealAnswerComponent = ({
       </Box>
 
       {/* Right - Statistics */}
-      <Box
+      {/* <Box
         sx={{
           flex: 1,
           backgroundColor: '#fff',
@@ -96,7 +96,7 @@ const RevealAnswerComponent = ({
         <Typography variant="h6" fontWeight={600} mb={2}>
           Statistics
         </Typography>
-        {/* Example stats, these can be made dynamic similarly if needed */}
+        
         <Box mb={1}>
           <Typography variant="subtitle2" color="#00acc1">
             Medium
@@ -116,7 +116,7 @@ const RevealAnswerComponent = ({
           <Typography variant="body2">Time taken</Typography>
         </Box>
         <Divider sx={{ my: 2 }} />
-      </Box>
+      </Box> */}
     </Box>
   );
 };
