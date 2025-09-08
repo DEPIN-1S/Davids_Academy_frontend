@@ -1,11 +1,9 @@
+
 import React from 'react';
 import { Box, Typography, LinearProgress, Stack, Chip, IconButton } from '@mui/material';
 import DownloadIcon from '@mui/icons-material/Download';
 
-const ScoreStatisticsComponent = () => {
-  const peerScore = 62;
-  const yourScore = 19;
-
+const ScoreStatisticsComponent = ({ peerScore = 62, yourScore = 19, testMode = 'Tutorial', questionMode = 'Unused', completedOn = '07 Jul, 2025 4:26 pm', testId = '21306234' }) => {
   const renderScoreBar = (title) => (
     <Box sx={{ mb: 3 }}>
       <Typography variant="h6" fontWeight="600" mb={1}>
@@ -32,14 +30,13 @@ const ScoreStatisticsComponent = () => {
   return (
     <Box sx={{ padding: 3 }}>
       <Stack direction="row" justifyContent="space-between" alignItems="center" mb={2}>
-        <Typography variant="subtitle1" fontWeight="600">Test ID – 21306234</Typography>
+        <Typography variant="subtitle1" fontWeight="600">Test ID – {testId}</Typography>
         <Stack direction="row" spacing={2} alignItems="center">
           <Typography variant="body2" sx={{ cursor: 'pointer' }}>Download as PDF</Typography>
           <IconButton size="small"><DownloadIcon fontSize="small" /></IconButton>
           <Typography variant="body2" sx={{ cursor: 'pointer' }}>Notes</Typography>
         </Stack>
       </Stack>
-
       <Box
         sx={{
           backgroundColor: '#f2f2f2',
@@ -49,23 +46,21 @@ const ScoreStatisticsComponent = () => {
       >
         {renderScoreBar('Classic')}
         {renderScoreBar('NGN')}
-
         <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2} mt={2}>
           <Stack direction="row" spacing={1} alignItems="center">
             <Typography variant="body2" fontWeight="500">Test Mode:</Typography>
-            <Chip label="Tutorial" size="small" />
+            <Chip label={testMode} size="small" />
           </Stack>
           <Stack direction="row" spacing={1} alignItems="center">
             <Typography variant="body2" fontWeight="500">Question Mode:</Typography>
-            <Chip label="Unused" size="small" />
+            <Chip label={questionMode} size="small" />
           </Stack>
         </Stack>
-
         <Box mt={2}>
           <Typography variant="body2" fontWeight="500">
             Completed On :
             <Chip
-              label="07 Jul, 2025 4:26 pm"
+              label={completedOn}
               size="small"
               sx={{ ml: 1, backgroundColor: '#fff' }}
             />

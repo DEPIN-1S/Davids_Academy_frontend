@@ -23,7 +23,7 @@ const QuestionFooterComponent = ({
           className="footer-button"
           color="error"
         >
-          End Test
+          Submit & Exit
         </Button>
       </div>
 

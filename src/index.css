@@ -9,6 +9,14 @@ body {
   line-height: 1.6;
 }
 
+
+/* ✅ Block printing */
+@media print {
+  body {
+    display: none !important;
+  }
+}
+
 code {
   font-family: 'Fira Code', 'Source Code Pro', Menlo, Monaco, Consolas, 'Courier New', monospace;
   background-color: #f3f4f6;
