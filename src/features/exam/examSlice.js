@@ -10,7 +10,8 @@ import { fetchTestQuestionsAPI } from "../../features/exam/examAPI";
 import { adminDeleteQuestion } from "../../features/exam/examAPI";
 import { fetchMockTestQuestionsByCourseId } from "../../features/exam/examAPI"
 import { adminCreateTest } from "../../features/exam/examAPI";
-import { apiDeleteTest} from "../../features/exam/examAPI"
+import { apiDeleteTest } from "../../features/exam/examAPI";
+import {adminFetchQuestionByQID} from "../../features/exam/examAPI"
 
 
 
@@ -205,6 +206,8 @@ export const getQBankQuestionData = createAsyncThunk(
     "questions/fetchQBankQuestionData",
     async (questionId, { rejectWithValue }) => {
         try {
+            console.log("Inside getQuestion data ::::");
+
             const data = await fetchQBankQuestionData(questionId); // returns single question object
             return data;
         } catch (error) {
@@ -213,13 +216,29 @@ export const getQBankQuestionData = createAsyncThunk(
     }
 );
 
+
+//thunk for fetching qestion by QID
+export const getQuestionData = createAsyncThunk(
+    "exam/getQuestionData",
+    async (questionId, { rejectWithValue }) => {
+        try {
+            console.log("➡️ Thunk getQuestionData with ID:", questionId);
+            const data = await adminFetchQuestionByQID(questionId);
+            return data;
+        } catch (error) {
+            return rejectWithValue(error.message);
+        }
+    }
+);
+
+
 const questionSlice = createSlice({
     name: "questions",
     initialState: {
         loading: false,
         success: false,
         error: null,
-        tests:[],
+        tests: [],
 
         questionTypes: [],
         questionTypesLoading: false,
@@ -523,6 +542,20 @@ const questionSlice = createSlice({
             .addCase(adminCreateTestThunk.rejected, (state, action) => {
                 state.adminCreateTestLoading = false;
                 state.adminCreateTestError = action.payload || "Failed to create test";
+            })
+
+            //for fetching questions by QID in admin side
+            .addCase(getQuestionData.pending, (state) => {
+                state.loading = true;
+                state.error = null;
+            })
+            .addCase(getQuestionData.fulfilled, (state, action) => {
+                state.loading = false;
+                state.questionData = action.payload;
+            })
+            .addCase(getQuestionData.rejected, (state, action) => {
+                state.loading = false;
+                state.error = action.payload || "Failed to fetch question";
             })
 
     }

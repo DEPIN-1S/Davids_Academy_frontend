@@ -1,9 +1,36 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import QuestionHeader from "./QuestionHeader";
-
+import { useDispatch, useSelector } from "react-redux";
+import { useNavigate, useParams } from "react-router-dom";
+import { getQuestionData } from "../features/exam/examSlice";
+import { Box, Button, Typography } from "@mui/material";
+import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 
 function MultiRadioQuestionView() {
   // 🔹 Static Question Data
+  const { questionId } = useParams()
+  const dispatch = useDispatch();
+  const { questionData, loading, error } = useSelector((state) => state.exam);
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (questionId) {
+      console.log("Dispatching thunk with questionId:", questionId);
+      dispatch(getQuestionData(questionId));
+    }
+  }, [dispatch, questionId]);
+  useEffect(() => {
+    console.log("Updated RadiquestionData in state:", questionData);
+  }, [questionData]);
+
+
+  useEffect(() => {
+    if (questionData?.data?.tabsInfo?.length > 0) {
+      // set first tab as active by default
+      setActiveTab(questionData.data.tabsInfo[0].tabKey);
+    }
+  }, [questionData]);
+
   const question = {
     question: "Which intervention should the nurse take first?",
     tabsInfo: [
@@ -47,9 +74,11 @@ function MultiRadioQuestionView() {
   const explanationParagraphs = question.explanation.map((exp) => exp.explanation);
   const additionalInfoParagraphs = question.additionalInfo.map((info) => info.info);
   const additionalInfoImage = question.additionalInfo[0]?.image || null;
-
-  const handleTabClick = (tab) => {
-    setActiveTab(tab);
+  const mark = questionData.data.marks;
+  const difficulty = questionData.data.difficulty;
+  const question_type = questionData.data.question_type;
+  const handleTabClick = (tabKey) => {
+    setActiveTab(tabKey);
   };
 
   const handleSelect = (findingIndex, group) => {
@@ -62,30 +91,54 @@ function MultiRadioQuestionView() {
 
   return (
     <>
-    {/*  <QuestionHeader  /> */}
+      <Box sx={{
+        display: "flex",
+        justifyContent: "space-between",
+        alignItems: "center",
+        width: "100%",
+        pb: 2,
+      }} >
+        <Typography >
+          Mark :{mark}
+        </Typography>
+        <Typography >
+          Difficulty :{difficulty}
+        </Typography>
+        <Typography >
+          Question Type : {question_type}
+        </Typography>
+      </Box>
+      {/*  <QuestionHeader  /> */}
       <div className="multi-radio-container">
+
         <div className="heading">
-          <h4>{question.question}</h4>
-          
+          <h4> {questionData?.data?.question}</h4>
         </div>
 
         {/* Tabs */}
+
         <div className="tabs">
-          {notesTabs.map((tab) => (
+          {questionData?.data?.tabsInfo?.map((tab) => (
             <button
-              key={tab}
-              className={`tab-button ${activeTab === tab ? "active" : ""}`}
-              onClick={() => handleTabClick(tab)}
+              key={tab.id}
+              className={`tab-button ${activeTab === tab.tabKey ? "active" : ""}`}
+              onClick={() => handleTabClick(tab.tabKey)}
             >
-              {tab}
+              {tab.tabKey}
             </button>
           ))}
         </div>
 
         {/* Tab Content */}
         <div className="note-box">
-          <p>{tabContent[activeTab]}</p>
+          <p>
+            {
+              questionData?.data?.tabsInfo?.find((t) => t.tabKey === activeTab)
+                ?.tabValue
+            }
+          </p>
         </div>
+
 
         {/* Radio Table */}
         <div className="table-wrapper">
@@ -140,6 +193,20 @@ function MultiRadioQuestionView() {
           additionalInfoImage={additionalInfoImage}
         />
       )} */}
+        <Box sx={{ display: "flex", justifyContent: "center", pt: 5 }}>
+          <Button
+            variant="outlined"
+            startIcon={<ArrowBackIcon />}
+            onClick={() => navigate(-1)} // 👈 goes back
+            sx={{
+              borderRadius: "8px",
+              textTransform: "none",
+              fontWeight: 600,
+            }}
+          >
+            Back To Question Management
+          </Button>
+        </Box>
       </div>
     </>
   );

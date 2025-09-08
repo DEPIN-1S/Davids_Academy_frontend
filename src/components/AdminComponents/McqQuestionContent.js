@@ -368,6 +368,7 @@ const McqQuestionContent = () => {
                 helperText={errors.question || `${question.length} characters (minimum 10 required)`}
                 sx={{ mb: 2 }}
             />
+            
 
             {/* File Upload Section */}
             <Box display="flex" justifyContent="flex-end" mt={1} mb={3} gap={1}>

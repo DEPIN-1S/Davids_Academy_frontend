@@ -42,7 +42,7 @@ export const addRecording = createAsyncThunk(
         console.log("Inside add recording thunk");
 
         try {
-            const token = localStorage.getItem("accessToken");
+            const token = sessionStorage.getItem("accessToken");
             const screenshotBase64 = localStorage.getItem("screenshot");
 
             let fileScreenshot = null;

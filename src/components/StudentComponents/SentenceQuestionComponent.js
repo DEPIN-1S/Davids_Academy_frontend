@@ -67,7 +67,7 @@ const SentenceQuestionComponent = ({ question, onSubmit }) => {
   // Loading or no data state
   if (!question || !highlightOptions.length) {
     return (
-      <Box sx={{ padding: 2, textAlign: 'center' }}>
+  <Box sx={{ padding: 2, textAlign: 'center' }}>
         <Typography>No sentence highlight question data available</Typography>
       </Box>
     );

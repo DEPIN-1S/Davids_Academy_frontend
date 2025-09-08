@@ -125,10 +125,16 @@ const EditStudentForm = ({ studentId, onClose }) => {
         dispatch(updateStudent(payload))
             .unwrap()
             .then(() => {
+
                 console.log("Student updated successfully");
+                alert("✅ Student updated successfully!");
                 onClose?.(); // close form after update
+                dispatch(fetchCourses());
             })
-            .catch((error) => console.error("Error updating student:", error));
+            .catch((error) => {
+                console.error("Error updating student:", error);
+                alert(`❌ Error updating student: ${error.message || error}`);
+            });
     };
 
 

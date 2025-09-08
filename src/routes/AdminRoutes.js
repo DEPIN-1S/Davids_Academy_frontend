@@ -180,25 +180,25 @@ const AdminRoutes = () => (
             } />
 
             {/* Question view */}
-             <Route path="/admin/MCQ-question-view" element={
+             <Route path="/admin/MCQ-question-view/:questionId" element={
                 <ProtectedRoutes allowedRoles={['admin']}>
                     <McqQuestionView />
                 </ProtectedRoutes>
             } />
 
-              <Route path="/admin/DragDrop-question-view" element={
+              <Route path="/admin/DragDrop-question-view/:questionId" element={
                 <ProtectedRoutes allowedRoles={['admin']}>
                     <DragDropQuestionView />
                 </ProtectedRoutes>
             } />
 
-              <Route path="/admin/DropDown-question-view" element={
+              <Route path="/admin/DropDown-question-view/:questionId" element={
                 <ProtectedRoutes allowedRoles={['admin']}>
                     <DropDownQuestionView />
                 </ProtectedRoutes>
             } />
 
-              <Route path="/admin/MultiRadio-question-view" element={
+              <Route path="/admin/MultiRadio-question-view/:questionId" element={
                 <ProtectedRoutes allowedRoles={['admin']}>
                     <MultiRadioQuestionView />
                 </ProtectedRoutes>
@@ -210,13 +210,13 @@ const AdminRoutes = () => (
                 </ProtectedRoutes>
             } /> 
 
-              <Route path="/admin/SentenceHighlight-question-view" element={
+              <Route path="/admin/SentenceHighlight-question-view/:questionId" element={
                 <ProtectedRoutes allowedRoles={['admin']}>
                     <SentenceHighlightQuestionView/>
                 </ProtectedRoutes>
             } />
 
-              <Route path="/admin/Sorting-question-view" element={
+              <Route path="/admin/Sorting-question-view/:questionId" element={
                 <ProtectedRoutes allowedRoles={['admin']}>
                     <SortingQuestionView/>
                 </ProtectedRoutes>

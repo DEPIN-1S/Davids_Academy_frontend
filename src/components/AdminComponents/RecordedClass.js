@@ -21,7 +21,7 @@ const CourseManagement = () => {
     const handleDelete = (id) => {
         console.log("list :::", list);
         console.log("Recording Id :::", id);
-        const token = localStorage.getItem("accessToken");
+        const token = sessionStorage.getItem("accessToken");
         dispatch(deleteRecordedClass(id))
 
             .unwrap()
@@ -63,14 +63,14 @@ const CourseManagement = () => {
     useEffect(() => {
         console.log("Recordings Fetched ::::",recordings);
         
-        const token = localStorage.getItem("accessToken");
+        const token = sessionStorage.getItem("accessToken");
         if (token) {
             dispatch(fetchRecordedClasses({ token, page: 1, limit: 10 }));
         }
     }, [dispatch]);
 
     const handlePageChange = (newPage) => {
-        const token = localStorage.getItem("accessToken");
+        const token = sessionStorage.getItem("accessToken");
         dispatch(fetchRecordedClasses({ token, page: newPage, limit }));
     };
 

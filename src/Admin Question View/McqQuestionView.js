@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
+
 import {
   Box,
   Typography,
@@ -7,36 +8,39 @@ import {
   FormControlLabel,
   Button,
 } from '@mui/material';
-
+import { getQuestionData } from "../features/exam/examSlice"
 import '../styles/DashboardStyles/RadioButtonQuestionComponent.css';
 import RevealAnswerComponent from '../components/StudentComponents/RevealAnswerComponent';
-
+import { useNavigate, useParams } from 'react-router-dom';
+import { useDispatch, useSelector } from 'react-redux';
+import { Height } from '@mui/icons-material';
+import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 function McqQuestionView() {
   const [selectedOption, setSelectedOption] = useState('');
   const [showAnswer, setShowAnswer] = useState(false);
-
+  const { questionId } = useParams()
+  const dispatch = useDispatch();
+  const { questionData, loading, error } = useSelector((state) => state.exam);
+  console.log("Question id in params", questionId);
   const exhibit = 'https://via.placeholder.com/600x250.png?text=Exhibit+Image';
-  const questionText =
-    'Which vitamin deficiency is most commonly associated with night blindness?';
-  const mcqoptions = [
-    { id: 1, option: 'Vitamin A' },
-    { id: 2, option: 'Vitamin B12' },
-    { id: 3, option: 'Vitamin C' },
-    { id: 4, option: 'Vitamin D' },
-  ];
-  const answer = 'Vitamin A';
-  const explanation = [
-    {
-      heading: 'Explanation',
-      explanation:
-        'Night blindness is primarily due to Vitamin A deficiency, which is essential for the production of rhodopsin in the retina.',
-    },
-  ];
-  const additionalInfo = [
-    {
-      info: 'Vitamin A deficiency is also associated with xerophthalmia and corneal damage.',
-    },
-  ];
+  const navigate = useNavigate();
+  useEffect(() => {
+    if (questionId) {
+      console.log("Dispatching thunk with questionId:", questionId);
+      dispatch(getQuestionData(questionId));
+    }
+  }, [dispatch, questionId]);
+  useEffect(() => {
+    console.log("Updated questionData in state:", questionData);
+  }, [questionData]);
+  const questionText = questionData.data.question;
+  const mark = questionData.data.marks;
+  const difficulty = questionData.data.difficulty;
+  const question_type = questionData.data.question_type;
+  const mcqoptions = questionData?.data?.mcqoptions || [];
+
+
+
 
   const handleChange = (event) => {
     setSelectedOption(event.target.value);
@@ -47,37 +51,63 @@ function McqQuestionView() {
   };
 
   return (
-    <Box
-      className="radio-container"
-     
-    >
-      {exhibit && (
-        <img
-          src={exhibit}
-          alt="Exhibit"
-          style={{ maxWidth: '100%', marginBottom: '1rem', borderRadius: 8 }}
-        />
-      )}
+    <>
+      <Box sx={{
+        display: "flex",
+        justifyContent: "space-between",
+        alignItems: "center",
+        width: "100%",
+        p: 2,
+      }} >
+        <Typography >
+          Mark :{mark}
+        </Typography>
+        <Typography >
+          Difficulty :{difficulty}
+        </Typography>
+        <Typography >
+          Question Type : {question_type}
+        </Typography>
+      </Box>
 
-      <Typography variant="body1" className="question-text" gutterBottom>
-        {questionText}
-      </Typography>
+      <Box sx={{
 
-      <RadioGroup
-        value={selectedOption}
-        onChange={handleChange}
-        className="radio-options"
-      >
-        {mcqoptions.map((optionObj) => (
-          <FormControlLabel
-            key={optionObj.id}
-            value={optionObj.option}
-            control={<Radio />}
-            label={<span className="radio-label">{optionObj.option}</span>}
-          />
-        ))}
-      </RadioGroup>
-{/* 
+        pt: 5,
+      }}  >
+
+
+        <Box
+          className="radio-container"
+
+        >
+          {questionData?.data?.exhibit && (
+            <img
+              src={questionData.data.exhibit}
+              alt="Exhibit"
+              style={{ maxWidth: '100%', marginBottom: '1rem', borderRadius: 8 }}
+            />
+          )}
+
+
+          <Typography variant="body1" className="question-text" gutterBottom>
+            {questionText}
+          </Typography>
+
+          <RadioGroup
+            value={selectedOption}
+            onChange={handleChange}
+            className="radio-options"
+          >
+            {mcqoptions.map((optionObj) => (
+              <FormControlLabel
+                key={optionObj.id}
+                value={optionObj.option}
+                control={<Radio />}
+                label={<span className="radio-label">{optionObj.option}</span>}
+              />
+            ))}
+          </RadioGroup>
+          {/* 
       <Box className="reveal-btn-wrapper">
         <Button
           variant="contained"
@@ -113,7 +143,23 @@ function McqQuestionView() {
           />
         </>
       )} */}
-    </Box>
+        </Box>
+        <Box sx={{ display: "flex", justifyContent: "center", pt: 5 }}>
+          <Button
+            variant="outlined"
+            startIcon={<ArrowBackIcon />}
+            onClick={() => navigate(-1)} // 👈 goes back
+            sx={{
+              borderRadius: "8px",
+              textTransform: "none",
+              fontWeight: 600,
+            }}
+          >
+            Back To Question Management
+          </Button>
+        </Box>
+      </Box>
+    </>
   );
 }
 
