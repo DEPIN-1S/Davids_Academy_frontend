@@ -118,6 +118,8 @@ useEffect(() => {
 
 useEffect(() => {
     const loadQuestionData = async () => {
+      console.log( 'Loading question data for :', loadQuestionData);
+      
         if (questionIds && questionIds.length > 0 && currentIndex < questionIds.length) {
             const questionId = questionIds[currentIndex];
             console.log('Loading question data for question ID:', questionId);
@@ -176,18 +178,40 @@ useEffect(() => {
 
   };
 
+  // const handleEnd = async () => {
+  //   if (isTestMode) {
+  //     try {
+  //       await submitTest(testId);
+  //       navigate('/student/score');
+  //     } catch (err) {
+  //       setError(err.message || 'Failed to submit test.');
+  //     }
+  //   } else {
+  //     console.log('Ending Q-Bank session');
+  //   }
+  // };
+
   const handleEnd = async () => {
-    if (isTestMode) {
-      try {
-        await submitTest(testId);
-        navigate('/student/score');
-      } catch (err) {
-        setError(err.message || 'Failed to submit test.');
+  if (isTestMode) {
+    try {
+      const res = await submitTest(testId);
+
+      if (res?.result) {
+        // ✅ success
+        navigate('/student/tests');
+      } else {
+        // ❌ backend responded but no success
+        setError(res?.message || 'Something went wrong while submitting test.');
       }
-    } else {
-      console.log('Ending Q-Bank session');
+    } catch (err) {
+      // ❌ network or fetch error
+      setError(err.message || 'Failed to submit test.');
     }
-  };
+  } else {
+    console.log('Ending Q-Bank session');
+  }
+};
+
 
 const handleAnswerSubmit = async (questionId, is_correct, mark) => {
     if (isTestMode) {

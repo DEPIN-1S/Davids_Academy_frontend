@@ -8,11 +8,16 @@ import AdminRoutes from "./routes/AdminRoutes";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "./styles/Layout.css";
 import { FileProvider } from "./context/FileContext";
+import useSecurityRestrictions from "./hooks/useSecurityRestrictions"; // ✅ Import hook
+
 const App = () => {
   const dispatch = useDispatch();
   useEffect(() => {
     dispatch(hydrateUser());
   }, [dispatch]);
+
+  // ✅ Apply restrictions globally
+ useSecurityRestrictions();
 
   return (
     <FileProvider>
@@ -21,7 +26,7 @@ const App = () => {
         {StudentRoutes()}
         {AdminRoutes()}
       </Routes>
-    </FileProvider >
+    </FileProvider>
   );
 };
 
