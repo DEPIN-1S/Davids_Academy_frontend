@@ -63,8 +63,8 @@ const QManagementPage = () => {
             case 'Fill in the Blanks':
                 navigate('/admin/FillinTheBlanksQuestion-question-view');
                 break;
-            case 'Descriptive':
-                navigate('/admin/SentenceHighlight-question-view');
+            case 'Sentence Highlight':
+                navigate(`/admin/SentenceHighlight-question-view/${questionId}`);
                 break;
             case 'Sorting':
                 navigate(`/admin/Sorting-question-view/${questionId}`);

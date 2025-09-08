@@ -79,7 +79,7 @@ The client is lethargic, oriented to person and place only, and using accessory 
           ))}
         </div>
 
-        <div className="reveal-btn-wrap">
+        {/* <div className="reveal-btn-wrap">
           <button className="reveal-btn" onClick={() => setShowExplanation(true)}>
             Reveal Answer
           </button>
@@ -87,9 +87,7 @@ The client is lethargic, oriented to person and place only, and using accessory 
 
         {showExplanation && (
           <div className="highlight-explanation-box">
-            {/* You can use text or an image below */}
-            {/* Example image explanation */}
-            {/* <img src="/assets/explanation-image.jpg" alt="Explanation" /> */}
+            
             <h3>Explanation</h3>
             <ul>
               <li>Still gaining weight and experiencing constipation indicates hypothyroidism persists.</li>
@@ -97,7 +95,9 @@ The client is lethargic, oriented to person and place only, and using accessory 
               <li>Trace pedal edema and reduced activity tolerance are clinical concerns.</li>
             </ul>
           </div>
-        )}
+        )} */}
+
+        
       </div>
       </>
     );

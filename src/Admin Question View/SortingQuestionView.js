@@ -14,10 +14,11 @@ import {
   arrayMove,
 } from '@dnd-kit/sortable';
 import SortableItemComponentQuestionView from './SortableItemComponentQuestionView';
-import { useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { getQuestionData } from '../features/exam/examSlice'
-import { Box, Typography } from '@mui/material';
+import { Box, Button, Typography } from '@mui/material';
+import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 
 /* import RevealAnswerComponent from './RevealAnswerComponent'; */
 
@@ -27,6 +28,8 @@ function SortingQuestionView() {
   const { questionData, loading, error } = useSelector((state) => state.exam);
   console.log("Question id in params", questionId);
   const exhibit = 'https://via.placeholder.com/600x250.png?text=Exhibit+Image';
+  const navigate = useNavigate();
+
   useEffect(() => {
     if (questionId) {
       console.log("Dispatching thunk with questionId:", questionId);
@@ -39,7 +42,7 @@ function SortingQuestionView() {
   const [steps, setSteps] = useState([]);
   const question = questionData?.data || {};
   const sortingOptions = question?.sortingoptions || [];
-const mark = questionData.data.marks;
+  const mark = questionData.data.marks;
   const difficulty = questionData.data.difficulty;
   const question_type = questionData.data.question_type;
   useEffect(() => {
@@ -154,6 +157,22 @@ const mark = questionData.data.marks;
           </div>
         </RevealAnswerComponent>
       )} */}
+
+
+      <Box sx={{ display: "flex", justifyContent: "center", pt: 5 }}>
+        <Button
+          variant="outlined"
+          startIcon={<ArrowBackIcon />}
+          onClick={() => navigate(-1)} // 👈 goes back
+          sx={{
+            borderRadius: "8px",
+            textTransform: "none",
+            fontWeight: 600,
+          }}
+        >
+          Back To Question Management
+        </Button>
+      </Box>
     </div>
   );
 }

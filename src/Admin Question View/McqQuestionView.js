@@ -11,10 +11,10 @@ import {
 import { getQuestionData } from "../features/exam/examSlice"
 import '../styles/DashboardStyles/RadioButtonQuestionComponent.css';
 import RevealAnswerComponent from '../components/StudentComponents/RevealAnswerComponent';
-import { useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { Height } from '@mui/icons-material';
-
+import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 function McqQuestionView() {
   const [selectedOption, setSelectedOption] = useState('');
   const [showAnswer, setShowAnswer] = useState(false);
@@ -23,6 +23,7 @@ function McqQuestionView() {
   const { questionData, loading, error } = useSelector((state) => state.exam);
   console.log("Question id in params", questionId);
   const exhibit = 'https://via.placeholder.com/600x250.png?text=Exhibit+Image';
+  const navigate = useNavigate();
   useEffect(() => {
     if (questionId) {
       console.log("Dispatching thunk with questionId:", questionId);
@@ -38,7 +39,8 @@ function McqQuestionView() {
   const question_type = questionData.data.question_type;
   const mcqoptions = questionData?.data?.mcqoptions || [];
 
- 
+
+
 
   const handleChange = (event) => {
     setSelectedOption(event.target.value);
@@ -49,7 +51,7 @@ function McqQuestionView() {
   };
 
   return (
-    <Box  >
+    <>
       <Box sx={{
         display: "flex",
         justifyContent: "space-between",
@@ -68,36 +70,44 @@ function McqQuestionView() {
         </Typography>
       </Box>
 
-      <Box
-        className="radio-container"
-      >
-        {exhibit && (
-          <img
-            src={exhibit}
-            alt="Exhibit"
-            style={{ maxWidth: '100%', marginBottom: '1rem', borderRadius: 8 }}
-          />
-        )}
+      <Box sx={{
 
-        <Typography variant="body1" className="question-text" gutterBottom>
-          {questionText}
-        </Typography>
+        pt: 5,
+      }}  >
 
-        <RadioGroup
-          value={selectedOption}
-          onChange={handleChange}
-          className="radio-options"
+
+        <Box
+          className="radio-container"
+
         >
-          {mcqoptions.map((optionObj) => (
-            <FormControlLabel
-              key={optionObj.id}
-              value={optionObj.option}
-              control={<Radio />}
-              label={<span className="radio-label">{optionObj.option}</span>}
+          {questionData?.data?.exhibit && (
+            <img
+              src={questionData.data.exhibit}
+              alt="Exhibit"
+              style={{ maxWidth: '100%', marginBottom: '1rem', borderRadius: 8 }}
             />
-          ))}
-        </RadioGroup>
-        {/* 
+          )}
+
+
+          <Typography variant="body1" className="question-text" gutterBottom>
+            {questionText}
+          </Typography>
+
+          <RadioGroup
+            value={selectedOption}
+            onChange={handleChange}
+            className="radio-options"
+          >
+            {mcqoptions.map((optionObj) => (
+              <FormControlLabel
+                key={optionObj.id}
+                value={optionObj.option}
+                control={<Radio />}
+                label={<span className="radio-label">{optionObj.option}</span>}
+              />
+            ))}
+          </RadioGroup>
+          {/* 
       <Box className="reveal-btn-wrapper">
         <Button
           variant="contained"
@@ -133,8 +143,23 @@ function McqQuestionView() {
           />
         </>
       )} */}
+        </Box>
+        <Box sx={{ display: "flex", justifyContent: "center", pt: 5 }}>
+          <Button
+            variant="outlined"
+            startIcon={<ArrowBackIcon />}
+            onClick={() => navigate(-1)} // 👈 goes back
+            sx={{
+              borderRadius: "8px",
+              textTransform: "none",
+              fontWeight: 600,
+            }}
+          >
+            Back To Question Management
+          </Button>
+        </Box>
       </Box>
-    </Box>
+    </>
   );
 }
 

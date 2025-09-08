@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from 'react';
-import { Box, Typography, Paper, Grid, useMediaQuery } from '@mui/material';
+import { Box, Typography, Paper, Grid, useMediaQuery, Button } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { DragDropContext, Droppable, Draggable } from '@hello-pangea/dnd';
-import { useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { getQuestionData } from '../features/exam/examSlice';
-
+import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import Tabs from '@mui/material/Tabs';
 import Tab from '@mui/material/Tab';
 
@@ -22,7 +22,7 @@ function DragDropQuestionView() {
   const { questionId } = useParams();
   const dispatch = useDispatch();
   const { questionData, loading, error } = useSelector((state) => state.exam);
-
+  const navigate = useNavigate();
   useEffect(() => {
     if (questionId) {
       dispatch(getQuestionData(questionId));
@@ -216,6 +216,20 @@ function DragDropQuestionView() {
           Reveal Answer
         </Button>
       </Box> */}
+      <Box sx={{ display: "flex", justifyContent: "center", pt: 5 }}>
+        <Button
+          variant="outlined"
+          startIcon={<ArrowBackIcon />}
+          onClick={() => navigate(-1)} // 👈 goes back
+          sx={{
+            borderRadius: "8px",
+            textTransform: "none",
+            fontWeight: 600,
+          }}
+        >
+          Back To Question Management
+        </Button>
+      </Box>
     </Box>
   );
 }

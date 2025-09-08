@@ -12,9 +12,10 @@ import {
   useMediaQuery,
   useTheme,
 } from '@mui/material';
-import { useParams } from 'react-router-dom';
-import {getQuestionData} from '../features/exam/examSlice'
+import { useNavigate, useParams } from 'react-router-dom';
+import { getQuestionData } from '../features/exam/examSlice'
 import { useDispatch, useSelector } from 'react-redux';
+import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 
 function DropDownQuestionView() {
   const theme = useTheme();
@@ -22,23 +23,30 @@ function DropDownQuestionView() {
   const { questionId } = useParams()
   const { questionData, loading, error } = useSelector((state) => state.exam);
   const dispatch = useDispatch();
+  const navigate = useNavigate();
   console.log("Question id in params", questionId);
   useEffect(() => {
-      if (questionId) {
-        console.log("Dispatching thunk with questionId:", questionId);
-        dispatch(getQuestionData(questionId));
-      }
-    }, [dispatch, questionId]);
-    useEffect(() => {
-      console.log("Updated questionData in state:", questionData);
-    }, [questionData]);
+    if (questionId) {
+      console.log("Dispatching thunk with questionId:", questionId);
+      dispatch(getQuestionData(questionId));
+    }
+  }, [dispatch, questionId]);
 
-  // ✅ Static Tabs Info
-  const tabsInfo = [
-    { id: 1, tabKey: 'Tab 1', tabValue: 'This is explanation for Tab 1.' },
-    { id: 2, tabKey: 'Tab 2', tabValue: 'This is explanation for Tab 2.' },
-    { id: 3, tabKey: 'Tab 3', tabValue: 'This is explanation for Tab 3.' },
-  ];
+  useEffect(() => {
+    console.log("Updated dropdownquestionData in state:", questionData);
+  }, [questionData]);
+
+
+
+  const handleTabClick = (tabKey) => {
+    setActiveTab(tabKey);
+  };
+  const tabContent = questionData?.data?.tabsInfo?.reduce((acc, tab) => {
+    acc[tab.tabKey] = tab.tabValue;
+    return acc;
+  }, {}) || {};
+
+
 
   // ✅ Static dropdowns
   const dropdowns = [
@@ -99,33 +107,41 @@ function DropDownQuestionView() {
 
   return (
     <Box
-      sx={{
-        backgroundColor: '#fff',
-        borderRadius: '1.5rem',
-        padding: '2rem',
-        margin: '2rem auto',
-        maxWidth: '950px',
-        boxShadow: '0 4px 12px rgba(0,0,0,0.06)',
-      }}
+
     >
+      <Box sx={{
+        display: "flex",
+        justifyContent: "space-between",
+        alignItems: "center",
+        width: "100%",
+        pb: 3,
+      }} >
+        <Typography >
+          Mark :{questionData?.data?.marks}
+        </Typography>
+        <Typography >
+          Difficulty :{questionData?.data?.difficulty}
+        </Typography>
+        <Typography >
+          Question Type : {questionData?.data?.question_type}
+        </Typography>
+      </Box>
       <Typography
         variant="h6"
         fontWeight={700}
         mb={2}
         sx={{ textAlign: 'center', color: '#2e3760' }}
       >
-        The following scenario applies to the next 3 items
+        {questionData?.data?.question}
       </Typography>
 
-      <Tabs
+      {/*  <Tabs
         value={activeTab}
         onChange={handleTabChange}
-        centered={!isMobile}
-        variant={isMobile ? 'scrollable' : 'standard'}
-        scrollButtons={isMobile ? 'auto' : false}
+
         sx={{ mb: 2 }}
       >
-        {tabsInfo.map((tab) => (
+        {questionData?.data?.tabsInfo.map((tab) => (
           <Tab label={tab.tabKey} key={tab.id} />
         ))}
       </Tabs>
@@ -135,14 +151,39 @@ function DropDownQuestionView() {
           backgroundColor: '#f8f9ff',
           borderRadius: '10px',
           padding: '1rem',
-          mb: 4,
+          mb: 2,
           minHeight: '100px',
         }}
       >
         <Typography variant="body1" sx={{ color: '#333' }}>
-          {tabsInfo[activeTab]?.tabValue}
+          {questionData?.data?.tabsInfo?.[activeTab]?.tabValue}
+        </Typography>
+      </Box> */}
+
+      <Tabs
+        value={activeTab}
+        onChange={handleTabChange}
+        sx={{ mb: 2 }}
+      >
+        {questionData?.data?.tabsInfo?.map((tab) => (
+          <Tab label={tab.tabKey} key={tab.id} />
+        ))}
+      </Tabs>
+
+      <Box
+        sx={{
+          backgroundColor: '#f8f9ff',
+          borderRadius: '10px',
+          padding: '1rem',
+          mb: 2,
+          minHeight: '100px',
+        }}
+      >
+        <Typography variant="body1" sx={{ color: '#333' }}>
+          {questionData?.data?.tabsInfo?.[activeTab]?.tabValue || "No content available"}
         </Typography>
       </Box>
+
 
       <Typography
         variant="body1"
@@ -194,7 +235,7 @@ function DropDownQuestionView() {
         this client is at highest risk for
       </Typography>
 
-     {/*  <Box textAlign="center">
+      {/*  <Box textAlign="center">
         <Button
           variant="contained"
           onClick={handleReveal}
@@ -229,6 +270,20 @@ function DropDownQuestionView() {
           </Typography>
         </Box>
       )} */}
+      <Box sx={{ display: "flex", justifyContent: "center", pt: 5 }}>
+        <Button
+          variant="outlined"
+          startIcon={<ArrowBackIcon />}
+          onClick={() => navigate(-1)} // 👈 goes back
+          sx={{
+            borderRadius: "8px",
+            textTransform: "none",
+            fontWeight: 600,
+          }}
+        >
+          Back To Question Management
+        </Button>
+      </Box>
     </Box>
   );
 }

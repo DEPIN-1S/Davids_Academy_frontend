@@ -1,16 +1,18 @@
 import React, { useEffect, useState } from "react";
 import QuestionHeader from "./QuestionHeader";
 import { useDispatch, useSelector } from "react-redux";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { getQuestionData } from "../features/exam/examSlice";
-import { Box, Typography } from "@mui/material";
-
+import { Box, Button, Typography } from "@mui/material";
+import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 
 function MultiRadioQuestionView() {
   // 🔹 Static Question Data
   const { questionId } = useParams()
   const dispatch = useDispatch();
   const { questionData, loading, error } = useSelector((state) => state.exam);
+  const navigate = useNavigate();
+
   useEffect(() => {
     if (questionId) {
       console.log("Dispatching thunk with questionId:", questionId);
@@ -72,9 +74,9 @@ function MultiRadioQuestionView() {
   const explanationParagraphs = question.explanation.map((exp) => exp.explanation);
   const additionalInfoParagraphs = question.additionalInfo.map((info) => info.info);
   const additionalInfoImage = question.additionalInfo[0]?.image || null;
-  /* const mark = questionData.data.marks;
+  const mark = questionData.data.marks;
   const difficulty = questionData.data.difficulty;
-  const question_type = questionData.data.question_type; */
+  const question_type = questionData.data.question_type;
   const handleTabClick = (tabKey) => {
     setActiveTab(tabKey);
   };
@@ -89,31 +91,32 @@ function MultiRadioQuestionView() {
 
   return (
     <>
+      <Box sx={{
+        display: "flex",
+        justifyContent: "space-between",
+        alignItems: "center",
+        width: "100%",
+        pb: 2,
+      }} >
+        <Typography >
+          Mark :{mark}
+        </Typography>
+        <Typography >
+          Difficulty :{difficulty}
+        </Typography>
+        <Typography >
+          Question Type : {question_type}
+        </Typography>
+      </Box>
       {/*  <QuestionHeader  /> */}
       <div className="multi-radio-container">
-        {/* <Box sx={{
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: "center",
-          width: "100%",
-          pb: 2,
-        }} >
-          <Typography >
-            Mark :{mark}
-          </Typography>
-          <Typography >
-            Difficulty :{difficulty}
-          </Typography>
-          <Typography >
-            Question Type : {question_type}
-          </Typography>
-        </Box> */}
+
         <div className="heading">
           <h4> {questionData?.data?.question}</h4>
         </div>
 
         {/* Tabs */}
-        {/* Tabs */}
+
         <div className="tabs">
           {questionData?.data?.tabsInfo?.map((tab) => (
             <button
@@ -190,6 +193,20 @@ function MultiRadioQuestionView() {
           additionalInfoImage={additionalInfoImage}
         />
       )} */}
+        <Box sx={{ display: "flex", justifyContent: "center", pt: 5 }}>
+          <Button
+            variant="outlined"
+            startIcon={<ArrowBackIcon />}
+            onClick={() => navigate(-1)} // 👈 goes back
+            sx={{
+              borderRadius: "8px",
+              textTransform: "none",
+              fontWeight: 600,
+            }}
+          >
+            Back To Question Management
+          </Button>
+        </Box>
       </div>
     </>
   );

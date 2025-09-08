@@ -210,7 +210,7 @@ const AdminRoutes = () => (
                 </ProtectedRoutes>
             } /> 
 
-              <Route path="/admin/SentenceHighlight-question-view" element={
+              <Route path="/admin/SentenceHighlight-question-view/:questionId" element={
                 <ProtectedRoutes allowedRoles={['admin']}>
                     <SentenceHighlightQuestionView/>
                 </ProtectedRoutes>
