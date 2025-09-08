@@ -278,9 +278,9 @@ const QManagementPage = () => {
                                     <tr>
                                         <th>Test ID</th>
                                         <th>Course</th>
-                                        <th> Title</th>
-                                        <th>From </th>
-                                        <th>To </th>
+                                        <th>Title</th>
+                                        <th>From</th>
+                                        <th>To</th>
                                         <th>Actions</th>
                                     </tr>
                                 </thead>
