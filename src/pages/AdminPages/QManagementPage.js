@@ -43,9 +43,9 @@ const QManagementPage = () => {
     const handleViewQuestion = (questionData) => {
         console.log("Question Data in question view", questionData);
         const { questionType } = questionData;
-        const  questionId  = questionData.id;
-        console.log("question Id :::",questionId);
-        
+        const questionId = questionData.id;
+        console.log("question Id :::", questionId);
+
 
         switch (questionType) {
             case 'MCQ':
@@ -205,7 +205,7 @@ const QManagementPage = () => {
                                 className={`tab-btn ${activeTab === "Q-bank" ? "active" : ""}`}
                                 onClick={() => setActiveTab("Q-bank")}
                             >
-                                Q-bank
+                                Questions(Q-bank)
                                 <span className="tab-count">{adminQBankTotalCount}</span>
                             </button>
                             <button
@@ -213,7 +213,7 @@ const QManagementPage = () => {
                                     }`}
                                 onClick={() => setActiveTab("Mock Test")}
                             >
-                                Mock Test
+                                Questions(Mock Test)
                                 <span className="tab-count">
                                     {adminMockTestTotalCount}
                                 </span>
@@ -222,7 +222,7 @@ const QManagementPage = () => {
                                 className={`tab-btn ${activeTab === "Test" ? "active" : ""}`}
                                 onClick={() => setActiveTab("Test")}
                             >
-                                Test
+                                Mock Test
                                 <span className="tab-count">{adminTestQuestionsTotalCount}</span>
                             </button>
                         </div>
@@ -278,9 +278,9 @@ const QManagementPage = () => {
                                     <tr>
                                         <th>Test ID</th>
                                         <th>Course</th>
-                                        <th>Test Title</th>
-                                        <th>From Date</th>
-                                        <th>To Date</th>
+                                        <th> Title</th>
+                                        <th>From </th>
+                                        <th>To </th>
                                         <th>Actions</th>
                                     </tr>
                                 </thead>
