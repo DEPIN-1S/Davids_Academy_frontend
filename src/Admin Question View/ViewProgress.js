@@ -27,11 +27,9 @@ function ViewProgress() {
                 <table className="styled-table">
                     <thead>
                         <tr>
-                            <th>Test Title</th>
-                            <th>From Date</th>
-                            <th>To Date</th>
-                            <th>Started At</th>
-                            <th>Updated At</th>
+                            <th> Title</th>
+                            <th>From </th>
+                            <th>To </th>
                             <th>Score</th>
                         </tr>
                     </thead>
@@ -42,22 +40,6 @@ function ViewProgress() {
                                     <td>{test.testTitle}</td>
                                     <td>{new Date(test.fromDate).toLocaleDateString()}</td>
                                     <td>{new Date(test.toDate).toLocaleDateString()}</td>
-                                    <td>
-                                        {new Date(test.st_created_at).toLocaleTimeString("en-IN", {
-                                            hour: "2-digit",
-                                            minute: "2-digit",
-                                            hour12: true,
-                                            timeZone: "Asia/Kolkata",
-                                        })}
-                                    </td>
-                                    <td>
-                                        {new Date(test.st_updated_at).toLocaleTimeString("en-IN", {
-                                            hour: "2-digit",
-                                            minute: "2-digit",
-                                            hour12: true,
-                                            timeZone: "Asia/Kolkata",
-                                        })}
-                                    </td>
                                     <td>{test.st_score}</td>
                                 </tr>
                             ))
