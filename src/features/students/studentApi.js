@@ -29,6 +29,37 @@ export async function listStudents(token, page = 1, limit = 10) {
 
 
 
+export async function fetchStudentTestProgress(studentId) {
+  const token = sessionStorage.getItem("accessToken"); // ✅ get token from sessionStorage
+
+  if (!token) {
+    throw new Error("No access token found in sessionStorage");
+  }
+
+  const response = await fetch(
+    "https://lunarsenterprises.com:6040/davidsacademy/admin/student/test",
+    {
+      method: "POST",
+      headers: {
+        "Authorization": `Bearer ${token}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ student_id: studentId }),
+    }
+  );
+
+  if (!response.ok) {
+    throw new Error("Failed to fetch test progress");
+  }
+
+  const data = await response.json();
+  console.log(`Test progress data for student ${studentId}:`, data);
+  return data;
+}
+
+
+
+
 export async function editStudent(studentData, token) {
   const response = await fetch(
     "https://lunarsenterprises.com:6040/davidsacademy/admin/student/edit",
@@ -45,7 +76,7 @@ export async function editStudent(studentData, token) {
   let data;
   try {
     console.log("Inside studenet edit api");
-    
+
     data = await response.json();
   } catch (err) {
     console.error("Failed to parse JSON from response:", err);

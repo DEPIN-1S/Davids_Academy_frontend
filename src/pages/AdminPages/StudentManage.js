@@ -5,6 +5,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { fetchStudents, removeStudent } from "../../features/students/studentSlice";
 import AddStudentForm from "../../components/AdminComponents/AddStudentForm";
 import EditStudentForm from "../../components/AdminComponents/EditStudentForm";
+import { useNavigate } from "react-router-dom";
 
 const StudentManage = () => {
   const dispatch = useDispatch();
@@ -50,7 +51,10 @@ const StudentManage = () => {
   const handlePageChange = (newPage) => {
     setPage(newPage);
   };
-
+  const navigate = useNavigate()
+  const navigateToViewProgress = (studentId) => {
+    navigate(`/admin/view-progress/${studentId}`);
+  };
   const students = !loading ? filteredStudents : [];
 
   return (
@@ -94,7 +98,7 @@ const StudentManage = () => {
                   <td>{student.cs_name || "N/A"}</td>
                   <td>{student.status || "N/A"}</td>
                   <td className="action-buttons">
-                    <button className="progress-btn">View Progress</button>
+                    <button onClick={() => navigateToViewProgress(student.id)} className="progress-btn">View Progress</button>
 
                     {student.status === "active" ? (
                       <button

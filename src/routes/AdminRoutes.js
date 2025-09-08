@@ -33,6 +33,7 @@ import MultiRadioQuestionView from "../Admin Question View/MultiRadioQuestionVie
 import SentenceHighlightQuestionView from "../Admin Question View/SentenceHighlightQuestionView";
 import FillinTheBlanksQuestionView from "../Admin Question View/FillinTheBlanksQuestionView";
 import SortingQuestionView from "../Admin Question View/SortingQuestionView";
+import ViewProgress from "../Admin Question View/ViewProgress";
 
 const AdminRoutes = () => (
     <>
@@ -180,45 +181,51 @@ const AdminRoutes = () => (
             } />
 
             {/* Question view */}
-             <Route path="/admin/MCQ-question-view/:questionId" element={
+            <Route path="/admin/MCQ-question-view/:questionId" element={
                 <ProtectedRoutes allowedRoles={['admin']}>
                     <McqQuestionView />
                 </ProtectedRoutes>
             } />
 
-              <Route path="/admin/DragDrop-question-view/:questionId" element={
+            <Route path="/admin/DragDrop-question-view/:questionId" element={
                 <ProtectedRoutes allowedRoles={['admin']}>
                     <DragDropQuestionView />
                 </ProtectedRoutes>
             } />
 
-              <Route path="/admin/DropDown-question-view/:questionId" element={
+            <Route path="/admin/DropDown-question-view/:questionId" element={
                 <ProtectedRoutes allowedRoles={['admin']}>
                     <DropDownQuestionView />
                 </ProtectedRoutes>
             } />
 
-              <Route path="/admin/MultiRadio-question-view/:questionId" element={
+            <Route path="/admin/MultiRadio-question-view/:questionId" element={
                 <ProtectedRoutes allowedRoles={['admin']}>
                     <MultiRadioQuestionView />
                 </ProtectedRoutes>
             } />
 
-               <Route path="/admin/FillinTheBlanksQuestion-question-view" element={
+            <Route path="/admin/FillinTheBlanksQuestion-question-view" element={
                 <ProtectedRoutes allowedRoles={['admin']}>
-                    <FillinTheBlanksQuestionView/>
-                </ProtectedRoutes>
-            } /> 
-
-              <Route path="/admin/SentenceHighlight-question-view/:questionId" element={
-                <ProtectedRoutes allowedRoles={['admin']}>
-                    <SentenceHighlightQuestionView/>
+                    <FillinTheBlanksQuestionView />
                 </ProtectedRoutes>
             } />
 
-              <Route path="/admin/Sorting-question-view/:questionId" element={
+            <Route path="/admin/SentenceHighlight-question-view/:questionId" element={
                 <ProtectedRoutes allowedRoles={['admin']}>
-                    <SortingQuestionView/>
+                    <SentenceHighlightQuestionView />
+                </ProtectedRoutes>
+            } />
+
+            <Route path="/admin/Sorting-question-view/:questionId" element={
+                <ProtectedRoutes allowedRoles={['admin']}>
+                    <SortingQuestionView />
+                </ProtectedRoutes>
+            } />
+
+            <Route path="/admin/view-progress/:studentId" element={
+                <ProtectedRoutes allowedRoles={['admin']}>
+                    <ViewProgress />
                 </ProtectedRoutes>
             } />
 
