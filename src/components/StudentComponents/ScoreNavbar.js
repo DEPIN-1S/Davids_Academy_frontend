@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { Box, Button, Stack, useMediaQuery } from '@mui/material';
 import { useTheme } from '@mui/material/styles';
@@ -11,7 +12,6 @@ const navItems = [
 const ScoreNavbar = () => {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
-
   const location = useLocation();
   const navigate = useNavigate();
 
@@ -28,7 +28,6 @@ const ScoreNavbar = () => {
         gap: isMobile ? 2 : 0,
       }}
     >
-      {/* Left side (Score) */}
       <Box sx={{ flexGrow: 1, display: 'flex', justifyContent: isMobile ? 'center' : 'flex-start' }}>
         {navItems.slice(0, 1).map(({ label, path }) => {
           const isActive = location.pathname === path;
@@ -55,8 +54,6 @@ const ScoreNavbar = () => {
           );
         })}
       </Box>
-
-      {/* Right side (View Explanations) */}
       <Box sx={{ flexGrow: 1, display: 'flex', justifyContent: isMobile ? 'center' : 'flex-end' }}>
         {navItems.slice(1).map(({ label, path }) => {
           const isActive = location.pathname === path;
