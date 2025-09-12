@@ -61,7 +61,7 @@ const QManagementPage = () => {
                 navigate(`/admin/MultiRadio-question-view/${questionId}`);
                 break;
             case 'Fill in the Blanks':
-                navigate('/admin/FillinTheBlanksQuestion-question-view');
+                navigate(`/admin/fillInTheBlanks-question-view/${questionId}`);
                 break;
             case 'Sentence Highlight':
                 navigate(`/admin/SentenceHighlight-question-view/${questionId}`);

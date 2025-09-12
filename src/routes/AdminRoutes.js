@@ -150,6 +150,7 @@ const AdminRoutes = () => (
                     <AddCourseComponent />
                 </ProtectedRoutes>
             } />
+            
             <Route path="/admin/course-form/:id" element={
                 <ProtectedRoutes allowedRoles={['admin']}>
                     <AddCourseComponent />
@@ -223,11 +224,19 @@ const AdminRoutes = () => (
                 </ProtectedRoutes>
             } />
 
+            <Route path="/admin/fillInTheBlanks-question-view/:questionId" element={
+                <ProtectedRoutes allowedRoles={['admin']}>
+                    <FillinTheBlanksQuestionView/>
+                </ProtectedRoutes>
+            } />
+
             <Route path="/admin/view-progress/:studentId" element={
                 <ProtectedRoutes allowedRoles={['admin']}>
                     <ViewProgress />
                 </ProtectedRoutes>
             } />
+
+            
 
         </Route>
     </>

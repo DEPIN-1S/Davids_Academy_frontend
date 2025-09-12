@@ -12,7 +12,9 @@ import {
     Accordion,
     AccordionSummary,
     AccordionDetails,
-    Grid
+    Grid,
+    Select,
+    MenuItem
 } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
@@ -30,7 +32,7 @@ const DragdropQuestionContent = () => {
     // Get any existing data from previous steps
     const existingData = location.state?.questionData || {};
     const questionType = location.state?.questionType || existingData.questionType || "Drag Drop";
-    const  cs_id = location.state?.cs_id || "";
+    const cs_id = location.state?.cs_id || "";
     const exam_type = location.state?.exam_type || "";
     const question_type_id = location.state?.question_type_id || "";
 
@@ -40,17 +42,21 @@ const DragdropQuestionContent = () => {
     const [tabs, setTabs] = useState(existingData.tabs || [
         { tabKey: "", tabValue: "" }
     ]);
-    const [dragAndDrop, setDragAndDrop] = useState(existingData.drag_and_drop || [
+    /* const [dragAndDrop, setDragAndDrop] = useState(existingData.drag_and_drop || [
         {
             option_heading: "",
             question_answer: "",
             option_value: [""]
         }
-    ]);
+    ]); */
 
-
-    
-
+    const [dragAndDrop, setDragAndDrop] = useState(
+        existingData.drag_and_drop || Array.from({ length: 5 }, () => ({
+            option_heading: "",
+            question_answer: "",
+            option_value: [""],
+        }))
+    );
 
     const [selectedFile, setSelectedFile] = useState(null); // ✅ Local state for UI, Context for persistence
     const [errors, setErrors] = useState({});
@@ -194,18 +200,20 @@ const DragdropQuestionContent = () => {
             newErrors.tabs = 'At least one tab with key and value is required';
         }
 
-        const validSections = dragAndDrop.filter(section =>
+        // ✅ Require ALL sections to be valid
+        const allValidSections = dragAndDrop.every(section =>
             section.option_heading.trim() &&
             section.question_answer.trim() &&
             section.option_value.some(val => val.trim())
         );
-        if (validSections.length === 0) {
-            newErrors.dragAndDrop = 'At least one drag and drop section with heading, answer, and options is required';
+        if (!allValidSections) {
+            newErrors.dragAndDrop = 'All 5 drag and drop sections must have heading, answer, and options';
         }
 
         setErrors(newErrors);
         return Object.keys(newErrors).length === 0;
     };
+
 
     // ✅ Navigation handlers - NO files in navigation state
     const handleNext = () => {
@@ -214,10 +222,10 @@ const DragdropQuestionContent = () => {
         }
         // ✅ Prepare ONLY serializable question data
         const questionData = {
-            cs_id:cs_id,
-            exam_type:exam_type,
+            cs_id: cs_id,
+            exam_type: exam_type,
             questionType: questionType,
-            question_type_id:question_type_id,
+            question_type_id: question_type_id,
             question: question.trim(),
             drag_drop_content: dragDropContent.trim(),
             tabs: tabs.filter(tab => tab.tabKey.trim() && tab.tabValue.trim()),
@@ -263,7 +271,7 @@ const DragdropQuestionContent = () => {
             drag_drop_content: dragDropContent.trim(),
             tabs: tabs,
             drag_and_drop: dragAndDrop,
-         
+
             // ✅ No file objects in navigation state
         };
 
@@ -271,7 +279,7 @@ const DragdropQuestionContent = () => {
             state: {
                 questionData: currentData,
                 fromStep: 'content',
-                 cs_id
+                cs_id
             }
         });
     };
@@ -291,18 +299,21 @@ const DragdropQuestionContent = () => {
         return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
     };
 
-    const isFormValid = () => {
-        const hasValidQuestion = question.trim() !== "";
-        const hasValidContent = dragDropContent.trim() !== "";
-        const hasValidTabs = tabs.some(tab => tab.tabKey.trim() && tab.tabValue.trim());
-        const hasValidSections = dragAndDrop.some(section =>
-            section.option_heading.trim() &&
-            section.question_answer.trim() &&
-            section.option_value.some(val => val.trim())
-        );
+   const isFormValid = () => {
+    const hasValidQuestion = question.trim() !== "";
+    const hasValidContent = dragDropContent.trim() !== "";
+    const hasValidTabs = tabs.some(tab => tab.tabKey.trim() && tab.tabValue.trim());
 
-        return hasValidQuestion && hasValidContent && hasValidTabs && hasValidSections;
-    };
+    // ✅ Require ALL sections to be valid
+    const hasValidSections = dragAndDrop.every(section =>
+        section.option_heading.trim() &&
+        section.question_answer.trim() &&
+        section.option_value.some(val => val.trim())
+    );
+
+    return hasValidQuestion && hasValidContent && hasValidTabs && hasValidSections;
+};
+
 
     // Cleanup on unmount
     React.useEffect(() => {
@@ -554,21 +565,44 @@ const DragdropQuestionContent = () => {
                                     <TextField
                                         fullWidth
                                         label="Section Heading"
-                                         value={section.option_heading}
+                                        value={section.option_heading}
                                         onChange={(e) => handleDragDropHeadingChange(sectionIndex, e.target.value)}
                                         placeholder="e.g., Action to take, Parameter to Monitor"
                                         size="small"
                                     />
                                 </Grid>
                                 <Grid item xs={12} md={6}>
-                                    <TextField
+                                    {/* <TextField
                                         fullWidth
                                         label="Correct Answer"
                                         value={section.question_answer}
                                         onChange={(e) => handleDragDropAnswerChange(sectionIndex, e.target.value)}
                                         placeholder="e.g., Option 1, Option 2"
                                         size="small"
-                                    />
+                                    /> */}
+
+                                    <Select
+                                        sx={{ color: "gray" }}
+                                        fullWidth
+                                        size="small"
+                                        value={section.question_answer || ""}
+                                        onChange={(e) => handleDragDropAnswerChange(sectionIndex, e.target.value)}
+                                        displayEmpty
+                                    >
+                                        <MenuItem value="">
+                                            <em>Select Correct Answer</em>
+                                        </MenuItem>
+                                        {section.option_value
+                                            .filter(option => option.trim() !== "") // only that section's options
+                                            .map((option, optionIndex) => (
+                                                <MenuItem key={optionIndex} value={option}>
+                                                    {option}
+                                                </MenuItem>
+                                            ))}
+                                    </Select>
+
+
+
                                 </Grid>
                             </Grid>
 
@@ -612,14 +646,14 @@ const DragdropQuestionContent = () => {
                         </Card>
                     ))}
 
-                    <Button
+                    {/* <Button
                         startIcon={<AddIcon />}
                         onClick={handleAddDragDropSection}
                         variant="outlined"
                         size="small"
                     >
                         Add Drag & Drop Section
-                    </Button>
+                    </Button> */}
 
                     {errors.dragAndDrop && (
                         <Typography color="error" variant="caption" sx={{ display: 'block', mt: 1 }}>

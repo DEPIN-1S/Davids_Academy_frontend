@@ -1,21 +1,19 @@
-import React, { useEffect, useState } from 'react';
-import { Box, Typography, Paper, Grid, useMediaQuery, Button } from '@mui/material';
-import { styled } from '@mui/material/styles';
-import { DragDropContext, Droppable, Draggable } from '@hello-pangea/dnd';
-import { useNavigate, useParams } from 'react-router-dom';
-import { useDispatch, useSelector } from 'react-redux';
-import { getQuestionData } from '../features/exam/examSlice';
+import React, { useEffect, useState } from "react";
+import { Box, Typography, Paper, Grid, Button } from "@mui/material";
+import { styled } from "@mui/material/styles";
+import { useNavigate, useParams } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
+import { getQuestionData } from "../features/exam/examSlice";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
-import Tabs from '@mui/material/Tabs';
-import Tab from '@mui/material/Tab';
-
+import Tabs from "@mui/material/Tabs";
+import Tab from "@mui/material/Tab";
 
 const StyledDropZone = styled(Paper)(({ theme }) => ({
   minHeight: 120,
   padding: theme.spacing(2),
   borderRadius: theme.spacing(1),
-  border: '2px dashed #ccc',
-  background: '#f9f9f9',
+  border: "2px dashed #ccc",
+  background: "#f9f9f9",
 }));
 
 function DragDropQuestionView() {
@@ -23,25 +21,20 @@ function DragDropQuestionView() {
   const dispatch = useDispatch();
   const { questionData, loading, error } = useSelector((state) => state.exam);
   const navigate = useNavigate();
+
+  const [activeTab, setActiveTab] = useState(0);
+  const [zones, setZones] = useState({});
+
+  // ✅ Fetch question data
   useEffect(() => {
     if (questionId) {
       dispatch(getQuestionData(questionId));
     }
   }, [dispatch, questionId]);
-  const [activeTab, setActiveTab] = useState(0);
-  const [zones, setZones] = useState({});
-  // ✅ Static Tabs Info
-  const mark = questionData.data.marks;
-  const difficulty = questionData.data.difficulty;
-  const question_type = questionData.data.question_type;
 
-  const handleTabChange = (event, newValue) => {
-    setActiveTab(newValue);
-  };
-
+  // ✅ Initialize zones when dropdownquestiontext changes
   useEffect(() => {
-    if (questionData?.data?.dropdownquestiontext) {
-      // initialize empty arrays for each drop zone from API
+    if (Array.isArray(questionData?.data?.dropdownquestiontext)) {
       const newZones = {};
       questionData.data.dropdownquestiontext.forEach((zone) => {
         newZones[zone.id] = [];
@@ -54,20 +47,16 @@ function DragDropQuestionView() {
     console.log("Updated Drag drop question data in state:", questionData);
   }, [questionData]);
 
-  const onDragEnd = (result) => {
-    const { source, destination } = result;
-    if (!destination) return;
-
-    if (source.droppableId === 'source' && destination.droppableId !== 'source') {
-      const dragged =
-        questionData?.data?.dropdownquestiontext?.[0]?.dragdropoption[source.index];
-      const newZone = [...zones[destination.droppableId], dragged];
-      setZones({ ...zones, [destination.droppableId]: newZone });
-    }
+  const handleTabChange = (event, newValue) => {
+    setActiveTab(newValue);
   };
 
+  // ✅ Normalize arrays (avoids undefined.map crashes)
+  const tabsInfo = questionData?.data?.tabsInfo || [];
+  const branches = questionData?.data?.branches || [];
+
   return (
-    <Box >
+    <Box>
       <Box sx={{
         display: "flex",
         justifyContent: "space-between",
@@ -76,151 +65,186 @@ function DragDropQuestionView() {
         pb: 3,
       }} >
         <Typography >
-          Mark :{mark}
+          Mark :{questionData?.data?.marks}
         </Typography>
         <Typography >
-          Difficulty :{difficulty}
+          Difficulty :{questionData?.data?.difficulty}
         </Typography>
         <Typography >
-          Question Type : {question_type}
+          Question Type : {questionData?.data?.question_type}
         </Typography>
       </Box>
-      <Typography variant="h6" fontWeight={700} textAlign="center" mb={2}>
-        {questionData?.data?.question}
+      <Typography variant="h6" fontWeight={700} textAlign="center" mt={4} mb={2}>
+        {questionData?.data?.question || "Loading..."}
       </Typography>
 
-      <Tabs
-        value={activeTab}
-        onChange={handleTabChange}
-
-        sx={{ mb: 2 }}
-      >
-        {questionData?.data?.tabsInfo.map((tab) => (
+      {/* Tabs */}
+      <Tabs value={activeTab} onChange={handleTabChange} sx={{ mb: 2 }}>
+        {tabsInfo.map((tab) => (
           <Tab label={tab.tabKey} key={tab.id} />
         ))}
       </Tabs>
 
+      {/* Tab Content */}
       <Box
         sx={{
-          backgroundColor: '#f8f9ff',
-          borderRadius: '10px',
-          padding: '1rem',
+          backgroundColor: "#f8f9ff",
+          borderRadius: "10px",
+          padding: "1rem",
           mb: 2,
-          minHeight: '100px',
+          minHeight: "100px",
         }}
       >
-        <Typography variant="body1" sx={{ color: '#333' }}>
-          {questionData?.data?.tabsInfo?.[activeTab]?.tabValue}
+        <Typography variant="body1" sx={{ color: "#333" }}>
+          {tabsInfo[activeTab]?.tabValue || "No content available"}
         </Typography>
       </Box>
 
-      <DragDropContext onDragEnd={onDragEnd}>
-        {/* Target Zones from API */}
-        <Grid container spacing={3} justifyContent="center" mb={2}>
-          {(questionData?.data?.headings || []).map((heading) => (
-            <Grid item xs={12} sm={6} md={3} key={heading.id}>
-              <Typography fontWeight={600} mb={1} textAlign="center">
-                {heading.headings}
-              </Typography>
-              <Droppable droppableId={heading.id.toString()}>
-                {(dropProvided) => (
-                  <StyledDropZone ref={dropProvided.innerRef} {...dropProvided.droppableProps}>
-                    {(zones[heading.id] || []).map((item, index) => (
-                      <Draggable
-                        key={item.id.toString()}
-                        draggableId={item.id.toString()}
-                        index={index}
-                      >
-                        {(dragProvided, snapshot) => (
-                          <Box
-                            ref={dragProvided.innerRef}
-                            {...dragProvided.draggableProps}
-                            {...dragProvided.dragHandleProps}
-                            sx={{
-                              backgroundColor: snapshot.isDragging ? '#e0f7fa' : '#fff',
-                              borderRadius: 1,
-                              p: 1,
-                              mb: 1,
-                              boxShadow: 1,
-                              fontSize: '0.9rem',
-                              minWidth: 300,
-                              maxWidth: '100%',
-                            }}
-                          >
-                            {item.options_value}
-                          </Box>
-                        )}
-                      </Draggable>
-                    ))}
-                    {dropProvided.placeholder}
-                  </StyledDropZone>
-                )}
-              </Droppable>
+      <Box sx={{ p: 4 }}>
+        {/* Main Layout */}
+        <Grid
+          container
+          justifyContent="center"
+          alignItems="center"
+          spacing={4}
+          sx={{ minHeight: "30vh" }}
+        >
+          {/* LEFT SIDE */}
+          <Grid item xs={12} sm={4}>
+            <Box display="flex" flexDirection="column" alignItems="flex-end" gap={4}>
+              <Paper elevation={1} sx={{ p: 2, minWidth: 200, textAlign: "center", borderRadius: 2 }}>
+                <Typography fontWeight={600}>Action to take</Typography>
+              </Paper>
+              <Paper elevation={1} sx={{ p: 2, minWidth: 200, textAlign: "center", borderRadius: 2 }}>
+                <Typography fontWeight={600}>Action to take</Typography>
+              </Paper>
+            </Box>
+          </Grid>
 
+          {/* CENTER BOX */}
+          <Grid item xs={12} sm={4}>
+            <Box display="flex" justifyContent="center">
+              <Paper
+                elevation={3}
+                sx={{
+                  p: 3,
+                  backgroundColor: "#1e2a4a",
+                  color: "#fff",
+                  borderRadius: 2,
+                  textAlign: "center",
+                  minWidth: 250,
+                }}
+              >
+                <Typography fontWeight={700}>Most likely experiencing</Typography>
+              </Paper>
+            </Box>
+          </Grid>
+
+          {/* RIGHT SIDE */}
+          <Grid item xs={12} sm={4}>
+            <Box display="flex" flexDirection="column" alignItems="flex-start" gap={4}>
+              <Paper elevation={1} sx={{ p: 2, minWidth: 200, textAlign: "center", borderRadius: 2 }}>
+                <Typography fontWeight={600}>Parameter to Monitor</Typography>
+              </Paper>
+              <Paper elevation={1} sx={{ p: 2, minWidth: 200, textAlign: "center", borderRadius: 2 }}>
+                <Typography fontWeight={600}>Parameter to Monitor</Typography>
+              </Paper>
+            </Box>
+          </Grid>
+        </Grid>
+
+        {/* Bottom Options (Branches) */}
+        <Grid container justifyContent="center" sx={{ pt: 5 }} spacing={3}>
+          {branches.map((branch, idx) => (
+            <Grid item key={idx}>
+              <Paper
+                elevation={0}
+                sx={{
+                  p: 2,
+                  minWidth: 320,
+                  border: "1px solid #ddd",
+                  borderRadius: 2,
+                  backgroundColor: "#f9f9f9",
+                  boxShadow: "0px 2px 6px rgba(0,0,0,0.05)",
+                }}
+              >
+                {/* Card Title */}
+                <Typography
+                  variant="h6"
+                  sx={{
+                    mb: 2,
+                    fontSize: "1rem",
+                    fontWeight: 600,
+                    color: "#333",
+                    textAlign: "center",
+                  }}
+                >
+                  {branch.headings || "Action to take"}
+                </Typography>
+
+                {/* Options */}
+                {branch.dragdropoption?.map((opt, index) => {
+                  const isCorrect =
+                    String(opt.id) === String(branch.drag_drop_answer);
+
+                  return (
+                    <Paper
+                      key={index}
+                      elevation={0}
+                      sx={{
+                        display: "flex",
+                        alignItems: "center",
+                        gap: 1.5,
+                        p: 1.5,
+                        mb: 1.5,
+                        border: "1px solid #ddd",
+                        borderRadius: 1.5,
+                        backgroundColor: "#fff",
+                      }}
+                    >
+                      {/* Left Handle */}
+                      <Box
+                        sx={{
+                          display: "flex",
+                          flexDirection: "column",
+                          justifyContent: "center",
+                          alignItems: "center",
+                          width: 20,
+                          gap: "3px",
+                        }}
+                      >
+                        <Box sx={{ width: "14px", height: "2px", bgcolor: "#999", borderRadius: 1 }} />
+                        <Box sx={{ width: "14px", height: "2px", bgcolor: "#999", borderRadius: 1 }} />
+                        <Box sx={{ width: "14px", height: "2px", bgcolor: "#999", borderRadius: 1 }} />
+                      </Box>
+
+                      {/* Option Text */}
+                      <Typography
+                        variant="body2"
+                        sx={{
+                          textAlign: "left",
+                          color: "#333",
+                          fontSize: "0.9rem",
+                          fontWeight: isCorrect ? 600 : 400, // bold correct
+                        }}
+                      >
+                        {opt.options_value}
+                      </Typography>
+                    </Paper>
+                  );
+                })}
+              </Paper>
             </Grid>
           ))}
         </Grid>
+      </Box>
 
-        {/* Source Items */}
-        <Box textAlign="center" mb={4}>
-          <Typography variant="h6" fontWeight={600} mb={2}>
-            Options
-          </Typography>
-          <Droppable droppableId="source" direction="horizontal">
-            {(provided) => (
-              <Box
-                ref={provided.innerRef}
-                {...provided.droppableProps}
-                display="flex"
-                justifyContent="center"
-                flexWrap="wrap"
-                gap={2}
-              >
-                {(questionData?.data?.dropdownquestiontext?.[0]?.dragdropoption || []).map(
-                  (item, index) => (
-                    <Draggable
-                      key={item.id.toString()}
-                      draggableId={item.id.toString()}
-                      index={index}
-                    >
-                      {(provided) => (
-                        <Box
-                          ref={provided.innerRef}
-                          {...provided.draggableProps}
-                          {...provided.dragHandleProps}
-                          sx={{
-                            backgroundColor: '#fff',
-                            border: '1px solid #ccc',
-                            borderRadius: 1,
-                            p: 1,
-                            minWidth: 250,
-                            textAlign: 'center',
-                            fontSize: '0.9rem',
-                            boxShadow: 1,
-                          }}
-                        >
-                          {item.options_value}
-                        </Box>
-                      )}
-                    </Draggable>
-                  )
-                )}
-                {provided.placeholder}
-              </Box>
-            )}
-          </Droppable>
-        </Box>
-      </DragDropContext>
-      {/*  <Box textAlign="center">
-        <Button variant="contained" sx={{ backgroundColor: '#f7c948', color: '#000' }}>
-          Reveal Answer
-        </Button>
-      </Box> */}
+      {/* Back Button */}
       <Box sx={{ display: "flex", justifyContent: "center", pt: 5 }}>
         <Button
           variant="outlined"
           startIcon={<ArrowBackIcon />}
-          onClick={() => navigate(-1)} // 👈 goes back
+          onClick={() => navigate(-1)}
           sx={{
             borderRadius: "8px",
             textTransform: "none",
@@ -235,4 +259,3 @@ function DragDropQuestionView() {
 }
 
 export default DragDropQuestionView;
-
