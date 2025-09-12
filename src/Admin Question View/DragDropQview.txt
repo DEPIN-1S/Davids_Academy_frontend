@@ -31,7 +31,9 @@ function DragDropQuestionView() {
   const [activeTab, setActiveTab] = useState(0);
   const [zones, setZones] = useState({});
   // ✅ Static Tabs Info
-
+  const mark = questionData.data.marks;
+  const difficulty = questionData.data.difficulty;
+  const question_type = questionData.data.question_type;
 
   const handleTabChange = (event, newValue) => {
     setActiveTab(newValue);
@@ -64,17 +66,9 @@ function DragDropQuestionView() {
     }
   };
 
-  const options = [
-    "Administer high-flow oxygen ",
-    "Elevate head of bed to 45.",
-    "Monitor oxygen saturation ",
-    "Notify healthcare provider .",
-    "Prepare for possible intubation.",
-  ];
-
   return (
     <Box >
-      {/* <Box sx={{
+      <Box sx={{
         display: "flex",
         justifyContent: "space-between",
         alignItems: "center",
@@ -90,7 +84,7 @@ function DragDropQuestionView() {
         <Typography >
           Question Type : {question_type}
         </Typography>
-      </Box> */}
+      </Box>
       <Typography variant="h6" fontWeight={700} textAlign="center" mb={2}>
         {questionData?.data?.question}
       </Typography>
@@ -120,7 +114,8 @@ function DragDropQuestionView() {
         </Typography>
       </Box>
 
-      {/*  <DragDropContext onDragEnd={onDragEnd}>
+      <DragDropContext onDragEnd={onDragEnd}>
+        {/* Target Zones from API */}
         <Grid container spacing={3} justifyContent="center" mb={2}>
           {(questionData?.data?.headings || []).map((heading) => (
             <Grid item xs={12} sm={6} md={3} key={heading.id}>
@@ -166,7 +161,7 @@ function DragDropQuestionView() {
           ))}
         </Grid>
 
-
+        {/* Source Items */}
         <Box textAlign="center" mb={4}>
           <Typography variant="h6" fontWeight={600} mb={2}>
             Options
@@ -215,174 +210,7 @@ function DragDropQuestionView() {
             )}
           </Droppable>
         </Box>
-      </DragDropContext> */}
-      <Box sx={{ p: 4 }}>
-        {/* Main Layout */}
-        <Grid
-          container
-          justifyContent="center"
-          alignItems="center"
-          spacing={4}
-          sx={{ minHeight: "30vh" }}
-        >
-          {/* LEFT SIDE */}
-          <Grid item xs={12} sm={4}>
-            <Box display="flex" flexDirection="column" alignItems="flex-end" gap={4}>
-              <Paper
-                elevation={1}
-                sx={{
-                  p: 2,
-                  minWidth: 200,
-                  textAlign: "center",
-                  borderRadius: 2,
-                }}
-              >
-                <Typography fontWeight={600}>Action to take</Typography>
-              </Paper>
-
-              <Paper
-                elevation={1}
-                sx={{
-                  p: 2,
-                  minWidth: 200,
-                  textAlign: "center",
-                  borderRadius: 2,
-                }}
-              >
-                <Typography fontWeight={600}>Action to take</Typography>
-              </Paper>
-            </Box>
-          </Grid>
-
-          {/* CENTER BOX */}
-          <Grid item xs={12} sm={4}>
-            <Box display="flex" justifyContent="center">
-              <Paper
-                elevation={3}
-                sx={{
-                  p: 3,
-                  backgroundColor: "#1e2a4a",
-                  color: "#fff",
-                  borderRadius: 2,
-                  textAlign: "center",
-                  minWidth: 250,
-                }}
-              >
-                <Typography fontWeight={700}>Most likely experiencing</Typography>
-              </Paper>
-            </Box>
-          </Grid>
-
-          {/* RIGHT SIDE */}
-          <Grid item xs={12} sm={4}>
-            <Box display="flex" flexDirection="column" alignItems="flex-start" gap={4}>
-              <Paper
-                elevation={1}
-                sx={{
-                  p: 2,
-                  minWidth: 200,
-                  textAlign: "center",
-                  borderRadius: 2,
-                }}
-              >
-                <Typography fontWeight={600}>Parameter to Monitor</Typography>
-              </Paper>
-
-              <Paper
-                elevation={1}
-                sx={{
-                  p: 2,
-                  minWidth: 200,
-                  textAlign: "center",
-                  borderRadius: 2,
-                }}
-              >
-                <Typography fontWeight={600}>Parameter to Monitor</Typography>
-              </Paper>
-            </Box>
-          </Grid>
-        </Grid>
-
-        {/* Bottom Options (Static 5 Boxes) */}
-        <Grid container justifyContent="center" sx={{ pt: 5 }} spacing={3}>
-          {questionData?.data?.branches?.map((branch, idx) => (
-            <Grid item key={idx}>
-              <Paper
-                elevation={0}
-                sx={{
-                  p: 2,
-                  minWidth: 320,
-                  border: "1px solid #ddd",
-                  borderRadius: 2,
-                  backgroundColor: "#f9f9f9",
-                  boxShadow: "0px 2px 6px rgba(0,0,0,0.05)",
-                }}
-              >
-                {/* Card Title */}
-                <Typography
-                  variant="h6"
-                  sx={{ mb: 2, fontSize: "1rem", fontWeight: 600, color: "#333", textAlign: "center" }}
-                >
-                  {branch.headings || "Action to take"}
-                </Typography>
-
-                {/* Options */}
-                {branch.dragdropoption?.map((opt, index) => {
-                  const isCorrect = String(opt.id) === String(branch.drag_drop_answer); // ✅ check answer
-
-                  return (
-                    <Paper
-                      key={index}
-                      elevation={0}
-                      sx={{
-                        display: "flex",
-                        alignItems: "center",
-                        gap: 1.5,
-                        p: 1.5,
-                        mb: 1.5,
-                        border: "1px solid #ddd",
-                        borderRadius: 1.5,
-                        backgroundColor: "#fff", 
-                      }}
-                    >
-                      {/* Left Handle */}
-                      <Box
-                        sx={{
-                          display: "flex",
-                          flexDirection: "column",
-                          justifyContent: "center",
-                          alignItems: "center",
-                          width: 20,
-                          gap: "3px",
-                        }}
-                      >
-                        <Box sx={{ width: "14px", height: "2px", bgcolor: "#999", borderRadius: 1 }} />
-                        <Box sx={{ width: "14px", height: "2px", bgcolor: "#999", borderRadius: 1 }} />
-                        <Box sx={{ width: "14px", height: "2px", bgcolor: "#999", borderRadius: 1 }} />
-                      </Box>
-
-                      {/* Option Text */}
-                      <Typography
-                        variant="body2"
-                        sx={{
-                          textAlign: "left",
-                          color: "#333",
-                          fontSize: "0.9rem",
-                          fontWeight: isCorrect ? 600 : 400, // bold correct
-                        }}
-                      >
-                        {opt.options_value}
-                      </Typography>
-                    </Paper>
-                  );
-                })}
-              </Paper>
-            </Grid>
-          ))}
-        </Grid>
-      </Box>
-
-
+      </DragDropContext>
       {/*  <Box textAlign="center">
         <Button variant="contained" sx={{ backgroundColor: '#f7c948', color: '#000' }}>
           Reveal Answer

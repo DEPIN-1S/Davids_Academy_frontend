@@ -32,11 +32,9 @@ function DropDownQuestionView() {
     }
   }, [dispatch, questionId]);
 
-  useEffect(() => {
+   useEffect(() => {
     console.log("Updated dropdownquestionData in state:", questionData);
-  }, [questionData]);
-
-
+  }, [questionData]); 
 
   const handleTabClick = (tabKey) => {
     setActiveTab(tabKey);
@@ -134,31 +132,6 @@ function DropDownQuestionView() {
       >
         {questionData?.data?.question}
       </Typography>
-
-      {/*  <Tabs
-        value={activeTab}
-        onChange={handleTabChange}
-
-        sx={{ mb: 2 }}
-      >
-        {questionData?.data?.tabsInfo.map((tab) => (
-          <Tab label={tab.tabKey} key={tab.id} />
-        ))}
-      </Tabs>
-
-      <Box
-        sx={{
-          backgroundColor: '#f8f9ff',
-          borderRadius: '10px',
-          padding: '1rem',
-          mb: 2,
-          minHeight: '100px',
-        }}
-      >
-        <Typography variant="body1" sx={{ color: '#333' }}>
-          {questionData?.data?.tabsInfo?.[activeTab]?.tabValue}
-        </Typography>
-      </Box> */}
 
       <Tabs
         value={activeTab}

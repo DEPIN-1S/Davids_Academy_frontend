@@ -28,6 +28,18 @@ const McqQuestionContent = () => {
 
     // ✅ Use File Context instead of passing files through navigation
     const { addQuestionFile, questionFile, hasQuestionFile } = useFileContext();
+
+    // ✅ Get data from QuestionTypeComponent according to the new structure
+    /*     const {
+            exam_type,
+            question_type_id,
+            questionType: questionTypeName,
+            questionData: existingQuestionData,
+            cs_id,
+    
+        } = location.state || {}; */
+
+
     const state = location.state || {};
     const {
         exam_type,
