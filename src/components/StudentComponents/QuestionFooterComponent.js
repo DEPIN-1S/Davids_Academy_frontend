@@ -36,14 +36,14 @@ const QuestionFooterComponent = ({
       </div>
 
       <div className="right-buttons">
-        <Button
+        {/* <Button
           startIcon={<ArrowBackIosNewIcon />}
           onClick={onPrevious}
           className="footer-button" // Consistent class name
           disabled={disablePrevious}
         >
           Previous
-        </Button>
+        </Button> */}
         <Button
           endIcon={<ArrowForwardIosIcon />}
           onClick={onNext}

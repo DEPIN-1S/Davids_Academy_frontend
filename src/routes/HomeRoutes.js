@@ -6,7 +6,8 @@ import AboutPage from "../pages/AboutPage";
 import CoursesPage from "../pages/CoursesPage";
 import TestimonialsPage from "../pages/TestimonialsPage";
 import ContactPage from "../pages/ContactPage";
-import SampleQuestionnaire from "../pages/SampleQuestionnaire";
+import SampleQuestionsPage from "../pages/SampleQuestionnaire";
+import SampleQuestionnaire from "../components/SampleQuestionnaire";
 import LoginPage from "../pages/LoginPage";
 
 const HomeRoutes = () => (
@@ -18,6 +19,7 @@ const HomeRoutes = () => (
             <Route path="/testimonials" element={<TestimonialsPage />} />
             <Route path="/contact-us" element={<ContactPage />} />
             <Route path="/sample-questionnaire" element={<SampleQuestionnaire />} />
+               <Route path="/sample-questions" element={<SampleQuestionsPage />} />
             <Route path="/login" element={<LoginPage />} />
         </Route>
     </>

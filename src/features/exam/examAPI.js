@@ -457,3 +457,51 @@ export const submitTest = async (test_id) => {
     throw error;
   }
 };
+
+
+
+
+
+
+// Fetch sample question IDs (GET, no auth)
+export const fetchSampleQuestionnaireIds = async () => {
+  try {
+    const response = await fetch(`${baseUrl}/exam/sample-questionnaire`, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+
+    if (!response.ok) {
+      throw new Error("Failed to fetch sample questionnaire IDs");
+    }
+
+    const data = await response.json();
+    return data.data; // Matches your Postman response structure: array of {id: number}
+  } catch (error) {
+    throw error;
+  }
+};
+
+// Fetch question data by ID (POST, no auth, adapted from fetchQBankQuestionData)
+export const fetchSampleQuestionData = async (questionId) => {
+  try {
+    const response = await fetch(`${baseUrl}/student/questions/sample-questionnaire`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ questionId }),
+    });
+
+    if (!response.ok) {
+      throw new Error("Failed to fetch sample question data");
+    }
+
+    const data = await response.json();
+    return data.data; // Assumes structure with question details
+  } catch (error) {
+    throw error;
+  }
+};
