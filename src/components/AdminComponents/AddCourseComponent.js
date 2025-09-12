@@ -41,6 +41,7 @@ const AddCourseComponent = () => {
             let found = courseList.find((c) => String(c.cs_id) === String(id));
             // If not present (direct reload), you should fetch it (optional, assuming fetchCourses gives all)
             if (!found) {
+                console.log("Editing course data:", found);
                 dispatch(fetchCourses());
             } else {
                 // Pre-fill fields: you may need to map backend fields to UI fields
