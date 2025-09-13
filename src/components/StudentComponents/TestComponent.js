@@ -1,6 +1,7 @@
+
 // import React, { useState, useEffect } from 'react';
 // import { useNavigate } from 'react-router-dom';
-// import { fetchStudentTests } from '../../features/exam/examAPI'; // Assuming the API functions are in src/api/examApi.js (from previous response)
+// import { fetchStudentTests } from '../../features/exam/examAPI';
 
 // const TestComponent = () => {
 //   const [testData, setTestData] = useState([]);
@@ -56,9 +57,6 @@
 //       color: 'white',
 //       fontWeight: 600,
 //       fontSize: '14px',
-//       '@media (max-width: 768px)': {
-//         gridTemplateColumns: '1fr 2fr 1fr',
-//       },
 //     },
 //     tableRow: {
 //       display: 'grid',
@@ -67,17 +65,9 @@
 //       backgroundColor: '#f9f9f9',
 //       borderBottom: '1px solid #eee',
 //       fontSize: '14px',
-//       '&:nth-child(even)': {
-//         backgroundColor: '#f0f0f5',
-//       },
-//       '@media (max-width: 768px)': {
-//         gridTemplateColumns: '1fr 2fr 1fr',
-//       },
 //     },
 //     hiddenOnMobile: {
-//       '@media (max-width: 768px)': {
-//         display: 'none',
-//       },
+//       display: 'block',
 //     },
 //     actionButton: {
 //       padding: '5px 10px',
@@ -111,53 +101,112 @@
 //     },
 //   };
 
-//   const fetchTestData = async () => {
-//     setLoading(true);
-//     setError(null);
-//     try {
-//       // Integrated: Use fetchStudentTests from the API module (replaces axios call)
-//       // Note: This fetches with type='all' as per original logic; adjust if needed for dynamic types
-//       const data = await fetchStudentTests('all');
+  
+//   // const fetchTestData = async () => {
+//   //   setLoading(true);
+//   //   setError(null);
+//   //   try {
+//   //     const data = await fetchStudentTests('all');
+     
+//   //     const transformedData = data.map(item => {
+//   //       const toDate = new Date(item.toDate);
+//   //       const currentDate = new Date();
+//   //       let status = 'Pending';
 
-//       // Data transformation remains the same as original
-//       const transformedData = data.map(item => {
-//         const toDate = new Date(item.toDate);
-//         const currentDate = new Date();
-//         const isInProgress = item.isInProgress || false;
-//         let action = '';
-//         let buttonText = '';
+//   //       if (item.isCompleted) {
+//   //         status = 'Completed';
+//   //       } else if (toDate < currentDate) {
+//   //         status = 'Expired';
+//   //       }
+//   //       let action = '';
+//   //       let buttonText = '';
+//   //       if (status === 'Completed' || status === 'Expired') {
+//   //         action = status;
+//   //       } else if (item.isInProgress) {
+//   //         buttonText = 'Resume';
+//   //       } else {
+//   //         buttonText = 'Start Test';
+//   //       }
 
-//         if (toDate < currentDate) {
-//           action = 'Completed';
-//         } else if (isInProgress) {
-//           buttonText = 'Resume';
-//         } else {
-//           buttonText = 'Start Test';
-//         }
+//   //       return {
+//   //         id: item.id,
+//   //         name: item.testTitle,
+//   //         date: new Date(item.fromDate).toLocaleDateString('en-US', {
+//   //           month: 'short',
+//   //           day: 'numeric',
+//   //           year: 'numeric',
+//   //         }),
+//   //         totalQuestions: item.totalQuestions || 'N/A',
+//   //         score: item.score || 'N/A',
+//   //         status,
+//   //         action,
+//   //         buttonText,
+//   //       };
+//   //     });
 
-//         return {
-//           id: item.id,
-//           name: item.testTitle,
-//           date: new Date(item.fromDate).toLocaleDateString('en-US', {
-//             month: 'short',
-//             day: 'numeric',
-//             year: 'numeric',
-//           }),
-//           totalQuestions: item.totalQuestions || 'N/A',
-//           score: item.score || 'N/A',
-//           status: toDate < currentDate ? 'Completed' : 'Pending',
-//           action,
-//           buttonText,
-//         };
-//       });
+//   //     setTestData(transformedData);
+//   //     setLoading(false);
+//   //   } catch (err) {
+//   //     setError(err.message || 'Failed to fetch test data.');
+//   //     setLoading(false);
+//   //   }
+//   // };
 
-//       setTestData(transformedData);
-//       setLoading(false);
-//     } catch (err) {
-//       setError(err.message || 'Failed to fetch test data.');
-//       setLoading(false);
-//     }
-//   };
+// const fetchTestData = async () => {
+//   setLoading(true);
+//   setError(null);
+//   try {
+//     const data = await fetchStudentTests('all');
+   
+//     const transformedData = data.map(item => {
+//       const fromDate = item.fromDate ? new Date(item.fromDate) : null;
+//       const toDate = item.toDate ? new Date(item.toDate) : null;
+//       const currentDate = new Date();
+//       let status = 'Pending';
+
+//       // Prioritize new fields if available (from backend JOIN)
+//       if (item.is_submitted === 1 || item.status === 'completed') {
+//         status = 'Completed';
+//       } else if (item.isCompleted) {
+//         status = 'Completed';
+//       } else if (toDate && toDate < currentDate) {
+//         status = 'Expired';
+//       }
+
+//       let action = '';
+//       let buttonText = '';
+//       if (status === 'Completed' || status === 'Expired') {
+//         action = status;
+//       } else if (item.isInProgress) {
+//         buttonText = 'Resume';
+//       } else {
+//         buttonText = 'Start Test';
+//       }
+
+//       return {
+//         id: item.id,
+//         name: item.testTitle || 'Untitled Test',  // Fallback for missing title
+//         date: fromDate ? fromDate.toLocaleDateString('en-US', {
+//           month: 'short',
+//           day: 'numeric',
+//           year: 'numeric',
+//         }) : 'Invalid Date',  // Safe handling
+//         totalQuestions: item.totalQuestions || 'N/A',
+//         score: item.st_score || item.score || 'N/A',  // Prefer st_score if available
+//         status,
+//         action,
+//         buttonText,
+//         is_submitted: item.is_submitted || false,  // For future use
+//       };
+//     });
+
+//     setTestData(transformedData);
+//     setLoading(false);
+//   } catch (err) {
+//     setError(err.message || 'Failed to fetch test data.');
+//     setLoading(false);
+//   }
+// };
 
 //   useEffect(() => {
 //     fetchTestData();
@@ -167,9 +216,6 @@
 //     ? testData
 //     : testData.filter(test => test.status === selectedType);
 
-//   // Navigation handler: On "Start Test" or "Resume" click, navigate to exam with testId
-//   // If "Resume", append &resume=true query param (as per original logic)
-//   // This is based on the test ID and buttonText condition
 //   const handleActionClick = (testId, buttonText) => {
 //     if (buttonText === 'Start Test') {
 //       navigate(`/student/exam?testId=${testId}`);
@@ -198,6 +244,7 @@
 //           <option value="All">All</option>
 //           <option value="Completed">Completed</option>
 //           <option value="Pending">Pending</option>
+//           <option value="Expired">Expired</option>
 //         </select>
 //         <div style={styles.testCount}>{filteredTests.length} Tests</div>
 //       </div>
@@ -225,8 +272,8 @@
 //               <span style={styles.hiddenOnMobile}>{test.score}</span>
 //               <span style={styles.hiddenOnMobile}>{test.status}</span>
 //               <span style={styles.hiddenOnMobile}>
-//                 {test.action === 'Completed' ? (
-//                   <span>Completed</span>
+//                 {test.action === 'Completed' || test.action === 'Expired' ? (
+//                   <span>{test.action}</span>
 //                 ) : test.buttonText ? (
 //                   <button
 //                     style={{
@@ -331,9 +378,6 @@ const TestComponent = () => {
     startButton: {
       backgroundColor: '#2196F3',
     },
-    resumeButton: {
-      backgroundColor: '#4CAF50',
-    },
     noTests: {
       padding: '1rem',
       textAlign: 'center',
@@ -352,46 +396,65 @@ const TestComponent = () => {
     },
   };
 
-  
   const fetchTestData = async () => {
     setLoading(true);
     setError(null);
     try {
-      const data = await fetchStudentTests('all');
-     
-      const transformedData = data.map(item => {
-        const toDate = new Date(item.toDate);
+      const rawData = await fetchStudentTests('all');
+      
+      // De-duplicate: Group by id, prioritize completed (is_submitted=1), then highest st_score
+      const uniqueTests = {};
+      rawData.forEach(item => {
+        const testId = item.id;
+        if (!uniqueTests[testId]) {
+          uniqueTests[testId] = item;
+        } else {
+          const existing = uniqueTests[testId];
+          // Prioritize: completed > higher score > current
+          if (item.is_submitted === 1 || 
+              (item.st_score > existing.st_score && existing.is_submitted !== 1)) {
+            uniqueTests[testId] = item;
+          }
+        }
+      });
+
+      const transformedData = Object.values(uniqueTests).map(item => {
+        const fromDate = item.fromDate ? new Date(item.fromDate) : null;
+        const toDate = item.toDate ? new Date(item.toDate) : null;
         const currentDate = new Date();
         let status = 'Pending';
 
-        if (item.isCompleted) {
+        // Prioritize new fields for status
+        if (item.is_submitted === 1 || item.status === 'completed') {
           status = 'Completed';
-        } else if (toDate < currentDate) {
+        } else if (toDate && toDate < currentDate) {
           status = 'Expired';
         }
+        // Removed isInProgress check
+
         let action = '';
         let buttonText = '';
         if (status === 'Completed' || status === 'Expired') {
           action = status;
-        } else if (item.isInProgress) {
-          buttonText = 'Resume';
         } else {
+          // Removed Resume - always Start Test for Pending
           buttonText = 'Start Test';
         }
 
         return {
           id: item.id,
-          name: item.testTitle,
-          date: new Date(item.fromDate).toLocaleDateString('en-US', {
+          name: item.testTitle || 'Untitled Test',
+          date: fromDate ? fromDate.toLocaleDateString('en-US', {
             month: 'short',
             day: 'numeric',
             year: 'numeric',
-          }),
+          }) : 'N/A',
           totalQuestions: item.totalQuestions || 'N/A',
-          score: item.score || 'N/A',
+          score: item.st_score !== undefined ? item.st_score : (item.score || 'N/A'),
           status,
           action,
           buttonText,
+          is_submitted: item.is_submitted || 0,
         };
       });
 
@@ -413,10 +476,9 @@ const TestComponent = () => {
 
   const handleActionClick = (testId, buttonText) => {
     if (buttonText === 'Start Test') {
-      navigate(`/student/exam?testId=${testId}`);
-    } else if (buttonText === 'Resume') {
-      navigate(`/student/exam?testId=${testId}&resume=true`);
+      navigate(`/student/exam?testId=${testId}`);  // Removed &resume=true
     }
+    // Removed Resume handling
   };
 
   if (loading) {
@@ -467,13 +529,13 @@ const TestComponent = () => {
               <span style={styles.hiddenOnMobile}>{test.score}</span>
               <span style={styles.hiddenOnMobile}>{test.status}</span>
               <span style={styles.hiddenOnMobile}>
-                {test.action === 'Completed' || test.action === 'Expired' ? (
+                {test.action ? (
                   <span>{test.action}</span>
                 ) : test.buttonText ? (
                   <button
                     style={{
                       ...styles.actionButton,
-                      ...(test.buttonText === 'Resume' ? styles.resumeButton : styles.startButton),
+                      ...styles.startButton,  // Always start button style
                     }}
                     onClick={() => handleActionClick(test.id, test.buttonText)}
                   >

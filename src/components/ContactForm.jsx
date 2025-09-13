@@ -82,7 +82,8 @@ const ContactForm = ({ open, onClose }) => {
         });
         setErrors({});
         onClose(); // Close dialog
-        navigate("/student/question-bank");
+        // FIX: Navigate to sample exam to load questions
+        navigate("/exam?mode=sample");  // Adjust to your route (e.g., /student/exam?mode=sample if auth needed)
       } else if (action.type.endsWith("rejected")) {
         alert("Failed to send message. Please try again later.");
       }
