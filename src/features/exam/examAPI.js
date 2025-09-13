@@ -5,20 +5,22 @@ const refreshToken = sessionStorage.getItem('refreshToken');
 
 
 const getToken = () => {
-  const token = sessionStorage.getItem('accessToken');
-  if (!token) {
-    throw new Error('No authentication token found. Please log in.');
-  }
-  return token;
+    const token = sessionStorage.getItem('accessToken');
+    if (!token) {
+        throw new Error('No authentication token found. Please log in.');
+    }
+    return token;
 };
 
 export const postQuestion = async (questionData) => {
     console.log("question data in api call :::::", questionData);
+    const token = sessionStorage.getItem("accessToken");
     try {
         const response = await fetch(baseUrl + "/exam/question", {
             method: "POST",
             headers: {
-                "Content-Type": "application/json"
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${token}`
             },
             body: JSON.stringify(questionData)
         });
@@ -41,11 +43,21 @@ export const postQuestion = async (questionData) => {
     }
 };
 
+
 //for deleting questions
 export const adminDeleteQuestion = async (id) => {
     try {
+        const token = sessionStorage.getItem("accessToken");
         const url = `${baseUrl}/exam/questions/${id}`;
-        const response = await fetch(url, { method: "DELETE" });
+        const response = await fetch(url, {
+            method: "DELETE",
+            headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${token}`
+            },
+        },
+
+        );
 
         if (!response.ok) {
             throw new Error(`Failed to delete question with ID ${id}`);
@@ -58,14 +70,49 @@ export const adminDeleteQuestion = async (id) => {
 };
 
 
+// api/admin.js
+export const apiDeleteTest = async (id) => {
+    try {
+        const token = sessionStorage.getItem("accessToken");
+        console.log("inside admin delete test API");
+        const url = `${baseUrl}/exam/tests/${id}`;
+        const response = await fetch(url,
+            {
+                method: "DELETE",
+                headers: {
+                    "Content-Type": "application/json",
+                    Authorization: `Bearer ${token}`
+                }
+            }
+        );
+
+        if (!response.ok) {
+            throw new Error(`Failed to delete test with ID ${id}`);
+        }
+
+        return { success: true, id };
+    } catch (error) {
+        console.error("Error deleting test:", error);
+        throw error;
+    }
+};
+
 
 
 
 //for fetching mock test questing to create test
 export const fetchMockTestQuestionsByCourseId = async (courseId) => {
     try {
+        const token = sessionStorage.getItem("accessToken");
         const response = await fetch(
-            `${baseUrl}/exam/list/mock-test-questions?courseId=${courseId}`
+            `${baseUrl}/exam/list/mock-test-questions?courseId=${courseId}`,
+             {
+                headers: {
+                    "Content-Type": "application/json",
+                    Authorization: `Bearer ${token}`
+                }
+            }
+            
         );
 
         if (!response.ok) {
@@ -80,13 +127,14 @@ export const fetchMockTestQuestionsByCourseId = async (courseId) => {
 };
 
 
-
-
 // src/api/questionTypeApi.js
 export const fetchQuestionTypes = async () => {
     try {
-        const response = await fetch(baseUrl + "/exam/list/question-types"); // replace with real URL
-
+        const response = await fetch(baseUrl + "/exam/list/question-types", {
+            headers: {
+                Authorization: `Bearer ${sessionStorage.getItem('accessToken')}`
+            }
+        });
         if (!response.ok) {
             throw new Error("Failed to fetch question types");
         }
@@ -136,12 +184,15 @@ export async function fetchTestQuestionsAPI() {
 
 // POST: Create a new test with all necessary details
 export const adminCreateTest = async (testData) => {
+
     try {
+        const token = sessionStorage.getItem("accessToken");
         console.log("✅Test data in api call ::: ", testData);
         const response = await fetch(`${baseUrl}/exam/tests`, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
+                Authorization: `Bearer ${token}`
             },
             body: JSON.stringify(testData),
         });
@@ -155,9 +206,6 @@ export const adminCreateTest = async (testData) => {
         throw error;
     }
 };
-
-
-
 
 
 export const fetchQBankQuestions = async () => {
@@ -182,8 +230,12 @@ export const fetchQBankQuestions = async () => {
     }
 };
 
+
+//for fetching mocktest question data and question bank data
 export const fetchQBankQuestionData = async (questionId) => {
     try {
+        console.log("Inside Question Data :: ");
+
         const response = await fetch(
             process.env.REACT_APP_API_URL + "/student/questions/data",
             {
@@ -191,7 +243,6 @@ export const fetchQBankQuestionData = async (questionId) => {
                 headers: {
                     "Content-Type": "application/json",
                     Authorization: `Bearer ${sessionStorage.getItem('accessToken')}`
-
                 },
                 body: JSON.stringify({ questionId: questionId })
             }
@@ -216,9 +267,12 @@ export const adminGetQBankQuestions = async (page = 1, limit = 10) => {
     try {
         const url = `${baseUrl}/exam/list/questions/${page}?exam_type=q-bank&limit=${limit}`;
         console.log("Fetching URL:", url);
-
+        const token = sessionStorage.getItem("accessToken");
         const response = await fetch(url, {
-            method: "GET"
+            method: "GET",
+            headers: {
+                Authorization: `Bearer ${token}`
+            }
         });
 
         if (!response.ok) {
@@ -235,16 +289,17 @@ export const adminGetQBankQuestions = async (page = 1, limit = 10) => {
     }
 };
 
-
-
 // ✅ Fetch Mock Test Questions in admin side
 export const adminGetMockTestQuestions = async (page = 1, limit = 10) => {
     try {
         const url = `${baseUrl}/exam/list/questions/${page}?exam_type=mock test&limit=${limit}`;
         console.log("Fetching URL:", url);
-
+        const token = sessionStorage.getItem("accessToken");
         const response = await fetch(url, {
-            method: "GET"
+            method: "GET",
+            headers: {
+                Authorization: `Bearer ${token}`
+            },
         });
 
         if (!response.ok) {
@@ -267,14 +322,16 @@ export const adminGetMockTestQuestions = async (page = 1, limit = 10) => {
 export async function adminGetTestQuestions(page = 1, limit = 10) {
     try {
         console.log("✅ Inside admin test questions :: ");
-
+        const token = sessionStorage.getItem("accessToken");
         const response = await fetch(
             /*  ${baseUrl}/exam/list/questions/${page}?exam_type=mock test&limit=${limit}`; */
             `https://lunarsenterprises.com:6040/davidsacademy/exam/list/test/${page}`,
             {
                 method: "GET",
                 headers: {
-                    "Content-Type": "application/json",
+                    Authorization: `Bearer ${token}`,
+                    "Content-Type": "application/json"
+
                 },
             }
         );
@@ -297,27 +354,27 @@ export async function adminGetTestQuestions(page = 1, limit = 10) {
 
 
 export const fetchStudentTests = async (type = 'all') => {
-  try {
-    const token = getToken();
-    const response = await fetch(
-      `${baseUrl}/student/test/list?type=${type}`,
-      {
-        method: 'GET',
-        headers: {
-          Authorization: `Bearer ${token}`,
-          'Content-Type': 'application/json',
-        },
-      }
-    );
-    if (!response.ok) {
-      throw new Error('Failed to fetch student tests');
+    try {
+        const token = sessionStorage.getItem("accessToken");
+        const response = await fetch(
+            `${baseUrl}/student/test/list?type=${type}`,
+            {
+                method: 'GET',
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                    'Content-Type': 'application/json',
+                },
+            }
+        );
+        if (!response.ok) {
+            throw new Error('Failed to fetch student tests');
+        }
+        const data = await response.json();
+        // Assuming response structure: { data: [...] } based on TestComponent transformation
+        return data.data || [];
+    } catch (error) {
+        throw error;
     }
-    const data = await response.json();
-    // Assuming response structure: { data: [...] } based on TestComponent transformation
-    return data.data || [];
-  } catch (error) {
-    throw error;
-  }
 };
 
 
@@ -325,7 +382,7 @@ export const fetchStudentTests = async (type = 'all') => {
 // List all questions in a specific test (POST based on provided testapis)
 export const fetchTestQuestions = async (test_id) => {
     try {
-        const token = getToken();
+        const token = sessionStorage.getItem("accessToken");
         const response = await fetch(
             `${baseUrl}/student/test/questions`,
             {
@@ -341,14 +398,8 @@ export const fetchTestQuestions = async (test_id) => {
         if (!response.ok) {
             throw new Error(`Failed to fetch test questions: ${response.status}`);
         }
-
         const data = await response.json();
         console.log("Test questions with headings:", data);
-        
-        // Return both question IDs and any heading information
-         // Deduplicate IDs to prevent repeats
-    //    const uniqueIds = [...new Set(data.data?.map(item => item.questionId).filter(id => id))];
-    //  return uniqueIds.length > 0 ? uniqueIds : [];
         return data.data || data.list || data;
     } catch (error) {
         throw error;
@@ -356,12 +407,12 @@ export const fetchTestQuestions = async (test_id) => {
 };
 
 
-
+//Fetch question Data by question id
 export const fetchTestQuestionData = async (test_id, questionId) => {
     try {
-        const token = getToken();
+        const token = sessionStorage.getItem("accessToken");
         console.log('Fetching question data for:', { test_id, questionId });
-        
+
         const response = await fetch(
             `${baseUrl}/student/test/question/data`,
             {
@@ -386,7 +437,7 @@ export const fetchTestQuestionData = async (test_id, questionId) => {
 
         const data = await response.json();
         console.log("Question data received:", data);
-        
+
         if (data.result && data.data) {
             return data.data;
         } else {
@@ -399,41 +450,87 @@ export const fetchTestQuestionData = async (test_id, questionId) => {
 };
 
 
-
-
-
-
-
-
-
-
-
 // Submit test question (POST based on provided testapis)
 export const submitTestQuestion = async (test_id, questionId, is_correct, mark) => {
-  try {
-    const token = getToken();
-    const response = await fetch(
-      `${baseUrl}/student/test/question/submit`,
-      {
-        method: 'POST',
-        headers: {
-          Authorization: `Bearer ${token}`,
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ test_id, questionId, is_correct, mark }),
-      }
-    );
-    if (!response.ok) {
-      throw new Error('Failed to submit test question');
+    try {
+        const token = sessionStorage.getItem("accessToken");
+        const response = await fetch(
+            `${baseUrl}/student/test/question/submit`,
+            {
+                method: 'POST',
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ test_id, questionId, is_correct, mark }),
+            }
+        );
+        if (!response.ok) {
+            throw new Error('Failed to submit test question');
+        }
+        const data = await response.json();
+        // Return full response for any messages or results
+        return data;
+    } catch (error) {
+        throw error;
     }
-    const data = await response.json();
-    // Return full response for any messages or results
-    return data;
-  } catch (error) {
-    throw error;
-  }
 };
 
+// Submit entire test (POST based on provided testapis)
+export const submitTest = async (test_id) => {
+    try {
+        const token = sessionStorage.getItem("accessToken");
+        const response = await fetch(
+            `${baseUrl}/student/test/submit`,
+            {
+                method: 'POST',
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ test_id }),
+            }
+        );
+        if (!response.ok) {
+            throw new Error('Failed to submit test');
+        }
+        const data = await response.json();
+        // Return full response
+        return data;
+    } catch (error) {
+        throw error;
+    }
+};
+
+
+
+// examApi.js
+//api for fetching questions by id in admin side
+export const adminFetchQuestionByQID = async (questionId) => {
+    console.log("➡️ API adminFetchQuestionByQID called with ID:", questionId);
+
+    try {
+        const token = sessionStorage.getItem("accessToken");
+        const response = await fetch(`${baseUrl}/student/questions/data`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${token}`,
+            },
+            body: JSON.stringify({ questionId }), // ✅ send in body
+        });
+
+        if (!response.ok) {
+            throw new Error("Failed to fetch question");
+        }
+
+        const result = await response.json();
+        return result; // single question object
+    } catch (error) {
+        console.error("❌ Error in adminFetchQuestionByQID:", error);
+        throw error;
+    }
+};
 // Submit entire test (POST based on provided testapis)
 export const submitTest = async (test_id) => {
   try {
@@ -507,3 +604,4 @@ export const fetchSampleQuestionData = async (questionId) => {
     throw error;
   }
 };
+

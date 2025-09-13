@@ -9,7 +9,6 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import "./styles/Layout.css";
 import { FileProvider } from "./context/FileContext";
 import useSecurityRestrictions from "./hooks/useSecurityRestrictions"; // ✅ Import hook
-
 const App = () => {
   const dispatch = useDispatch();
   useEffect(() => {
@@ -18,8 +17,7 @@ const App = () => {
 
   // ✅ Apply restrictions globally
 //  useSecurityRestrictions();
-
-  return (
+ return (
     <FileProvider>
       <Routes>
         {HomeRoutes()}

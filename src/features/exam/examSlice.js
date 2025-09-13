@@ -10,6 +10,8 @@ import { fetchTestQuestionsAPI } from "../../features/exam/examAPI";
 import { adminDeleteQuestion } from "../../features/exam/examAPI";
 import { fetchMockTestQuestionsByCourseId } from "../../features/exam/examAPI"
 import { adminCreateTest } from "../../features/exam/examAPI";
+import { apiDeleteTest } from "../../features/exam/examAPI";
+import {adminFetchQuestionByQID} from "../../features/exam/examAPI"
 
 
 
@@ -25,6 +27,21 @@ export const adminDeleteQBankQuestion = createAsyncThunk(
         }
     }
 );
+
+//for deleting test by admin
+export const adminDeleteTest = createAsyncThunk(
+    "admin/deleteTest",
+    async (id, { rejectWithValue }) => {
+        try {
+            console.log("Inside delete test thunk");
+            const result = await apiDeleteTest(id); // ✅ call API function
+            return result;
+        } catch (error) {
+            return rejectWithValue(error.message);
+        }
+    }
+);
+
 
 
 
@@ -189,6 +206,8 @@ export const getQBankQuestionData = createAsyncThunk(
     "questions/fetchQBankQuestionData",
     async (questionId, { rejectWithValue }) => {
         try {
+            console.log("Inside getQuestion data ::::");
+
             const data = await fetchQBankQuestionData(questionId); // returns single question object
             return data;
         } catch (error) {
@@ -197,12 +216,29 @@ export const getQBankQuestionData = createAsyncThunk(
     }
 );
 
+
+//thunk for fetching qestion by QID
+export const getQuestionData = createAsyncThunk(
+    "exam/getQuestionData",
+    async (questionId, { rejectWithValue }) => {
+        try {
+            console.log("➡️ Thunk getQuestionData with ID:", questionId);
+            const data = await adminFetchQuestionByQID(questionId);
+            return data;
+        } catch (error) {
+            return rejectWithValue(error.message);
+        }
+    }
+);
+
+
 const questionSlice = createSlice({
     name: "questions",
     initialState: {
         loading: false,
         success: false,
         error: null,
+        tests: [],
 
         questionTypes: [],
         questionTypesLoading: false,
@@ -240,7 +276,6 @@ const questionSlice = createSlice({
         adminMockTestTotalPages: 1,
         adminMockTestTotalCount: 0,
 
-
         //for test questions
         adminTestQuestions: [],
         adminTestQuestionsLoading: false,
@@ -248,8 +283,6 @@ const questionSlice = createSlice({
         adminTestQuestionsCurrentPage: 1,
         adminTestQuestionsTotalPages: 1,
         adminTestQuestionsTotalCount: 0,
-
-
 
         //for fetching admin fetching Mock Test questions by course Id
         adminMockTestQuestionsByCourseId: [],
@@ -302,6 +335,24 @@ const questionSlice = createSlice({
             })
 
             .addCase(adminDeleteQBankQuestion.rejected, (state, action) => {
+                state.loading = false;
+                state.error = action.payload;
+            })
+
+
+            //Delete test
+            .addCase(adminDeleteTest.pending, (state) => {
+                state.loading = true;
+                state.error = null;
+            })
+            .addCase(adminDeleteTest.fulfilled, (state, action) => {
+                state.loading = false;
+                // Remove deleted test from state immediately
+                state.tests = state.tests.filter(
+                    (t) => t.id !== action.payload.id
+                );
+            })
+            .addCase(adminDeleteTest.rejected, (state, action) => {
                 state.loading = false;
                 state.error = action.payload;
             })
@@ -491,6 +542,20 @@ const questionSlice = createSlice({
             .addCase(adminCreateTestThunk.rejected, (state, action) => {
                 state.adminCreateTestLoading = false;
                 state.adminCreateTestError = action.payload || "Failed to create test";
+            })
+
+            //for fetching questions by QID in admin side
+            .addCase(getQuestionData.pending, (state) => {
+                state.loading = true;
+                state.error = null;
+            })
+            .addCase(getQuestionData.fulfilled, (state, action) => {
+                state.loading = false;
+                state.questionData = action.payload;
+            })
+            .addCase(getQuestionData.rejected, (state, action) => {
+                state.loading = false;
+                state.error = action.payload || "Failed to fetch question";
             })
 
     }

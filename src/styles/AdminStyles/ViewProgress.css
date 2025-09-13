@@ -1,0 +1,46 @@
+body {
+  font-family: "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  background: #f5f7fb;
+}
+
+.table-wrapper {
+  display: flex;
+  justify-content: center;
+  margin-top: 40px;
+}
+
+.styled-table {
+  border-collapse: collapse;
+  width: 80%;
+  max-width: 700px;
+  background: #ffffff;
+  border: 1px solid #e6e6e6;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+}
+
+.styled-table thead {
+  background: #2e3760;
+  color: #ffffff;
+  text-align: left;
+}
+
+.styled-table th,
+.styled-table td {
+  padding: 14px 18px;
+}
+
+.styled-table tbody tr:nth-child(even) {
+  background-color: #f9f9f9; /* striped rows */
+}
+
+.styled-table tbody tr:hover {
+  background-color: #eef5ff;
+ 
+}
+
+.styled-table td:nth-child(2) {
+  font-weight: 600;
+  color: #2e3760;
+}

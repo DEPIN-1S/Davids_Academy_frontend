@@ -1,18 +1,49 @@
-import React, { useState } from 'react';
+import React, { useState } from 'react'
 import { Box, Typography, Button, Tabs, Tab, List, ListItem, ListItemText, useMediaQuery, useTheme } from '@mui/material';
-import RevealAnswerComponent from './RevealAnswerComponent';
+import { useParams } from 'react-router-dom';
 
-const SentenceQuestionComponent = ({ question, onSubmit }) => {
+
+function FillinTheBlanksQuestionView() {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
+  const { questionId } = useParams()
+  // ✅ Static data
+  const question = {
+    id: 1,
+    question: "A client is undergoing treatment for hypertension. Identify the findings that suggest the client is not meeting the treatment goals.",
+    tabsInfo: [
+      { id: 1, tabKey: "History", tabValue: "Patient has a history of high BP for 5 years." },
+      { id: 2, tabKey: "Lab Results", tabValue: "Latest BP reading: 170/100 mmHg." },
+      { id: 3, tabKey: "Progress Note", tabValue: "Complains of frequent headaches and dizziness." },
+    ],
+    highlightOptions: [
+      { id: 1, options: "BP is consistently above 160/100 mmHg" },
+      { id: 2, options: "Patient follows a low-salt diet" },
+      { id: 3, options: "Reports no improvement in symptoms" },
+      { id: 4, options: "Patient engages in regular exercise" },
+    ],
+    answer: "13", // means correct answers are options 1 and 3
+    explanation: [
+      {
+        heading: "Explanation",
+        explanation: "Uncontrolled BP and persistent symptoms show the treatment goals are not met.",
+      },
+    ],
+    additionalInfo: [
+      {
+        info: "Lifestyle changes like diet and exercise are positive but not sufficient alone when BP remains uncontrolled.",
+        image: null,
+      },
+    ],
+    marks: 5,
+  };
 
-  // Extract data from question prop
   const {
-    id: questionId,
+   
     question: questionText,
     tabsInfo = [],
-    highlightOptions = [], // Updated to match Postman: highlightOptions instead of sentenceoptions
-    answer: correctAnswerStr = '', // String like "12"
+    highlightOptions = [],
+    answer: correctAnswerStr = '',
     explanation = [],
     additionalInfo = [],
   } = question || {};
@@ -24,12 +55,10 @@ const SentenceQuestionComponent = ({ question, onSubmit }) => {
   const [correctAnswer, setCorrectAnswer] = useState('');
   const [isCorrect, setIsCorrect] = useState(false);
 
-  // Handle tab change
   const handleTabChange = (event, newValue) => {
     setActiveTab(newValue);
   };
 
-  // Handle sentence selection
   const handleToggleSentence = (sentence) => {
     if (selectedSentences.includes(sentence)) {
       setSelectedSentences(selectedSentences.filter((s) => s !== sentence));
@@ -38,40 +67,24 @@ const SentenceQuestionComponent = ({ question, onSubmit }) => {
     }
   };
 
-  // Handle reveal (submission and show answers)
   const handleReveal = () => {
-    // User’s selected sentences as a comma-separated string
     const userAnswerStr = selectedSentences.length > 0 ? selectedSentences.join(', ') : 'Not selected';
 
-    // Assuming correctAnswerStr like "12" means indices 1 and 2 (0-based, so options[0] and options[1])
-    const correctIndices = correctAnswerStr.split('').map(Number).map(i => i - 1); // e.g., "12" -> [0,1]
+    const correctIndices = correctAnswerStr.split('').map(Number).map(i => i - 1);
     const correctAnswerList = correctIndices.map(idx => highlightOptions[idx]?.options || 'Not available');
     const correctAnswerText = correctAnswerList.join(', ');
 
-    // Compare user selections with correct answers
     const correctStatus =
       selectedSentences.length === correctAnswerList.length &&
       selectedSentences.every((sentence) => correctAnswerList.includes(sentence));
+
     const mark = correctStatus ? (question?.marks || 5) : 0;
 
-    // Call onSubmit from ExamContainer
-    onSubmit(questionId, correctStatus, mark, userAnswerStr);
-
-    // Set states for reveal
     setUserAnswer(userAnswerStr);
     setCorrectAnswer(correctAnswerText);
     setIsCorrect(correctStatus);
     setShowAnswer(true);
   };
-
-  // Loading or no data state
-  if (!question || !highlightOptions.length) {
-    return (
-  <Box sx={{ padding: 2, textAlign: 'center' }}>
-        <Typography>No sentence highlight question data available</Typography>
-      </Box>
-    );
-  }
 
   return (
     <Box
@@ -89,7 +102,7 @@ const SentenceQuestionComponent = ({ question, onSubmit }) => {
         {questionText}
       </Typography>
 
-      {/* Tabs for Contextual Information */}
+      {/* Tabs */}
       {tabsInfo.length > 0 && (
         <>
           <Tabs
@@ -120,7 +133,7 @@ const SentenceQuestionComponent = ({ question, onSubmit }) => {
         </>
       )}
 
-      {/* Sentences for Highlighting */}
+      {/* Highlight Options */}
       <Typography variant="body1" fontWeight={500} textAlign="center" mb={2}>
         Click to highlight the findings that indicate the client is not meeting the treatment goals.
       </Typography>
@@ -202,19 +215,18 @@ const SentenceQuestionComponent = ({ question, onSubmit }) => {
             {isCorrect ? '✅ Correct!' : '❌ Incorrect'}
           </Typography>
 
-          
-          <RevealAnswerComponent
+          {/* <RevealAnswerComponent
             questionText={questionText}
             explanationHeading={explanation[0]?.heading || 'Explanation'}
             explanationParagraphs={explanation.map((exp) => exp.explanation) || []}
-            additionalInfoHeading='Additional Info'
+            additionalInfoHeading="Additional Info"
             additionalInfoParagraphs={additionalInfo.map((info) => info.info) || []}
             additionalInfoImage={additionalInfo[0]?.image || null}
-          />
+          /> */}
         </Box>
       )}
     </Box>
-  );
-};
+  )
+}
 
-export default SentenceQuestionComponent;
+export default FillinTheBlanksQuestionView

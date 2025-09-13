@@ -22,7 +22,7 @@ export async function listRecordedClasses(token, page = 1, limit = 10) {
 export async function DeleteRecordedClass(recording_id) {
     console.log("Inside delete recording api::", recording_id);
 
-    const token = localStorage.getItem("accessToken");
+    const token = sessionStorage.getItem("accessToken");
     console.log("Token found:", token);
 
     try {
