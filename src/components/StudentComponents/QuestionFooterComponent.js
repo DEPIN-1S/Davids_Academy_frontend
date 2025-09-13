@@ -13,17 +13,20 @@ const QuestionFooterComponent = ({
   disableNext = false,
   questionNumber,
   totalQuestions,
+  customButtonText = "Submit & Exit",
+  customOnClick = onEnd,
+  showPrevious = true,  
 }) => {
   return (
     <Box className="question-footer">
       <div className="left-buttons">
         <Button
           startIcon={<LogoutIcon />}
-          onClick={onEnd}
+          onClick={customOnClick}
           className="footer-button"
           color="error"
         >
-          Submit & Exit
+          {customButtonText}
         </Button>
       </div>
 
@@ -36,18 +39,22 @@ const QuestionFooterComponent = ({
       </div>
 
       <div className="right-buttons">
-        <Button
-          startIcon={<ArrowBackIosNewIcon />}
-          onClick={onPrevious}
-          className="footer-button" // Consistent class name
-          disabled={disablePrevious}
-        >
-          Previous
-        </Button>
+        {/*  Conditionally render Previous button */}
+        {showPrevious && (
+          <Button
+            startIcon={<ArrowBackIosNewIcon />}
+            onClick={onPrevious}
+            className="footer-button"
+            disabled={disablePrevious}
+          >
+            Previous
+          </Button>
+        )}
+        
         <Button
           endIcon={<ArrowForwardIosIcon />}
           onClick={onNext}
-          className="footer-button" // Consistent class name
+          className="footer-button"
           disabled={disableNext}
         >
           Next

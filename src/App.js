@@ -16,8 +16,8 @@ const App = () => {
   }, [dispatch]);
 
   // ✅ Apply restrictions globally
- useSecurityRestrictions();
-  return (
+//  useSecurityRestrictions();
+ return (
     <FileProvider>
       <Routes>
         {HomeRoutes()}
