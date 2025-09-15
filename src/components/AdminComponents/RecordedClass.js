@@ -3,8 +3,7 @@ import { FaPlay, FaPlus, FaUser, FaClock } from "react-icons/fa";
 import "../../styles/AdminStyles/CourseManagement.css";
 import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
-import { fetchRecordedClasses } from "../../features/recorded classes/recordedClassSlice";
-import { deleteRecordedClass } from "../../features/recorded classes/recordedClassSlice";
+import { fetchRecordedClasses, deleteRecordedClass } from "../../features/recorded classes/recordedClassSlice";
 
 const CourseManagement = () => {
     const dispatch = useDispatch();
@@ -13,17 +12,11 @@ const CourseManagement = () => {
     const { list: recordings, loading, error, page, totalPages, limit } = useSelector(
         (state) => state.recordings
     );
-    const isLiveVideo = (url) => url.includes("/live/");
-    const { list } = useSelector((state) => state.recordings);
     const [selectedVideo, setSelectedVideo] = useState(null);
 
-
     const handleDelete = (id) => {
-        console.log("list :::", list);
-        console.log("Recording Id :::", id);
         const token = sessionStorage.getItem("accessToken");
         dispatch(deleteRecordedClass(id))
-
             .unwrap()
             .then(() => {
                 alert("Recorded class deleted successfully!");
@@ -34,35 +27,20 @@ const CourseManagement = () => {
             });
     };
 
-
-    const formatYoutubeUrl = (url) => {
-        if (!url) return "";
-
-        // Live video → cannot embed, open in new tab
-        if (url.includes("/live/")) return url;
-
-        // Shortened URL: https://youtu.be/VIDEO_ID
-        if (url.includes("youtu.be")) {
-            const videoId = url.split("/").pop().split("?")[0];
-            return `https://www.youtube.com/embed/${videoId}`;
-        }
-
-        // Normal YouTube URL: https://www.youtube.com/watch?v=VIDEO_ID
-        if (url.includes("watch?v=")) {
-            return url.replace("watch?v=", "embed/").split("&")[0]; // remove extra params
-        }
-
-        // Already embed URL
-        if (url.includes("embed")) return url;
-
-        return url;
+    // 🔹 Convert Google Drive share link → embed link
+    const formatDriveUrl = (url) => {
+        if (!url || !url.includes("drive.google.com")) return url;
+        const fileIdMatch = url.match(/[-\w]{25,}/); // extract file ID
+        if (!fileIdMatch) return url;
+        return `https://drive.google.com/file/d/${fileIdMatch[0]}/preview`;
     };
 
-
+    const handlePlay = (videoUrl) => {
+        if (!videoUrl) return;
+        setSelectedVideo(formatDriveUrl(videoUrl));
+    };
 
     useEffect(() => {
-        console.log("Recordings Fetched ::::",recordings);
-        
         const token = sessionStorage.getItem("accessToken");
         if (token) {
             dispatch(fetchRecordedClasses({ token, page: 1, limit: 10 }));
@@ -74,32 +52,16 @@ const CourseManagement = () => {
         dispatch(fetchRecordedClasses({ token, page: newPage, limit }));
     };
 
-
-    const handlePlay = (videoUrl) => {
-        if (isLiveVideo(videoUrl)) {
-            window.open(videoUrl, "_blank");
-        } else {
-            const embedUrl = formatYoutubeUrl(videoUrl);
-            setSelectedVideo(embedUrl);
-        }
-    };
-
-
     const handleAddClick = () => {
         navigate("/admin/upload-thumbnail");
     };
 
-    if (loading) {
-        return <p>Loading recordings...</p>;
-    }
-
-    if (error) {
-        return <p style={{ color: "red" }}>Error: {error}</p>;
-    }
+    if (loading) return <p>Loading recordings...</p>;
+    if (error) return <p style={{ color: "red" }}>Error: {error}</p>;
 
     return (
         <div className="recorded-classes-container">
-            <div className="recorded-class-header" >
+            <div className="recorded-class-header">
                 <div className="search-container">
                     <input
                         type="text"
@@ -109,13 +71,10 @@ const CourseManagement = () => {
                         className="search-input"
                     />
                 </div>
-
                 <button className="add-questions-btn" onClick={handleAddClick}>
                     <FaPlus /> Add Recorded Class
                 </button>
-
             </div>
-
 
             <div className="classes-grid">
                 {Array.isArray(recordings) && recordings.length > 0 ? (
@@ -126,18 +85,10 @@ const CourseManagement = () => {
                                     src={`https://lunarsenterprises.com:6040/${cls.r_thumbnail}`}
                                     alt={cls.r_title}
                                 />
-
-                                <div
-                                    className="play-overlay"
-                                    onClick={() => handlePlay(cls.r_video_url)}
-                                >
-                                    <div className="play-button">
-                                        <FaPlay />
-                                    </div>
+                                <div className="play-overlay" onClick={() => handlePlay(cls.r_video_url)}>
+                                    <div className="play-button"><FaPlay /></div>
                                 </div>
-
                             </div>
-
                             <div className="card-content">
                                 <h3 className="class-title">{cls.r_title}</h3>
                                 <div className="class-meta">
@@ -149,60 +100,42 @@ const CourseManagement = () => {
                                         <FaUser className="meta-icon" />
                                         <span>{cls.r_tutor_name}</span>
                                     </div>
-
                                     <button onClick={() => handleDelete(cls.r_id)} className="recorded-class-delete-btn">
                                         Delete class
                                     </button>
-
                                 </div>
-
                             </div>
                         </div>
                     ))
                 ) : (
                     <p>No recorded classes found.</p>
                 )}
-
             </div>
+
+            {/* Pagination */}
             <div className="pagination-controls">
-                <button
-                    disabled={page === 1}
-                    onClick={() => handlePageChange(page - 1)}
-                >
-                    Prev
-                </button>
-
+                <button disabled={page === 1} onClick={() => handlePageChange(page - 1)}>Prev</button>
                 <span> Page {page} of {totalPages} </span>
-
-                <button
-                    disabled={page === totalPages}
-                    onClick={() => handlePageChange(page + 1)}
-                >
-                    Next
-                </button>
+                <button disabled={page === totalPages} onClick={() => handlePageChange(page + 1)}>Next</button>
             </div>
+
+            {/* Video Popup Modal */}
             {selectedVideo && (
                 <div className="video-modal">
                     <div className="video-modal-content">
-                        <button
-                            className="video-modal-close"
-                            onClick={() => setSelectedVideo(null)}
-                        >
-                            ✕
-                        </button>
+                        <button className="video-modal-close" onClick={() => setSelectedVideo(null)}>✕</button>
                         <iframe
                             width="100%"
                             height="450"
                             src={selectedVideo}
                             frameBorder="0"
-                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                            allow="autoplay; encrypted-media"
                             allowFullScreen
-                            title="YouTube Video"
+                            title="Drive Video Player"
                         ></iframe>
                     </div>
                 </div>
             )}
-
         </div>
     );
 };
