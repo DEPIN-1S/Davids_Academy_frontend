@@ -209,7 +209,7 @@ const MetaInfoComponent = () => {
         explanationHeading: receivedQuestionData.explanationHeading || "",
         explanationText: receivedQuestionData.explanationText || "",
         info: receivedQuestionData.additionalInfo || "",
-        answer: receivedQuestionData.correctAnswer || "",
+        answer: receivedQuestionData.correctAnswer || [],
         options: receivedQuestionData.options || [],
         marks: form.marks
     });
@@ -406,7 +406,7 @@ const MetaInfoComponent = () => {
         explanationText: receivedQuestionData.explanationText || "",
         info: receivedQuestionData.additionalInfo || "",
         infoImage: null,
-        answer: receivedQuestionData.correctAnswer || "",
+        answer: receivedQuestionData.correctAnswer || [],
         options: receivedQuestionData.options || [],
         marks: form.marks
     });
@@ -465,11 +465,9 @@ const MetaInfoComponent = () => {
     const getFillInTheBlanksBaseData = () => ({
         courseId: receivedQuestionData.cs_id,
         questionType: receivedQuestionData.questionType,
-        exam_type: receivedQuestionData.exam_type,
-        /*    question: receivedQuestionData.question_content || [], */
+        exam_type: receivedQuestionData.exam_type,    
         question: receivedQuestionData?.question_content?.[0]?.question_text,
         question_type_id: receivedQuestionData.question_type_id,
-        /*      answer: receivedQuestionData.answer || "", */
         answer: receivedQuestionData?.question_content?.[0]?.fill_blanks_answer,
         difficulty: form.difficulty || "",
         question_content: receivedQuestionData.question_content,
@@ -514,15 +512,6 @@ const MetaInfoComponent = () => {
         answer: receivedQuestionData.answer,
         infoImage: receivedQuestionData.infoImage || null,
         marks: form.marks
-        /*  highlightInstructions: receivedQuestionData.highlightInstructions, */
-        /* highlightoptions: "highlightoptions", */
-        /* answer: receivedQuestionData.correctHighlights, */
-        /* question_content:receivedQuestionData.question_content, */
-        /* question_content: receivedQuestionData.question_content || [], */
-        /* radio_options: receivedQuestionData.radio_options || [], */
-        /* passage: receivedQuestionData.passage,
-         highlightInstructions: receivedQuestionData.highlightInstructions,
-         correctHighlights: receivedQuestionData.correctHighlights, */
     });
 
 
@@ -557,8 +546,6 @@ const MetaInfoComponent = () => {
                 break;
         }
     };
-
-
 
     const onBack = () => {
         // ✅ Preserve current meta data when going back (all serializable)
