@@ -1,19 +1,17 @@
-import React, { useRef, useState } from "react";
+ import React, { useRef, useState } from "react";
 import {
     Box,
     Button,
     Typography,
     TextField,
     IconButton,
-    MenuItem,
-    Select,
-    InputLabel,
     FormControl,
     Card,
     CardContent,
     Chip,
     Radio,
-    Alert
+    Alert,
+    Checkbox
 } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
@@ -37,11 +35,7 @@ const McqQuestionContent = () => {
         cs_id,
     } = state;
 
-
-    // ✅ Redirect back if required data is missing
     React.useEffect(() => {
-        console.log("Question type id in mcqContent :::: ", question_type_id);
-
         if (!exam_type || !question_type_id || !questionTypeName || !cs_id) {
             navigate("/admin/question-type");
         }
@@ -50,28 +44,29 @@ const McqQuestionContent = () => {
     // Form state - initialize with existing data if available
     const [question, setQuestion] = useState(existingQuestionData?.question || "");
     const [options, setOptions] = useState(existingQuestionData?.options || ["", ""]);
-    const [correctAnswer, setCorrectAnswer] = useState(existingQuestionData?.correctAnswer || "");
-    const [selectedFile, setSelectedFile] = useState(null); // ✅ Local state for UI, Context for persistence
+    const [correctAnswer, setCorrectAnswer] = useState(
+        Array.isArray(existingQuestionData?.correctAnswer)
+            ? existingQuestionData.correctAnswer
+            : []
+    );
+
+    const [selectedFile, setSelectedFile] = useState(null);
     const [errors, setErrors] = useState({});
     const fileInputRef = useRef(null);
 
-    // ✅ Initialize with existing file from context if available
     React.useEffect(() => {
         if (questionFile) {
             setSelectedFile(questionFile);
         }
     }, [questionFile]);
 
-    // ✅ File upload handlers - Store in Context instead of passing through navigation
     const handleFileSelect = (event) => {
         const file = event.target.files[0];
         if (file) {
-            // Validate file size (10MB limit)
             if (file.size > 10 * 1024 * 1024) {
                 setErrors(prev => ({ ...prev, file: 'File size must be less than 10MB' }));
                 return;
             }
-            // Validate file type
             const allowedTypes = ['image/jpeg', 'image/png', 'image/gif', 'application/pdf', 'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'];
             if (!allowedTypes.includes(file.type)) {
                 setErrors(prev => ({ ...prev, file: 'Only images, PDF, and Word documents are allowed' }));
@@ -85,13 +80,10 @@ const McqQuestionContent = () => {
                 url: URL.createObjectURL(file),
                 uploadedAt: new Date().toISOString()
             };
-            // ✅ Store in both local state (for UI) and Context (for persistence)
             setSelectedFile(fileData);
-            addQuestionFile(fileData); // Store in Context
+            addQuestionFile(fileData);
             setErrors(prev => ({ ...prev, file: null }));
-            console.log('File stored in Context:', fileData.name);
         }
-        // Reset input value
         event.target.value = '';
     };
 
@@ -103,26 +95,20 @@ const McqQuestionContent = () => {
         if (selectedFile) {
             URL.revokeObjectURL(selectedFile.url);
             setSelectedFile(null);
-            addQuestionFile(null); // ✅ Remove from Context as well
+            addQuestionFile(null);
             setErrors(prev => ({ ...prev, file: null }));
         }
     };
 
-    // Option handlers (unchanged)
     const handleOptionChange = (index, value) => {
         const newOptions = [...options];
         newOptions[index] = value;
         setOptions(newOptions);
-        // Update correct answer if it was the changed option
-        if (correctAnswer === options[index]) {
-            setCorrectAnswer(value);
-        }
-        // Clear validation errors
         setErrors(prev => ({ ...prev, options: null }));
     };
 
     const handleAddOption = () => {
-        if (options.length < 6) { // Maximum 6 options
+        if (options.length < 6) {
             setOptions([...options, ""]);
         }
     };
@@ -131,92 +117,66 @@ const McqQuestionContent = () => {
         if (options.length > 2) {
             const newOptions = options.filter((_, i) => i !== index);
             setOptions(newOptions);
-            // Reset correct answer if removed option was selected
-            if (correctAnswer === options[index]) {
-                setCorrectAnswer("");
-            }
             setErrors(prev => ({ ...prev, options: null }));
         }
     };
 
-    // Validation (unchanged)
     const validateForm = () => {
         const newErrors = {};
-        // Question validation
         if (!question.trim()) {
             newErrors.question = 'Question is required';
         } else if (question.trim().length < 10) {
             newErrors.question = 'Question must be at least 10 characters long';
         }
 
-        // Options validation
         const validOptions = options.filter(opt => opt.trim() !== "");
         if (validOptions.length < 2) {
             newErrors.options = 'At least 2 options are required';
         }
 
-        // Check for duplicate options
         const uniqueOptions = new Set(validOptions.map(opt => opt.trim().toLowerCase()));
         if (uniqueOptions.size !== validOptions.length) {
             newErrors.options = 'Options must be unique';
         }
 
-        // Correct answer validation
-        if (!correctAnswer.trim()) {
-            newErrors.correctAnswer = 'Please select the correct answer';
-        } else if (!validOptions.includes(correctAnswer)) {
-            newErrors.correctAnswer = 'Correct answer must be one of the provided options';
+        if (correctAnswer.length === 0) {
+            newErrors.correctAnswer = 'Please select at least one correct answer';
+        } else if (!correctAnswer.every(ans => validOptions.includes(ans))) {
+            newErrors.correctAnswer = 'All correct answers must be from the provided options';
         }
 
         setErrors(newErrors);
         return Object.keys(newErrors).length === 0;
     };
 
-    // ✅ Updated Navigation handlers - NO FormData in navigation state
     const handleNext = () => {
         if (!validateForm()) {
             return;
         }
 
-        // ✅ Prepare ONLY serializable question data
         const questionData = {
-            // Basic information from previous steps
             exam_type,
             question_type_id,
             questionType: questionTypeName,
             cs_id,
-
-            // Question content
             question: question.trim(),
-
-            // MCQ specific data
             options: options.filter(opt => opt.trim() !== "").map(opt => opt.trim()),
-            correctAnswer: correctAnswer.trim(),
-
-            // Metadata (all serializable)
+            correctAnswer: correctAnswer,
             createdAt: existingQuestionData?.createdAt || new Date().toISOString(),
             updatedAt: new Date().toISOString(),
             questionId: existingQuestionData?.questionId || `${questionTypeName}_${Date.now()}`,
-
-            // Step tracking
             currentStep: 'content',
             completedSteps: ['exam-type', 'question-type', 'content']
         };
 
-        console.log('✅ Navigating with serializable data only:', questionData);
-        console.log('✅ File stored in Context:', hasQuestionFile ? 'Yes' : 'No');
-
-        // ✅ Navigate with ONLY serializable data - NO FormData objects
         navigate('/admin/answer-explain', {
             state: {
                 questionData: questionData,
-                // ✅ Only pass file metadata for UI display, actual file is in Context
                 hasFile: hasQuestionFile,
                 fileInfo: selectedFile ? {
                     name: selectedFile.name,
                     type: selectedFile.type,
                     size: selectedFile.size
-                    // ✅ No 'file' or 'url' properties to avoid serialization issues
                 } : null,
                 fromStep: 'content'
             }
@@ -224,12 +184,10 @@ const McqQuestionContent = () => {
     };
 
     const handleBack = () => {
-        // ✅ Prepare current data for potential restoration (all serializable)
         const currentQuestionData = {
             question: question.trim(),
             options: options,
-            correctAnswer: correctAnswer.trim(),
-            // ✅ No file objects in navigation state
+            correctAnswer: correctAnswer,
         };
 
         navigate('/admin/question-type', {
@@ -242,7 +200,6 @@ const McqQuestionContent = () => {
         });
     };
 
-    // Helper functions (unchanged)
     const getFileIcon = (fileType) => {
         if (fileType?.startsWith('image/')) return <Image />;
         if (fileType === 'application/pdf') return <PictureAsPdf />;
@@ -257,16 +214,18 @@ const McqQuestionContent = () => {
         return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
     };
 
+    // ✅ FIXED: updated to work with array
     const isFormValid = () => {
         const validOptions = options.filter(opt => opt.trim() !== "");
-        return question.trim() !== "" &&
+        return (
+            question.trim() !== "" &&
             question.trim().length >= 10 &&
             validOptions.length >= 2 &&
-            correctAnswer.trim() !== "" &&
-            validOptions.includes(correctAnswer);
+            correctAnswer.length > 0 &&
+            correctAnswer.every(ans => validOptions.includes(ans))
+        );
     };
 
-    // Cleanup on unmount (unchanged)
     React.useEffect(() => {
         return () => {
             if (selectedFile && selectedFile.url) {
@@ -356,7 +315,7 @@ const McqQuestionContent = () => {
                 helperText={errors.question || `${question.length} characters (minimum 10 required)`}
                 sx={{ mb: 2 }}
             />
-            
+
 
             {/* File Upload Section */}
             <Box display="flex" justifyContent="flex-end" mt={1} mb={3} gap={1}>
@@ -499,30 +458,46 @@ const McqQuestionContent = () => {
 
             {/* Correct Answer Selector */}
             <FormControl fullWidth margin="normal" error={!!errors.correctAnswer}>
-                <InputLabel>Select Correct Answer *</InputLabel>
-                <Select
-                    value={correctAnswer}
-                    onChange={(e) => {
-                        setCorrectAnswer(e.target.value);
-                        setErrors(prev => ({ ...prev, correctAnswer: null }));
-                    }}
-                    label="Select Correct Answer *"
-                >
-                    {options
+                <Typography variant="subtitle1" mb={1}>
+                    Select Correct Answer(s) *
+                </Typography>
+
+                {options.filter(opt => opt.trim() !== "").length === 0 ? (
+                    <Typography variant="body2" color="textSecondary" sx={{ ml: 1 }}>
+                        ➡️ Please add answer options to select correct answers
+                    </Typography>
+                ) : (
+                    options
                         .filter(opt => opt.trim() !== "")
                         .map((opt, idx) => (
-                            <MenuItem key={idx} value={opt}>
-                                {String.fromCharCode(65 + idx)}) {opt}
-                            </MenuItem>
+                            <Box key={idx} display="flex" alignItems="center" mb={1}>
+                                <Checkbox
+                                    checked={correctAnswer.includes(opt)}
+                                    onChange={(e) => {
+                                        if (e.target.checked) {
+                                            setCorrectAnswer([...correctAnswer, opt]);
+                                        } else {
+                                            setCorrectAnswer(correctAnswer.filter(ans => ans !== opt));
+                                        }
+                                        setErrors(prev => ({ ...prev, correctAnswer: null }));
+                                    }}
+                                    size="small"
+                                    color="success"
+                                />
+                                <Typography variant="body2">
+                                    {String.fromCharCode(65 + idx)}) {opt}
+                                </Typography>
+                            </Box>
                         ))
-                    }
-                </Select>
+                )}
+
                 {errors.correctAnswer && (
                     <Typography color="error" variant="caption" sx={{ mt: 0.5 }}>
                         {errors.correctAnswer}
                     </Typography>
                 )}
             </FormControl>
+
 
             {/* ✅ Enhanced Form Summary with Context information */}
             <Card sx={{ mt: 3, bgcolor: 'grey.50' }}>
@@ -571,3 +546,5 @@ const McqQuestionContent = () => {
 };
 
 export default McqQuestionContent;
+
+ 
