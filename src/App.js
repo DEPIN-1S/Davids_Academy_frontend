@@ -15,8 +15,8 @@ const App = () => {
     dispatch(hydrateUser());
   }, [dispatch]);
 
-  // ✅ Apply restrictions globally
- useSecurityRestrictions();
+ /*  // ✅ Apply restrictions globally
+ useSecurityRestrictions(); */
   return (
     <FileProvider>
       <Routes>

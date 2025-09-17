@@ -18,29 +18,7 @@ const EnquireLeadComponent = () => {
     return (
         <div className="enquire-lead-page">
             <div className="content-area">
-                {/* Filter Dropdown */}
-                <div className="filter-section">
-                    <div className="filter-dropdown">
-                        <button
-                            className="dropdown-btn"
-                            onClick={() => setShowDropdown(!showDropdown)}
-                        >
-                            All
-                            <FaChevronDown
-                                className={`dropdown-icon ${showDropdown ? "rotate" : ""}`}
-                            />
-                        </button>
-                        {showDropdown && (
-                            <div className="dropdown-menu">
-                                <div className="dropdown-item active">All</div>
-                                <div className="dropdown-item">New</div>
-                                <div className="dropdown-item">In Progress</div>
-                                <div className="dropdown-item">Completed</div>
-                            </div>
-                        )}
-                    </div>
-                </div>
-
+                
                 {/* Table Section */}
                 <div className="table-section">
                     <div className="table-container">
@@ -114,14 +92,7 @@ const EnquireLeadComponent = () => {
                                                 <div className="detail-row">
                                                     <strong>Message:</strong> {enquiry.cu_message}
                                                 </div>
-                                                {/* Optionally, show status or created_at:
-                        <div className="detail-row">
-                          <strong>Status:</strong> {enquiry.cu_status}
-                        </div>
-                        <div className="detail-row">
-                          <strong>Date:</strong> {new Date(enquiry.cu_created_at).toLocaleString()}
-                        </div>
-                        */}
+                            
                                             </div>
                                         </div>
                                     </div>

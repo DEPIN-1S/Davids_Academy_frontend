@@ -1,5 +1,6 @@
 import React from 'react';
 import '../styles/Courses.css';
+import { Link } from 'react-router-dom';
 
 const courses = [
   {
@@ -42,10 +43,12 @@ const Courses = () => {
 
       <div className="courses-footer">
         <div className="arrows">
-          <button className="circle-btn">←</button>
-          <button className="circle-btn">→</button>
+         {/*  <button className="circle-btn">←</button>
+          <button className="circle-btn">→</button> */}
         </div>
-        <button className="view-all">View All →</button>
+        <Link to="/courses" >
+          <button className="view-all">View All →</button>
+        </Link>
       </div>
     </section>
   );

@@ -46,3 +46,15 @@
   color: #2e7d32;
   font-size: 1rem;
 }
+
+.exhibit-img {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  gap: 10px;
+}
+.exhibit-img h1 {
+  font-size: 26px;
+}
