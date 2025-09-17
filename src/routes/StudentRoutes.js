@@ -14,7 +14,7 @@ import MultiRadioQuestionPage from "../pages/StudentPages/MultiRadioQuestionPage
 import SortQuestionPage from "../pages/StudentPages/SortQuestionPage";
 import SentenceQuestionPage from "../pages/StudentPages/SentenceQuestionPage";
 import DropSortQuestionPage from "../pages/StudentPages/FillInQuestionPage";
-import ScorePage from "../pages/StudentPages/ScorePage";
+// import ScorePage from "../pages/StudentPages/ScorePage";
 import StudentLayout from "../components/StudentComponents/StudentLayout";
 import ExamContainer from "../components/StudentComponents/ExamContainer";
 const StudentRoutes = () => (
@@ -99,8 +99,8 @@ const StudentRoutes = () => (
                     <RevealAnswerRadioPage />
                 </ProtectedRoutes>} />
             {/* answer routes end */}
-
-            <Route path="/student/score" element={<ProtectedRoutes allowedRoles={['student']}><ScorePage /></ProtectedRoutes>} />
+{/* 
+            <Route path="/student/score" element={<ProtectedRoutes allowedRoles={['student']}><ScorePage /></ProtectedRoutes>} /> */}
         </Route>
     </>
 );
