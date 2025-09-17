@@ -4,7 +4,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { fetchCourses } from "../../features/courses/courseSlice";
 import { fetchRecentEnquiries } from "../../features/contact/contactSlice";
 import { fetchStudents } from "../../features/students/studentSlice";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { adminFetchTestQuestions } from "../../features/exam/examSlice"
 import { fetchMockTestQuestion } from "../../features/exam/examAPI";
 
@@ -21,18 +21,16 @@ const DashboardPage = () => {
 
   const { recentEnquiries, loading, error } = useSelector((state) => state.contact);
   const studentCount = total;
-  console.log("er4r34reet:::", recentEnquiries);
+  console.log("recent Enquiries:::", recentEnquiries);
 
   const navigate = useNavigate()
 
   const {
     adminTestQuestions,
-    adminTestQuestionsTotalCount 
+    adminTestQuestionsTotalCount
   } = useSelector((state) => state.exam);
 
-  const viewAllEnquiries = () => {
 
-  }
 
   useEffect(() => {
     console.log("Dashboard useEffect triggered");
@@ -40,8 +38,8 @@ const DashboardPage = () => {
     dispatch(fetchStudents());
     dispatch(fetchRecentEnquiries());
     dispatch(adminFetchTestQuestions())
-    console.log("fetch test question in admin dashboard  ::: ",adminTestQuestions);
-    
+    console.log("fetch test question in admin dashboard  ::: ", adminTestQuestions);
+
   }, [dispatch]);
 
 
@@ -55,7 +53,7 @@ const DashboardPage = () => {
     { title: "Total Courses", value: coursesLoading ? "Loading..." : courses.length, subtitle: "Available for student" },
     {
       title: "Tests Created",
-      value:  adminTestQuestionsTotalCount,
+      value: adminTestQuestionsTotalCount,
       change: "12%",
       subtitle: "increase in 30 days",
     },
@@ -133,7 +131,9 @@ const DashboardPage = () => {
         <div className="enquiries-card">
           <div className="enquiries-header">
             <h2>Recent Enquiries</h2>
-            <button className="view-all-btn" onClick={viewAllEnquiries()} >View all</button>
+            <Link to='/admin/enquire-lead' >
+              <button className="view-all-btn" >View all</button>
+            </Link>
           </div>
 
 
@@ -152,9 +152,6 @@ const DashboardPage = () => {
               <p>No enquiries found.</p>
             )}
           </div>
-
-
-
         </div>
       </div>
     </div>

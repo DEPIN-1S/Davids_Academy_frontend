@@ -46,6 +46,8 @@
   color: #777;
 }
 
+
+
 .content-grid {
   display: grid;
   grid-template-columns: 2fr 1fr;
@@ -127,4 +129,8 @@
   border-radius: 12px;
   font-size: 0.8rem;
   font-weight: 500;
+}
+
+.enquiry-list h4 {
+font-size: 20px;
 }

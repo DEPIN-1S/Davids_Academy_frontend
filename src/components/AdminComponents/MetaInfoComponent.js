@@ -147,7 +147,6 @@ const MetaInfoComponent = () => {
 
             // data structure according to question type
             const completeQuestionData = constructQuestionFormData();
-
             // ✅ Create FormData using Context
             const completeFormData = createCompleteFormData(completeQuestionData);
             console.log('🚀 Submitting with Context FormData (multipart/form-data)');
@@ -160,10 +159,13 @@ const MetaInfoComponent = () => {
 
             // ✅ Submit to your multipart endpoint
             console.log("URL :::::: ", process.env.REACT_APP_API_URL);
-            console.log("copleter form data ", completeFormData);
+            console.log("completed form data ", completeFormData);
+            const token = sessionStorage.getItem("accessToken");
             const response = await fetch(`${process.env.REACT_APP_API_URL}/exam/question`, {
-
                 method: 'POST',
+                headers: {
+                    Authorization: `Bearer ${token}`
+                },
                 body: completeFormData
             });
 
@@ -465,7 +467,7 @@ const MetaInfoComponent = () => {
     const getFillInTheBlanksBaseData = () => ({
         courseId: receivedQuestionData.cs_id,
         questionType: receivedQuestionData.questionType,
-        exam_type: receivedQuestionData.exam_type,    
+        exam_type: receivedQuestionData.exam_type,
         question: receivedQuestionData?.question_content?.[0]?.question_text,
         question_type_id: receivedQuestionData.question_type_id,
         answer: receivedQuestionData?.question_content?.[0]?.fill_blanks_answer,

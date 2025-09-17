@@ -32,7 +32,12 @@ export const FileProvider = ({ children }) => {
                 formData.append("info", questionData.info);
                 formData.append("answer", JSON.stringify(questionData.answer || []));
                 formData.append("options", JSON.stringify(questionData.options || [])); // ✅ FIX
-                formData.marks("marks", questionData.marks)
+                formData.append("marks", questionData.marks)
+
+                if (questionFile?.file) {
+                    formData.append("exhibit", questionFile.file, questionFile.file.name);
+                }
+
                 break;
 
             case "Dropdown":
@@ -47,7 +52,7 @@ export const FileProvider = ({ children }) => {
                 formData.append("explanationHeading", questionData.explanationHeading);
                 formData.append("explanationText", questionData.explanationText);
                 formData.append("info", questionData.info);
-                formData.marks("marks", questionData.marks)
+                formData.append("marks", questionData.marks)
                 break;
 
             case "Drag Drop":
@@ -63,7 +68,7 @@ export const FileProvider = ({ children }) => {
                 formData.append("explanationHeading", questionData.explanationHeading);
                 formData.append("explanationText", questionData.explanationText);
                 formData.append("info", questionData.info);
-                formData.marks("marks", questionData.marks)
+                formData.append("marks", questionData.marks)
                 break;
 
             case "Sorting":
@@ -77,7 +82,7 @@ export const FileProvider = ({ children }) => {
                 formData.append("explanationHeading", questionData.explanationHeading);
                 formData.append("explanationText", questionData.explanationText);
                 formData.append("info", questionData.info);
-                formData.marks("marks", questionData.marks)
+                formData.append("marks", questionData.marks)
                 break;
 
             case "Fill in the Blanks":
@@ -93,7 +98,7 @@ export const FileProvider = ({ children }) => {
                 formData.append("explanationHeading", questionData.explanationHeading);
                 formData.append("explanationText", questionData.explanationText);
                 formData.append("info", questionData.info);
-                formData.marks("marks", questionData.marks)
+                formData.append("marks", questionData.marks)
                 break;
 
             case "Multiple Radio":
@@ -109,7 +114,7 @@ export const FileProvider = ({ children }) => {
                 formData.append("explanationHeading", questionData.explanationHeading);
                 formData.append("explanationText", questionData.explanationText);
                 formData.append("info", questionData.info);
-                formData.marks("marks", questionData.marks)
+                formData.append("marks", questionData.marks)
                 break;
 
             case "Sentence Highlight": // ✅ FIX case sensitivity
@@ -126,7 +131,7 @@ export const FileProvider = ({ children }) => {
                 formData.append("explanationHeading", questionData.explanationHeading ?? "");
                 formData.append("explanationText", questionData.explanationText ?? "");
                 formData.append("info", questionData.info ?? "");
-                formData.marks("marks", questionData.marks)
+                formData.append("marks", questionData.marks)
 
             default:
                 console.warn(" Unknown questionType:", questionData.questionType);
@@ -138,7 +143,7 @@ export const FileProvider = ({ children }) => {
         }
 
         for (let [key, value] of formData.entries()) {
-            console.log("📦 FormData entry:", key, value);
+            console.log("📦 FormData entry in file context :::", key, value);
         }
 
         return formData;

@@ -1,19 +1,9 @@
 import React, { useEffect, useState } from 'react';
-
-import {
-  Box,
-  Typography,
-  Radio,
-  RadioGroup,
-  FormControlLabel,
-  Button,
-} from '@mui/material';
+import { Box, Typography, Radio, RadioGroup, FormControlLabel, Button, } from '@mui/material';
 import { getQuestionData } from "../features/exam/examSlice"
 import '../styles/DashboardStyles/RadioButtonQuestionComponent.css';
-import RevealAnswerComponent from '../components/StudentComponents/RevealAnswerComponent';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
-import { Height } from '@mui/icons-material';
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 function McqQuestionView() {
   const [selectedOption, setSelectedOption] = useState('');
@@ -33,14 +23,11 @@ function McqQuestionView() {
   useEffect(() => {
     console.log("Updated questionData in state:", questionData);
   }, [questionData]);
-  const questionText = questionData.data.question;
-  const mark = questionData.data.marks;
-  const difficulty = questionData.data.difficulty;
-  const question_type = questionData.data.question_type;
+  const questionText = questionData?.data?.question || "";
+  const mark = questionData?.data?.marks || "";
+  const difficulty = questionData?.data?.difficulty || "";
+  const question_type = questionData?.data?.question_type || "";
   const mcqoptions = questionData?.data?.mcqoptions || [];
-
-
-
 
   const handleChange = (event) => {
     setSelectedOption(event.target.value);
@@ -49,6 +36,7 @@ function McqQuestionView() {
   const handleReveal = () => {
     setShowAnswer(true);
   };
+
 
   return (
     <>
@@ -75,18 +63,19 @@ function McqQuestionView() {
         pt: 5,
       }}  >
 
-
-        <Box
-          className="radio-container"
-
-        >
+        <Box className="exhibit-img" >
+          <h1>Exhibit Image uploaded :</h1>
           {questionData?.data?.exhibit && (
             <img
-              src={questionData.data.exhibit}
+            width={500}
+              src={`https://lunarsenterprises.com:6040/${questionData.data.exhibit}`}
               alt="Exhibit"
               style={{ maxWidth: '100%', marginBottom: '1rem', borderRadius: 8 }}
             />
           )}
+        </Box>
+
+        <Box className="radio-container">
 
 
           <Typography variant="body1" className="question-text" gutterBottom>
@@ -107,42 +96,8 @@ function McqQuestionView() {
               />
             ))}
           </RadioGroup>
-          {/* 
-      <Box className="reveal-btn-wrapper">
-        <Button
-          variant="contained"
-          className="reveal-btn"
-          onClick={handleReveal}
-        >
-          Reveal Answer
-        </Button>
-      </Box>
 
-      {showAnswer && (
-        <>
-          <Typography className="correct-answer" sx={{ mt: 2 }}>
-            ✅ Correct Answer: <strong>{answer}</strong>
-          </Typography>
 
-          <Typography className="explanation-text" sx={{ mt: 1 }}>
-            <strong>{explanation[0].heading}:</strong>{' '}
-            {explanation[0].explanation}
-          </Typography>
-
-          <Typography className="additional-info-text" sx={{ mt: 1 }}>
-            <strong>Info:</strong> {additionalInfo[0].info}
-          </Typography>
-
-          <RevealAnswerComponent
-            questionText={questionText}
-            explanationHeading={explanation[0].heading}
-            explanationParagraphs={explanation.map((exp) => exp.explanation)}
-            additionalInfoHeading="Additional Info"
-            additionalInfoParagraphs={additionalInfo.map((info) => info.info)}
-            additionalInfoImage={null}
-          />
-        </>
-      )} */}
         </Box>
         <Box sx={{ display: "flex", justifyContent: "center", pt: 5 }}>
           <Button

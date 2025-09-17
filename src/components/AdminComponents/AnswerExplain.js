@@ -238,12 +238,6 @@ const AnswerExplain = () => {
 
     const handleBack = () => {
         const dataToSendBack = {
-            /* question: previousQuestionData.question,
-            options: previousQuestionData.options,
-            correctAnswer: previousQuestionData.correctAnswer,
-            createdAt: previousQuestionData.createdAt,
-            questionId: previousQuestionData.questionId, */
-
             cs_id: previousQuestionData.cs_id,
             exam_type: previousQuestionData.exam_type,
             question_type_id: previousQuestionData.question_type_id,
