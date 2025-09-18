@@ -23,6 +23,7 @@ function McqQuestionView() {
   useEffect(() => {
     console.log("Updated questionData in state:", questionData);
   }, [questionData]);
+  
   const questionText = questionData?.data?.question || "";
   const mark = questionData?.data?.marks || "";
   const difficulty = questionData?.data?.difficulty || "";
