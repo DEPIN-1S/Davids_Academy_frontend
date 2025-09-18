@@ -14,7 +14,6 @@ const App = () => {
   useEffect(() => {
     dispatch(hydrateUser());
   }, [dispatch]);
-
  /*  // ✅ Apply restrictions globally
  useSecurityRestrictions(); */
   return (

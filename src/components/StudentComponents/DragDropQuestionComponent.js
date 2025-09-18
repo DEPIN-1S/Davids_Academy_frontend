@@ -1,54 +1,54 @@
-import React, { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
-import { Box, Typography, Button, Paper, Grid, CircularProgress } from "@mui/material";
+import React, { useState } from "react";
+import { Box, Typography, Paper, Grid, Button } from "@mui/material";
 import { styled } from "@mui/material/styles";
 import { DragDropContext, Droppable, Draggable } from "@hello-pangea/dnd";
 import RevealAnswerComponent from './RevealAnswerComponent';
+
 const StyledDropZone = styled(Paper)(({ theme }) => ({
   minHeight: 120,
   padding: theme.spacing(2),
   borderRadius: theme.spacing(1),
   border: "2px dashed #ccc",
-  background: "#f9f9f9",
-  "&:hover": {
-    background: "#f0f0f0",
-  },
+  background: "#fcfcfc",
+  "&:hover": { background: "#f1f1f1" },
+}));
+const OptionPaper = styled(Paper)(({ theme }) => ({
+  display: "flex",
+  alignItems: "center",
+  gap: theme.spacing(1.5),
+  padding: theme.spacing(1.5),
+  marginBottom: theme.spacing(1.5),
+  border: "1px solid #ddd",
+  borderRadius: theme.spacing(1.5),
+  backgroundColor: "#fff",
 }));
 
-const DragDropQuestionComponent = ({ question, onSubmit }) => {
-  const navigate = useNavigate();
-
-  useEffect(() => {
-    console.log("Question prop received:", question);
-  }, [question]);
-
+const DragDropQuestionComponent = ({ question }) => {
   const {
-    id: questionId,
-    question: questionText,
-    question_type: questionType,
+    question: questionText = "",
     headings = [],
+    drag_drop_content = "",
     explanation = [],
     additionalInfo = [],
-  } = question || {};
+    marks = 0,
+  } = question;
 
-  // Initialize draggable items from dragdropoption across all headings
-  const initialItems = headings.reduce((acc, heading) => {
-    heading.dragdropoption.forEach(opt => {
-      acc.push({
-        id: opt.id.toString(),
-        content: opt.options_value,
-      });
-    });
-    return acc;
-  }, []);
+  // Gather all drag options for all headings
+  const allOptionItems = headings.flatMap(heading =>
+    heading.dragdropoption.map(opt => ({
+      id: `${heading.headings}-${opt.id}`,
+      content: opt.options_value,
+      group: heading.headings,
+    }))
+  );
 
+  // Prepare initial zones: one for each heading, one for source
   const initialZones = headings.reduce((acc, heading) => {
-    acc[heading.id.toString()] = []; // Empty drop zone for each heading
+    acc[heading.headings] = [];
     return acc;
-  }, { source: initialItems }); // Source zone with all items
+  }, { source: allOptionItems });
 
   const [zones, setZones] = useState(initialZones);
-  const [isLoading, setIsLoading] = useState(!question);
   const [showReveal, setShowReveal] = useState(false);
   const [userAnswer, setUserAnswer] = useState('');
   const [correctAnswer, setCorrectAnswer] = useState('');
@@ -57,7 +57,6 @@ const DragDropQuestionComponent = ({ question, onSubmit }) => {
   const onDragEnd = (result) => {
     const { source, destination } = result;
     if (!destination) return;
-
     if (source.droppableId !== destination.droppableId) {
       const sourceItems = [...zones[source.droppableId]];
       const destItems = [...zones[destination.droppableId]];
@@ -69,7 +68,6 @@ const DragDropQuestionComponent = ({ question, onSubmit }) => {
         [destination.droppableId]: destItems,
       });
     } else {
-      // Reorder within the same zone
       const items = [...zones[source.droppableId]];
       const [reorderedItem] = items.splice(source.index, 1);
       items.splice(destination.index, 0, reorderedItem);
@@ -77,198 +75,144 @@ const DragDropQuestionComponent = ({ question, onSubmit }) => {
     }
   };
 
+  // Reveal logic: maps headings to dropped, and correct answer
   const handleReveal = () => {
-    // User answer: mapping headings to dropped items
     const userAns = headings.map(heading => {
-      const dropped = zones[heading.id.toString()][0]?.content || 'Not selected';
+      const dropped = zones[heading.headings][0]?.content || 'Not selected';
       return `${heading.headings}: ${dropped}`;
     }).join('; ');
-
-    // Correct answer from data
-    const correctAns = headings.map(heading => `${heading.headings}: ${heading.drag_drop_answer}`).join('; ');
-
-    // Check correctness (assuming one correct per heading, and exact match)
+    const correctAns = headings.map(heading =>
+      `${heading.headings}: ${heading.drag_drop_answer}`).join('; ');
     const correctStatus = headings.every(heading => {
-      const dropped = zones[heading.id.toString()][0]?.content;
+      const dropped = zones[heading.headings][0]?.content;
       return dropped === heading.drag_drop_answer;
     });
-    const mark = correctStatus ? (question?.marks || 5) : 0;
-
-    // Call onSubmit
-    onSubmit(questionId, correctStatus, mark, userAns);
-
-    // Set states for reveal
     setUserAnswer(userAns);
     setCorrectAnswer(correctAns);
     setIsCorrect(correctStatus);
     setShowReveal(true);
   };
 
-  useEffect(() => {
-    if (question) {
-      setIsLoading(false);
-    }
-  }, [question]);
-
-  if (isLoading) {
-    return (
-      <Box sx={{ padding: 2, textAlign: "center" }}>
-        <CircularProgress />
-        <Typography mt={2}>Loading question data...</Typography>
-      </Box>
-    );
-  }
-
-  if (!question || !headings.length) {
-    return (
-      <Box sx={{ padding: 2, textAlign: "center" }}>
-        <Typography>No drag and drop question data available</Typography>
-      </Box>
-    );
-  }
-
-  if (questionType !== "Drag Drop") {
-    return (
-      <Box sx={{ padding: 2, textAlign: "center" }}>
-        <Typography>Wrong question type: {questionType}. Expected "Drag Drop".</Typography>
-      </Box>
-    );
-  }
-
   return (
-    <Box p={3}>
-      <Typography variant="h6" fontWeight={700} textAlign="center" mb={3}>
-        {questionText || "Drag the options into the appropriate categories"}
-      </Typography>
+    <Box sx={{ p: 4 }}>
+      <Grid container justifyContent="center" alignItems="center" spacing={4} sx={{ minHeight: "30vh" }}>
+        {/* LEFT SIDE: "Action" headings */}
+        <Grid item xs={12} sm={4}>
+          <Box display="flex" flexDirection="column" alignItems="flex-end" gap={4}>
+            {headings.filter(h => h.headings.toLowerCase().includes("action")).map(heading => (
+              <Paper key={heading.headings} elevation={1} sx={{ p: 2, minWidth: 200, textAlign: "center", borderRadius: 2 }}>
+                <Typography fontWeight={600}>{heading.headings}</Typography>
+              </Paper>
+            ))}
+          </Box>
+        </Grid>
+        {/* CENTER BLUE BOX */}
+        <Grid item xs={12} sm={4}>
+          <Box display="flex" justifyContent="center">
+            <Paper elevation={3} sx={{
+              p: 3,
+              backgroundColor: "#1e2a4a",
+              color: "#fff",
+              borderRadius: 2,
+              textAlign: "center",
+              minWidth: 250,
+            }}>
+              <Typography fontWeight={700}>{drag_drop_content || "Potential Condition"}</Typography>
+            </Paper>
+          </Box>
+        </Grid>
+        {/* RIGHT SIDE: "Parameter" headings */}
+        <Grid item xs={12} sm={4}>
+          <Box display="flex" flexDirection="column" alignItems="flex-start" gap={4}>
+            {headings.filter(h => h.headings.toLowerCase().includes("parameter")).map(heading => (
+              <Paper key={heading.headings} elevation={1} sx={{ p: 2, minWidth: 200, textAlign: "center", borderRadius: 2 }}>
+                <Typography fontWeight={600}>{heading.headings}</Typography>
+              </Paper>
+            ))}
+          </Box>
+        </Grid>
+      </Grid>
 
+      {/* DragDrop Grid: one zone per heading */}
       <DragDropContext onDragEnd={onDragEnd}>
-        {!showReveal && (
-          <>
-            <Grid container spacing={3} justifyContent="center" mb={4}>
-              {headings.map((heading) => (
-                <Grid item xs={12} sm={6} md={4} key={heading.id}>
-                  <Typography fontWeight={600} mb={1} textAlign="center">
-                    {heading.headings}
-                  </Typography>
-                  <Droppable droppableId={heading.id.toString()}>
-                    {(provided) => (
-                      <StyledDropZone
-                        ref={provided.innerRef}
-                        {...provided.droppableProps}
-                        sx={{
-                          backgroundColor: zones[heading.id.toString()]?.length > 0 ? "#e0f7fa" : undefined,
-                        }}
-                      >
-                        {zones[heading.id.toString()].map((item, index) => (
-                          <Draggable key={item.id} draggableId={item.id} index={index}>
-                            {(provided) => (
-                              <Box
-                                ref={provided.innerRef}
-                                {...provided.draggableProps}
-                                {...provided.dragHandleProps}
-                                sx={{
-                                  backgroundColor: "#fff",
-                                  borderRadius: 1,
-                                  p: 1,
-                                  mb: 1,
-                                  boxShadow: 1,
-                                  fontSize: "0.9rem",
-                                }}
-                              >
-                                {item.content}
+        <Grid container justifyContent="center" sx={{ pt: 5 }} spacing={3}>
+          {headings.map(heading => (
+            <Grid item key={heading.headings}>
+              <Paper elevation={0} sx={{ p: 2, minWidth: 320, border: "1px solid #ddd", borderRadius: 2, backgroundColor: "#f9f9f9", boxShadow: "0px 2px 6px rgba(0,0,0,0.05)" }}>
+                <Typography variant="h6" sx={{ mb: 2, fontSize: "1rem", fontWeight: 600, color: "#333", textAlign: "center" }}>
+                  {heading.headings}
+                </Typography>
+                <Droppable droppableId={heading.headings}>
+                  {(provided) => (
+                    <Box ref={provided.innerRef} {...provided.droppableProps}>
+                      {zones[heading.headings].map((dragItem, idx) => (
+                        <Draggable key={dragItem.id} draggableId={dragItem.id} index={idx}>
+                          {(provided) => (
+                            <OptionPaper ref={provided.innerRef} {...provided.draggableProps} {...provided.dragHandleProps}>
+                              <Box sx={{ display: "flex", flexDirection: "column", justifyContent: "center", alignItems: "center", width: 20, gap: "3px" }}>
+                                <Box sx={{ width: "14px", height: "2px", bgcolor: "#999", borderRadius: 1 }} />
+                                <Box sx={{ width: "14px", height: "2px", bgcolor: "#999", borderRadius: 1 }} />
+                                <Box sx={{ width: "14px", height: "2px", bgcolor: "#999", borderRadius: 1 }} />
                               </Box>
-                            )}
-                          </Draggable>
-                        ))}
-                        {provided.placeholder}
-                      </StyledDropZone>
-                    )}
-                  </Droppable>
-                </Grid>
-              ))}
+                              <Typography variant="body2" sx={{ textAlign: "left", color: "#333", fontSize: "0.9rem" }}>
+                                {dragItem.content}
+                              </Typography>
+                            </OptionPaper>
+                          )}
+                        </Draggable>
+                      ))}
+                      {provided.placeholder}
+                    </Box>
+                  )}
+                </Droppable>
+              </Paper>
             </Grid>
-
-            <Box textAlign="center" mb={4}>
-              <Typography variant="h6" fontWeight={600} mb={2}>
-                Options
-              </Typography>
-              <Droppable droppableId="source" direction="horizontal">
-                {(provided) => (
-                  <Box
-                    ref={provided.innerRef}
-                    {...provided.droppableProps}
-                    display="flex"
-                    justifyContent="center"
-                    flexWrap="wrap"
-                    gap={2}
-                  >
-                    {zones.source.map((item, index) => (
-                      <Draggable key={item.id} draggableId={item.id} index={index}>
-                        {(provided) => (
-                          <Box
-                            ref={provided.innerRef}
-                            {...provided.draggableProps}
-                            {...provided.dragHandleProps}
-                            sx={{
-                              backgroundColor: "#fff",
-                              border: "1px solid #ccc",
-                              borderRadius: 1,
-                              p: 1,
-                              minWidth: 250,
-                              textAlign: "center",
-                              fontSize: "0.9rem",
-                              boxShadow: 1,
-                            }}
-                          >
-                            {item.content}
+          ))}
+        </Grid>
+        {/* Source Box: options to drag */}
+        <Grid container justifyContent="center" sx={{ pt: 3 }} spacing={2}>
+          <Grid item xs={12}>
+            <Droppable droppableId="source" direction="horizontal">
+              {(provided) => (
+                <Box ref={provided.innerRef} {...provided.droppableProps} display="flex" justifyContent="center" flexWrap="wrap" gap={2} sx={{ minHeight: 64 }}>
+                  {zones.source.map((dragItem, idx) => (
+                    <Draggable key={dragItem.id} draggableId={dragItem.id} index={idx}>
+                      {(provided) => (
+                        <OptionPaper ref={provided.innerRef} {...provided.draggableProps} {...provided.dragHandleProps}>
+                          <Box sx={{ display: "flex", flexDirection: "column", justifyContent: "center", alignItems: "center", width: 20, gap: "3px" }}>
+                            <Box sx={{ width: "14px", height: "2px", bgcolor: "#999", borderRadius: 1 }} />
+                            <Box sx={{ width: "14px", height: "2px", bgcolor: "#999", borderRadius: 1 }} />
+                            <Box sx={{ width: "14px", height: "2px", bgcolor: "#999", borderRadius: 1 }} />
                           </Box>
-                        )}
-                      </Draggable>
-                    ))}
-                    {provided.placeholder}
-                  </Box>
-                )}
-              </Droppable>
-            </Box>
-          </>
-        )}
+                          <Typography variant="body2" sx={{ textAlign: "left", color: "#333", fontSize: "0.9rem" }}>
+                            {dragItem.content}
+                          </Typography>
+                        </OptionPaper>
+                      )}
+                    </Draggable>
+                  ))}
+                  {provided.placeholder}
+                </Box>
+              )}
+            </Droppable>
+          </Grid>
+        </Grid>
       </DragDropContext>
-
-      <Box textAlign="center">
-        <Button
-          variant="contained"
-          onClick={handleReveal}
-          sx={{
-            backgroundColor: "#f4c300",
-            color: "#000",
-            "&:hover": { backgroundColor: "#e0b000" },
-          }}
-        >
+      {/* Reveal Answer Section */}
+      <Box textAlign="center" mt={4}>
+        <Button variant="contained" onClick={handleReveal} sx={{ backgroundColor: "#f4c300", color: "#000", "&:hover": { backgroundColor: "#e0b000" } }}>
           Reveal Answer
         </Button>
       </Box>
-
       {showReveal && (
         <Box sx={{ mt: 4 }}>
-          <Typography variant="subtitle1" fontWeight={600} mb={1} color="#2E3760">
-            Your Answer:
-          </Typography>
-          <Typography variant="body1" mb={3}>
-            {userAnswer}
-          </Typography>
-
-          <Typography variant="subtitle1" fontWeight={600} mb={1} color="#2E3760">
-            Correct Answer:
-          </Typography>
-          <Typography variant="body1" mb={3}>
-            {correctAnswer}
-          </Typography>
-
+          <Typography variant="subtitle1" fontWeight={600} mb={1} color="#2E3760">Your Answer:</Typography>
+          <Typography variant="body1" mb={3}>{userAnswer}</Typography>
+          <Typography variant="subtitle1" fontWeight={600} mb={1} color="#2E3760">Correct Answer:</Typography>
+          <Typography variant="body1" mb={3}>{correctAnswer}</Typography>
           <Typography variant="subtitle1" fontWeight={600} mb={1} color={isCorrect ? 'green' : 'red'}>
             {isCorrect ? '✅ Correct!' : '❌ Incorrect'}
           </Typography>
-
-         
           <RevealAnswerComponent
             questionText={questionText}
             explanationHeading={explanation[0]?.heading || 'Explanation'}

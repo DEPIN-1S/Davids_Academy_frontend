@@ -106,13 +106,13 @@ export const fetchMockTestQuestionsByCourseId = async (courseId) => {
         const token = sessionStorage.getItem("accessToken");
         const response = await fetch(
             `${baseUrl}/exam/list/mock-test-questions?courseId=${courseId}`,
-             {
+            {
                 headers: {
                     "Content-Type": "application/json",
                     Authorization: `Bearer ${token}`
                 }
             }
-            
+
         );
 
         if (!response.ok) {
@@ -377,6 +377,8 @@ export const fetchStudentTests = async (type = 'all') => {
     }
 };
 
+
+
 // List all questions in a specific test (POST based on provided testapis)
 export const fetchTestQuestions = async (test_id) => {
     try {
@@ -529,3 +531,46 @@ export const adminFetchQuestionByQID = async (questionId) => {
         throw error;
     }
 };
+// Fetch sample question IDs (GET, no auth)
+export const fetchSampleQuestionnaireIds = async () => {
+    try {
+        const response = await fetch(`${baseUrl}/exam/sample-questionnaire`, {
+            method: "GET",
+            headers: {
+                "Content-Type": "application/json",
+            },
+        });
+
+        if (!response.ok) {
+            throw new Error("Failed to fetch sample questionnaire IDs");
+        }
+
+        const data = await response.json();
+        return data.data; // Matches your Postman response structure: array of {id: number}
+    } catch (error) {
+        throw error;
+    }
+};
+
+// Fetch question data by ID (POST, no auth, adapted from fetchQBankQuestionData)
+export const fetchSampleQuestionData = async (questionId) => {
+    try {
+        const response = await fetch(`${baseUrl}/student/questions/sample-questionnaire`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ questionId }),
+        });
+
+        if (!response.ok) {
+            throw new Error("Failed to fetch sample question data");
+        }
+
+        const data = await response.json();
+        return data.data; // Assumes structure with question details
+    } catch (error) {
+        throw error;
+    }
+};
+

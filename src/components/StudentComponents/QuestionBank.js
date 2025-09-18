@@ -1,14 +1,23 @@
+
+
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Box, Typography, Button } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
+import { useSelector } from 'react-redux';
 
 const QuestionBank = () => {
   const navigate = useNavigate();
+  const user = useSelector((state) => state.user); // adjust selector based on your redux slice
 
   const handleStartTest = () => {
-    // Navigate to the exam container route (where questions are managed)
-    navigate('/student/exam'); // Adjust path as per your route setup
+    if (user?.isLoggedIn) {
+      // User logged in: navigate to user's test or exam normally
+      navigate('/student/exam'); // or append testId if needed
+    } else {
+      // Not logged in: navigate to sample mode for without-auth sample questions
+      navigate('/student/exam?mode=sample');
+    }
   };
 
   return (
