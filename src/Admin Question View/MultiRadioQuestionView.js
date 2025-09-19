@@ -19,6 +19,7 @@ function MultiRadioQuestionView() {
       dispatch(getQuestionData(questionId));
     }
   }, [dispatch, questionId]);
+  
   useEffect(() => {
     console.log("Updated RadiquestionData in state:", questionData);
   }, [questionData]);
@@ -61,9 +62,7 @@ function MultiRadioQuestionView() {
   const [answers, setAnswers] = useState({});
   const [showReveal, setShowReveal] = useState(false);
 
-  // Extract static data
-  const notesTabs = question.tabsInfo.map((tab) => tab.tabKey);
-  const clientFindings = question.clientfindings;
+ 
 
   const tabContent = question.tabsInfo.reduce((acc, tab) => {
     acc[tab.tabKey] = tab.tabValue;
@@ -110,13 +109,11 @@ function MultiRadioQuestionView() {
       </Box>
       {/*  <QuestionHeader  /> */}
       <div className="multi-radio-container">
-
         <div className="heading">
           <h4> {questionText}</h4>
         </div>
 
         {/* Tabs */}
-
         <div className="tabs">
           {questionData?.data?.tabsInfo?.map((tab) => (
             <button

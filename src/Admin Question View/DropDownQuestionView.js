@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState, useEffect } from "react";
 import {
   Box,
   Typography,
@@ -6,92 +6,57 @@ import {
   InputLabel,
   Select,
   MenuItem,
-  Button,
-  Tabs,
-  Tab,
   useMediaQuery,
   useTheme,
-} from '@mui/material';
-import { useNavigate, useParams } from 'react-router-dom';
-import { getQuestionData } from '../features/exam/examSlice'
-import { useDispatch, useSelector } from 'react-redux';
-import ArrowBackIcon from "@mui/icons-material/ArrowBack";
+} from "@mui/material";
+import { useDispatch, useSelector } from "react-redux";
+import { getQuestionData } from "../features/exam/examSlice";
+import { useParams } from "react-router-dom";
 
-function DropDownQuestionView() {
+const DropdownQuestionComponent = () => {
   const theme = useTheme();
-  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
-  const { questionId } = useParams()
-  const { questionData, loading, error } = useSelector((state) => state.exam);
+  const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
   const dispatch = useDispatch();
-  const navigate = useNavigate();
-  console.log("Question id in params", questionId);
+  const { questionData, loading, error } = useSelector((state) => state.exam);
+  const { questionId } = useParams();
+
+  const [activeTab, setActiveTab] = useState("");
+  const [dropdownValues, setDropdownValues] = useState({});
+
+  // 🔹 Fetch question data when component mounts
   useEffect(() => {
     if (questionId) {
-      console.log("Dispatching thunk with questionId:", questionId);
       dispatch(getQuestionData(questionId));
     }
   }, [dispatch, questionId]);
 
    useEffect(() => {
-    console.log("Updated dropdownquestionData in state:", questionData);
-  }, [questionData]); 
+      console.log("Updated questionData in state:", questionData);
+    }, [questionData]);
 
-  const handleTabClick = (tabKey) => {
-    setActiveTab(tabKey);
-  };
-  const tabContent = questionData?.data?.tabsInfo?.reduce((acc, tab) => {
-    acc[tab.tabKey] = tab.tabValue;
-    return acc;
-  }, {}) || {};
+  // 🔹 Set default tab only once when data loads
+  useEffect(() => {
+    const firstTab = questionData?.data?.tabsInfo?.[0]?.tabKey;
+    if (firstTab && !activeTab) {
+      setActiveTab(firstTab);
+    }
+  }, [questionData?.data?.tabsInfo]);
 
+  // 🔹 Initialize dropdown values from API data
+  useEffect(() => {
+    const dropdowns = questionData?.data?.dropdowns || [];
+    if (!dropdowns.length) return;
 
+    const initialValues = {};
+    dropdowns.forEach((dt) => {
+      if (dt?.id) {
+        initialValues[dt.id] = "";
+      }
+    });
+    setDropdownValues(initialValues);
+  }, [questionData?.data?.dropdowns]);
 
-  // ✅ Static dropdowns
-  const dropdowns = [
-    {
-      id: 1,
-      dropdownField: 'Age Group',
-      blankOrNot: '1',
-      dropdownoption: [
-        { id: 1, dropdownValue: '18-25' },
-        { id: 2, dropdownValue: '26-35' },
-        { id: 3, dropdownValue: '36-45' },
-      ],
-    },
-    {
-      id: 2,
-      dropdownField: 'Medical Condition',
-      blankOrNot: '1',
-      dropdownoption: [
-        { id: 1, dropdownValue: 'Diabetes' },
-        { id: 2, dropdownValue: 'Hypertension' },
-        { id: 3, dropdownValue: 'None' },
-      ],
-    },
-    {
-      id: 3,
-      dropdownField: 'Highest Risk Factor',
-      blankOrNot: '1',
-      dropdownoption: [
-        { id: 1, dropdownValue: 'Heart Disease' },
-        { id: 2, dropdownValue: 'Stroke' },
-        { id: 3, dropdownValue: 'Obesity' },
-      ],
-    },
-  ];
-
-  const [activeTab, setActiveTab] = useState(0);
-  const [dropdownValues, setDropdownValues] = useState({
-    1: '',
-    2: '',
-    3: '',
-  });
-  const [showAnswer, setShowAnswer] = useState(false);
-
-  const handleTabChange = (event, newValue) => {
-    setActiveTab(newValue);
-  };
-
+  // Handle dropdown selection
   const handleDropdownChange = (id) => (event) => {
     setDropdownValues((prev) => ({
       ...prev,
@@ -99,166 +64,120 @@ function DropDownQuestionView() {
     }));
   };
 
-  const handleReveal = () => {
-    setShowAnswer(true);
+  // Handle tab change
+  const handleTabClick = (tabKey) => {
+    setActiveTab(tabKey);
   };
 
+  // Extract data safely
+  const questionText = questionData?.data?.question || "";
+  const mark = questionData?.data?.marks || "";
+  const difficulty = questionData?.data?.difficulty || "";
+  const question_type = questionData?.data?.question_type || "";
+  const tabsInfo = questionData?.data?.tabsInfo || [];
+  const dropdowns = questionData?.data?.dropdowns || [];
+
   return (
-    <Box
-
-    >
-      <Box sx={{
-        display: "flex",
-        justifyContent: "space-between",
-        alignItems: "center",
-        width: "100%",
-        pb: 3,
-      }} >
-        <Typography >
-          Mark :{questionData?.data?.marks}
-        </Typography>
-        <Typography >
-          Difficulty :{questionData?.data?.difficulty}
-        </Typography>
-        <Typography >
-          Question Type : {questionData?.data?.question_type}
-        </Typography>
-      </Box>
-      <Typography
-        variant="h6"
-        fontWeight={700}
-        mb={2}
-        sx={{ textAlign: 'center', color: '#2e3760' }}
-      >
-        {questionData?.data?.question}
-      </Typography>
-
-      <Tabs
-        value={activeTab}
-        onChange={handleTabChange}
-        sx={{ mb: 2 }}
-      >
-        {questionData?.data?.tabsInfo?.map((tab) => (
-          <Tab label={tab.tabKey} key={tab.id} />
-        ))}
-      </Tabs>
-
+    <>
+      {/* Header Info */}
       <Box
         sx={{
-          backgroundColor: '#f8f9ff',
-          borderRadius: '10px',
-          padding: '1rem',
-          mb: 2,
-          minHeight: '100px',
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+          width: "100%",
+          p: 2,
         }}
       >
-        <Typography variant="body1" sx={{ color: '#333' }}>
-          {questionData?.data?.tabsInfo?.[activeTab]?.tabValue || "No content available"}
-        </Typography>
+        <Typography>Mark : {mark}</Typography>
+        <Typography>Difficulty : {difficulty}</Typography>
+        <Typography>Question Type : {question_type}</Typography>
       </Box>
 
-
-      <Typography
-        variant="body1"
-        fontWeight={500}
-        textAlign="center"
-        mb={2}
-        sx={{ fontSize: isMobile ? '0.95rem' : '1.05rem', color: '#333' }}
-      >
-        Based on the client&apos;s
-      </Typography>
-
+      {/* Main Box */}
       <Box
         sx={{
-          display: 'flex',
-          flexDirection: isMobile ? 'column' : 'row',
-          gap: '1rem',
-          justifyContent: 'center',
-          alignItems: 'center',
-          mb: 4,
-          flexWrap: 'wrap',
+          backgroundColor: "#fff",
+          borderRadius: "1.5rem",
+          padding: "2rem",
+          margin: "2rem auto",
+          maxWidth: "950px",
+          boxShadow: "0 4px 12px rgba(0,0,0,0.06)",
         }}
       >
-        {dropdowns.map((dt) => (
-          <FormControl sx={{ minWidth: 160 }} size="small" key={dt.id}>
-            <InputLabel>{dt.dropdownField}</InputLabel>
-            <Select
-              value={dropdownValues[dt.id]}
-              label={dt.dropdownField}
-              onChange={handleDropdownChange(dt.id)}
-              disabled={dt.blankOrNot === '0'}
+        {/* Question Text */}
+        <Typography
+          variant="h6"
+          fontWeight={700}
+          mb={2}
+          sx={{ textAlign: "center", color: "#2e3760" }}
+        >
+          {questionText}
+        </Typography>
+
+        {/* Tabs */}
+        <div className="tabs">
+          {tabsInfo.map((tab) => (
+            <button
+              key={tab.id}
+              className={`tab-button ${activeTab === tab.tabKey ? "active" : ""}`}
+              onClick={() => handleTabClick(tab.tabKey)}
             >
-              {dt.dropdownoption.map((opt) => (
-                <MenuItem key={opt.id} value={opt.dropdownValue}>
-                  {opt.dropdownValue}
-                </MenuItem>
-              ))}
-            </Select>
-          </FormControl>
-        ))}
-      </Box>
+              {tab.tabKey}
+            </button>
+          ))}
+        </div>
 
-      <Typography
-        variant="body1"
-        fontWeight={500}
-        textAlign="center"
-        mb={2}
-        sx={{ fontSize: isMobile ? '0.95rem' : '1.05rem', color: '#333' }}
-      >
-        this client is at highest risk for
-      </Typography>
+        {/* Tab Content */}
+        <div className="note-box">
+          <p>{tabsInfo.find((t) => t.tabKey === activeTab)?.tabValue}</p>
+        </div>
 
-      {/*  <Box textAlign="center">
-        <Button
-          variant="contained"
-          onClick={handleReveal}
-          sx={{
-            backgroundColor: '#f4c300',
-            color: '#000',
-            fontWeight: 600,
-            padding: '0.6rem 2.5rem',
-            borderRadius: '10px',
-            '&:hover': { backgroundColor: '#e0b000' },
-          }}
-        >
-          Reveal Answer
-        </Button>
-      </Box>
-
-      {showAnswer && (
+        {/* Dropdowns */}
         <Box
-          mt={4}
-          p={2}
           sx={{
-            backgroundColor: '#eafbea',
-            borderRadius: '10px',
-            border: '1px solid #cde8cd',
-            textAlign: 'center',
+            display: "flex",
+            flexDirection: isMobile ? "column" : "row",
+            gap: "1rem",
+            justifyContent: "center",
+            alignItems: "center",
+            mb: 4,
+            flexWrap: "wrap",
           }}
         >
-          <Typography variant="body1" fontWeight={500}>
-            ✅ Correct Answer: Based on the client&apos;s{' '}
-            <b>{dropdownValues[1]}</b> and <b>{dropdownValues[2]}</b>, the highest
-            risk is <b>{dropdownValues[3]}</b>.
-          </Typography>
-        </Box>
-      )} */}
-      <Box sx={{ display: "flex", justifyContent: "center", pt: 5 }}>
-        <Button
-          variant="outlined"
-          startIcon={<ArrowBackIcon />}
-          onClick={() => navigate(-1)} // 👈 goes back
-          sx={{
-            borderRadius: "8px",
-            textTransform: "none",
-            fontWeight: 600,
-          }}
-        >
-          Back To Question Management
-        </Button>
-      </Box>
-    </Box>
-  );
-}
+          {dropdowns.map((dt, index) => {
+            if (!dt) return null;
+            const dropdownId = dt.id || index;
+            const dropdownOptions = dt.dropdownoption || [];
+            const dropdownLabel = dt.dropdownField || `Option ${index + 1}`;
 
-export default DropDownQuestionView;
+            return (
+              <FormControl sx={{ minWidth: 160 }} size="small" key={dropdownId}>
+                <InputLabel>{dropdownLabel}</InputLabel>
+                <Select
+                  value={dropdownValues[dropdownId] || ""}
+                  label={dropdownLabel}
+                  onChange={handleDropdownChange(dropdownId)}
+                >
+                  <MenuItem value="">
+                    <em>Select an option</em>
+                  </MenuItem>
+                  {dropdownOptions.map((opt, optIndex) => (
+                    <MenuItem
+                      key={opt.id || optIndex}
+                      value={opt.dropdownValue || `Option ${optIndex + 1}`}
+                    >
+                      {opt.dropdownValue || `Option ${optIndex + 1}`}
+                    </MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
+            );
+          })}
+        </Box>
+      </Box>
+    </>
+  );
+};
+
+export default DropdownQuestionComponent;

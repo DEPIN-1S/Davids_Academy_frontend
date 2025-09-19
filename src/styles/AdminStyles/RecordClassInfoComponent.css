@@ -85,6 +85,12 @@
   margin-bottom: 0;
 }
 
+.duration-date {
+  display: flex;
+  gap: 8px;
+  
+}
+
 .form-label {
   display: block;
   font-size: 0.95rem;
@@ -301,13 +307,16 @@
 }
 
 @keyframes shake {
+
   0%,
   100% {
     transform: translateX(0);
   }
+
   25% {
     transform: translateX(-5px);
   }
+
   75% {
     transform: translateX(5px);
   }

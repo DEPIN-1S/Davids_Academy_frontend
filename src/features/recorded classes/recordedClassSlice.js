@@ -58,7 +58,8 @@ export const addRecording = createAsyncThunk(
                 duration: recordingData.classDuration,
                 tutor_name: recordingData.tutorName,
                 video_url: recordingData.videoUrl,
-                recordimage: fileScreenshot
+                recordimage: fileScreenshot,
+                recordDate: recordingData.recordDate
             };
 
             console.log("Mapped Payload being sent:", payload);

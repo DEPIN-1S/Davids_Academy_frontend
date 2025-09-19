@@ -59,6 +59,8 @@ export async function DeleteRecordedClass(recording_id) {
 
 
 export async function createRecording(token, recordingData) {
+    console.log("recording data ::: ",recordingData);
+    
     console.log("Inside add recording API");
     const formData = new FormData();
     Object.entries(recordingData).forEach(([key, value]) => {

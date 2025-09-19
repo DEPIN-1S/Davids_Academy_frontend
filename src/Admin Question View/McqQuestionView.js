@@ -20,10 +20,11 @@ function McqQuestionView() {
       dispatch(getQuestionData(questionId));
     }
   }, [dispatch, questionId]);
+
   useEffect(() => {
     console.log("Updated questionData in state:", questionData);
   }, [questionData]);
-  
+
   const questionText = questionData?.data?.question || "";
   const mark = questionData?.data?.marks || "";
   const difficulty = questionData?.data?.difficulty || "";
@@ -48,6 +49,7 @@ function McqQuestionView() {
         width: "100%",
         p: 2,
       }} >
+
         <Typography >
           Mark :{mark}
         </Typography>
@@ -68,7 +70,7 @@ function McqQuestionView() {
           <h1>Exhibit Image uploaded :</h1>
           {questionData?.data?.exhibit && (
             <img
-            width={500}
+              width={500}
               src={`https://lunarsenterprises.com:6040/${questionData.data.exhibit}`}
               alt="Exhibit"
               style={{ maxWidth: '100%', marginBottom: '1rem', borderRadius: 8 }}
