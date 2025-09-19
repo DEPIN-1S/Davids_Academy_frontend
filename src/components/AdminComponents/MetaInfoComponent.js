@@ -314,15 +314,8 @@ const MetaInfoComponent = () => {
         explanationHeading: receivedQuestionData.explanationHeading || "",
         explanationText: receivedQuestionData.explanationText || "",
         info: receivedQuestionData.additionalInfo || "",
-        answer: receivedQuestionData.answer,
+        answer: receivedQuestionData.answer  || [],
         marks: form.marks
-        /*  answer: receivedQuestionData.correctHighlights, */
-        /* question_content:receivedQuestionData.question_content, */
-        /* question_content: receivedQuestionData.question_content || [], */
-        /*  radio_options: receivedQuestionData.radio_options || [], */
-        /*  passage: receivedQuestionData.passage,
-         highlightInstructions: receivedQuestionData.highlightInstructions,
-         correctHighlights: receivedQuestionData.correctHighlights, */
     });
 
 
@@ -511,7 +504,7 @@ const MetaInfoComponent = () => {
         explanationHeading: receivedQuestionData.explanationHeading || "",
         explanationText: receivedQuestionData.explanationText || "",
         info: receivedQuestionData.additionalInfo || "",
-        answer: receivedQuestionData.answer,
+        answers: receivedQuestionData.answer || [],
         infoImage: receivedQuestionData.infoImage || null,
         marks: form.marks
     });
