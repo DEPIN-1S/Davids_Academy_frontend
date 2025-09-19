@@ -19,6 +19,7 @@ function MultiRadioQuestionView() {
       dispatch(getQuestionData(questionId));
     }
   }, [dispatch, questionId]);
+  
   useEffect(() => {
     console.log("Updated RadiquestionData in state:", questionData);
   }, [questionData]);
@@ -30,6 +31,7 @@ function MultiRadioQuestionView() {
       setActiveTab(questionData.data.tabsInfo[0].tabKey);
     }
   }, [questionData]);
+
 
   const question = {
     question: "Which intervention should the nurse take first?",
@@ -60,23 +62,22 @@ function MultiRadioQuestionView() {
   const [answers, setAnswers] = useState({});
   const [showReveal, setShowReveal] = useState(false);
 
-  // Extract static data
-  const notesTabs = question.tabsInfo.map((tab) => tab.tabKey);
-  const clientFindings = question.clientfindings;
-  const answerGroups = Array.from(new Set(question.radioOption.map((opt) => opt.answer)));
+ 
 
   const tabContent = question.tabsInfo.reduce((acc, tab) => {
     acc[tab.tabKey] = tab.tabValue;
     return acc;
   }, {});
 
-  const explanationHeading = question.explanation[0]?.heading || "Explanation";
-  const explanationParagraphs = question.explanation.map((exp) => exp.explanation);
-  const additionalInfoParagraphs = question.additionalInfo.map((info) => info.info);
-  const additionalInfoImage = question.additionalInfo[0]?.image || null;
-  const mark = questionData.data.marks;
-  const difficulty = questionData.data.difficulty;
-  const question_type = questionData.data.question_type;
+
+  const mark = questionData?.data?.marks || "";
+  const difficulty = questionData?.data?.difficulty || "";
+  const question_type = questionData?.data?.question_type || "";
+  const questionText = questionData?.data?.question || "";
+  const radioOption = questionData?.data?.radioOption || [];
+  const questionContent = questionData?.data.questionContent || [];
+  const answerGroups = Array.from(new Set(radioOption.map((opt) => opt.options)));
+
   const handleTabClick = (tabKey) => {
     setActiveTab(tabKey);
   };
@@ -85,9 +86,7 @@ function MultiRadioQuestionView() {
     setAnswers((prev) => ({ ...prev, [findingIndex]: group }));
   };
 
-  const handleReveal = () => {
-    setShowReveal(true);
-  };
+
 
   return (
     <>
@@ -110,13 +109,11 @@ function MultiRadioQuestionView() {
       </Box>
       {/*  <QuestionHeader  /> */}
       <div className="multi-radio-container">
-
         <div className="heading">
-          <h4> {questionData?.data?.question}</h4>
+          <h4> {questionText}</h4>
         </div>
 
         {/* Tabs */}
-
         <div className="tabs">
           {questionData?.data?.tabsInfo?.map((tab) => (
             <button
@@ -152,7 +149,8 @@ function MultiRadioQuestionView() {
               </tr>
             </thead>
             <tbody>
-              {clientFindings.map((finding, idx) => (
+
+              {questionContent.map((finding, idx) => (
                 <tr key={finding.id || idx}>
                   <td>{finding.client_findings}</td>
                   {answerGroups.map((group) => (
@@ -169,30 +167,11 @@ function MultiRadioQuestionView() {
                   ))}
                 </tr>
               ))}
+
             </tbody>
           </table>
         </div>
 
-        {/* Reveal Answer Button */}
-        {/*  {!showReveal && (
-        <div className="reveal-btn-wrap">
-          <button className="reveal-btn" onClick={handleReveal}>
-            Reveal Answer
-          </button>
-        </div>
-      )} */}
-
-        {/* Reveal Answer Section */}
-        {/* {showReveal && (
-        <RevealAnswerComponent
-          questionText={question.question}
-          explanationHeading={explanationHeading}
-          explanationParagraphs={explanationParagraphs}
-          additionalInfoHeading="Additional Info"
-          additionalInfoParagraphs={additionalInfoParagraphs}
-          additionalInfoImage={additionalInfoImage}
-        />
-      )} */}
         <Box sx={{ display: "flex", justifyContent: "center", pt: 5 }}>
           <Button
             variant="outlined"

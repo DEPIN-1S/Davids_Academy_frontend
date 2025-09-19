@@ -5,12 +5,15 @@ import { useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { addRecording } from "../../features/recorded classes/recordedClassSlice"
 const RecordedClassInfoComponent = ({ onNext, onBack }) => {
+
     const [formData, setFormData] = useState({
         classTitle: '',
         classDuration: '',
         tutorName: '',
-        videoUrl: ''
+        videoUrl: '',
+        recordDate: ''
     });
+
     const [errors, setErrors] = useState({});
     const handleInputChange = (e) => {
         const { name, value } = e.target;
@@ -36,6 +39,9 @@ const RecordedClassInfoComponent = ({ onNext, onBack }) => {
         if (!formData.classDuration.trim()) {
             newErrors.classDuration = 'Class duration is required';
         }
+        if (!formData.recordDate.trim()) {
+            newErrors.recordDate = 'Class date is required';
+        }
         if (!formData.tutorName.trim()) {
             newErrors.tutorName = 'Tutor name is required';
         }
@@ -48,6 +54,7 @@ const RecordedClassInfoComponent = ({ onNext, onBack }) => {
 
     const navigate = useNavigate()
     const dispatch = useDispatch();
+
     const handleNext = () => {
         if (validateForm()) {
             dispatch(addRecording(formData))
@@ -57,7 +64,7 @@ const RecordedClassInfoComponent = ({ onNext, onBack }) => {
 
                     // show success message
                     alert("Recorded class added successfully!");
-                   
+
                     // navigate to listing page
                     navigate('/admin/recorded-class');
                 })
@@ -69,9 +76,7 @@ const RecordedClassInfoComponent = ({ onNext, onBack }) => {
     };
 
     const handleBack = () => {
-        if (onBack) {
-            onBack();
-        }
+        navigate('/admin/recorded-class')
     };
 
     return (
@@ -113,24 +118,45 @@ const RecordedClassInfoComponent = ({ onNext, onBack }) => {
                             )}
                         </div>
 
-                        {/* Class Duration */}
-                        <div className="form-group">
-                            <label className="form-label" htmlFor="classDuration">
-                                Class Duration
-                            </label>
-                            <input
-                                id="classDuration"
-                                name="classDuration"
-                                type="text"
-                                className={`form-input ${errors.classDuration ? 'error' : ''}`}
-                                placeholder="Specify the total time length of the recorded session."
-                                value={formData.classDuration}
-                                onChange={handleInputChange}
-                            />
-                            {errors.classDuration && (
-                                <span className="error-message">{errors.classDuration}</span>
-                            )}
+                        <div className="duration-date">
+                            {/* Class Duration */}
+                            <div className="form-group">
+                                <label className="form-label" htmlFor="classDuration">
+                                    Class Duration
+                                </label>
+                                <input
+                                    id="classDuration"
+                                    name="classDuration"
+                                    type="text"
+                                    className={`form-input ${errors.classDuration ? 'error' : ''}`}
+                                    placeholder="Total time length of session."
+                                    value={formData.classDuration}
+                                    onChange={handleInputChange}
+                                />
+                                {errors.classDuration && (
+                                    <span className="error-message">{errors.classDuration}</span>
+                                )}
+                            </div>
+
+                            {/* Class Date */}
+                            <div className="form-group">
+                                <label className="form-label" htmlFor="recordDate">
+                                    Class Date
+                                </label>
+                                <input
+                                    id="recordDate"
+                                    name="recordDate"   // ✅ must match formData key
+                                    type="date"
+                                    className={`form-input ${errors.recordDate ? 'error' : ''}`}
+                                    value={formData.recordDate}
+                                    onChange={handleInputChange}
+                                />
+                                {errors.recordDate && (   // ✅ corrected error check
+                                    <span className="error-message">{errors.recordDate}</span>
+                                )}
+                            </div>
                         </div>
+
 
                         {/* Tutor Name */}
                         <div className="form-group">

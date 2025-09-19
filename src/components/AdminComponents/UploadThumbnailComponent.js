@@ -102,17 +102,20 @@ const UploadThumbnail = ({ onUpload, onNext, onBack }) => {
     }
 
     const navigate = useNavigate()
-   const handleNextToRecordedClassInfo = async () => {
-    if (uploadedFile) {
-        const base64Image = await fileToBase64(uploadedFile);
-        localStorage.setItem('screenshot', base64Image);
+    const handleNextToRecordedClassInfo = async () => {
+        if (uploadedFile) {
+            const base64Image = await fileToBase64(uploadedFile);
+            localStorage.setItem('screenshot', base64Image);
 
-        // Check in console
-        console.log("Saved screenshot:", localStorage.getItem('screenshot'));
-    }
-    navigate('/admin/record-class-info');
-};
-
+            // Check in console
+            console.log("Saved screenshot:", localStorage.getItem('screenshot'));
+        }
+        navigate('/admin/record-class-info');
+    };
+    
+    const handleBack = () => {
+        navigate('/admin/recorded-class')
+    };
 
     return (
         <div className="upload-thumbnail-page">
@@ -232,7 +235,7 @@ const UploadThumbnail = ({ onUpload, onNext, onBack }) => {
                     <div className="navigation-buttons">
                         <button
                             className="nav-btn back-btn"
-                            onClick={onBack}
+                            onClick={handleBack}
                             type="button"
                         >
                             <span className="btn-text">← Back</span>

@@ -55,7 +55,6 @@ const MultiradioQuestionContent = () => {
     ]);
     const [selectedFile, setSelectedFile] = useState(null); // ✅ Local state for UI, Context for persistence
     const [errors, setErrors] = useState({});
-
     const fileInputRef = useRef(null);
 
     // ✅ Initialize with existing file from context if available
@@ -336,6 +335,7 @@ const MultiradioQuestionContent = () => {
             <Typography variant="h6" mb={1} color="primary">
                 Question Text *
             </Typography>
+
             <TextField
                 fullWidth
                 label="Enter your question"
@@ -353,32 +353,6 @@ const MultiradioQuestionContent = () => {
                 helperText={errors.question}
                 sx={{ mb: 3 }}
             />
-
-            {/* File Upload Section */}
-           {/*  <Box display="flex" justifyContent="flex-end" mt={1} mb={3} gap={1}>
-                <input
-                    type="file"
-                    ref={fileInputRef}
-                    onChange={handleFileSelect}
-                    accept="image/*,.pdf,.doc,.docx"
-                    style={{ display: 'none' }}
-                />
-                <Button
-                    variant="outlined"
-                    onClick={handleButtonClick}
-                    startIcon={<CloudUpload />}
-                    size="small"
-                >
-                    {selectedFile ? 'Change Exhibit' : '+ Add Exhibit'}
-                </Button>
-            </Box>
-
-       
-            {errors.file && (
-                <Alert severity="error" sx={{ mb: 2 }}>
-                    {errors.file}
-                </Alert>
-            )} */}
 
             {/* Display Uploaded File */}
             {selectedFile && (
