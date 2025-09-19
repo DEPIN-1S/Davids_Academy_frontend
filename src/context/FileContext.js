@@ -126,7 +126,7 @@ export const FileProvider = ({ children }) => {
                 formData.append("difficulty", questionData.difficulty ?? "");
                 formData.append("tabs", JSON.stringify(questionData.tabs || []));
                 formData.append("highlightoptions", JSON.stringify(questionData.highlightoptions || []));
-                formData.append("answer", JSON.stringify(questionData.answer || []));
+                formData.append("answers", JSON.stringify(questionData.answer || []));
                 formData.append("passage", questionData.passage ?? "");
                 formData.append("explanationHeading", questionData.explanationHeading ?? "");
                 formData.append("explanationText", questionData.explanationText ?? "");

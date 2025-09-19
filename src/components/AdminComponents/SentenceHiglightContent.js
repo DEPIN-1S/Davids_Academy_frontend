@@ -15,7 +15,9 @@ import {
     Paper,
     InputLabel,
     Select,
-    MenuItem
+    MenuItem,
+    Checkbox,
+    ListItemText
 } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
@@ -46,11 +48,9 @@ const SentenceHighlightContent = () => {
     const [correctHighlights, setCorrectHighlights] = useState(existingData.correctHighlights || [""]);
     const [selectedFile, setSelectedFile] = useState(existingData.exhibit || null);
     const [errors, setErrors] = useState({});
-    const [answer, setAnswer] = useState(existingData?.answer || "")
-    /*     const [correctAnswer, setCorrectAnswer] = useState(existingQuestionData?.correctAnswer || ""); */
+    const [answer, setAnswer] = useState(existingData?.answer || [])
 
     const fileInputRef = useRef(null);
-
     // File upload handlers
     const handleFileSelect = (event) => {
         const file = event.target.files[0];
@@ -157,6 +157,9 @@ const SentenceHighlightContent = () => {
             newErrors.correctHighlights = 'At least one correct highlight text is required';
         }
 
+        if (answer.length === 0) {
+            newErrors.answer = "Select at least one correct highlight";
+        }
 
         setErrors(newErrors);
         return Object.keys(newErrors).length === 0;
@@ -176,7 +179,7 @@ const SentenceHighlightContent = () => {
             question: question.trim(),
             tabs: tabs.filter(tab => tab.tabKey.trim() && tab.tabValue.trim()),
             passage: passage.trim(),
-            answer: answer.trim(),
+            answer: answer,
             highlightInstructions: highlightInstructions.trim(),
             correctHighlights: correctHighlights.filter(highlight => highlight.trim()),
             exhibit: selectedFile,
@@ -211,7 +214,7 @@ const SentenceHighlightContent = () => {
             state: {
                 questionData: currentData,
                 fromStep: 'content',
-                cs_id:cs_id
+                cs_id: cs_id
             }
         });
     };
@@ -303,32 +306,6 @@ const SentenceHighlightContent = () => {
                 helperText={errors.question}
                 sx={{ mb: 3 }}
             />
-
-            {/* File Upload Section */}
-            {/* <Box display="flex" justifyContent="flex-end" mt={1} mb={3} gap={1}>
-                <input
-                    type="file"
-                    ref={fileInputRef}
-                    onChange={handleFileSelect}
-                    accept="image/*,.pdf,.doc,.docx"
-                    style={{ display: 'none' }}
-                />
-                <Button
-                    variant="outlined"
-                    onClick={handleButtonClick}
-                    startIcon={<CloudUpload />}
-                    size="small"
-                >
-                    + Add Exhibit
-                </Button>
-            </Box>
-
-          
-            {errors.file && (
-                <Alert severity="error" sx={{ mb: 2 }}>
-                    {errors.file}
-                </Alert>
-            )} */}
 
             {/* Display Uploaded File */}
             {selectedFile && (
@@ -523,64 +500,14 @@ const SentenceHighlightContent = () => {
                 </Typography>
             )}
 
-
-            {/* <FormControl fullWidth margin="normal" error={!!errors.answer}>
-                <InputLabel>Select Correct Answer *</InputLabel>
-                <Select
-                    value={answer}
-                    onChange={(e) => {
-                        setAnswer(e.target.value);
-                        setErrors(prev => ({ ...prev, answer: null }));
-                    }}
-                    label="Select Correct Answer *"
-                >
-                    {options
-                        .filter(opt => opt.trim() !== "")
-                        .map((opt, idx) => (
-                            <MenuItem key={idx} value={opt}>
-                                {String.fromCharCode(65 + idx)} {opt}
-                            </MenuItem>
-                        ))
-                    }
-                </Select>
-                {errors.correctAnswer && (
-                    <Typography color="error" variant="caption" sx={{ mt: 0.5 }}>
-                        {errors.correctAnswer}
-                    </Typography>
-                )}
-            </FormControl> */}
-
             <Typography variant="h6" mb={1} color="primary">
                 Select Correct Highlight *
             </Typography>
-            {/*  <FormControl fullWidth margin="normal" className="pb-4" error={!!errors.answer} >
-                <Select
-                    labelId="correct-answer-label"
-                    value={answer}
-                    onChange={(e) => {
-                        setAnswer(e.target.value);
-                        setErrors(prev => ({ ...prev, answer: null }));
-                    }}
-                    
-                >
-                    {correctHighlights
-                        .filter(h => h.trim() !== "")
-                        .map((highlight, idx) => (
-                            <MenuItem key={idx} value={highlight}>
-                                Highlight {idx + 1}: {highlight.length > 50 ? highlight.slice(0, 50) + "..." : highlight}
-                            </MenuItem>
-                        ))
-                    }
-                </Select>
-                {errors.correctAnswer && (
-                    <Typography color="error" variant="caption" sx={{ mt: 0.5 }}>
-                        {errors.correctAnswer}
-                    </Typography>
-                )}
-            </FormControl> */}
+
 
             <FormControl fullWidth margin="normal" className="pb-4" error={!!errors.answer}>
                 <Select
+                    multiple
                     displayEmpty
                     value={answer}
                     onChange={(e) => {
@@ -588,30 +515,32 @@ const SentenceHighlightContent = () => {
                         setErrors(prev => ({ ...prev, answer: null }));
                     }}
                     renderValue={(selected) => {
-                        if (selected === "") {
-                            return <span style={{ color: "#999" }}>Select correct highlight from the options</span>;
+                        if (selected.length === 0) {
+                            return <span style={{ color: "#999" }}>Select correct highlights from the options</span>;
                         }
-                        return selected;
+                        return selected.join(", ");
                     }}
                 >
-
-
                     {correctHighlights
                         .filter(h => h.trim() !== "")
                         .map((highlight, idx) => (
                             <MenuItem key={idx} value={highlight}>
-                                Highlight {idx + 1}:{" "}
-                                {highlight.length > 50 ? highlight.slice(0, 50) + "..." : highlight}
+                                <Checkbox checked={answer.indexOf(highlight) > -1} />
+                                <ListItemText
+                                    primary={`Highlight ${idx + 1}: ${highlight.length > 50 ? highlight.slice(0, 50) + "..." : highlight
+                                        }`}
+                                />
                             </MenuItem>
                         ))}
                 </Select>
 
-                {errors.correctAnswer && (
+                {errors.answer && (
                     <Typography color="error" variant="caption" sx={{ mt: 0.5 }}>
-                        {errors.correctAnswer}
+                        {errors.answer}
                     </Typography>
                 )}
             </FormControl>
+
 
 
             {/* Preview Section */}
