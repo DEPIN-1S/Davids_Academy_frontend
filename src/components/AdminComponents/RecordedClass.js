@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { FaPlay, FaPlus, FaUser, FaClock } from "react-icons/fa";
 import "../../styles/AdminStyles/CourseManagement.css";
 import { useNavigate } from "react-router-dom";
+import { FaRegCalendarAlt } from "react-icons/fa";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchRecordedClasses, deleteRecordedClass } from "../../features/recorded classes/recordedClassSlice";
 
@@ -42,6 +43,7 @@ const CourseManagement = () => {
 
     useEffect(() => {
         const token = sessionStorage.getItem("accessToken");
+        console.log("Date::", recordings)
         if (token) {
             dispatch(fetchRecordedClasses({ token, page: 1, limit: 10 }));
         }
@@ -99,6 +101,15 @@ const CourseManagement = () => {
                                     <div className="meta-item">
                                         <FaUser className="meta-icon" />
                                         <span>{cls.r_tutor_name}</span>
+                                    </div>
+                                    <div className="meta-item">
+                                        <FaRegCalendarAlt className="meta-icon" />
+                                        <span>{new Date(cls.r_record_date).toLocaleDateString("en-GB", {
+                                            day: "2-digit",
+                                            month: "short",
+                                            year: "numeric",
+                                        })}
+                                        </span>
                                     </div>
                                     <button onClick={() => handleDelete(cls.r_id)} className="recorded-class-delete-btn">
                                         Delete class
