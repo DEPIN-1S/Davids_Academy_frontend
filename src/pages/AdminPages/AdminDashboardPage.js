@@ -4,61 +4,54 @@ import { useDispatch, useSelector } from "react-redux";
 import { fetchCourses } from "../../features/courses/courseSlice";
 import { fetchRecentEnquiries } from "../../features/contact/contactSlice";
 import { fetchStudents } from "../../features/students/studentSlice";
-import { Link, useNavigate } from "react-router-dom";
-import { adminFetchTestQuestions } from "../../features/exam/examSlice"
-import { fetchMockTestQuestion } from "../../features/exam/examAPI";
+import { Link } from "react-router-dom";
+import { adminFetchTestQuestions } from "../../features/exam/examSlice";
 
 const DashboardPage = () => {
   const dispatch = useDispatch();
+
+  // Courses
   const { list: courses, loading: coursesLoading } = useSelector((state) => state.course);
-  const {
-    list: students,
-    loading: studentsLoading,
-    error: studentsError,
-    total,
-    totalPages,
-  } = useSelector((state) => state.students);
 
-  const { recentEnquiries, loading, error } = useSelector((state) => state.contact);
-  const studentCount = total;
-  console.log("recent Enquiries:::", recentEnquiries);
+  // Students
+  const { total: studentCount } = useSelector((state) => state.students);
 
-  const navigate = useNavigate()
+  // Recent enquiries
+  const { recentEnquiries } = useSelector((state) => state.contact);
 
-  const {
-    adminTestQuestions,
-    adminTestQuestionsTotalCount
-  } = useSelector((state) => state.exam);
+  // Test questions count
+  const { adminTestQuestionsTotalCount } = useSelector((state) => state.exam);
 
-
-
+  // Fetch all data
   useEffect(() => {
-    console.log("Dashboard useEffect triggered");
     dispatch(fetchCourses());
-    dispatch(fetchStudents());
+    dispatch(fetchStudents()); // total is already in slice
     dispatch(fetchRecentEnquiries());
-    dispatch(adminFetchTestQuestions())
-    console.log("fetch test question in admin dashboard  ::: ", adminTestQuestions);
-
+    dispatch(adminFetchTestQuestions()); // total count in slice
   }, [dispatch]);
 
-
+  // Stats for dashboard
   const stats = [
     {
       title: "Total Students",
-      value: studentCount,
+      value: studentCount || 0,
       change: "20%",
       subtitle: "Increase of 65 Student",
     },
-    { title: "Total Courses", value: coursesLoading ? "Loading..." : courses.length, subtitle: "Available for student" },
+    {
+      title: "Total Courses",
+      value: coursesLoading ? "Loading..." : courses.length,
+      subtitle: "Available for student",
+    },
     {
       title: "Tests Created",
-      value: adminTestQuestionsTotalCount,
+      value: adminTestQuestionsTotalCount || 0,
       change: "12%",
       subtitle: "increase in 30 days",
     },
   ];
 
+  // Dummy top batches and subjects
   const topBatches = [
     { name: "DHA", avg: 83, color: "#00BFFF" },
     { name: "NCLEX", avg: 79, color: "#8A2BE2" },
@@ -71,9 +64,9 @@ const DashboardPage = () => {
     { name: "HAAD", avg: 76, color: "#32CD32" },
   ];
 
-
   return (
     <div className="dashboard-container">
+      {/* Stats */}
       <div className="stats-grid">
         {stats.map((stat, index) => (
           <div key={index} className="stats-card">
@@ -82,15 +75,15 @@ const DashboardPage = () => {
               <span className="arrow-icon">↗</span>
             </div>
             <h2>{stat.value.toLocaleString()}</h2>
-            {stat.change && (
-              <span className="change-badge">{stat.change} ↑</span>
-            )}
+            {stat.change && <span className="change-badge">{stat.change} ↑</span>}
             <p className="stats-subtitle">{stat.subtitle}</p>
           </div>
         ))}
       </div>
 
+      {/* Performance and Enquiries */}
       <div className="content-grid">
+        {/* Performance */}
         <div className="performance-card">
           <h2>Student Performance Overview</h2>
 
@@ -101,19 +94,14 @@ const DashboardPage = () => {
               <div className="progress-bar">
                 <div
                   className="progress-fill"
-                  style={{
-                    width: `${batch.avg}%`,
-                    backgroundColor: batch.color,
-                  }}
-                ></div>
+                  style={{ width: `${batch.avg}%`, backgroundColor: batch.color }}
+                />
               </div>
               <span className="avg-text">Avg {batch.avg}%</span>
             </div>
           ))}
 
-          <h4 style={{ marginTop: "20px" }}>
-            Top Performing Subjects This Month
-          </h4>
+          <h4 style={{ marginTop: "20px" }}>Top Performing Subjects This Month</h4>
           {topSubjects.map((subj, i) => (
             <div key={i} className="progress-item">
               <span>{subj.name}</span>
@@ -121,25 +109,25 @@ const DashboardPage = () => {
                 <div
                   className="progress-fill"
                   style={{ width: `${subj.avg}%`, backgroundColor: subj.color }}
-                ></div>
+                />
               </div>
               <span className="avg-text">Avg {subj.avg}%</span>
             </div>
           ))}
         </div>
 
+        {/* Recent Enquiries */}
         <div className="enquiries-card">
           <div className="enquiries-header">
             <h2>Recent Enquiries</h2>
-            <Link to='/admin/enquire-lead' >
-              <button className="view-all-btn" >View all</button>
+            <Link to="/admin/enquire-lead">
+              <button className="view-all-btn">View all</button>
             </Link>
           </div>
 
-
           <div className="enquiry-list">
-            {recentEnquiries.length > 0 ? (
-              recentEnquiries.map(({ _id, cu_course_interested, cu_name, cu_status }) => (
+            {recentEnquiries?.length > 0 ? (
+              recentEnquiries.slice(0, 4).map(({ _id, cu_course_interested, cu_name, cu_status }) => (
                 <div className="enquiry-item" key={_id}>
                   <div>
                     <h4>{cu_name}</h4>
