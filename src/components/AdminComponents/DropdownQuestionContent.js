@@ -11,7 +11,11 @@ import {
     Alert,
     Accordion,
     AccordionSummary,
-    AccordionDetails
+    AccordionDetails,
+    InputLabel,
+    Select,
+    MenuItem,
+    FormControl
 } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
@@ -19,6 +23,7 @@ import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
 import { CloudUpload, Delete, Image, PictureAsPdf, Description, ExpandMore } from '@mui/icons-material';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useFileContext } from '../../context/FileContext'; // ✅ Import the Context
+
 
 const DropdownQuestionContent = () => {
     const navigate = useNavigate();
@@ -368,75 +373,6 @@ const DropdownQuestionContent = () => {
                 sx={{ mb: 3 }}
             />
 
-            
-            {/* <Box display="flex" justifyContent="flex-end" mt={1} mb={3} gap={1}>
-                <input
-                    type="file"
-                    ref={fileInputRef}
-                    onChange={handleFileSelect}
-                    accept="image/*,.pdf,.doc,.docx"
-                    style={{ display: 'none' }}
-                />
-                <Button
-                    variant="outlined"
-                    onClick={handleButtonClick}
-                    startIcon={<CloudUpload />}
-                    size="small"
-                >
-                    {selectedFile ? 'Change Exhibit' : '+ Add Exhibit'}
-                </Button>
-            </Box>
-
-            {errors.file && (
-                <Alert severity="error" sx={{ mb: 2 }}>
-                    {errors.file}
-                </Alert>
-            )}
-
-            {selectedFile && (
-                <Card sx={{ mb: 3 }}>
-                    <CardContent sx={{ p: 2, '&:last-child': { pb: 2 } }}>
-                        <Box display="flex" alignItems="center" gap={2}>
-                            {getFileIcon(selectedFile.type)}
-                            <Box flex={1}>
-                                <Typography variant="body2" fontWeight={500}>
-                                    {selectedFile.name}
-                                </Typography>
-                                <Box display="flex" gap={1} mt={0.5}>
-                                    <Chip
-                                        label={formatFileSize(selectedFile.size)}
-                                        size="small"
-                                        variant="outlined"
-                                    />
-                                    <Chip
-                                        label={selectedFile.type.split('/')[1]?.toUpperCase() || 'FILE'}
-                                        size="small"
-                                        color="primary"
-                                        variant="outlined"
-                                    />
-                                    <Chip
-                                        label="Context Managed"
-                                        size="small"
-                                        color="success"
-                                        variant="outlined"
-                                    />
-                                </Box>
-                            </Box>
-                            {selectedFile.type.startsWith('image/') && (
-                                <Box
-                                    component="img"
-                                    src={selectedFile.url}
-                                    alt={selectedFile.name}
-                                    sx={{ width: 60, height: 60, objectFit: 'cover', borderRadius: 1 }}
-                                />
-                            )}
-                            <IconButton onClick={handleRemoveFile} color="error" size="small">
-                                <Delete />
-                            </IconButton>
-                        </Box>
-                    </CardContent>
-                </Card>
-            )} */}
 
             {/* Tabs Section */}
             <Accordion defaultExpanded sx={{ mb: 3 }}>
@@ -548,15 +484,32 @@ const DropdownQuestionContent = () => {
 
                             {dropdown.blank_or_not && (
                                 <>
-                                    <TextField
-                                        fullWidth
-                                        label="Correct Answer"
-                                        value={dropdown.dropdownanswer}
-                                        onChange={(e) => handleDropdownAnswerChange(dropdownIndex, e.target.value)}
-                                        placeholder="e.g., pneumonia, hemothorax"
-                                        sx={{ mb: 2 }}
-                                        size="small"
-                                    />
+                                    <FormControl fullWidth size="small" sx={{ mb: 2 }}>
+                                        <InputLabel id={`correct-answer-label-${dropdownIndex}`}>
+                                            Correct Answer
+                                        </InputLabel>
+                                        <Select
+                                            labelId={`correct-answer-label-${dropdownIndex}`}
+                                            id={`correct-answer-select-${dropdownIndex}`}
+                                            value={dropdown.dropdownanswer || ""}
+                                            onChange={(e) => handleDropdownAnswerChange(dropdownIndex, e.target.value)}
+                                            disabled={dropdown.dropDowneOption.length === 0}
+                                            displayEmpty
+                                            renderValue={dropdown.dropdownanswer ? undefined : () => "Select correct answer"}
+                                        >
+                                            {dropdown.dropDowneOption.length === 0 ? (
+                                                <MenuItem value="" disabled>
+                                                    Add options first
+                                                </MenuItem>
+                                            ) : (
+                                                dropdown.dropDowneOption.map((option, optionIndex) => (
+                                                    <MenuItem key={optionIndex} value={option}>
+                                                        {option || `Option ${optionIndex + 1}`}
+                                                    </MenuItem>
+                                                ))
+                                            )}
+                                        </Select>
+                                    </FormControl>
 
                                     <Typography variant="subtitle2" mb={1}>
                                         Dropdown Options:

@@ -30,9 +30,9 @@ const DropdownQuestionComponent = () => {
     }
   }, [dispatch, questionId]);
 
-   useEffect(() => {
-      console.log("Updated questionData in state:", questionData);
-    }, [questionData]);
+  useEffect(() => {
+    console.log("Updated questionData in state:", questionData);
+  }, [questionData]);
 
   // 🔹 Set default tab only once when data loads
   useEffect(() => {
@@ -49,7 +49,7 @@ const DropdownQuestionComponent = () => {
 
     const initialValues = {};
     dropdowns.forEach((dt) => {
-      if (dt?.id) {
+      if (dt?.id && dt?.blankOrNot === "1") {
         initialValues[dt.id] = "";
       }
     });
@@ -67,6 +67,90 @@ const DropdownQuestionComponent = () => {
   // Handle tab change
   const handleTabClick = (tabKey) => {
     setActiveTab(tabKey);
+  };
+
+  // Render fill-in-the-blanks content
+  const renderFillInTheBlanks = () => {
+    const dropdowns = questionData?.data?.dropdowns || [];
+    
+    return (
+      <Box sx={{ 
+        fontSize: '1.1rem', 
+        lineHeight: 1.8, 
+        textAlign: 'left',
+        p: 2,
+        backgroundColor: '#f8f9fa',
+        borderRadius: '8px',
+        border: '1px solid #e9ecef'
+      }}>
+        {dropdowns.map((dt, index) => {
+          if (!dt) return null;
+          
+          const dropdownId = dt.id || index;
+          const dropdownField = dt.dropdownField || '';
+          const blankOrNot = dt.blankOrNot === "1";
+          const dropdownOptions = dt.dropdownoption || [];
+
+          return (
+            <span key={dropdownId} style={{ display: 'inline' }}>
+              {/* Always show the dropdown field text */}
+              <span style={{ marginRight: blankOrNot ? '8px' : '4px', marginBottom: '10px', display: 'inline-block' }}>
+                {dropdownField}
+              </span>
+              
+              {/* Show dropdown only if blankOrNot is "1" */}
+              {blankOrNot && (
+                <span style={{ 
+                  display: 'inline-block', 
+                  verticalAlign: 'middle',
+                  margin: '0 4px'
+                }}>
+                  <FormControl 
+                    sx={{ 
+                      minWidth: 120, 
+                      '& .MuiOutlinedInput-root': {
+                        height: '32px',
+                        fontSize: '0.9rem'
+                      },
+                      '& .MuiInputLabel-root': {
+                        fontSize: '0.8rem',
+                        transform: 'translate(14px, 8px) scale(1)'
+                      },
+                      '& .MuiInputLabel-shrink': {
+                        transform: 'translate(14px, -6px) scale(0.75)'
+                      }
+                    }} 
+                    size="small"
+                  >
+                    <InputLabel>Select</InputLabel>
+                    <Select
+                      value={dropdownValues[dropdownId] || ""}
+                      label="Select"
+                      onChange={handleDropdownChange(dropdownId)}
+                    >
+                      <MenuItem value="">
+                        <em>Choose...</em>
+                      </MenuItem>
+                      {dropdownOptions.map((opt, optIndex) => (
+                        <MenuItem
+                          key={opt.id || optIndex}
+                          value={opt.dropdownValue || `Option ${optIndex + 1}`}
+                        >
+                          {opt.dropdownValue || `Option ${optIndex + 1}`}
+                        </MenuItem>
+                      ))}
+                    </Select>
+                  </FormControl>
+                </span>
+              )}
+              
+              {/* Add space after each item except the last one */}
+              {index < dropdowns.length - 1 && ' '}
+            </span>
+          );
+        })}
+      </Box>
+    );
   };
 
   // Extract data safely
@@ -133,48 +217,11 @@ const DropdownQuestionComponent = () => {
           <p>{tabsInfo.find((t) => t.tabKey === activeTab)?.tabValue}</p>
         </div>
 
-        {/* Dropdowns */}
-        <Box
-          sx={{
-            display: "flex",
-            flexDirection: isMobile ? "column" : "row",
-            gap: "1rem",
-            justifyContent: "center",
-            alignItems: "center",
-            mb: 4,
-            flexWrap: "wrap",
-          }}
-        >
-          {dropdowns.map((dt, index) => {
-            if (!dt) return null;
-            const dropdownId = dt.id || index;
-            const dropdownOptions = dt.dropdownoption || [];
-            const dropdownLabel = dt.dropdownField || `Option ${index + 1}`;
-
-            return (
-              <FormControl sx={{ minWidth: 160 }} size="small" key={dropdownId}>
-                <InputLabel>{dropdownLabel}</InputLabel>
-                <Select
-                  value={dropdownValues[dropdownId] || ""}
-                  label={dropdownLabel}
-                  onChange={handleDropdownChange(dropdownId)}
-                >
-                  <MenuItem value="">
-                    <em>Select an option</em>
-                  </MenuItem>
-                  {dropdownOptions.map((opt, optIndex) => (
-                    <MenuItem
-                      key={opt.id || optIndex}
-                      value={opt.dropdownValue || `Option ${optIndex + 1}`}
-                    >
-                      {opt.dropdownValue || `Option ${optIndex + 1}`}
-                    </MenuItem>
-                  ))}
-                </Select>
-              </FormControl>
-            );
-          })}
+        {/* Fill in the Blanks Section */}
+        <Box sx={{ mb: 4 }}>
+          {renderFillInTheBlanks()}
         </Box>
+        
       </Box>
     </>
   );
