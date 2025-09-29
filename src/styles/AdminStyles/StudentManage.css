@@ -8,12 +8,37 @@
 }
 
 .status-dropdown {
-  padding: 6px 17px;
-  border-radius: 20px;
-  border-color: none;
+  padding: 7px 13px;      
+  border-radius: 8px;        
+  border: 1px solid #ccc;    
   font-size: 14px;
-  background-color: #E9E9E9;
+  background-color: #fff;   
+  color: #333;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  outline: none;
 }
+
+.status-dropdown:hover {
+  border-color: #253d73;     
+}
+
+.status-dropdown:focus {
+  border-color: #253d73;
+  box-shadow: 0 0 5px rgba(37, 61, 115, 0.3);
+}
+
+
+.table-header .controls {
+  display: flex;
+  align-items: center;
+  gap: 10px; /* space between search, dropdown, and button */
+}
+
+.search-input {
+  flex: 0 0 280px; /* do not grow/shrink, fixed width */
+}
+
 
 .add-student {
   /* padding: 6px 14px;

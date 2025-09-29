@@ -9,15 +9,27 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import "./styles/Layout.css";
 import { FileProvider } from "./context/FileContext";
 import useSecurityRestrictions from "./hooks/useSecurityRestrictions"; // ✅ Import hook
+import { ToastContainer } from "react-toastify";
 const App = () => {
   const dispatch = useDispatch();
   useEffect(() => {
     dispatch(hydrateUser());
   }, [dispatch]);
- /*  // ✅ Apply restrictions globally
- useSecurityRestrictions(); */
+  /*  // ✅ Apply restrictions globally
+  useSecurityRestrictions(); */
   return (
     <FileProvider>
+      <ToastContainer
+        position="top-right"
+        autoClose={3000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+      />
       <Routes>
         {HomeRoutes()}
         {StudentRoutes()}

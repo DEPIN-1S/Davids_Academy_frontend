@@ -3,6 +3,7 @@ import "../styles/ContactPage.css";
 import { submitContact } from "../features/contact/contactSlice";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchCourses } from '../features/courses/courseSlice'
+import { toast } from "react-toastify";
 
 const ContactPage = () => {
   const dispatch = useDispatch();
@@ -54,7 +55,7 @@ const ContactPage = () => {
 
     dispatch(submitContact(contactFormData)).then((action) => {
       if (action.type.endsWith("fulfilled")) {
-        alert("Message sent successfully!");
+        toast.success("Message sent successfully!");
         setContactFormData({
           name: "",
           email: "",
@@ -64,7 +65,7 @@ const ContactPage = () => {
         });
         setErrors({});
       } else if (action.type.endsWith("rejected")) {
-        alert("Failed to send message. Please try again later.");
+        toast.error("Failed to send message. Please try again later.");
       }
     });
 
