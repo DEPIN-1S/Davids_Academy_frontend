@@ -58,9 +58,9 @@ const Courses = () => {
           {/*  <button className="circle-btn">←</button>
           <button className="circle-btn">→</button> */}
         </div>
-        <Link to="/courses" >
+        {/*   <Link to="/courses" >
           <button className="view-all">View All →</button>
-        </Link>
+        </Link> */}
       </div>
     </section>
   );
