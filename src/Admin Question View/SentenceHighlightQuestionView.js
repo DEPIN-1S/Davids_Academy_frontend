@@ -3,7 +3,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { data, useNavigate, useParams } from "react-router-dom";
 import { getQuestionData } from "../../src/features/exam/examSlice"
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
-import { Box, Button } from "@mui/material";
+import { Box, Button, Typography } from "@mui/material";
 
 function SentenceHighlightQuestionView() {
   const notesTabs = [
@@ -32,6 +32,8 @@ function SentenceHighlightQuestionView() {
   const { questionId } = useParams()
   const navigate = useNavigate();
   const dispatch = useDispatch();
+
+
   const { questionData, loading, error } = useSelector((state) => state.exam);
   useEffect(() => {
     if (questionId) {
@@ -43,9 +45,19 @@ function SentenceHighlightQuestionView() {
     console.log("Updated sentence highlight questionData in state:", questionData);
   }, [questionData]);
 
+
+  const questionText = questionData?.data?.question || "";
+  const mark = questionData?.data?.marks || "";
+  const difficulty = questionData?.data?.difficulty || "";
+  const question_type = questionData?.data?.question_type || "";
+
   const handleTabClick = (tabKey) => {
     setActiveTab(tabKey);
   };
+
+
+
+
   const tabContent = questionData?.data?.tabsInfo?.reduce((acc, tab) => {
     acc[tab.tabKey] = tab.tabValue;
     return acc;
@@ -62,6 +74,29 @@ function SentenceHighlightQuestionView() {
 
   return (
     <>
+
+<Box sx={{
+        display: "flex",
+        justifyContent: "space-between",
+        alignItems: "center",
+        width: "100%",
+        p: 2,
+        pb: 8
+      }} >
+
+        <Typography >
+          Mark :{mark}
+        </Typography>
+        <Typography >
+          Difficulty :{difficulty}
+        </Typography>
+        <Typography >
+          Question Type : {question_type}
+        </Typography>
+      </Box>
+
+      
+
       <div className="heading">
         <h4>
           <h4> {questionData?.data?.question}</h4>
@@ -92,6 +127,7 @@ function SentenceHighlightQuestionView() {
           Click to highlight the findings in the progress note that indicate
           that the client is not meeting the treatment goals.
         </p>
+
 
         <div className="highlight-scroll-box">
           {sentencesData.map((sentence, idx) => (

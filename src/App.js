@@ -10,6 +10,8 @@ import "./styles/Layout.css";
 import { FileProvider } from "./context/FileContext";
 import useSecurityRestrictions from "./hooks/useSecurityRestrictions"; // ✅ Import hook
 import { ToastContainer } from "react-toastify";
+import ScrollToHashElement from "./ScrollToHashElement";
+import ScrollToTop from "./ScrollToTop";
 const App = () => {
   const dispatch = useDispatch();
   useEffect(() => {
@@ -30,6 +32,8 @@ const App = () => {
         draggable
         pauseOnHover
       />
+      <ScrollToHashElement/>
+       <ScrollToTop />
       <Routes>
         {HomeRoutes()}
         {StudentRoutes()}

@@ -25,7 +25,7 @@ const testimonials = [
 
 const SuccessStories = () => {
   return (
-    <section className="success-section">
+    <section id='HomeTestimonials' className="success-section">
       <h2 className="success-title">Success Stories at David’s Academy</h2>
 
       <div className="testimonial-container">

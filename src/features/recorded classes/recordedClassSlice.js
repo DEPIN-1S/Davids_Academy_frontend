@@ -3,15 +3,15 @@ import { createRecording, listRecordedClasses, base64ToFile, DeleteRecordedClass
 
 
 export const fetchRecordedClasses = createAsyncThunk(
-  "recordings/fetchRecordedClasses",
-  async ({ token, page = 1, limit = 10, searchQuery = "" }, { rejectWithValue }) => {
-    try {
-      const response = await listRecordedClasses(token, page, limit, searchQuery);
-      return response;
-    } catch (error) {
-      return rejectWithValue(error.message);
+    "recordings/fetchRecordedClasses",
+    async ({ token, page = 1, limit = 10, searchQuery = "" }, { rejectWithValue }) => {
+        try {
+            const response = await listRecordedClasses(token, page, limit, searchQuery);
+            return response;
+        } catch (error) {
+            return rejectWithValue(error.message);
+        }
     }
-  }
 );
 
 
@@ -54,7 +54,7 @@ export const addRecording = createAsyncThunk(
 
             const payload = {
                 title: recordingData.classTitle,
-                course: 12,
+                course: recordingData.courseId, 
                 subject: "rec",
                 duration: recordingData.classDuration,
                 tutor_name: recordingData.tutorName,

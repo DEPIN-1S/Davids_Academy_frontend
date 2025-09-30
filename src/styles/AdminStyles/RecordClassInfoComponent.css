@@ -85,10 +85,15 @@
   margin-bottom: 0;
 }
 
+/* Duration & Date Section */
 .duration-date {
   display: flex;
   gap: 8px;
-  
+}
+
+.duration-date .form-group {
+  flex: 1;       /* all children take equal width */
+  min-width: 0;  /* prevents overflow issues */
 }
 
 .form-label {
@@ -307,19 +312,9 @@
 }
 
 @keyframes shake {
-
-  0%,
-  100% {
-    transform: translateX(0);
-  }
-
-  25% {
-    transform: translateX(-5px);
-  }
-
-  75% {
-    transform: translateX(5px);
-  }
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-5px); }
+  75% { transform: translateX(5px); }
 }
 
 /* Focus within form container */

@@ -1,6 +1,8 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import '../styles/Courses.css';
 import { Link } from 'react-router-dom';
+import { fetchCourses } from '../features/courses/courseSlice';
+import { useDispatch } from 'react-redux';
 
 const courses = [
   {
@@ -20,9 +22,19 @@ const courses = [
   },
 ];
 
+
+
 const Courses = () => {
+
+  const dispatch = useDispatch();
+  useEffect(() => {
+    dispatch(fetchCourses());
+    console.log("courses in course management ::::", fetchCourses);
+  }, [dispatch]);
+
+
   return (
-    <section className="our-courses">
+    <section id="HomeCourses" className="our-courses">
       <h2 className="courses-title">
         <img src="/images/studentIcon.png" alt="cap icon" className="cap-icon" />
         Our Courses
@@ -43,7 +55,7 @@ const Courses = () => {
 
       <div className="courses-footer">
         <div className="arrows">
-         {/*  <button className="circle-btn">←</button>
+          {/*  <button className="circle-btn">←</button>
           <button className="circle-btn">→</button> */}
         </div>
         <Link to="/courses" >

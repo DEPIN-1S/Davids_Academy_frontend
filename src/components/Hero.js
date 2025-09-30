@@ -6,7 +6,7 @@ import { FaBook } from "react-icons/fa";
 const Hero = () => {
   return (
     <>
-      <section className="hero-container">
+      <section  className="hero-container">
         <div className='hero-content-main' >
           <div className="hero-content">
             <h1 className="hero-title">

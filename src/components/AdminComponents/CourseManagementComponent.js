@@ -76,7 +76,7 @@ const CourseManagementComponent = () => {
                 .unwrap()
                 .then(() => {
                     alert("Course deleted successfully");
-                    dispatch(fetchCourses()); 
+                    dispatch(fetchCourses());
                 })
                 .catch((error) => {
                     alert("Failed to delete course: ");
@@ -243,7 +243,7 @@ const CourseManagementComponent = () => {
                             <CardContent
                                 sx={{
                                     flexGrow: 1,
-                                    p: { xs: 2, sm: 3 },
+                                    p: { xs: 2, sm: 7 },
                                     pb: { xs: 1, sm: 2 }
                                 }}
                             >
@@ -337,12 +337,18 @@ const CourseManagementComponent = () => {
                                 {/* Status Chip */}
                                 <Chip
                                     label={course.cs_status ? course.cs_status.charAt(0).toUpperCase() + course.cs_status.slice(1) : "Active"}
-                                    size="small"
+                                    size="medium"
                                     sx={{
-                                        bgcolor: 'success.light',
-                                        color: 'success.dark',
-                                        fontWeight: 500,
-                                        fontSize: { xs: '0.75rem', sm: '0.8rem' }
+                                        bgcolor: course.cs_status === 'inactive' ? '#FFE6E6' : '#E6F4EA', // red-ish for inactive, green-ish for active
+                                        color: course.cs_status === 'inactive' ? '#D32F2F' : '#388E3C',
+                                        fontWeight: 600,
+                                        fontSize: { xs: '1rem', sm: '1.1rem' },  // larger text
+                                        borderRadius: '16px',   // slightly more rounded
+                                        px: 2.5,                // more horizontal padding
+                                        py: 1,                  // more vertical padding
+                                        minHeight: '40px',      // ensures height is bigger
+                                        textTransform: 'capitalize',
+                                        
                                     }}
                                 />
                             </CardContent>

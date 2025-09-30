@@ -24,10 +24,10 @@ const Navbar = () => {
 
         <ul className={`nav-links ${menuOpen ? 'active' : ''}`}>
           <li><Link to="/" onClick={closeMenu}>Home</Link></li>
-          <li><Link to="/about" onClick={closeMenu}>About us</Link></li>
-          <li><Link to="/courses" onClick={closeMenu}>Courses</Link></li>
-          <li><Link to="/testimonials" onClick={closeMenu}>Testimonials</Link></li>
-          <li><Link to="/sample-questionnaire" onClick={closeMenu}>Sample Questionnaire</Link></li>
+          <li><Link to="/#HomeAbout" onClick={closeMenu}>About us</Link></li>
+          <li><Link to="/#HomeCourses" onClick={closeMenu}>Courses</Link></li>
+          <li><Link to="/#HomeSampleQuestionnaire" onClick={closeMenu}>Sample Questionnaire</Link></li>
+          <li><Link to="/#HomeTestimonials" onClick={closeMenu}>Testimonials</Link></li>
           <li><Link to="/contact-us" onClick={closeMenu}>Contact Us</Link></li>
           {/* Mobile view: show user or login */}
           <li className="mobile-login" onClick={closeMenu}>

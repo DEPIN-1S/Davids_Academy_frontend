@@ -1,18 +1,31 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { FaArrowLeft, FaArrowRight } from "react-icons/fa";
 import "../../styles/AdminStyles/RecordClassInfoComponent.css";
 import { useNavigate } from "react-router-dom";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { addRecording } from "../../features/recorded classes/recordedClassSlice"
+import { fetchCourses } from "../../features/courses/courseSlice";
 const RecordedClassInfoComponent = ({ onNext, onBack }) => {
 
     const [formData, setFormData] = useState({
         classTitle: '',
         classDuration: '',
         tutorName: '',
+        courseId: '',
         videoUrl: '',
         recordDate: ''
     });
+
+
+
+    const { list: courses, loading: coursesLoading } = useSelector((state) => state.course);
+    const dispatch = useDispatch();
+    useEffect(() => {
+        console.log("courses in contact page ::", courses);
+
+        dispatch(fetchCourses());
+    }, [dispatch]);
+
 
     const [errors, setErrors] = useState({});
     const handleInputChange = (e) => {
@@ -42,6 +55,9 @@ const RecordedClassInfoComponent = ({ onNext, onBack }) => {
         if (!formData.recordDate.trim()) {
             newErrors.recordDate = 'Class date is required';
         }
+        if (!formData.courseId.trim()) {
+            newErrors.courseId = 'Course selection is required';
+        }
         if (!formData.tutorName.trim()) {
             newErrors.tutorName = 'Tutor name is required';
         }
@@ -52,8 +68,9 @@ const RecordedClassInfoComponent = ({ onNext, onBack }) => {
         return Object.keys(newErrors).length === 0;
     };
 
+
     const navigate = useNavigate()
-    const dispatch = useDispatch();
+
 
     const handleNext = () => {
         if (validateForm()) {
@@ -129,7 +146,7 @@ const RecordedClassInfoComponent = ({ onNext, onBack }) => {
                                     name="classDuration"
                                     type="text"
                                     className={`form-input ${errors.classDuration ? 'error' : ''}`}
-                                    placeholder="Total time length of session."
+                                    placeholder="Total class duration"
                                     value={formData.classDuration}
                                     onChange={handleInputChange}
                                 />
@@ -155,6 +172,29 @@ const RecordedClassInfoComponent = ({ onNext, onBack }) => {
                                     <span className="error-message">{errors.recordDate}</span>
                                 )}
                             </div>
+                            <div className="form-group">
+                                <label className="form-label" htmlFor="courseId">
+                                    Course Name
+                                </label>
+                                <select
+                                    id="courseId"
+                                    name="courseId"
+                                    className={`form-input ${errors.courseId ? 'error' : ''}`}
+                                    value={formData.courseId}
+                                    onChange={handleInputChange}
+                                >
+                                    <option value="">Select Course Name</option>
+                                    {courses.map((course) => (
+                                        <option key={course.cs_id} value={course.cs_id}>
+                                            {course.cs_name}
+                                        </option>
+                                    ))}
+                                </select>
+                                {errors.courseId && (
+                                    <span className="error-message">{errors.courseId}</span>
+                                )}
+                            </div>
+
                         </div>
 
 

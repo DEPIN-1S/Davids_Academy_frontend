@@ -5,7 +5,7 @@ import '../styles/About.css'
 
 const About = () => {
   return (
-    <div className="about">
+    <div id="HomeAbout"  className="about">
       {/* Left side image */}
       <img src="/images/Group9.png" alt="About David Academy" className="about-img" />
 
