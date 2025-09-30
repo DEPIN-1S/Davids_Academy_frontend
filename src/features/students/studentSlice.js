@@ -7,18 +7,17 @@ import { fetchStudentTestProgress } from "../../features/students/studentApi"
 
 export const fetchStudents = createAsyncThunk(
   "students/fetchStudents",
-  async ({ page, limit }, { rejectWithValue }) => {
+  async ({ page, limit, searchQuery, filterStatus }, { rejectWithValue }) => {
     try {
-
       const token = sessionStorage.getItem("accessToken");
-      const response = await listStudents(token, page, limit);
-      return response; // { data: [...], pagination: {...}, result, message }
-
+      const response = await listStudents(token, page, limit, searchQuery, filterStatus);
+      return response;
     } catch (error) {
       return rejectWithValue(error.message);
     }
   }
 );
+
 
 //for fetching student progress
 export const fetchStudentProgress = createAsyncThunk(

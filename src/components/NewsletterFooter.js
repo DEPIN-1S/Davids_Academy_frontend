@@ -1,6 +1,10 @@
-import React from 'react';
+import React, { useState } from 'react';
 import '../styles/NewsletterFooter.css';
+import { Link as ScrollLink } from "react-scroll"
+import { Link } from 'react-router-dom';
 const NewsletterFooter = () => {
+  const closeMenu = () => setMenuOpen(false);
+  const [menuOpen, setMenuOpen] = useState(false);
   return (
     <footer className="footer">
       {/* Top Grid */}
@@ -24,11 +28,13 @@ const NewsletterFooter = () => {
           <div>
             <h4>Quick Links</h4>
             <ul>
-              <li><a href="/">Home</a></li>
-              <li><a href="/about">About Us</a></li>
-              <li><a href="/courses">Courses</a></li>
-              <li><a href="/testimonials">Testimonials</a></li>
-              <li><a href="/contact-us">Contact Us</a></li>
+              <li><Link to="/" onClick={closeMenu}  >Home</Link></li>
+              <li><Link to="/#HomeAbout" onClick={closeMenu}>About us</Link></li>
+              <li><Link to="/#HomeCourses" onClick={closeMenu}>Courses</Link></li>
+              <li><Link to="/#HomeSampleQuestionnaire" onClick={closeMenu} >Sample Questionnaire</Link></li>
+              <li><Link to="/#HomeTestimonials" onClick={closeMenu}>Testimonials</Link></li>
+              <li><Link to="/contact-us" onClick={closeMenu}>Contact Us</Link></li>
+
             </ul>
           </div>
           <div>

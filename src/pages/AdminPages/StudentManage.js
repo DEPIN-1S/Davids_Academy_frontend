@@ -17,22 +17,12 @@ const StudentManage = () => {
   const [filterStatus, setFilterStatus] = useState("all");
   const [showAddForm, setShowAddForm] = useState(false);
   const [selectedStudentId, setSelectedStudentId] = useState(null);
+  const [searchQuery, setSearchQuery] = useState("");
 
-  // Fetch students whenever page changes
+  // ✅ Fetch students whenever page, search, or filter changes
   useEffect(() => {
-    dispatch(fetchStudents({ page, limit: 10 }));
-    console.log("Students list from Redux:", list)
-
-  }, [dispatch, page]);
-
-  // Filter logic
-  const filteredStudents = Array.isArray(list)
-    ? list.filter((student) =>
-      filterStatus === "all"
-        ? true
-        : student.status?.toLowerCase() === filterStatus
-    )
-    : [];
+    dispatch(fetchStudents({ page, limit: 10, searchQuery, filterStatus }));
+  }, [dispatch, page, searchQuery, filterStatus]);
 
   const handleDelete = (studentId) => {
     if (window.confirm("Do you really want to update this student's status?")) {
@@ -40,7 +30,7 @@ const StudentManage = () => {
         .unwrap()
         .then(() => {
           alert("Student status updated successfully ✅");
-          dispatch(fetchStudents({ page, limit: 10 }));
+          dispatch(fetchStudents({ page, limit: 10, searchQuery, filterStatus }));
         })
         .catch((error) => {
           alert(error.message || "Error updating student status");
@@ -51,29 +41,46 @@ const StudentManage = () => {
   const handlePageChange = (newPage) => {
     setPage(newPage);
   };
-  const navigate = useNavigate()
+
+  const navigate = useNavigate();
   const navigateToViewProgress = (studentId) => {
     navigate(`/admin/view-progress/${studentId}`);
   };
-  const students = !loading ? filteredStudents : [];
+
+  // ✅ No frontend filtering anymore, just take list directly from backend
+  const students = !loading && Array.isArray(list) ? list : [];
 
   return (
     <>
       <div className="table-header">
         <h3>Total Students: {total || 0}</h3>
-        <select
-          className="status-dropdown"
-          value={filterStatus}
-          onChange={(e) => setFilterStatus(e.target.value)}
-        >
-          <option value="all">All</option>
-          <option value="active">Active</option>
-          <option value="inactive">Inactive</option>
-        </select>
-
-        <button className="add-student" onClick={() => setShowAddForm(true)}>
-          + Add Student
-        </button>
+        <div className="controls">
+          <input
+            type="text"
+            className="search-input"
+            placeholder="Search students..."
+            value={searchQuery}
+            onChange={(e) => {
+              setPage(1); // reset to first page on search
+              setSearchQuery(e.target.value);
+            }}
+          />
+          <select
+            className="status-dropdown"
+            value={filterStatus}
+            onChange={(e) => {
+              setPage(1); // reset to first page on filter
+              setFilterStatus(e.target.value);
+            }}
+          >
+            <option value="all">All</option>
+            <option value="active">Active</option>
+            <option value="inactive">Inactive</option>
+          </select>
+          <button className="add-student" onClick={() => setShowAddForm(true)}>
+            + Add Student
+          </button>
+        </div>
       </div>
 
       <div className="table-container">
@@ -91,14 +98,22 @@ const StudentManage = () => {
           <tbody>
             {!loading && students.length > 0 ? (
               students.map((student, index) => (
-                <tr key={student.id || index} className={index % 2 === 1 ? "striped" : ""}>
+                <tr
+                  key={student.id || index}
+                  className={index % 2 === 1 ? "striped" : ""}
+                >
                   <td>{student.id}</td>
                   <td>{student.firstname} {student.lastname}</td>
                   <td>{student.email}</td>
                   <td>{student.cs_name || "N/A"}</td>
                   <td>{student.status || "N/A"}</td>
                   <td className="action-buttons">
-                    <button onClick={() => navigateToViewProgress(student.id)} className="progress-btn">View Progress</button>
+                    <button
+                      onClick={() => navigateToViewProgress(student.id)}
+                      className="progress-btn"
+                    >
+                      View Progress
+                    </button>
 
                     {student.status === "active" ? (
                       <button
@@ -175,7 +190,7 @@ const StudentManage = () => {
               <AddStudentForm
                 onClose={() => setShowAddForm(false)}
                 onSuccess={() => {
-                  dispatch(fetchStudents({ page, limit: 10 }));
+                  dispatch(fetchStudents({ page, limit: 10, searchQuery, filterStatus }));
                   setShowAddForm(false);
                 }}
               />

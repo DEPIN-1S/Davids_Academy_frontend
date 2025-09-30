@@ -464,7 +464,7 @@ const SentenceHighlightContent = () => {
                         </Typography>
                         <TextField
                             fullWidth
-                            label={`Correct highlight text ${index + 1}`}
+                            label={`Highlight Option ${index + 1}`}
                             multiline
                             minRows={2}
                             value={highlight}

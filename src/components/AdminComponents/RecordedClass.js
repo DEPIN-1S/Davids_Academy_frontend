@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { FaPlay, FaPlus, FaUser, FaClock } from "react-icons/fa";
 import "../../styles/AdminStyles/CourseManagement.css";
 import { useNavigate } from "react-router-dom";
@@ -15,6 +15,8 @@ const CourseManagement = () => {
     );
     const [selectedVideo, setSelectedVideo] = useState(null);
 
+    const debounceTimeout = useRef(null); // ref for debounce timer
+
     const handleDelete = (id) => {
         const token = sessionStorage.getItem("accessToken");
         dispatch(deleteRecordedClass(id))
@@ -28,10 +30,9 @@ const CourseManagement = () => {
             });
     };
 
-    // 🔹 Convert Google Drive share link → embed link
     const formatDriveUrl = (url) => {
         if (!url || !url.includes("drive.google.com")) return url;
-        const fileIdMatch = url.match(/[-\w]{25,}/); // extract file ID
+        const fileIdMatch = url.match(/[-\w]{25,}/);
         if (!fileIdMatch) return url;
         return `https://drive.google.com/file/d/${fileIdMatch[0]}/preview`;
     };
@@ -43,7 +44,6 @@ const CourseManagement = () => {
 
     useEffect(() => {
         const token = sessionStorage.getItem("accessToken");
-        console.log("Date::", recordings)
         if (token) {
             dispatch(fetchRecordedClasses({ token, page: 1, limit: 10 }));
         }
@@ -51,11 +51,24 @@ const CourseManagement = () => {
 
     const handlePageChange = (newPage) => {
         const token = sessionStorage.getItem("accessToken");
-        dispatch(fetchRecordedClasses({ token, page: newPage, limit }));
+        dispatch(fetchRecordedClasses({ token, page: newPage, limit, searchQuery: query }));
     };
 
     const handleAddClick = () => {
         navigate("/admin/upload-thumbnail");
+    };
+
+    // 🔹 Handle search input with debounce
+    const handleSearchChange = (e) => {
+        const value = e.target.value;
+        setQuery(value);
+
+        const token = sessionStorage.getItem("accessToken");
+        if (debounceTimeout.current) clearTimeout(debounceTimeout.current);
+
+        debounceTimeout.current = setTimeout(() => {
+            dispatch(fetchRecordedClasses({ token, page: 1, limit, searchQuery: value }));
+        }, 400); // 400ms debounce
     };
 
     if (loading) return <p>Loading recordings...</p>;
@@ -68,8 +81,8 @@ const CourseManagement = () => {
                     <input
                         type="text"
                         value={query}
-                        onChange={(e) => setQuery(e.target.value)}
-                        placeholder="Search..."
+                        onChange={handleSearchChange}
+                        placeholder="Search with class title..."
                         className="search-input"
                     />
                 </div>
@@ -108,8 +121,7 @@ const CourseManagement = () => {
                                             day: "2-digit",
                                             month: "short",
                                             year: "numeric",
-                                        })}
-                                        </span>
+                                        })}</span>
                                     </div>
                                     <button onClick={() => handleDelete(cls.r_id)} className="recorded-class-delete-btn">
                                         Delete class
@@ -130,7 +142,7 @@ const CourseManagement = () => {
                 <button disabled={page === totalPages} onClick={() => handlePageChange(page + 1)}>Next</button>
             </div>
 
-            {/* Video Popup Modal */}
+            {/* Video Modal */}
             {selectedVideo && (
                 <div className="video-modal">
                     <div className="video-modal-content">

@@ -1,4 +1,4 @@
-export async function listRecordedClasses(token, page = 1, limit = 10) {
+export async function listRecordedClasses(token, page = 1, limit = 10, searchQuery = "") {
   const response = await fetch(
     `https://lunarsenterprises.com:6040/davidsacademy/admin/record/list`,
     {
@@ -7,7 +7,7 @@ export async function listRecordedClasses(token, page = 1, limit = 10) {
         "Authorization": `Bearer ${token}`,
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ page, limit })   // 👈 pass pagination info
+      body: JSON.stringify({ page, limit, searchQuery })  // 👈 correct param
     }
   );
 
@@ -16,6 +16,8 @@ export async function listRecordedClasses(token, page = 1, limit = 10) {
   }
   return await response.json();
 }
+
+
 
 
 //Delete recorded class

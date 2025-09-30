@@ -1,4 +1,4 @@
-export async function listStudents(token, page = 1, limit = 10) {
+export async function listStudents(token, page = 1, limit = 10, searchQuery = "", filterStatus = "all") {
   const response = await fetch(
     `${process.env.REACT_APP_API_URL}/admin/student/list`,
     {
@@ -8,9 +8,10 @@ export async function listStudents(token, page = 1, limit = 10) {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        type: "all",
-        page,   // ✅ send current page
-        limit,  // ✅ send limit per page
+        page,
+        limit,
+        searchQuery: searchQuery || "",   // ✅ match backend key
+        type: filterStatus,               // ✅ backend expects "all" | "active" | "inactive"
       }),
     }
   );
@@ -20,12 +21,10 @@ export async function listStudents(token, page = 1, limit = 10) {
   }
 
   const data = await response.json();
-
-  // ✅ Debug log to see exactly what backend sends
   console.log("📦 Students API Response:", data);
-
-  return data; // should look like { list: [], totalPages: X, currentPage: Y }
+  return data;
 }
+
 
 
 
