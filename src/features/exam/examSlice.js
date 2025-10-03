@@ -3,7 +3,9 @@ import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import {
     postQuestion,
     fetchQuestionTypes,
-    fetchMockTestQuestion as fetchMockTestQuestionAPI, fetchQBankQuestions, fetchQBankQuestionData
+    fetchMockTestQuestion as fetchMockTestQuestionAPI, fetchQBankQuestions, fetchQBankQuestionData,
+    uploadTabImageApi,
+    deleteTabImageApi
 } from "./examAPI";
 import { adminGetQBankQuestions, adminGetMockTestQuestions, adminGetTestQuestions } from "./examAPI";
 import { fetchTestQuestionsAPI } from "../../features/exam/examAPI";
@@ -11,7 +13,7 @@ import { adminDeleteQuestion } from "../../features/exam/examAPI";
 import { fetchMockTestQuestionsByCourseId } from "../../features/exam/examAPI"
 import { adminCreateTest } from "../../features/exam/examAPI";
 import { apiDeleteTest } from "../../features/exam/examAPI";
-import {adminFetchQuestionByQID} from "../../features/exam/examAPI"
+import { adminFetchQuestionByQID } from "../../features/exam/examAPI"
 
 
 
@@ -131,6 +133,30 @@ export const adminFetchTestQuestions = createAsyncThunk(
     }
 );
 
+//for tab image upload
+export const uploadTabImage = createAsyncThunk(
+    "questions/uploadTabImage",
+    async (file, { rejectWithValue }) => {
+        try {
+            const formData = new FormData();
+            formData.append("tabImage", file); // ✅ backend expects tabImage
+
+            const result = await uploadTabImageApi(formData);
+            return result;
+        } catch (error) {
+            return rejectWithValue(error.message);
+        }
+    }
+);
+
+// Thunk for deleting tab image
+export const deleteTabImage = createAsyncThunk(
+  'exam/deleteTabImage',
+  async (fileName) => {
+    const result = await deleteTabImageApi(fileName);
+    return result;
+  }
+);
 
 
 // Async thunk for posting any question type
@@ -240,6 +266,11 @@ const questionSlice = createSlice({
         error: null,
         tests: [],
 
+        tabImage: null,   // for uploaded image info
+        loading: false,   // for upload status
+        error: null,
+
+
         questionTypes: [],
         questionTypesLoading: false,
         questionTypesError: null,
@@ -320,6 +351,37 @@ const questionSlice = createSlice({
                 state.error = action.payload;
             })
 
+            //upload tab image
+            .addCase(uploadTabImage.pending, (state) => {
+                state.loading = true;
+                state.error = null;
+            })
+            .addCase(uploadTabImage.fulfilled, (state, action) => {
+                state.loading = false;
+                state.tabImage = action.payload; // server response
+            })
+            .addCase(uploadTabImage.rejected, (state, action) => {
+                state.loading = false;
+                state.error = action.payload || 'Upload failed';
+            })
+
+
+            // Delete tab image
+            .addCase(deleteTabImage.pending, (state) => {
+                state.loading = true;
+                state.error = null;
+            })
+            .addCase(deleteTabImage.fulfilled, (state, action) => {
+                state.loading = false;
+                // Remove uploaded tab image if it matches the deleted file
+                if (state.tabImage?.fileName === action.payload.fileName) {
+                    state.tabImage = null;
+                }
+            })
+            .addCase(deleteTabImage.rejected, (state, action) => {
+                state.loading = false;
+                state.error = action.payload || "Failed to delete tab image";
+            })
 
 
             //Delete Question

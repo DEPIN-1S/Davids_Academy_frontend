@@ -224,6 +224,7 @@ const MetaInfoComponent = () => {
         courseId: receivedQuestionData.cs_id,
         question: receivedQuestionData.question || "",
         difficulty: form.difficulty,
+        instruction: receivedQuestionData.instruction || "",
         exam_type: receivedQuestionData.exam_type,
         tabs: receivedQuestionData.tabs || [],
         dropdowns: receivedQuestionData.dropdowns || [],
@@ -231,6 +232,7 @@ const MetaInfoComponent = () => {
         explanationText: receivedQuestionData.explanationText || "",
         info: receivedQuestionData.additionalInfo || "",
         marks: form.marks,
+
 
     });
 
@@ -314,7 +316,7 @@ const MetaInfoComponent = () => {
         explanationHeading: receivedQuestionData.explanationHeading || "",
         explanationText: receivedQuestionData.explanationText || "",
         info: receivedQuestionData.additionalInfo || "",
-        answer: receivedQuestionData.answer  || [],
+        answer: receivedQuestionData.answer || [],
         marks: form.marks
     });
 
@@ -416,6 +418,7 @@ const MetaInfoComponent = () => {
         difficulty: form.difficulty,
         exam_type: receivedQuestionData.exam_type,
         tabs: receivedQuestionData.tabs || [],
+        instruction: receivedQuestionData.instruction || "",
         dropdowns: receivedQuestionData.dropdowns || [],
         explanationHeading: receivedQuestionData.explanationHeading || "",
         explanationText: receivedQuestionData.explanationText || "",
@@ -673,7 +676,7 @@ const MetaInfoComponent = () => {
 
             {/* Heading */}
             <Typography variant="h5" mt={2} mb={1}>
-                Add Tags & Meta Information
+                Add Tags &  rmation
             </Typography>
             <Typography variant="body2" color="textSecondary" mb={3}>
                 Label your {receivedQuestionData.questionType || 'MCQ'} question with relevant categories for better organization and performance insights.
