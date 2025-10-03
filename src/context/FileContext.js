@@ -46,6 +46,7 @@ export const FileProvider = ({ children }) => {
                 formData.append("courseId", questionData.courseId);
                 formData.append("question", questionData.question);
                 formData.append("difficulty", questionData.difficulty);
+                formData.append("instruction",questionData.instruction);
                 formData.append("exam_type", questionData.exam_type);
                 formData.append("tabs", JSON.stringify(questionData.tabs || []));
                 formData.append("dropdowns", JSON.stringify(questionData.dropdowns || []));

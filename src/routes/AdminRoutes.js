@@ -34,6 +34,7 @@ import SentenceHighlightQuestionView from "../Admin Question View/SentenceHighli
 import FillinTheBlanksQuestionView from "../Admin Question View/FillinTheBlanksQuestionView";
 import SortingQuestionView from "../Admin Question View/SortingQuestionView";
 import ViewProgress from "../Admin Question View/ViewProgress";
+import TableDropDown from "../components/AdminComponents/TableDropDown";
 
 const AdminRoutes = () => (
     <>
@@ -106,6 +107,11 @@ const AdminRoutes = () => (
                     <FillinQuestionContent />
                 </ProtectedRoutes>
             } />
+            <Route path="/admin/table-dropDown" element={
+                <ProtectedRoutes allowedRoles={['admin']} >
+                    <TableDropDown />
+                </ProtectedRoutes>
+            } />
 
 
             {/* ✅ Question Management Flow Routes */}
@@ -150,7 +156,7 @@ const AdminRoutes = () => (
                     <AddCourseComponent />
                 </ProtectedRoutes>
             } />
-            
+
             <Route path="/admin/course-form/:id" element={
                 <ProtectedRoutes allowedRoles={['admin']}>
                     <AddCourseComponent />
@@ -226,7 +232,7 @@ const AdminRoutes = () => (
 
             <Route path="/admin/fillInTheBlanks-question-view/:questionId" element={
                 <ProtectedRoutes allowedRoles={['admin']}>
-                    <FillinTheBlanksQuestionView/>
+                    <FillinTheBlanksQuestionView />
                 </ProtectedRoutes>
             } />
 
@@ -236,7 +242,7 @@ const AdminRoutes = () => (
                 </ProtectedRoutes>
             } />
 
-            
+
 
         </Route>
     </>

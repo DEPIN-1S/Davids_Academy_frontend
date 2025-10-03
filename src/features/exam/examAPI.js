@@ -29,7 +29,7 @@ export const postQuestion = async (questionData) => {
     }
 
     const result = await response.json(); // ✅ store result
-    console.log("result response from api call ::::", result);
+   
 
     if (result?.message) {
       console.log("✅ API Response Message:", result.message);

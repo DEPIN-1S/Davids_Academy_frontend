@@ -7,8 +7,6 @@ import {
     IconButton,
     Card,
     CardContent,
-    Chip,
-    Alert,
     Accordion,
     AccordionSummary,
     AccordionDetails,
@@ -23,6 +21,9 @@ import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
 import { CloudUpload, Delete, Image, PictureAsPdf, Description, ExpandMore } from '@mui/icons-material';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useFileContext } from '../../context/FileContext'; // ✅ Import the Context
+import { useDispatch } from 'react-redux';
+import { deleteTabImage, uploadTabImage } from '../../features/exam/examSlice';
+
 
 
 const DropdownQuestionContent = () => {
@@ -30,19 +31,20 @@ const DropdownQuestionContent = () => {
     const location = useLocation();
     // ✅ Use File Context instead of passing files through navigation
     const { addQuestionFile, questionFile, hasQuestionFile } = useFileContext();
-
+    const dispatch = useDispatch();
     // Get any existing data from previous steps
     const existingData = location.state?.questionData || {};
     const questionType = location.state?.questionType || existingData.questionType || "Dropdown";
     const cs_id = location.state?.cs_id || "";
     const exam_type = location.state?.exam_type || "";
     const question_type_id = location.state?.question_type_id || "";
-
     // Form state
     const [question, setQuestion] = useState(existingData.question || "");
+    const [instruction, setInstruction] = useState(existingData.instruction || "")
     const [tabs, setTabs] = useState(existingData.tabs || [
-        { tabKey: "", tabValue: "" }
+        { tabKey: "", tabValue: "", }
     ]);
+
     const [dropdowns, setDropdowns] = useState(existingData.dropdowns || [
         {
             dropdownField: "",
@@ -54,8 +56,6 @@ const DropdownQuestionContent = () => {
     const [selectedFile, setSelectedFile] = useState(null); // ✅ Local state for UI, Context for persistence
     const [errors, setErrors] = useState({});
 
-    const fileInputRef = useRef(null);
-
     // ✅ Initialize with existing file from context if available
     React.useEffect(() => {
         if (questionFile) {
@@ -63,52 +63,79 @@ const DropdownQuestionContent = () => {
         }
     }, [questionFile]);
 
-    // ✅ File upload handlers - Store in Context instead of passing through navigation
-    const handleFileSelect = (event) => {
+
+    // here tab image is added to backend when user selects image from their local machine at that moment api call is implemented 
+    // File upload handler for tab image
+    const handleTabFileUpload = async (index, event) => {
         const file = event.target.files[0];
-        if (file) {
-            if (file.size > 10 * 1024 * 1024) {
-                setErrors(prev => ({ ...prev, file: 'File size must be less than 10MB' }));
-                return;
-            }
+        if (!file) return;
 
-            const allowedTypes = ['image/jpeg', 'image/png', 'image/gif', 'application/pdf', 'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'];
-            if (!allowedTypes.includes(file.type)) {
-                setErrors(prev => ({ ...prev, file: 'Only images, PDF, and Word documents are allowed' }));
-                return;
-            }
-
-            const fileData = {
-                file: file,
-                name: file.name,
-                size: file.size,
-                type: file.type,
-                url: URL.createObjectURL(file),
-                uploadedAt: new Date().toISOString()
-            };
-
-            // ✅ Store in both local state (for UI) and Context (for persistence)
-            setSelectedFile(fileData);
-            addQuestionFile(fileData); // Store in Context
-            setErrors(prev => ({ ...prev, file: null }));
-
-            console.log('File stored in Context:', fileData.name);
+        const allowedTypes = ['image/jpeg', 'image/png', 'image/gif'];
+        if (!allowedTypes.includes(file.type)) {
+            setErrors(prev => ({ ...prev, [`tabFile_${index}`]: 'Only images are allowed' }));
+            return;
         }
-        event.target.value = '';
-    };
 
-    const handleButtonClick = () => {
-        fileInputRef.current?.click();
-    };
+        // Local preview
+        const previewUrl = URL.createObjectURL(file);
+        const newTabs = [...tabs];
+        newTabs[index].previewUrl = previewUrl;
+        setTabs(newTabs);
 
-    const handleRemoveFile = () => {
-        if (selectedFile) {
-            URL.revokeObjectURL(selectedFile.url);
-            setSelectedFile(null);
-            addQuestionFile(null); // ✅ Remove from Context as well
-            setErrors(prev => ({ ...prev, file: null }));
+        try {
+            // Upload immediately
+            const result = await dispatch(uploadTabImage(file)).unwrap();
+            console.log('Upload result:', result);
+
+            // ✅ Store uploaded image URL in `tabImage` key
+            newTabs[index].tabImage = result?.data?.imageUrl || null;
+            setTabs(newTabs);
+
+        } catch (err) {
+            console.error('Upload failed:', err);
+            setErrors(prev => ({ ...prev, [`tabFile_${index}`]: 'Upload failed. Try again.' }));
+            newTabs[index].previewUrl = null;
+            setTabs(newTabs);
         }
     };
+
+
+
+    // Delete handler
+    const handleDeleteTabImage = async (index) => {
+        const tab = tabs[index];
+        console.log("Inside delete img::");
+
+        if (!tab.tabImage) {
+            // No uploaded image, just remove preview
+            const newTabs = [...tabs];
+            newTabs[index].previewUrl = null;
+            setTabs(newTabs);
+            return;
+        }
+
+        try {
+            console.log("Inside try :::");
+
+            // Extract only filename
+            const fileName = tab.tabImage.split('/').pop();
+            console.log("Sending filename to delete API:", fileName);
+
+            // Call delete API
+            await dispatch(deleteTabImage(fileName)).unwrap();
+
+            const newTabs = [...tabs];
+            newTabs[index].previewUrl = null;
+            newTabs[index].tabImage = null; // ✅ Clear tabImage
+            setTabs(newTabs);
+
+            console.log("Tab image deleted successfully");
+
+        } catch (error) {
+            console.error("Failed to delete tab image:", error);
+        }
+    };
+
 
     // Tab handlers
     const handleTabChange = (index, field, value) => {
@@ -226,6 +253,7 @@ const DropdownQuestionContent = () => {
             questionType: questionType,
             question: question.trim(),
             tabs: tabs.filter(tab => tab.tabKey.trim() && tab.tabValue.trim()),
+            instruction: instruction.trim(),
             dropdowns: dropdowns.filter(dropdown =>
                 dropdown.dropdownField.trim() &&
                 (dropdown.blank_or_not === false || (dropdown.dropdownanswer.trim() && dropdown.dropDowneOption.some(val => val.trim())))
@@ -283,30 +311,17 @@ const DropdownQuestionContent = () => {
         });
     };
 
-    // Helper functions
-    const getFileIcon = (fileType) => {
-        if (fileType?.startsWith('image/')) return <Image />;
-        if (fileType === 'application/pdf') return <PictureAsPdf />;
-        return <Description />;
-    };
-
-    const formatFileSize = (bytes) => {
-        if (bytes === 0) return '0 Bytes';
-        const k = 1024;
-        const sizes = ['Bytes', 'KB', 'MB', 'GB'];
-        const i = Math.floor(Math.log(bytes) / Math.log(k));
-        return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
-    };
 
     const isFormValid = () => {
         const hasValidQuestion = question.trim() !== "";
+        const hasValidInstruction = instruction.trim() !== ""
         const hasValidTabs = tabs.some(tab => tab.tabKey.trim() && tab.tabValue.trim());
         const hasValidDropdowns = dropdowns.some(dropdown =>
             dropdown.dropdownField.trim() &&
             (dropdown.blank_or_not === false || (dropdown.dropdownanswer.trim() && dropdown.dropDowneOption.some(val => val.trim())))
         );
 
-        return hasValidQuestion && hasValidTabs && hasValidDropdowns;
+        return hasValidQuestion && hasValidTabs && hasValidDropdowns && hasValidInstruction;
     };
 
     // Cleanup on unmount
@@ -416,6 +431,60 @@ const DropdownQuestionContent = () => {
                                 onChange={(e) => handleTabChange(index, 'tabValue', e.target.value)}
                                 placeholder="Enter the content that will be displayed in this tab..."
                             />
+
+                            <Box display="flex" flexDirection="column" alignItems="flex-start" mt={2}>
+                                <input
+                                    type="file"
+                                    accept="image/*"
+                                    style={{ display: 'none' }}
+                                    id={`tab-file-input-${index}`}
+                                    onChange={(e) => handleTabFileUpload(index, e)}
+                                />
+                                <Button
+                                    variant="outlined"
+                                    component="span"
+                                    onClick={() => document.getElementById(`tab-file-input-${index}`).click()}
+                                    startIcon={<CloudUpload />}
+                                    size="small"
+                                >
+                                    {tab.previewUrl ? "Change Image" : "Add Image"}
+                                </Button>
+
+                                {/*   {tab.previewUrl && (
+                                    <Box mt={1}>
+                                        <img
+                                            src={tab.previewUrl}
+                                            alt={`Tab ${index} preview`}
+                                            style={{ maxWidth: "200px", maxHeight: "150px", objectFit: "cover", borderRadius: "4px" }}
+                                        />
+                                    </Box>
+                                )} */}
+                                {tab.previewUrl && (
+                                    <Box mt={1} display="flex" alignItems="center" gap={1}>
+                                        <img
+                                            src={tab.previewUrl}
+                                            alt={`Tab ${index} preview`}
+                                            style={{ maxWidth: "200px", maxHeight: "150px", objectFit: "cover", borderRadius: "4px" }}
+                                        />
+                                        <IconButton
+                                            onClick={() => handleDeleteTabImage(index)}
+                                            color="error"
+                                            size="small"
+                                        >
+                                            <Delete />
+                                        </IconButton>
+                                    </Box>
+                                )}
+
+
+                                {errors[`tabFile_${index}`] && (
+                                    <Typography variant="caption" color="error">
+                                        {errors[`tabFile_${index}`]}
+                                    </Typography>
+                                )}
+                            </Box>
+
+
                         </Card>
                     ))}
 
@@ -435,6 +504,28 @@ const DropdownQuestionContent = () => {
                     )}
                 </AccordionDetails>
             </Accordion>
+
+
+            <Typography variant="h6" mb={1} color="primary">
+                Instruction*
+            </Typography>
+            <TextField
+                fullWidth
+                label="Enter Question instruction"
+                multiline
+                minRows={3}
+                maxRows={6}
+                value={instruction}
+                onChange={(e) => {
+                    setInstruction(e.target.value);
+                    setErrors(prev => ({ ...prev, instruction: null }));
+                }}
+                variant="outlined"
+                placeholder="Type your dropdown question instruction here..."
+                error={!!errors.instruction}
+                helperText={errors.instruction}
+                sx={{ mb: 3 }}
+            />
 
             {/* ✅ Updated Dropdowns Section matching required structure */}
             <Accordion defaultExpanded sx={{ mb: 3 }}>

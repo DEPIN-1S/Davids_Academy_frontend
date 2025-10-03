@@ -72,11 +72,11 @@ const DropdownQuestionComponent = () => {
   // Render fill-in-the-blanks content
   const renderFillInTheBlanks = () => {
     const dropdowns = questionData?.data?.dropdowns || [];
-    
+
     return (
-      <Box sx={{ 
-        fontSize: '1.1rem', 
-        lineHeight: 1.8, 
+      <Box sx={{
+        fontSize: '1.1rem',
+        lineHeight: 1.8,
         textAlign: 'left',
         p: 2,
         backgroundColor: '#f8f9fa',
@@ -85,7 +85,7 @@ const DropdownQuestionComponent = () => {
       }}>
         {dropdowns.map((dt, index) => {
           if (!dt) return null;
-          
+
           const dropdownId = dt.id || index;
           const dropdownField = dt.dropdownField || '';
           const blankOrNot = dt.blankOrNot === "1";
@@ -97,17 +97,17 @@ const DropdownQuestionComponent = () => {
               <span style={{ marginRight: blankOrNot ? '8px' : '4px', marginBottom: '10px', display: 'inline-block' }}>
                 {dropdownField}
               </span>
-              
+
               {/* Show dropdown only if blankOrNot is "1" */}
               {blankOrNot && (
-                <span style={{ 
-                  display: 'inline-block', 
+                <span style={{
+                  display: 'inline-block',
                   verticalAlign: 'middle',
                   margin: '0 4px'
                 }}>
-                  <FormControl 
-                    sx={{ 
-                      minWidth: 120, 
+                  <FormControl
+                    sx={{
+                      minWidth: 120,
                       '& .MuiOutlinedInput-root': {
                         height: '32px',
                         fontSize: '0.9rem'
@@ -119,7 +119,7 @@ const DropdownQuestionComponent = () => {
                       '& .MuiInputLabel-shrink': {
                         transform: 'translate(14px, -6px) scale(0.75)'
                       }
-                    }} 
+                    }}
                     size="small"
                   >
                     <InputLabel>Select</InputLabel>
@@ -143,7 +143,7 @@ const DropdownQuestionComponent = () => {
                   </FormControl>
                 </span>
               )}
-              
+
               {/* Add space after each item except the last one */}
               {index < dropdowns.length - 1 && ' '}
             </span>
@@ -178,6 +178,16 @@ const DropdownQuestionComponent = () => {
         <Typography>Question Type : {question_type}</Typography>
       </Box>
 
+      {/* Question Text */}
+      <Typography
+        variant="h6"
+        fontWeight={700}
+        mb={2}
+        sx={{ textAlign: "center", color: "#2e3760", pt:5 }}
+      >
+        {questionText}
+      </Typography>
+
       {/* Main Box */}
       <Box
         sx={{
@@ -189,15 +199,7 @@ const DropdownQuestionComponent = () => {
           boxShadow: "0 4px 12px rgba(0,0,0,0.06)",
         }}
       >
-        {/* Question Text */}
-        <Typography
-          variant="h6"
-          fontWeight={700}
-          mb={2}
-          sx={{ textAlign: "center", color: "#2e3760" }}
-        >
-          {questionText}
-        </Typography>
+
 
         {/* Tabs */}
         <div className="tabs">
@@ -218,10 +220,12 @@ const DropdownQuestionComponent = () => {
         </div>
 
         {/* Fill in the Blanks Section */}
-        <Box sx={{ mb: 4 }}>
-          {renderFillInTheBlanks()}
-        </Box>
-        
+
+
+      </Box>
+
+      <Box sx={{ mb: 4 }}>
+        {renderFillInTheBlanks()}
       </Box>
     </>
   );
