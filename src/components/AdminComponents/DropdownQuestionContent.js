@@ -575,32 +575,7 @@ const DropdownQuestionContent = () => {
 
                             {dropdown.blank_or_not && (
                                 <>
-                                    <FormControl fullWidth size="small" sx={{ mb: 2 }}>
-                                        <InputLabel id={`correct-answer-label-${dropdownIndex}`}>
-                                            Correct Answer
-                                        </InputLabel>
-                                        <Select
-                                            labelId={`correct-answer-label-${dropdownIndex}`}
-                                            id={`correct-answer-select-${dropdownIndex}`}
-                                            value={dropdown.dropdownanswer || ""}
-                                            onChange={(e) => handleDropdownAnswerChange(dropdownIndex, e.target.value)}
-                                            disabled={dropdown.dropDowneOption.length === 0}
-                                            displayEmpty
-                                            renderValue={dropdown.dropdownanswer ? undefined : () => "Select correct answer"}
-                                        >
-                                            {dropdown.dropDowneOption.length === 0 ? (
-                                                <MenuItem value="" disabled>
-                                                    Add options first
-                                                </MenuItem>
-                                            ) : (
-                                                dropdown.dropDowneOption.map((option, optionIndex) => (
-                                                    <MenuItem key={optionIndex} value={option}>
-                                                        {option || `Option ${optionIndex + 1}`}
-                                                    </MenuItem>
-                                                ))
-                                            )}
-                                        </Select>
-                                    </FormControl>
+                                    
 
                                     <Typography variant="subtitle2" mb={1}>
                                         Dropdown Options:
@@ -635,6 +610,33 @@ const DropdownQuestionContent = () => {
                                     >
                                         Add Option
                                     </Button>
+
+                                    <FormControl fullWidth size="small" sx={{ mb: 2 }}>
+                                        <InputLabel id={`correct-answer-label-${dropdownIndex}`}>
+                                            Correct Answer
+                                        </InputLabel>
+                                        <Select
+                                            labelId={`correct-answer-label-${dropdownIndex}`}
+                                            id={`correct-answer-select-${dropdownIndex}`}
+                                            value={dropdown.dropdownanswer || ""}
+                                            onChange={(e) => handleDropdownAnswerChange(dropdownIndex, e.target.value)}
+                                            disabled={dropdown.dropDowneOption.length === 0}
+                                            displayEmpty
+                                            renderValue={dropdown.dropdownanswer ? undefined : () => "Select correct answer"}
+                                        >
+                                            {dropdown.dropDowneOption.length === 0 ? (
+                                                <MenuItem value="" disabled>
+                                                    Add options first
+                                                </MenuItem>
+                                            ) : (
+                                                dropdown.dropDowneOption.map((option, optionIndex) => (
+                                                    <MenuItem key={optionIndex} value={option}>
+                                                        {option || `Option ${optionIndex + 1}`}
+                                                    </MenuItem>
+                                                ))
+                                            )}
+                                        </Select>
+                                    </FormControl>
                                 </>
                             )}
                         </Card>
