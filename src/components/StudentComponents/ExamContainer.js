@@ -368,6 +368,8 @@ const ExamContainer = ({ user }) => {
   // Load question IDs based on mode
   useEffect(() => {
     const loadQuestions = async () => {
+     
+      
       setLoading(true);
       setError(null);
       try {
@@ -388,6 +390,7 @@ const ExamContainer = ({ user }) => {
           setCurrentIndex(0);
         } else {
           dispatch(getQBankQuestions());
+          
         }
         setLoading(false);
       } catch (err) {
@@ -402,6 +405,9 @@ const ExamContainer = ({ user }) => {
     }
     loadQuestions();
   }, [dispatch, isTestMode, testId, isSampleMode]);
+ 
+  
+  
 
   // Sync QBank question IDs if not test or sample mode
   useEffect(() => {
