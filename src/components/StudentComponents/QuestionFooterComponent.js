@@ -40,7 +40,7 @@ const QuestionFooterComponent = ({
 
       <div className="right-buttons">
         {/*  Conditionally render Previous button */}
-        {showPrevious && (
+        {/* {showPrevious && (
           <Button
             startIcon={<ArrowBackIosNewIcon />}
             onClick={onPrevious}
@@ -49,7 +49,7 @@ const QuestionFooterComponent = ({
           >
             Previous
           </Button>
-        )}
+        )} */}
         
         <Button
           endIcon={<ArrowForwardIosIcon />}
