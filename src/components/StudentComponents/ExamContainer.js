@@ -1,5 +1,3 @@
-
-
 // import React, { useState, useEffect, useCallback, useMemo } from 'react';
 // import { useDispatch, useSelector } from 'react-redux';
 // import { useLocation, useNavigate } from 'react-router-dom';
@@ -52,7 +50,7 @@
 //     qBankQuestionData: qBankCurrentQuestion,
 //     qBankQuestionDataLoading
 //   } = useSelector((state) => state.exam);
-  
+
 //   // Local state
 //   const [questionIds, setQuestionIds] = useState([]);
 //   const [currentQuestion, setCurrentQuestion] = useState(null);
@@ -109,7 +107,6 @@
 //       setQuestionIds(qBankQuestionIds);
 //     }
 //   }, [isTestMode, isSampleMode, qBankQuestionIds]);
-
 
 //   useEffect(() => {
 //     const loadQuestionData = async () => {
@@ -171,7 +168,6 @@
 //     // Placeholder
 //   };
 
- 
 //   const handleEnd = async () => {
 //     if (isTestMode) {
 //       try {
@@ -190,7 +186,7 @@
 //         setError(err.message || 'Failed to submit test.');
 //       }
 //     } else {
-   
+
 //       console.log('Navigating back to home');
 //       navigate('/');
 //     }
@@ -243,14 +239,13 @@
 //     );
 //   }
 
- 
 //   const showPrevious = isSampleMode || (!isTestMode && !isSampleMode);
 
 //   return (
 //     <>
 //       {/* Conditional Navbar - Hide for sample mode */}
 //       {!isSampleMode && <DashboardNavbar />}
-      
+
 //       <QuestionHeaderComponent
 //         questionNumber={currentIndex + 1}
 //         totalQuestions={questionIds.length}
@@ -275,7 +270,7 @@
 //           <p>No question data available</p>
 //         )}
 //       </div>
-    
+
 //       <QuestionFooterComponent
 //         onEnd={handleEnd}
 //         onPause={handlePause}
@@ -287,7 +282,7 @@
 //         totalQuestions={questionIds.length}
 //         customButtonText={isTestMode ? "Submit & Exit" : "Back to Home"}
 //         customOnClick={handleEnd}
-//         showPrevious={showPrevious}  
+//         showPrevious={showPrevious}
 //       />
 //     </>
 //   );
@@ -295,24 +290,23 @@
 
 // export default ExamContainer;
 
-
-import React, { useState, useEffect, useCallback, useMemo } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import { useLocation, useNavigate } from 'react-router-dom';
-import DashboardNavbar from '../../components/StudentComponents/StudentNavbar';
-import QuestionHeaderComponent from './QuestionHeaderComponent';
-import QuestionFooterComponent from './QuestionFooterComponent';
-import MCQ from './MCQQuestionComponent';
-import Dropdown from './DropdownQuestionComponent';
-import Sorting from './SortQuestionComponent';
-import FillIn from './FillInQuestionComponent';
-import DragDrop from './DragDropQuestionComponent';
-import SentenceHighlight from './SentenceQuestionComponent';
-import MultiRadio from './MultiRadioQuestionComponent';
+import React, { useState, useEffect, useCallback, useMemo } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { useLocation, useNavigate } from "react-router-dom";
+import DashboardNavbar from "../../components/StudentComponents/StudentNavbar";
+import QuestionHeaderComponent from "./QuestionHeaderComponent";
+import QuestionFooterComponent from "./QuestionFooterComponent";
+import MCQ from "./MCQQuestionComponent";
+import Dropdown from "./DropdownQuestionComponent";
+import Sorting from "./SortQuestionComponent";
+import FillIn from "./FillInQuestionComponent";
+import DragDrop from "./DragDropQuestionComponent";
+import SentenceHighlight from "./SentenceQuestionComponent";
+import MultiRadio from "./MultiRadioQuestionComponent";
 import {
   getQBankQuestions,
-  getQBankQuestionData
-} from '../../features/exam/examSlice';
+  getQBankQuestionData,
+} from "../../features/exam/examSlice";
 import {
   fetchTestQuestions,
   fetchTestQuestionData,
@@ -320,16 +314,16 @@ import {
   submitTest,
   fetchSampleQuestionnaireIds,
   fetchSampleQuestionData,
-} from '../../features/exam/examAPI';
+} from "../../features/exam/examAPI";
 
 const questionTypeToComponent = {
-  'MCQ': MCQ,
-  'Dropdown': Dropdown,
-  'Sorting': Sorting,
-  'Fill in the Blanks': FillIn,
-  'Drag Drop': DragDrop,
-  'Sentence Highlight': SentenceHighlight,
-  'Multiple Radio': MultiRadio,
+  MCQ: MCQ,
+  Dropdown: Dropdown,
+  Sorting: Sorting,
+  "Fill in the Blanks": FillIn,
+  "Drag Drop": DragDrop,
+  "Sentence Highlight": SentenceHighlight,
+  "Multiple Radio": MultiRadio,
 };
 
 const ExamContainer = ({ user }) => {
@@ -337,22 +331,20 @@ const ExamContainer = ({ user }) => {
   const navigate = useNavigate();
   const location = useLocation();
   const queryParams = new URLSearchParams(location.search);
-  const testId = queryParams.get('testId');
-  const mode = queryParams.get('mode');
+  const testId = queryParams.get("testId");
+  const mode = queryParams.get("mode");
   const isTestMode = !!testId;
-  const isSampleMode = mode === 'sample';
+  const isSampleMode = mode === "sample";
   const { qBankQuestion: qBankQuestionIds, qBankQuestionLoading } = useSelector(
     (state) => state.exam
   );
-  const {
-    qBankQuestionData: qBankCurrentQuestion,
-    qBankQuestionDataLoading
-  } = useSelector((state) => state.exam);
-  
+  const { qBankQuestionData: qBankCurrentQuestion, qBankQuestionDataLoading } =
+    useSelector((state) => state.exam);
+
   // FIX: Get user from Redux for login check (adjust slice path if needed, e.g., state.auth)
-  const reduxUser = useSelector((state) => state.user);  // Assumes state.user has isLoggedIn or id
-  const isLoggedIn = reduxUser?.isLoggedIn || !!reduxUser?.id || !!user?.id;  // Flexible check (use prop or Redux)
-  
+  const reduxUser = useSelector((state) => state.user); // Assumes state.user has isLoggedIn or id
+  const isLoggedIn = reduxUser?.isLoggedIn || !!reduxUser?.id || !!user?.id; // Flexible check (use prop or Redux)
+
   // Local state
   const [questionIds, setQuestionIds] = useState([]);
   const [currentQuestion, setCurrentQuestion] = useState(null);
@@ -374,16 +366,19 @@ const ExamContainer = ({ user }) => {
         if (isTestMode) {
           const questionIds = await fetchTestQuestions(testId);
           if (!questionIds || questionIds.length === 0) {
-            throw new Error('No questions found for this test');
+            throw new Error("No questions found for this test");
           }
           setQuestionIds(questionIds);
           setCurrentIndex(0);
         } else if (isSampleMode) {
           const sampleQuestionIdsResponse = await fetchSampleQuestionnaireIds();
-          if (!sampleQuestionIdsResponse || sampleQuestionIdsResponse.length === 0) {
-            throw new Error('No sample questions found');
+          if (
+            !sampleQuestionIdsResponse ||
+            sampleQuestionIdsResponse.length === 0
+          ) {
+            throw new Error("No sample questions found");
           }
-          const ids = sampleQuestionIdsResponse.map(item => item.id);
+          const ids = sampleQuestionIdsResponse.map((item) => item.id);
           setQuestionIds(ids);
           setCurrentIndex(0);
         } else {
@@ -391,12 +386,12 @@ const ExamContainer = ({ user }) => {
         }
         setLoading(false);
       } catch (err) {
-        setError(err.message || 'Failed to load questions.');
+        setError(err.message || "Failed to load questions.");
         setLoading(false);
       }
     };
     if (isTestMode && !testId) {
-      setError('Test ID is required for test mode');
+      setError("Test ID is required for test mode");
       setLoading(false);
       return;
     }
@@ -413,7 +408,11 @@ const ExamContainer = ({ user }) => {
   // Load current question data
   useEffect(() => {
     const loadQuestionData = async () => {
-      if (questionIds && questionIds.length > 0 && currentIndex < questionIds.length) {
+      if (
+        questionIds &&
+        questionIds.length > 0 &&
+        currentIndex < questionIds.length
+      ) {
         const questionId = questionIds[currentIndex];
         try {
           setLoading(true);
@@ -429,7 +428,7 @@ const ExamContainer = ({ user }) => {
           }
           setLoading(false);
         } catch (err) {
-          setError(err.message || 'Failed to load question data.');
+          setError(err.message || "Failed to load question data.");
           setLoading(false);
         }
       }
@@ -446,24 +445,27 @@ const ExamContainer = ({ user }) => {
 
   // Timer for elapsed time
   useEffect(() => {
-    const timer = setInterval(() => setElapsedSeconds(prev => prev + 1), 1000);
+    const timer = setInterval(
+      () => setElapsedSeconds((prev) => prev + 1),
+      1000
+    );
     return () => clearInterval(timer);
   }, []);
 
   // Navigation handlers
   const handleNext = useCallback(() => {
     if (questionIds && currentIndex < questionIds.length - 1) {
-      if (isTestMode && !answeredIndices.has(currentIndex)) {
-        console.error('Answer the current question before proceeding');
+      // if (isTestMode && !answeredIndices.has(currentIndex)) {
+        console.error("Answer the current question before proceeding");
+        setCurrentIndex((idx) => idx + 1);
         return;
-      }
-      setCurrentIndex(idx => idx + 1);
+      // }
     }
   }, [questionIds, currentIndex, isTestMode, answeredIndices]);
 
   const handlePrevious = useCallback(() => {
     if (currentIndex > 0 && !answeredIndices.has(currentIndex - 1)) {
-      setCurrentIndex(idx => idx - 1);
+      setCurrentIndex((idx) => idx - 1);
     }
   }, [currentIndex, answeredIndices]);
 
@@ -477,27 +479,32 @@ const ExamContainer = ({ user }) => {
       try {
         const res = await submitTest(testId);
         if (res?.result) {
-          console.log('Test submitted successfully');
-          navigate('/student/tests');
+          console.log("Test submitted successfully");
+          navigate("/student/tests");
         } else {
-          if (res?.message && res.message.toLowerCase().includes('already submitted')) {
-            setError('Test already submitted. Cannot resubmit.');
+          if (
+            res?.message &&
+            res.message.toLowerCase().includes("already submitted")
+          ) {
+            setError("Test already submitted. Cannot resubmit.");
           } else {
-            setError(res?.message || 'Something went wrong while submitting test.');
+            setError(
+              res?.message || "Something went wrong while submitting test."
+            );
           }
         }
       } catch (err) {
-        setError(err.message || 'Failed to submit test.');
+        setError(err.message || "Failed to submit test.");
       }
     } else {
       // For sample/QBank: Conditional home based on login
-      let homePath = '/student/dashboard';  // Default logged-in home (adjust if needed)
+      let homePath = "/student/dashboard"; // Default logged-in home (adjust if needed)
       if (isSampleMode && !isLoggedIn) {
-        homePath = '/';  // Public home without login (landing/home screen)
-        console.log('Sample mode without login: Navigating to public home');
+        homePath = "/"; // Public home without login (landing/home screen)
+        console.log("Sample mode without login: Navigating to public home");
       } else {
         // QBank or logged-in sample: Logged-in home
-        console.log('QBank or logged-in sample: Navigating to student home');
+        console.log("QBank or logged-in sample: Navigating to student home");
       }
       navigate(homePath);
     }
@@ -508,28 +515,37 @@ const ExamContainer = ({ user }) => {
       try {
         const currentQuestionId = questionIds[currentIndex];
         await submitTestQuestion(testId, currentQuestionId, is_correct, mark);
-        setAnswers(prev => ({ ...prev, [currentQuestionId]: { is_correct, mark } }));
-        setAnsweredIndices(prev => new Set([...prev, currentIndex]));
+        setAnswers((prev) => ({
+          ...prev,
+          [currentQuestionId]: { is_correct, mark },
+        }));
+        setAnsweredIndices((prev) => new Set([...prev, currentIndex]));
         if (is_correct) {
-          setCorrectCount(prev => prev + 1);
+          setCorrectCount((prev) => prev + 1);
         } else {
-          setIncorrectCount(prev => prev + 1);
+          setIncorrectCount((prev) => prev + 1);
         }
       } catch (err) {
-        setError(err.message || 'Failed to submit answer.');
+        setError(err.message || "Failed to submit answer.");
       }
     }
   };
 
   const formatTime = (secs) => {
-    const h = Math.floor(secs / 3600).toString().padStart(2, '00');
-    const m = Math.floor((secs % 3600) / 60).toString().padStart(2, '00');
-    const s = (secs % 60).toString().padStart(2, '00');
-    return h === '00' ? `${m}:${s}` : `${h}:${m}:${s}`;
+    const h = Math.floor(secs / 3600)
+      .toString()
+      .padStart(2, "00");
+    const m = Math.floor((secs % 3600) / 60)
+      .toString()
+      .padStart(2, "00");
+    const s = (secs % 60).toString().padStart(2, "00");
+    return h === "00" ? `${m}:${s}` : `${h}:${m}:${s}`;
   };
 
   const QuestionComponent = useMemo(() => {
-    const isQuestionDataLoading = isTestMode ? loading : qBankQuestionDataLoading;
+    const isQuestionDataLoading = isTestMode
+      ? loading
+      : qBankQuestionDataLoading;
     if (currentQuestion && !isQuestionDataLoading) {
       return questionTypeToComponent[currentQuestion.question_type];
     }
@@ -537,7 +553,7 @@ const ExamContainer = ({ user }) => {
   }, [currentQuestion, isTestMode, loading, qBankQuestionDataLoading]);
 
   const isQuestionsListLoading = isTestMode ? loading : qBankQuestionLoading;
-  if (isQuestionsListLoading || (!questionIds || questionIds.length === 0)) {
+  if (isQuestionsListLoading || !questionIds || questionIds.length === 0) {
     return <div>Loading question list...</div>;
   }
 
@@ -556,15 +572,15 @@ const ExamContainer = ({ user }) => {
     <>
       {/* Conditional Navbar - Hide for sample mode */}
       {!isSampleMode && <DashboardNavbar />}
-      
+
       <QuestionHeaderComponent
         questionNumber={currentIndex + 1}
         totalQuestions={questionIds.length}
-        qid={currentQuestion?.id || 'N/A'}
-        user={user?.name || 'Guest'}
+        qid={currentQuestion?.id || "N/A"}
+        user={user?.name || "Guest"}
         time={formatTime(elapsedSeconds)}
       />
-      <div style={{ marginTop: '2rem' }}>
+      <div style={{ marginTop: "2rem" }}>
         {(isTestMode ? loading : qBankQuestionDataLoading) ? (
           <p>Loading question...</p>
         ) : QuestionComponent ? (
@@ -581,19 +597,21 @@ const ExamContainer = ({ user }) => {
           <p>No question data available</p>
         )}
       </div>
-    
+
       <QuestionFooterComponent
         onEnd={handleEnd}
         onPause={handlePause}
         onNext={handleNext}
         onPrevious={handlePrevious}
-        disablePrevious={currentIndex === 0 || answeredIndices.has(currentIndex - 1)}
+        disablePrevious={
+          currentIndex === 0 || answeredIndices.has(currentIndex - 1)
+        }
         disableNext={questionIds && currentIndex === questionIds.length - 1}
         questionNumber={currentIndex + 1}
         totalQuestions={questionIds.length}
         customButtonText={isTestMode ? "Submit & Exit" : "Back to Home"}
         customOnClick={handleEnd}
-        showPrevious={showPrevious}  
+        showPrevious={showPrevious}
       />
     </>
   );

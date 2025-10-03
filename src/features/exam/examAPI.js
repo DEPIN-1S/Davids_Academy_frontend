@@ -1,171 +1,158 @@
 // src/api/examApi.js
 const baseUrl = process.env.REACT_APP_API_URL;
-const accessToken = sessionStorage.getItem('accessToken');
-const refreshToken = sessionStorage.getItem('refreshToken');
-
+const accessToken = sessionStorage.getItem("accessToken");
+const refreshToken = sessionStorage.getItem("refreshToken");
 
 const getToken = () => {
-    const token = sessionStorage.getItem('accessToken');
-    if (!token) {
-        throw new Error('No authentication token found. Please log in.');
-    }
-    return token;
+  const token = sessionStorage.getItem("accessToken");
+  if (!token) {
+    throw new Error("No authentication token found. Please log in.");
+  }
+  return token;
 };
 
 export const postQuestion = async (questionData) => {
-    console.log("question data in api call :::::", questionData);
-    const token = sessionStorage.getItem("accessToken");
-    try {
-        const response = await fetch(baseUrl + "/exam/question", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-                Authorization: `Bearer ${token}`
-            },
-            body: JSON.stringify(questionData)
-        });
+  console.log("question data in api call :::::", questionData);
+  const token = sessionStorage.getItem("accessToken");
+  try {
+    const response = await fetch(baseUrl + "/exam/question", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify(questionData),
+    });
 
-        if (!response.ok) {
-            throw new Error("Failed to post question");
-        }
-
-        const result = await response.json(); // ✅ store result
-        console.log("result response from api call ::::", result);
-
-        if (result?.message) {
-            console.log("✅ API Response Message:", result.message);
-        }
-
-        return result; // ✅ return after logging
-    } catch (error) {
-        console.error("❌ API Error:", error);
-        throw error;
+    if (!response.ok) {
+      throw new Error("Failed to post question");
     }
-};
 
+    const result = await response.json(); // ✅ store result
+    console.log("result response from api call ::::", result);
+
+    if (result?.message) {
+      console.log("✅ API Response Message:", result.message);
+    }
+
+    return result; // ✅ return after logging
+  } catch (error) {
+    console.error("❌ API Error:", error);
+    throw error;
+  }
+};
 
 //for deleting questions
 export const adminDeleteQuestion = async (id) => {
-    try {
-        const token = sessionStorage.getItem("accessToken");
-        const url = `${baseUrl}/exam/questions/${id}`;
-        const response = await fetch(url, {
-            method: "DELETE",
-            headers: {
-                "Content-Type": "application/json",
-                Authorization: `Bearer ${token}`
-            },
-        },
+  try {
+    const token = sessionStorage.getItem("accessToken");
+    const url = `${baseUrl}/exam/questions/${id}`;
+    const response = await fetch(url, {
+      method: "DELETE",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+    });
 
-        );
-
-        if (!response.ok) {
-            throw new Error(`Failed to delete question with ID ${id}`);
-        }
-
-        return { success: true, id }; // ✅ return the deleted id
-    } catch (error) {
-        throw error;
+    if (!response.ok) {
+      throw new Error(`Failed to delete question with ID ${id}`);
     }
-};
 
+    return { success: true, id }; // ✅ return the deleted id
+  } catch (error) {
+    throw error;
+  }
+};
 
 // api/admin.js
 export const apiDeleteTest = async (id) => {
-    try {
-        const token = sessionStorage.getItem("accessToken");
-        console.log("inside admin delete test API");
-        const url = `${baseUrl}/exam/tests/${id}`;
-        const response = await fetch(url,
-            {
-                method: "DELETE",
-                headers: {
-                    "Content-Type": "application/json",
-                    Authorization: `Bearer ${token}`
-                }
-            }
-        );
+  try {
+    const token = sessionStorage.getItem("accessToken");
+    console.log("inside admin delete test API");
+    const url = `${baseUrl}/exam/tests/${id}`;
+    const response = await fetch(url, {
+      method: "DELETE",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+    });
 
-        if (!response.ok) {
-            throw new Error(`Failed to delete test with ID ${id}`);
-        }
-
-        return { success: true, id };
-    } catch (error) {
-        console.error("Error deleting test:", error);
-        throw error;
+    if (!response.ok) {
+      throw new Error(`Failed to delete test with ID ${id}`);
     }
+
+    return { success: true, id };
+  } catch (error) {
+    console.error("Error deleting test:", error);
+    throw error;
+  }
 };
-
-
-
 
 //for fetching mock test questing to create test
 export const fetchMockTestQuestionsByCourseId = async (courseId) => {
-    try {
-        const token = sessionStorage.getItem("accessToken");
-        const response = await fetch(
-            `${baseUrl}/exam/list/mock-test-questions?courseId=${courseId}`,
-            {
-                headers: {
-                    "Content-Type": "application/json",
-                    Authorization: `Bearer ${token}`
-                }
-            }
+  try {
+    const token = sessionStorage.getItem("accessToken");
+    const response = await fetch(
+      `${baseUrl}/exam/list/mock-test-questions?courseId=${courseId}`,
+      {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
 
-        );
-
-        if (!response.ok) {
-            throw new Error("Failed to fetch mock test questions");
-        }
-
-        const data = await response.json();
-        return data.list; // ✅ only return array of questions
-    } catch (error) {
-        throw error;
+    if (!response.ok) {
+      throw new Error("Failed to fetch mock test questions");
     }
-};
 
+    const data = await response.json();
+    return data.list; // ✅ only return array of questions
+  } catch (error) {
+    throw error;
+  }
+};
 
 // src/api/questionTypeApi.js
 export const fetchQuestionTypes = async () => {
-    try {
-        const response = await fetch(baseUrl + "/exam/list/question-types", {
-            headers: {
-                Authorization: `Bearer ${sessionStorage.getItem('accessToken')}`
-            }
-        });
-        if (!response.ok) {
-            throw new Error("Failed to fetch question types");
-        }
-        const data = await response.json();
-        return data.list; // ✅ return only the list array
-    } catch (error) {
-        throw error;
+  try {
+    const response = await fetch(baseUrl + "/exam/list/question-types", {
+      headers: {
+        Authorization: `Bearer ${sessionStorage.getItem("accessToken")}`,
+      },
+    });
+    if (!response.ok) {
+      throw new Error("Failed to fetch question types");
     }
+    const data = await response.json();
+    return data.list; // ✅ return only the list array
+  } catch (error) {
+    throw error;
+  }
 };
-
 
 // list question as per type
 export const fetchMockTestQuestion = async () => {
-    try {
-        const response = await fetch(baseUrl + "/exam/list/questions/mocktest");
+  try {
+    const response = await fetch(baseUrl + "/exam/list/questions/mocktest");
 
-        if (!response.ok) {
-            throw new Error("Failed to fetch question types");
-        }
-        const data = await response.json();
-        return data.list; // ✅ return only the list array
-    } catch (error) {
-        throw error;
+    if (!response.ok) {
+      throw new Error("Failed to fetch question types");
     }
+    const data = await response.json();
+    return data.list; // ✅ return only the list array
+  } catch (error) {
+    throw error;
+  }
 };
 
 //for fetching test questions
 export async function fetchTestQuestionsAPI() {
-    console.log("Inside fetch test questions :::: ");
+  console.log("Inside fetch test questions :::: ");
 
-    /*  const response = await fetch(
+  /*  const response = await fetch(
          "https://lunarsenterprises.com:6040/davidsacademy/student/test/list",
          {
              method: "GET",
@@ -180,397 +167,372 @@ export async function fetchTestQuestionsAPI() {
      return response.json(); // expects JSON array */
 }
 
-
-
 // POST: Create a new test with all necessary details
 export const adminCreateTest = async (testData) => {
+  try {
+    const token = sessionStorage.getItem("accessToken");
+    console.log("✅Test data in api call ::: ", testData);
+    const response = await fetch(`${baseUrl}/exam/tests`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify(testData),
+    });
 
-    try {
-        const token = sessionStorage.getItem("accessToken");
-        console.log("✅Test data in api call ::: ", testData);
-        const response = await fetch(`${baseUrl}/exam/tests`, {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-                Authorization: `Bearer ${token}`
-            },
-            body: JSON.stringify(testData),
-        });
-
-        if (!response.ok) {
-            throw new Error("Failed to create test");
-        }
-
-        return await response.json(); // server response with test details
-    } catch (error) {
-        throw error;
+    if (!response.ok) {
+      throw new Error("Failed to create test");
     }
-};
 
+    return await response.json(); // server response with test details
+  } catch (error) {
+    throw error;
+  }
+};
 
 export const fetchQBankQuestions = async () => {
-    try {
-        const response = await fetch(
-            process.env.REACT_APP_API_URL + "/student/questions/list",
-            {
-                method: "GET",
-                headers: {
-                    Authorization: `Bearer ${sessionStorage.getItem('accessToken')}`
-                }
-            }
-        );
-        if (!response.ok) {
-            throw new Error("Failed to fetch Q-Bank questions");
-        }
-        const data = await response.json();
-        // Response: { result: true, message: "...", data: [...] }
-        return data.data; // Return the array of question IDs
-    } catch (error) {
-        throw error;
+  try {
+    const response = await fetch(
+      process.env.REACT_APP_API_URL + "/student/questions/list",
+      {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${sessionStorage.getItem("accessToken")}`,
+        },
+      }
+    );
+    if (!response.ok) {
+      throw new Error("Failed to fetch Q-Bank questions");
     }
+    const data = await response.json();
+    console.log("QUESTION RESPONSE DATA:" + data['exhibit']);
+    return data.data; // Return the array of question IDs
+  } catch (error) {
+    throw error;
+  }
 };
-
 
 //for fetching mocktest question data and question bank data
 export const fetchQBankQuestionData = async (questionId) => {
-    try {
-        console.log("Inside Question Data :: ");
+  try {
+    console.log("Inside Question Data :: ");
 
-        const response = await fetch(
-            process.env.REACT_APP_API_URL + "/student/questions/data",
-            {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                    Authorization: `Bearer ${sessionStorage.getItem('accessToken')}`
-                },
-                body: JSON.stringify({ questionId: questionId })
-            }
-        );
+    const response = await fetch(
+      process.env.REACT_APP_API_URL + "/student/questions/data",
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${sessionStorage.getItem("accessToken")}`,
+        },
+        body: JSON.stringify({ questionId: questionId }),
+      }
+    );
 
-        if (!response.ok) {
-            throw new Error("Failed to fetch Q-Bank question data");
-        }
-
-        const data = await response.json();
-
-        // The question data is under data.data as per your example
-        return data.data;
-    } catch (error) {
-        throw error;
+    if (!response.ok) {
+      throw new Error("Failed to fetch Q-Bank question data");
     }
-};
 
+    const data = await response.json();
+
+    // The question data is under data.data as per your example
+    return data.data;
+  } catch (error) {
+    throw error;
+  }
+};
 
 // ✅ Fetch Question Bank Test Questions in admin side
 export const adminGetQBankQuestions = async (page = 1, limit = 10) => {
-    try {
-        const url = `${baseUrl}/exam/list/questions/${page}?exam_type=q-bank&limit=${limit}`;
-        console.log("Fetching URL:", url);
-        const token = sessionStorage.getItem("accessToken");
-        const response = await fetch(url, {
-            method: "GET",
-            headers: {
-                Authorization: `Bearer ${token}`
-            }
-        });
+  try {
+    const url = `${baseUrl}/exam/list/questions/${page}?exam_type=q-bank&limit=${limit}`;
+    console.log("Fetching URL:", url);
+    const token = sessionStorage.getItem("accessToken");
+    const response = await fetch(url, {
+      method: "GET",
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
 
-        if (!response.ok) {
-            throw new Error("Failed to fetch Q-Bank questions");
-        }
-
-        const result = await response.json();
-        console.log("✅ Get Question Bank Question ::: ", result);
-
-        return result;
-    } catch (error) {
-        console.error("❌ Q-Bank API Error:", error);
-        throw error;
+    if (!response.ok) {
+      throw new Error("Failed to fetch Q-Bank questions");
     }
+
+    const result = await response.json();
+    console.log("✅ Get Question Bank Question ::: ", result);
+
+    return result;
+  } catch (error) {
+    console.error("❌ Q-Bank API Error:", error);
+    throw error;
+  }
 };
 
 // ✅ Fetch Mock Test Questions in admin side
 export const adminGetMockTestQuestions = async (page = 1, limit = 10) => {
-    try {
-        const url = `${baseUrl}/exam/list/questions/${page}?exam_type=mock test&limit=${limit}`;
-        console.log("Fetching URL:", url);
-        const token = sessionStorage.getItem("accessToken");
-        const response = await fetch(url, {
-            method: "GET",
-            headers: {
-                Authorization: `Bearer ${token}`
-            },
-        });
+  try {
+    const url = `${baseUrl}/exam/list/questions/${page}?exam_type=mock test&limit=${limit}`;
+    console.log("Fetching URL:", url);
+    const token = sessionStorage.getItem("accessToken");
+    const response = await fetch(url, {
+      method: "GET",
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
 
-        if (!response.ok) {
-            throw new Error("Failed to fetch Mock Test questions");
-        }
-
-        const result = await response.json();
-        console.log("✅ Get Mock Test Questions ::: ", result);
-
-        return result;
-    } catch (error) {
-        console.error("❌ Mock Test API Error:", error);
-        throw error;
+    if (!response.ok) {
+      throw new Error("Failed to fetch Mock Test questions");
     }
+
+    const result = await response.json();
+    console.log("✅ Get Mock Test Questions ::: ", result);
+
+    return result;
+  } catch (error) {
+    console.error("❌ Mock Test API Error:", error);
+    throw error;
+  }
 };
-
-
 
 // fetch test questions in admin side
 export async function adminGetTestQuestions(page = 1, limit = 10) {
-    try {
-        console.log("✅ Inside admin test questions :: ");
-        const token = sessionStorage.getItem("accessToken");
-        const response = await fetch(
-            /*  ${baseUrl}/exam/list/questions/${page}?exam_type=mock test&limit=${limit}`; */
-            `https://lunarsenterprises.com:6040/davidsacademy/exam/list/test/${page}`,
-            {
-                method: "GET",
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                    "Content-Type": "application/json"
+  try {
+    console.log("✅ Inside admin test questions :: ");
+    const token = sessionStorage.getItem("accessToken");
+    const response = await fetch(
+      /*  ${baseUrl}/exam/list/questions/${page}?exam_type=mock test&limit=${limit}`; */
+      `https://lunarsenterprises.com:6040/davidsacademy/exam/list/test/${page}`,
+      {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+      }
+    );
 
-                },
-            }
-        );
-
-        if (!response.ok) {
-            throw new Error(`Failed to fetch test questions: ${response.status}`);
-        }
-
-        const data = await response.json();
-        console.log("Data by pagig of test ::::::::::", data);
-        return data; // full response
-
-
-    } catch (error) {
-        console.error("admin Test API Error:", error);
-        throw error;
+    if (!response.ok) {
+      throw new Error(`Failed to fetch test questions: ${response.status}`);
     }
+
+    const data = await response.json();
+    console.log("Data by pagig of test ::::::::::", data);
+    return data; // full response
+  } catch (error) {
+    console.error("admin Test API Error:", error);
+    throw error;
+  }
 }
 
-
-
-export const fetchStudentTests = async (type = 'all') => {
-    try {
-        const token = sessionStorage.getItem("accessToken");
-        const response = await fetch(
-            `${baseUrl}/student/test/list?type=${type}`,
-            {
-                method: 'GET',
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                    'Content-Type': 'application/json',
-                },
-            }
-        );
-        if (!response.ok) {
-            throw new Error('Failed to fetch student tests');
-        }
-        const data = await response.json();
-        // Assuming response structure: { data: [...] } based on TestComponent transformation
-        return data.data || [];
-    } catch (error) {
-        throw error;
+export const fetchStudentTests = async (type = "all") => {
+  try {
+    const token = sessionStorage.getItem("accessToken");
+    const response = await fetch(`${baseUrl}/student/test/list?type=${type}`, {
+      method: "GET",
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
+      },
+    });
+    if (!response.ok) {
+      throw new Error("Failed to fetch student tests");
     }
+    const data = await response.json();
+    // Assuming response structure: { data: [...] } based on TestComponent transformation
+    return data.data || [];
+  } catch (error) {
+    throw error;
+  }
 };
-
-
 
 // List all questions in a specific test (POST based on provided testapis)
 export const fetchTestQuestions = async (test_id) => {
-    try {
-        const token = sessionStorage.getItem("accessToken");
-        const response = await fetch(
-            `${baseUrl}/student/test/questions`,
-            {
-                method: 'POST',
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ test_id }),
-            }
-        );
+  try {
+    const token = sessionStorage.getItem("accessToken");
+    const response = await fetch(`${baseUrl}/student/test/questions`, {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ test_id }),
+    });
 
-        if (!response.ok) {
-            throw new Error(`Failed to fetch test questions: ${response.status}`);
-        }
-        const data = await response.json();
-        console.log("Test questions with headings:", data);
-        return data.data || data.list || data;
-    } catch (error) {
-        throw error;
+    if (!response.ok) {
+      throw new Error(`Failed to fetch test questions: ${response.status}`);
     }
+    const data = await response.json();
+    console.log("Test questions with headings:", data);
+    return data.data || data.list || data;
+  } catch (error) {
+    throw error;
+  }
 };
-
 
 //Fetch question Data by question id
 export const fetchTestQuestionData = async (test_id, questionId) => {
-    try {
-        const token = sessionStorage.getItem("accessToken");
-        console.log('Fetching question data for:', { test_id, questionId });
+  try {
+    const token = sessionStorage.getItem("accessToken");
+    console.log("Fetching question data for:", { test_id, questionId });
 
-        const response = await fetch(
-            `${baseUrl}/student/test/question/data`,
-            {
-                method: 'POST',
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    test_id: String(test_id),        // String format
-                    questionId: String(questionId)   // camelCase, not snake_case
-                    // No headings_id needed!
-                }),
-            }
-        );
+    const response = await fetch(`${baseUrl}/student/test/question/data`, {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        test_id: String(test_id), // String format
+        questionId: String(questionId), // camelCase, not snake_case
+        // No headings_id needed!
+      }),
+    });
 
-        if (!response.ok) {
-            const errorText = await response.text();
-            console.error('API Error Response:', errorText);
-            throw new Error(`Failed to fetch test question data: ${response.status} ${response.statusText}`);
-        }
-
-        const data = await response.json();
-        console.log("Question data received:", data);
-
-        if (data.result && data.data) {
-            return data.data;
-        } else {
-            throw new Error(data.message || 'No question data received');
-        }
-    } catch (error) {
-        console.error('fetchTestQuestionData error:', error);
-        throw error;
+    if (!response.ok) {
+      const errorText = await response.text();
+      console.error("API Error Response:", errorText);
+      throw new Error(
+        `Failed to fetch test question data: ${response.status} ${response.statusText}`
+      );
     }
+
+    const data = await response.json();
+    console.log("Question data received:", data);
+
+    if (data.result && data.data) {
+      return data.data;
+    } else {
+      throw new Error(data.message || "No question data received");
+    }
+  } catch (error) {
+    console.error("fetchTestQuestionData error:", error);
+    throw error;
+  }
 };
 
-
 // Submit test question (POST based on provided testapis)
-export const submitTestQuestion = async (test_id, questionId, is_correct, mark) => {
-    try {
-        const token = sessionStorage.getItem("accessToken");
-        const response = await fetch(
-            `${baseUrl}/student/test/question/submit`,
-            {
-                method: 'POST',
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ test_id, questionId, is_correct, mark }),
-            }
-        );
-        if (!response.ok) {
-            throw new Error('Failed to submit test question');
-        }
-        const data = await response.json();
-        // Return full response for any messages or results
-        return data;
-    } catch (error) {
-        throw error;
+export const submitTestQuestion = async (
+  test_id,
+  questionId,
+  is_correct,
+  mark
+) => {
+  try {
+    const token = sessionStorage.getItem("accessToken");
+    const response = await fetch(`${baseUrl}/student/test/question/submit`, {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ test_id, questionId, is_correct, mark }),
+    });
+    if (!response.ok) {
+      throw new Error("Failed to submit test question");
     }
+    const data = await response.json();
+    // Return full response for any messages or results
+    return data;
+  } catch (error) {
+    throw error;
+  }
 };
 
 // Submit entire test (POST based on provided testapis)
 export const submitTest = async (test_id) => {
-    try {
-        const token = sessionStorage.getItem("accessToken");
-        const response = await fetch(
-            `${baseUrl}/student/test/submit`,
-            {
-                method: 'POST',
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ test_id }),
-            }
-        );
-        if (!response.ok) {
-            throw new Error('Failed to submit test');
-        }
-        const data = await response.json();
-        // Return full response
-        return data;
-    } catch (error) {
-        throw error;
+  try {
+    const token = sessionStorage.getItem("accessToken");
+    const response = await fetch(`${baseUrl}/student/test/submit`, {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ test_id }),
+    });
+    if (!response.ok) {
+      throw new Error("Failed to submit test");
     }
+    const data = await response.json();
+    // Return full response
+    return data;
+  } catch (error) {
+    throw error;
+  }
 };
-
-
 
 // examApi.js
 //api for fetching questions by id in admin side
 export const adminFetchQuestionByQID = async (questionId) => {
-    console.log("➡️ API adminFetchQuestionByQID called with ID:", questionId);
+  console.log("➡️ API adminFetchQuestionByQID called with ID:", questionId);
 
-    try {
-        const token = sessionStorage.getItem("accessToken");
-        const response = await fetch(`${baseUrl}/student/questions/data`, {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-                Authorization: `Bearer ${token}`,
-            },
-            body: JSON.stringify({ questionId }), // ✅ send in body
-        });
+  try {
+    const token = sessionStorage.getItem("accessToken");
+    const response = await fetch(`${baseUrl}/student/questions/data`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify({ questionId }), // ✅ send in body
+    });
 
-        if (!response.ok) {
-            throw new Error("Failed to fetch question");
-        }
-
-        const result = await response.json();
-        return result; // single question object
-    } catch (error) {
-        console.error("❌ Error in adminFetchQuestionByQID:", error);
-        throw error;
+    if (!response.ok) {
+      throw new Error("Failed to fetch question");
     }
+
+    const result = await response.json();
+    return result; // single question object
+  } catch (error) {
+    console.error("❌ Error in adminFetchQuestionByQID:", error);
+    throw error;
+  }
 };
 // Fetch sample question IDs (GET, no auth)
 export const fetchSampleQuestionnaireIds = async () => {
-    try {
-        const response = await fetch(`${baseUrl}/exam/sample-questionnaire`, {
-            method: "GET",
-            headers: {
-                "Content-Type": "application/json",
-            },
-        });
+  try {
+    const response = await fetch(`${baseUrl}/exam/sample-questionnaire`, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
 
-        if (!response.ok) {
-            throw new Error("Failed to fetch sample questionnaire IDs");
-        }
-
-        const data = await response.json();
-        return data.data; // Matches your Postman response structure: array of {id: number}
-    } catch (error) {
-        throw error;
+    if (!response.ok) {
+      throw new Error("Failed to fetch sample questionnaire IDs");
     }
+
+    const data = await response.json();
+    return data.data; // Matches your Postman response structure: array of {id: number}
+  } catch (error) {
+    throw error;
+  }
 };
 
 // Fetch question data by ID (POST, no auth, adapted from fetchQBankQuestionData)
 export const fetchSampleQuestionData = async (questionId) => {
-    try {
-        const response = await fetch(`${baseUrl}/student/questions/sample-questionnaire`, {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-            },
-            body: JSON.stringify({ questionId }),
-        });
+  try {
+    const response = await fetch(
+      `${baseUrl}/student/questions/sample-questionnaire`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ questionId }),
+      }
+    );
 
-        if (!response.ok) {
-            throw new Error("Failed to fetch sample question data");
-        }
-
-        const data = await response.json();
-        return data.data; // Assumes structure with question details
-    } catch (error) {
-        throw error;
+    if (!response.ok) {
+      throw new Error("Failed to fetch sample question data");
     }
-};
 
+    const data = await response.json();
+    return data.data; // Assumes structure with question details
+  } catch (error) {
+    throw error;
+  }
+};
