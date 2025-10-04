@@ -35,7 +35,7 @@ const DragdropQuestionContent = () => {
     const cs_id = location.state?.cs_id || "";
     const exam_type = location.state?.exam_type || "";
     const question_type_id = location.state?.question_type_id || "";
-
+    const [instruction, setInstruction] = useState(existingData.instruction || "")
     // Form state
     const [question, setQuestion] = useState(existingData.question || "");
     const [dragDropContent, setDragDropContent] = useState(existingData.drag_drop_content || "");
@@ -176,6 +176,9 @@ const DragdropQuestionContent = () => {
         }]);
     };
 
+
+
+
     const handleRemoveDragDropSection = (index) => {
         if (dragAndDrop.length > 1) {
             const newDragAndDrop = dragAndDrop.filter((_, i) => i !== index);
@@ -228,6 +231,7 @@ const DragdropQuestionContent = () => {
             question_type_id: question_type_id,
             question: question.trim(),
             drag_drop_content: dragDropContent.trim(),
+            instruction: instruction.trim(),
             tabs: tabs.filter(tab => tab.tabKey.trim() && tab.tabValue.trim()),
             drag_and_drop: dragAndDrop.filter(section =>
                 section.option_heading.trim() &&
@@ -299,20 +303,20 @@ const DragdropQuestionContent = () => {
         return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
     };
 
-   const isFormValid = () => {
-    const hasValidQuestion = question.trim() !== "";
-    const hasValidContent = dragDropContent.trim() !== "";
-    const hasValidTabs = tabs.some(tab => tab.tabKey.trim() && tab.tabValue.trim());
+    const isFormValid = () => {
+        const hasValidQuestion = question.trim() !== "";
+        const hasValidContent = dragDropContent.trim() !== "";
+        const hasValidTabs = tabs.some(tab => tab.tabKey.trim() && tab.tabValue.trim());
+        const hasValidInstruction = instruction.trim() !== ""
+        // ✅ Require ALL sections to be valid
+        const hasValidSections = dragAndDrop.every(section =>
+            section.option_heading.trim() &&
+            section.question_answer.trim() &&
+            section.option_value.some(val => val.trim())
+        );
 
-    // ✅ Require ALL sections to be valid
-    const hasValidSections = dragAndDrop.every(section =>
-        section.option_heading.trim() &&
-        section.question_answer.trim() &&
-        section.option_value.some(val => val.trim())
-    );
-
-    return hasValidQuestion && hasValidContent && hasValidTabs && hasValidSections;
-};
+        return hasValidQuestion && hasValidContent && hasValidTabs && hasValidSections && hasValidInstruction;
+    };
 
 
     // Cleanup on unmount
@@ -512,6 +516,8 @@ const DragdropQuestionContent = () => {
                                 onChange={(e) => handleTabChange(index, 'tabValue', e.target.value)}
                                 placeholder="Enter the content that will be displayed in this tab..."
                             />
+
+                            
                         </Card>
                     ))}
 
@@ -531,6 +537,28 @@ const DragdropQuestionContent = () => {
                     )}
                 </AccordionDetails>
             </Accordion>
+
+
+            <Typography variant="h6" mb={1} color="primary">
+                Instruction*
+            </Typography>
+            <TextField
+                fullWidth
+                label="Enter Question instruction"
+                multiline
+                minRows={3}
+                maxRows={6}
+                value={instruction}
+                onChange={(e) => {
+                    setInstruction(e.target.value);
+                    setErrors(prev => ({ ...prev, instruction: null }));
+                }}
+                variant="outlined"
+                placeholder="Type your dropdown question instruction here..."
+                error={!!errors.instruction}
+                helperText={errors.instruction}
+                sx={{ mb: 3 }}
+            />
 
             {/* Drag & Drop Sections */}
             <Accordion defaultExpanded sx={{ mb: 3 }}>
