@@ -29,13 +29,72 @@ export const postQuestion = async (questionData) => {
     }
 
     const result = await response.json(); // ✅ store result
-   
+    console.log("result response from api call ::::", result);
 
     if (result?.message) {
       console.log("✅ API Response Message:", result.message);
     }
 
     return result; // ✅ return after logging
+  } catch (error) {
+    console.error("❌ API Error:", error);
+    throw error;
+  }
+};
+
+//for uploading tab image
+export const uploadTabImageApi = async (formData) => {
+  console.log("Uploading tab image with formData:", formData);
+  const token = sessionStorage.getItem("accessToken");
+  try {
+    const response = await fetch(baseUrl + "/exam/tab-image", {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${token}`, // don't set Content-Type for FormData
+      },
+      body: formData,
+    });
+
+    if (!response.ok) {
+      throw new Error("Failed to upload tab image");
+    }
+
+    const result = await response.json();
+    console.log("Tab image upload result:", result);
+
+    if (result?.message) {
+      console.log("✅ API Response Message:", result.message);
+    }
+
+    return result; // return uploaded file info
+  } catch (error) {
+    console.error("❌ API Error:", error);
+    throw error;
+  }
+};
+
+export const deleteTabImageApi = async (fileName) => {
+  console.log("Filename inside api call ::", fileName); // should log just "1759497132590-771453467.png"
+  const token = sessionStorage.getItem("accessToken");
+
+  try {
+    const response = await fetch(baseUrl + "/exam/tab-image", {
+      method: "DELETE", // backend expects DELETE
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify({ fileName }), // ✅ key must match backend
+    });
+
+    if (!response.ok) {
+      const errText = await response.text(); // log backend response
+      throw new Error(`Failed to delete tab image: ${errText}`);
+    }
+
+    const result = await response.json();
+    console.log("delete tab image api:", result);
+    return result;
   } catch (error) {
     console.error("❌ API Error:", error);
     throw error;
@@ -206,15 +265,16 @@ export const fetchQBankQuestions = async () => {
       throw new Error("Failed to fetch Q-Bank questions");
     }
     const data = await response.json();
-    console.log("QUESTION RESPONSE DATA:" + data['exhibit']);
+    // Response: { result: true, message: "...", data: [...] }
     return data.data; // Return the array of question IDs
   } catch (error) {
     throw error;
   }
 };
 
-//for fetching mocktest question data and question bank data
+//for fetching question bank data
 export const fetchQBankQuestionData = async (questionId) => {
+  console.log("Inside question bank fetching data");
   try {
     console.log("Inside Question Data :: ");
 

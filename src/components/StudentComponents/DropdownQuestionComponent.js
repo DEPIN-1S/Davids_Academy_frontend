@@ -1,16 +1,31 @@
-import React, { useState, useEffect } from 'react';
-import { Box, Typography, FormControl, InputLabel, Select, MenuItem, Button, Tabs, Tab, List, ListItem, ListItemText, useMediaQuery, useTheme } from '@mui/material';
-import RevealAnswerComponent from './RevealAnswerComponent';
+import React, { useState, useEffect } from "react";
+import {
+  Box,
+  Typography,
+  FormControl,
+  InputLabel,
+  Select,
+  MenuItem,
+  Button,
+  Tabs,
+  Tab,
+  List,
+  ListItem,
+  ListItemText,
+  useMediaQuery,
+  useTheme,
+} from "@mui/material";
+import RevealAnswerComponent from "./RevealAnswerComponent";
 
 const DropdownQuestionComponent = ({ question, onSubmit }) => {
   const theme = useTheme();
-  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
+  const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
 
   const [activeTab, setActiveTab] = useState(0);
   const [dropdownValues, setDropdownValues] = useState({});
   const [showReveal, setShowReveal] = useState(false);
-  const [userAnswer, setUserAnswer] = useState('');
-  const [correctAnswer, setCorrectAnswer] = useState('');
+  const [userAnswer, setUserAnswer] = useState("");
+  const [correctAnswer, setCorrectAnswer] = useState("");
   const [isCorrect, setIsCorrect] = useState(false);
 
   // Extract data from question prop
@@ -28,7 +43,7 @@ const DropdownQuestionComponent = ({ question, onSubmit }) => {
     const initialValues = {};
     dropdownquestiontext.forEach((dt) => {
       if (dt?.id) {
-        initialValues[dt.id] = '';
+        initialValues[dt.id] = "";
       }
     });
     setDropdownValues(initialValues);
@@ -53,25 +68,33 @@ const DropdownQuestionComponent = ({ question, onSubmit }) => {
     const userAnswerStr = dropdownquestiontext
       .map((dt) => {
         const dropdownId = dt.id;
-        return `${dt.dropdownField || 'Option'}: ${dropdownValues[dropdownId] || 'Not selected'}`;
+        return `${dt.dropdownField || "Option"}: ${
+          dropdownValues[dropdownId] || "Not selected"
+        }`;
       })
-      .join(', ');
+      .join(", ");
 
     // Correct answer: assuming from drag_drop_answer or first option (customize based on data)
     const correctAnswerStr = dropdownquestiontext
       .map((dt) => {
-        const correctOpt = dt.dropdownoption?.find(opt => opt.is_correct) || dt.dropdownoption[0]; 
-        return `${dt.dropdownField || 'Option'}: ${correctOpt?.dropdownValue || 'Not available'}`;
+        const correctOpt =
+          dt.dropdownoption?.find((opt) => opt.is_correct) ||
+          dt.dropdownoption[0];
+        return `${dt.dropdownField || "Option"}: ${
+          correctOpt?.dropdownValue || "Not available"
+        }`;
       })
-      .join(', ');
+      .join(", ");
 
     // Check correctness (exact match for all dropdowns)
     const correctStatus = dropdownquestiontext.every((dt) => {
       const dropdownId = dt.id;
-      const correctVal = dt.dropdownoption?.find(opt => opt.is_correct)?.dropdownValue || dt.dropdownoption[0]?.dropdownValue;
+      const correctVal =
+        dt.dropdownoption?.find((opt) => opt.is_correct)?.dropdownValue ||
+        dt.dropdownoption[0]?.dropdownValue;
       return dropdownValues[dropdownId] === correctVal;
     });
-    const mark = correctStatus ? (question?.marks || 5) : 0;
+    const mark = correctStatus ? question?.marks || 5 : 0;
 
     // Call onSubmit from ExamContainer
     onSubmit(questionId, correctStatus, mark, userAnswerStr);
@@ -86,7 +109,7 @@ const DropdownQuestionComponent = ({ question, onSubmit }) => {
   // Loading or no data state
   if (!question || !dropdownquestiontext.length) {
     return (
-      <Box sx={{ padding: 2, textAlign: 'center' }}>
+      <Box sx={{ padding: 2, textAlign: "center" }}>
         <Typography>No dropdown question data available</Typography>
       </Box>
     );
@@ -95,12 +118,12 @@ const DropdownQuestionComponent = ({ question, onSubmit }) => {
   return (
     <Box
       sx={{
-        backgroundColor: '#fff',
-        borderRadius: '1.5rem',
-        padding: '2rem',
-        margin: '2rem auto',
-        maxWidth: '950px',
-        boxShadow: '0 4px 12px rgba(0,0,0,0.06)',
+        backgroundColor: "#fff",
+        borderRadius: "1.5rem",
+        padding: "2rem",
+        margin: "2rem auto",
+        maxWidth: "950px",
+        boxShadow: "0 4px 12px rgba(0,0,0,0.06)",
       }}
     >
       {/* Question Text */}
@@ -108,11 +131,10 @@ const DropdownQuestionComponent = ({ question, onSubmit }) => {
         variant="h6"
         fontWeight={700}
         mb={2}
-        sx={{ textAlign: 'center', color: '#2e3760' }}
+        sx={{ textAlign: "center", color: "#2e3760" }}
       >
         {questionText}
       </Typography>
-
 
       {tabsInfo.length > 0 && (
         <>
@@ -120,8 +142,8 @@ const DropdownQuestionComponent = ({ question, onSubmit }) => {
             value={Math.min(activeTab, tabsInfo.length - 1)}
             onChange={handleTabChange}
             centered={!isMobile}
-            variant={isMobile ? 'scrollable' : 'standard'}
-            scrollButtons={isMobile ? 'auto' : false}
+            variant={isMobile ? "scrollable" : "standard"}
+            scrollButtons={isMobile ? "auto" : false}
             sx={{ mb: 2 }}
           >
             {tabsInfo.map((tab, i) => (
@@ -130,15 +152,16 @@ const DropdownQuestionComponent = ({ question, onSubmit }) => {
           </Tabs>
           <Box
             sx={{
-              backgroundColor: '#f8f9ff',
-              borderRadius: '10px',
-              padding: '1rem',
+              backgroundColor: "#f8f9ff",
+              borderRadius: "10px",
+              padding: "1rem",
               mb: 4,
-              minHeight: '100px',
+              minHeight: "100px",
             }}
           >
-            <Typography variant="body1" sx={{ color: '#333' }}>
-              {tabsInfo[Math.min(activeTab, tabsInfo.length - 1)]?.tabValue || 'No content available'}
+            <Typography variant="body1" sx={{ color: "#333" }}>
+              {tabsInfo[Math.min(activeTab, tabsInfo.length - 1)]?.tabValue ||
+                "No content available"}
             </Typography>
           </Box>
         </>
@@ -147,13 +170,13 @@ const DropdownQuestionComponent = ({ question, onSubmit }) => {
       {/* Dropdown */}
       <Box
         sx={{
-          display: 'flex',
-          flexDirection: isMobile ? 'column' : 'row',
-          gap: '1rem',
-          justifyContent: 'center',
-          alignItems: 'center',
+          display: "flex",
+          flexDirection: isMobile ? "column" : "row",
+          gap: "1rem",
+          justifyContent: "center",
+          alignItems: "center",
           mb: 4,
-          flexWrap: 'wrap',
+          flexWrap: "wrap",
         }}
       >
         {dropdownquestiontext.map((dt, index) => {
@@ -166,7 +189,7 @@ const DropdownQuestionComponent = ({ question, onSubmit }) => {
             <FormControl sx={{ minWidth: 160 }} size="small" key={dropdownId}>
               <InputLabel>{dropdownLabel}</InputLabel>
               <Select
-                value={dropdownValues[dropdownId] || ''}
+                value={dropdownValues[dropdownId] || ""}
                 label={dropdownLabel}
                 onChange={handleDropdownChange(dropdownId)}
               >
@@ -193,13 +216,13 @@ const DropdownQuestionComponent = ({ question, onSubmit }) => {
           variant="contained"
           onClick={handleReveal}
           sx={{
-            backgroundColor: '#f4c300',
-            color: '#000',
+            backgroundColor: "#f4c300",
+            color: "#000",
             fontWeight: 600,
-            padding: '0.6rem 2.5rem',
-            borderRadius: '10px',
-            '&:hover': {
-              backgroundColor: '#e0b000',
+            padding: "0.6rem 2.5rem",
+            borderRadius: "10px",
+            "&:hover": {
+              backgroundColor: "#e0b000",
             },
           }}
         >
@@ -210,38 +233,56 @@ const DropdownQuestionComponent = ({ question, onSubmit }) => {
       {/* Reveal Section */}
       {showReveal && (
         <Box sx={{ mt: 4 }}>
-          <Typography variant="subtitle1" fontWeight={600} mb={1} color="#2E3760">
+          <Typography
+            variant="subtitle1"
+            fontWeight={600}
+            mb={1}
+            color="#2E3760"
+          >
             Your Answer:
           </Typography>
           <List dense>
-            {userAnswer.split(', ').map((item, idx) => (
+            {userAnswer.split(", ").map((item, idx) => (
               <ListItem key={idx} disablePadding>
                 <ListItemText primary={item} />
               </ListItem>
             ))}
           </List>
 
-          <Typography variant="subtitle1" fontWeight={600} mt={2} mb={1} color="#2E3760">
+          <Typography
+            variant="subtitle1"
+            fontWeight={600}
+            mt={2}
+            mb={1}
+            color="#2E3760"
+          >
             Correct Answer:
           </Typography>
           <List dense>
-            {correctAnswer.split(', ').map((item, idx) => (
+            {correctAnswer.split(", ").map((item, idx) => (
               <ListItem key={idx} disablePadding>
                 <ListItemText primary={item} />
               </ListItem>
             ))}
           </List>
 
-          <Typography variant="subtitle1" fontWeight={600} mt={2} mb={1} color={isCorrect ? 'green' : 'red'}>
-            {isCorrect ? '✅ Correct!' : '❌ Incorrect'}
+          <Typography
+            variant="subtitle1"
+            fontWeight={600}
+            mt={2}
+            mb={1}
+            color={isCorrect ? "green" : "red"}
+          >
+            {isCorrect ? "✅ Correct!" : "❌ Incorrect"}
           </Typography>
 
-         
           <RevealAnswerComponent
             questionText={questionText}
-            explanationHeading={explanation[0]?.heading || 'Explanation'}
-            explanationParagraphs={explanation.map((exp) => exp.explanation) || []}
-            additionalInfoHeading='Additional Info'
+            explanationHeading={explanation[0]?.heading || "Explanation"}
+            explanationParagraphs={
+              explanation.map((exp) => exp.explanation) || []
+            }
+            additionalInfoHeading="Additional Info"
             additionalInfoParagraphs={[]}
             additionalInfoImage={null}
           />
