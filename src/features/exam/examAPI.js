@@ -325,7 +325,7 @@ export async function adminGetTestQuestions(page = 1, limit = 10) {
         const token = sessionStorage.getItem("accessToken");
         const response = await fetch(
             /*  ${baseUrl}/exam/list/questions/${page}?exam_type=mock test&limit=${limit}`; */
-            `https://lunarsenterprises.com:6040/davidsacademy/exam/list/test/${page}`,
+            `https://lunarsenterprises.com:8002/davidsacademy/exam/list/test/${page}`,
             {
                 method: "GET",
                 headers: {
