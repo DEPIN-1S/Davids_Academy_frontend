@@ -151,7 +151,7 @@ const AnswerExplain = () => {
             correctAnswer: previousQuestionData.correctAnswer,
             createdAt: previousQuestionData.createdAt,
             questionId: previousQuestionData.questionId,
-
+            instruction: previousQuestionData.instruction,
             //for dropdown data
             tabs: previousQuestionData.tabs || [],
             dropdowns: previousQuestionData.dropdowns || [],
