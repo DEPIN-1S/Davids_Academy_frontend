@@ -63,8 +63,8 @@ const DropdownQuestionContent = () => {
         }
     }, [questionFile]);
 
-
-    // here tab image is added to backend when user selects image from their local machine at that moment api call is implemented 
+  // here tab image is added to backend when user selects image from their local machine at that moment api call is triggered
+  
     // File upload handler for tab image
     const handleTabFileUpload = async (index, event) => {
         const file = event.target.files[0];
@@ -611,10 +611,8 @@ const DropdownQuestionContent = () => {
                                         Add Option
                                     </Button>
 
-                                    <FormControl fullWidth size="small" sx={{ mb: 2 }}>
-                                        <InputLabel id={`correct-answer-label-${dropdownIndex}`}>
-                                            Correct Answer
-                                        </InputLabel>
+                                    <FormControl fullWidth size="small" sx={{ mt:3,mb: 2 }}>
+                                       
                                         <Select
                                             labelId={`correct-answer-label-${dropdownIndex}`}
                                             id={`correct-answer-select-${dropdownIndex}`}
