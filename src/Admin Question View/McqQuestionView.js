@@ -71,7 +71,7 @@ function McqQuestionView() {
           {questionData?.data?.exhibit && (
             <img
               width={500}
-              src={`https://lunarsenterprises.com:6040/${questionData.data.exhibit}`}
+              src={`https://lunarsenterprises.com:8002/${questionData.data.exhibit}`}
               alt="Exhibit"
               style={{ maxWidth: '100%', marginBottom: '1rem', borderRadius: 8 }}
             />

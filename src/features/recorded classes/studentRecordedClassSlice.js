@@ -1,7 +1,7 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import axios from 'axios';
 
-const API_BASE_URL = process.env.REACT_APP_API_URL || 'https://lunarsenterprises.com:6040/davidsacademy';
+const API_BASE_URL = process.env.REACT_APP_API_URL || 'https://lunarsenterprises.com:8002/davidsacademy';
 const STUDENT_API_URL = `${API_BASE_URL}/student/recodings/list`;
 // const token = sessionStorage.getItem('accessToken');
 

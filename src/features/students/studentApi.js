@@ -36,7 +36,7 @@ export async function fetchStudentTestProgress(studentId) {
   }
 
   const response = await fetch(
-    "https://lunarsenterprises.com:6040/davidsacademy/admin/student/test",
+    "https://lunarsenterprises.com:8002/davidsacademy/admin/student/test",
     {
       method: "POST",
       headers: {
@@ -61,7 +61,7 @@ export async function fetchStudentTestProgress(studentId) {
 
 export async function editStudent(studentData, token) {
   const response = await fetch(
-    "https://lunarsenterprises.com:6040/davidsacademy/admin/student/edit",
+    "https://lunarsenterprises.com:8002/davidsacademy/admin/student/edit",
     {
       method: "POST",
       headers: {

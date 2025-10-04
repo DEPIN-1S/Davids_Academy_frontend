@@ -212,7 +212,7 @@ export async function fetchTestQuestionsAPI() {
   console.log("Inside fetch test questions :::: ");
 
   /*  const response = await fetch(
-         "https://lunarsenterprises.com:6040/davidsacademy/student/test/list",
+         "https://lunarsenterprises.com:8002/davidsacademy/student/test/list",
          {
              method: "GET",
              headers: {
@@ -364,7 +364,7 @@ export async function adminGetTestQuestions(page = 1, limit = 10) {
     const token = sessionStorage.getItem("accessToken");
     const response = await fetch(
       /*  ${baseUrl}/exam/list/questions/${page}?exam_type=mock test&limit=${limit}`; */
-      `https://lunarsenterprises.com:6040/davidsacademy/exam/list/test/${page}`,
+      `https://lunarsenterprises.com:8002/davidsacademy/exam/list/test/${page}`,
       {
         method: "GET",
         headers: {

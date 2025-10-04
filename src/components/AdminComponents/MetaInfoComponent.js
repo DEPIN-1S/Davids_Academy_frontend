@@ -199,7 +199,6 @@ const MetaInfoComponent = () => {
     };
 
     //Data sets for fileContext
-
     // ✅ MCQ base structure
     const getMCQFormData = () => ({
         questionType: receivedQuestionData.questionType,
@@ -418,7 +417,7 @@ const MetaInfoComponent = () => {
         difficulty: form.difficulty,
         exam_type: receivedQuestionData.exam_type,
         tabs: receivedQuestionData.tabs || [],
-        instruction: receivedQuestionData.instruction || "",
+        instructions: receivedQuestionData.instruction || "",
         dropdowns: receivedQuestionData.dropdowns || [],
         explanationHeading: receivedQuestionData.explanationHeading || "",
         explanationText: receivedQuestionData.explanationText || "",
@@ -436,6 +435,7 @@ const MetaInfoComponent = () => {
         drag_drop_content: receivedQuestionData.drag_drop_content || "",
         difficulty: form.difficulty || "",
         tabs: receivedQuestionData.tabs || [],
+        instructions: receivedQuestionData.instruction || "",
         drag_and_drop: receivedQuestionData.drag_and_drop || [],
         explanationHeading: receivedQuestionData.explanationHeading || "",
         explanationText: receivedQuestionData.explanationText || "",
@@ -451,6 +451,7 @@ const MetaInfoComponent = () => {
         courseId: receivedQuestionData.cs_id,
         exam_type: receivedQuestionData.exam_type,
         question: receivedQuestionData.question || "",
+       
         sortItems: receivedQuestionData.sortitems || [],
         difficulty: form.difficulty || "",
         explanationHeading: receivedQuestionData.explanationHeading || "",
@@ -484,6 +485,7 @@ const MetaInfoComponent = () => {
         exam_type: receivedQuestionData.exam_type,
         question: receivedQuestionData.question || "",
         difficulty: form.difficulty || "",
+        instructions: receivedQuestionData.instruction || "",
         tabs: receivedQuestionData.tabs || [],
         question_content: receivedQuestionData.question_content,
         radio_options: receivedQuestionData.radio_options || [],
@@ -501,6 +503,7 @@ const MetaInfoComponent = () => {
         exam_type: receivedQuestionData.exam_type,
         question: receivedQuestionData.question || "",
         difficulty: form.difficulty || "",
+        instructions: receivedQuestionData.instruction || "",
         tabs: receivedQuestionData.tabs || [],
         highlightoptions: receivedQuestionData.correctHighlights,
         passage: receivedQuestionData.passage,

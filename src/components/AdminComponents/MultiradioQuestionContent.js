@@ -27,21 +27,22 @@ import { CloudUpload, Delete, Image, PictureAsPdf, Description, ExpandMore } fro
 import { useNavigate, useLocation } from 'react-router-dom';
 // ✅ Updated import path (might need adjustment based on your project structure)
 import { useFileContext } from '../../context/FileContext'; // or '../../context/FileContext'
+import { deleteTabImage, uploadTabImage } from "../../features/exam/examSlice";
+import { useDispatch } from "react-redux";
+
 
 const MultiradioQuestionContent = () => {
     const navigate = useNavigate();
     const location = useLocation();
-
     // ✅ Use File Context instead of passing files through navigation
     const { addQuestionFile, questionFile, hasQuestionFile } = useFileContext();
-
     // Get any existing data from previous steps
     const existingData = location.state?.questionData || {};
     const questionType = location.state?.questionType || existingData.questionType || "Multiple Radio";
     const cs_id = location.state?.cs_id || "";
     const exam_type = location.state?.exam_type || "";
     const question_type_id = location.state?.question_type_id || "";
-
+    const [instruction, setInstruction] = useState(existingData.instruction || "")
     // Form state
     const [question, setQuestion] = useState(existingData.question || "");
     const [tabs, setTabs] = useState(existingData.tabs || [
@@ -64,43 +65,86 @@ const MultiradioQuestionContent = () => {
         }
     }, [questionFile]);
 
-    // ✅ File upload handlers - Store in Context instead of passing through navigation
-    const handleFileSelect = (event) => {
+
+    // here tab image is added to backend when user selects image from their local machine at that moment api call is triggered
+    // File upload handler for tab image
+    const dispatch = useDispatch();
+    const handleTabFileUpload = async (index, event) => {
         const file = event.target.files[0];
-        if (file) {
-            if (file.size > 10 * 1024 * 1024) {
-                setErrors(prev => ({ ...prev, file: 'File size must be less than 10MB' }));
-                return;
-            }
+        if (!file) return;
 
-            const allowedTypes = ['image/jpeg', 'image/png', 'image/gif', 'application/pdf', 'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'];
-            if (!allowedTypes.includes(file.type)) {
-                setErrors(prev => ({ ...prev, file: 'Only images, PDF, and Word documents are allowed' }));
-                return;
-            }
-
-            const fileData = {
-                file: file,
-                name: file.name,
-                size: file.size,
-                type: file.type,
-                url: URL.createObjectURL(file),
-                uploadedAt: new Date().toISOString()
-            };
-
-            // ✅ Store in both local state (for UI) and Context (for persistence)
-            setSelectedFile(fileData);
-            addQuestionFile(fileData); // Store in Context
-            setErrors(prev => ({ ...prev, file: null }));
-
-            console.log('File stored in Context:', fileData.name);
+        const allowedTypes = ["image/jpeg", "image/png", "image/gif"];
+        if (!allowedTypes.includes(file.type)) {
+            setErrors((prev) => ({
+                ...prev,
+                [`tabFile_${index}`]: "Only images are allowed",
+            }));
+            return;
         }
-        event.target.value = '';
+
+        // Local preview
+        const previewUrl = URL.createObjectURL(file);
+        const newTabs = [...tabs];
+        newTabs[index].previewUrl = previewUrl;
+        setTabs(newTabs);
+
+        try {
+            // Upload immediately
+            const result = await dispatch(uploadTabImage(file)).unwrap();
+            console.log("Upload result:", result);
+
+            // ✅ Store uploaded image URL in `tabImage` key
+            newTabs[index].tabImage = result?.data?.imageUrl || null;
+            setTabs(newTabs);
+        } catch (err) {
+            console.error("Upload failed:", err);
+            setErrors((prev) => ({
+                ...prev,
+                [`tabFile_${index}`]: "Upload failed. Try again.",
+            }));
+            newTabs[index].previewUrl = null;
+            setTabs(newTabs);
+        }
     };
 
-    const handleButtonClick = () => {
-        fileInputRef.current?.click();
+
+
+    // Delete handler
+    const handleDeleteTabImage = async (index) => {
+        const tab = tabs[index];
+        console.log("Inside delete img::");
+
+        if (!tab.tabImage) {
+            // No uploaded image, just remove preview
+            const newTabs = [...tabs];
+            newTabs[index].previewUrl = null;
+            setTabs(newTabs);
+            return;
+        }
+
+        try {
+            console.log("Inside try :::");
+
+            // Extract only filename
+            const fileName = tab.tabImage.split("/").pop();
+            console.log("Sending filename to delete API:", fileName);
+
+            // Call delete API
+            await dispatch(deleteTabImage(fileName)).unwrap();
+
+            const newTabs = [...tabs];
+            newTabs[index].previewUrl = null;
+            newTabs[index].tabImage = null; // ✅ Clear tabImage
+            setTabs(newTabs);
+
+            console.log("Tab image deleted successfully");
+        } catch (error) {
+            console.error("Failed to delete tab image:", error);
+        }
     };
+
+
+
 
     const handleRemoveFile = () => {
         if (selectedFile) {
@@ -214,6 +258,7 @@ const MultiradioQuestionContent = () => {
             question_type_id: question_type_id,
             questionType: questionType,
             question: question.trim(),
+            instruction: instruction.trim(),
             tabs: tabs.filter(tab => tab.tabKey.trim() && tab.tabValue.trim()),
             question_content: questionContent.filter(q => q.question_text.trim() && q.question_answer.trim()),
             radio_options: radioOptions.filter(option => option.option_value.trim()),
@@ -286,7 +331,8 @@ const MultiradioQuestionContent = () => {
         const hasValidTabs = tabs.some(tab => tab.tabKey.trim() && tab.tabValue.trim());
         const hasValidQuestions = questionContent.some(q => q.question_text.trim() && q.question_answer.trim());
         const hasValidRadioOptions = radioOptions.filter(option => option.option_value.trim()).length >= 2;
-        return hasValidQuestion && hasValidTabs && hasValidQuestions && hasValidRadioOptions;
+        const hasValidInstruction = instruction.trim() !== ""
+        return hasValidQuestion && hasValidTabs && hasValidQuestions && hasValidRadioOptions && hasValidInstruction;
     };
 
     // Cleanup on unmount
@@ -442,6 +488,62 @@ const MultiradioQuestionContent = () => {
                                 onChange={(e) => handleTabChange(index, 'tabValue', e.target.value)}
                                 placeholder="Enter the content that will be displayed in this tab..."
                             />
+
+                            <Box
+                                display="flex"
+                                flexDirection="column"
+                                alignItems="flex-start"
+                                mt={2}
+                            >
+                                <input
+                                    type="file"
+                                    accept="image/*"
+                                    style={{ display: "none" }}
+                                    id={`tab-file-input-${index}`}
+                                    onChange={(e) => handleTabFileUpload(index, e)}
+                                />
+                                <Button
+                                    variant="outlined"
+                                    component="span"
+                                    onClick={() =>
+                                        document.getElementById(`tab-file-input-${index}`).click()
+                                    }
+                                    startIcon={<CloudUpload />}
+                                    size="small"
+                                >
+                                    {tab.previewUrl ? "Change Image" : "Add Image"}
+                                </Button>
+
+
+                                {tab.previewUrl && (
+                                    <Box mt={1} display="flex" alignItems="center" gap={1}>
+                                        <img
+                                            src={tab.previewUrl}
+                                            alt={`Tab ${index} preview`}
+                                            style={{
+                                                maxWidth: "200px",
+                                                maxHeight: "150px",
+                                                objectFit: "cover",
+                                                borderRadius: "4px",
+                                            }}
+                                        />
+                                        <IconButton
+                                            onClick={() => handleDeleteTabImage(index)}
+                                            color="error"
+                                            size="small"
+                                        >
+                                            <Delete />
+                                        </IconButton>
+                                    </Box>
+                                )}
+
+                                {errors[`tabFile_${index}`] && (
+                                    <Typography variant="caption" color="error">
+                                        {errors[`tabFile_${index}`]}
+                                    </Typography>
+                                )}
+                            </Box>
+
                         </Card>
                     ))}
 
@@ -461,6 +563,28 @@ const MultiradioQuestionContent = () => {
                     )}
                 </AccordionDetails>
             </Accordion>
+
+            <Typography variant="h6" mb={1} color="primary">
+                Instruction*
+            </Typography>
+            <TextField
+                fullWidth
+                label="Enter Question instruction"
+                multiline
+                minRows={3}
+                maxRows={6}
+                value={instruction}
+                onChange={(e) => {
+                    setInstruction(e.target.value);
+                    setErrors(prev => ({ ...prev, instruction: null }));
+                }}
+                variant="outlined"
+                placeholder="Type your drag drop question instruction here..."
+                error={!!errors.instruction}
+                helperText={errors.instruction}
+                sx={{ mb: 3 }}
+            />
+
 
             {/* Radio Options Section */}
             <Accordion defaultExpanded sx={{ mb: 3 }}>
