@@ -303,6 +303,8 @@ import FillIn from "./FillInQuestionComponent";
 import DragDrop from "./DragDropQuestionComponent";
 import SentenceHighlight from "./SentenceQuestionComponent";
 import MultiRadio from "./MultiRadioQuestionComponent";
+import TableDropdownQuestionComponent from "./TableDropdownQuestionComponent";
+import TableMultipleDropdownComponent from "./TableMultipleDropdownComponent";
 import {
   getQBankQuestions,
   getQBankQuestionData,
@@ -324,6 +326,8 @@ const questionTypeToComponent = {
   "Drag Drop": DragDrop,
   "Sentence Highlight": SentenceHighlight,
   "Multiple Radio": MultiRadio,
+  "Table Dropdown": TableDropdownQuestionComponent,
+  Multidropdown: TableMultipleDropdownComponent,
 };
 
 const ExamContainer = ({ user }) => {
@@ -360,8 +364,6 @@ const ExamContainer = ({ user }) => {
   // Load question IDs based on mode
   useEffect(() => {
     const loadQuestions = async () => {
-     
-      
       setLoading(true);
       setError(null);
       try {
@@ -385,7 +387,6 @@ const ExamContainer = ({ user }) => {
           setCurrentIndex(0);
         } else {
           dispatch(getQBankQuestions());
-          
         }
         setLoading(false);
       } catch (err) {
@@ -400,9 +401,6 @@ const ExamContainer = ({ user }) => {
     }
     loadQuestions();
   }, [dispatch, isTestMode, testId, isSampleMode]);
- 
-  
-  
 
   // Sync QBank question IDs if not test or sample mode
   useEffect(() => {
@@ -462,9 +460,9 @@ const ExamContainer = ({ user }) => {
   const handleNext = useCallback(() => {
     if (questionIds && currentIndex < questionIds.length - 1) {
       // if (isTestMode && !answeredIndices.has(currentIndex)) {
-        console.error("Answer the current question before proceeding");
-        setCurrentIndex((idx) => idx + 1);
-        return;
+      console.error("Answer the current question before proceeding");
+      setCurrentIndex((idx) => idx + 1);
+      return;
       // }
     }
   }, [questionIds, currentIndex, isTestMode, answeredIndices]);
