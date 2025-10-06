@@ -1,4 +1,3 @@
-// ✅ MultiDropDownQuestionContent - Two Column Table Rows
 import React, { useState, useEffect } from "react";
 import {
     Box,
@@ -10,10 +9,8 @@ import {
     Accordion,
     AccordionSummary,
     AccordionDetails,
-    FormControl,
-    Select,
-    InputLabel,
-    MenuItem,
+    FormControlLabel,
+    Checkbox,
     FormHelperText,
 } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
@@ -26,15 +23,13 @@ import { useDispatch } from "react-redux";
 import { deleteTabImage, uploadTabImage } from "../../features/exam/examSlice";
 
 function TableHighlightsQuestionContent() {
-
     const navigate = useNavigate();
     const location = useLocation();
     const { questionFile, hasQuestionFile } = useFileContext();
     const dispatch = useDispatch();
 
     const existingData = location.state?.questionData || {};
-    const questionType =
-        location.state?.questionType || existingData.questionType || "Dropdown";
+    const questionType = location.state?.questionType || existingData.questionType || "Dropdown";
     const cs_id = location.state?.cs_id || "";
     const exam_type = location.state?.exam_type || "";
     const question_type_id = location.state?.question_type_id || "";
@@ -42,14 +37,11 @@ function TableHighlightsQuestionContent() {
     const [question, setQuestion] = useState(existingData.question || "");
     const [instruction, setInstruction] = useState(existingData.instruction || "");
     const [tabs, setTabs] = useState(existingData.tabs || [{ tabKey: "", tabValue: "" }]);
-    const [headers, setHeaders] = useState(existingData.headers || ["", "", ""]);
-    const [rows, setRows] = useState(
-        existingData.rows || [
-            { rowLabel: "", options: [[""], [""]], answer: ["", ""] }
-        ]
-    );
+    const [headers, setHeaders] = useState(existingData.headers || ["", ""]);
+    const [rows, setRows] = useState(existingData.rows || [{ options: [[""], [""]] }]);
     const [selectedFile, setSelectedFile] = useState(null);
     const [errors, setErrors] = useState({});
+    const [answers, setAnswers] = useState(existingData.answers || []);
 
     useEffect(() => {
         if (questionFile) setSelectedFile(questionFile);
@@ -112,47 +104,23 @@ function TableHighlightsQuestionContent() {
     };
 
     // ---------------- Row Handlers ----------------
-    const handleRowLabelChange = (rowIndex, value) => {
-        const updated = [...rows];
-        updated[rowIndex].rowLabel = value;
-        setRows(updated);
-    };
-
     const handleColumnOptionChange = (rowIndex, colIndex, optIndex, value) => {
         const updated = [...rows];
         updated[rowIndex].options[colIndex][optIndex] = value;
         setRows(updated);
     };
-
-    const handleAddColumnOption = (rowIndex, colIndex) => {
-        const updated = [...rows];
-        updated[rowIndex].options[colIndex].push("");
-        setRows(updated);
-    };
-
-    const handleRemoveColumnOption = (rowIndex, colIndex, optIndex) => {
-        const updated = [...rows];
-        if (updated[rowIndex].options[colIndex].length > 1) {
-            updated[rowIndex].options[colIndex].splice(optIndex, 1);
-            setRows(updated);
-        }
-    };
-
-    const handleColumnAnswerChange = (rowIndex, colIndex, value) => {
-        const updated = [...rows];
-        updated[rowIndex].answer[colIndex] = value;
-        setRows(updated);
-    };
-
-    const handleAddRow = () => {
-        setRows([
-            ...rows,
-            { rowLabel: "", options: [[""], [""]], answer: ["", ""] }
-        ]);
-    };
-
+    const handleAddRow = () => setRows([...rows, { options: [[""], [""]] }]);
     const handleRemoveRow = (rowIndex) => {
         if (rows.length > 1) setRows(rows.filter((_, i) => i !== rowIndex));
+    };
+
+    // ---------------- Checkbox Answer Handler ----------------
+    const handleAnswerChange = (value) => {
+        if (answers.includes(value)) {
+            setAnswers(answers.filter((ans) => ans !== value));
+        } else {
+            setAnswers([...answers, value]);
+        }
     };
 
     // ---------------- Validation ----------------
@@ -160,21 +128,16 @@ function TableHighlightsQuestionContent() {
         const newErrors = {};
         if (!question.trim()) newErrors.question = "Question is required";
         if (!instruction.trim()) newErrors.instruction = "Instruction is required";
-        headers.forEach((h, i) => {
-            if (!h.trim()) newErrors[`header_${i}`] = `Header ${i + 1} is required`;
-        });
-        const validTabs = tabs.filter((tab) => tab.tabKey.trim() && tab.tabValue.trim());
-        if (validTabs.length === 0) newErrors.tabs = "At least one tab is required";
 
         rows.forEach((row, i) => {
-            if (!row.rowLabel.trim()) newErrors[`rowLabel_${i}`] = `Row ${i + 1} label required`;
             row.options.forEach((colOptions, colIndex) => {
-                if (!colOptions.length || colOptions.some(opt => !opt.trim()))
+                if (!colOptions.length || colOptions.some(opt => !opt.trim())) {
                     newErrors[`options_${i}_${colIndex}`] = `All options in row ${i + 1}, column ${colIndex + 1} required`;
-                if (!row.answer[colIndex] || row.answer[colIndex].trim() === "")
-                    newErrors[`answer_${i}_${colIndex}`] = `Answer required for row ${i + 1}, column ${colIndex + 1}`;
+                }
             });
         });
+
+        if (answers.length === 0) newErrors.answers = "Please select at least one correct answer";
 
         setErrors(newErrors);
         return Object.keys(newErrors).length === 0;
@@ -184,14 +147,9 @@ function TableHighlightsQuestionContent() {
     const handleNext = () => {
         if (!validateForm()) return;
 
-        // Transform rows to required structure
-        const formattedRows = rows.map(row => ({
-            rowLabel: row.rowLabel.trim(),
-            columns: row.options.map((colOptions, colIndex) => ({
-                colIndex: colIndex + 1,           // 1-based index
-                options: colOptions.map(opt => opt.trim()),
-                answer: row.answer[colIndex]      // answer for this column
-            }))
+        const tableFields = rows.map(row => ({
+            leftColumn: row.options[0][0],
+            rightColumn: row.options[1][0],
         }));
 
         const questionData = {
@@ -200,10 +158,14 @@ function TableHighlightsQuestionContent() {
             question_type_id,
             questionType,
             question: question.trim(),
-            headers,
+            tableHeaders: {
+                leftHeader: headers[0],
+                rightHeader: headers[1],
+            },
+            tableFields,
             tabs: tabs.filter((tab) => tab.tabKey.trim() && tab.tabValue.trim()),
             instruction: instruction.trim(),
-            rows: formattedRows,   // ✅ Pass rows in the required structure
+            answers,
             createdAt: existingData.createdAt || new Date().toISOString(),
             updatedAt: new Date().toISOString(),
             questionId: existingData.questionId || `${questionType}_${Date.now()}`,
@@ -223,19 +185,13 @@ function TableHighlightsQuestionContent() {
         });
     };
 
-
     const handleBack = () => {
-        const currentData = { question: question.trim(), headers, tabs, rows, instruction };
+        const currentData = { question: question.trim(), headers, tabs, rows, instruction, answers };
         navigate("/admin/question-type", {
             state: { questionData: currentData, fromStep: "content", cs_id, exam_type, question_type_id }
         });
     };
 
-    const isFormValid = () =>
-        question.trim() &&
-        instruction.trim() &&
-        headers.every(h => h.trim()) &&
-        tabs.some(tab => tab.tabKey.trim() && tab.tabValue.trim());
     return (
         <Box p={3} maxWidth="900px" mx="auto">
             <Typography variant="caption" color="textSecondary" mb={2} display="block">
@@ -257,10 +213,7 @@ function TableHighlightsQuestionContent() {
                 minRows={3}
                 maxRows={6}
                 value={question}
-                onChange={(e) => {
-                    setQuestion(e.target.value);
-                    setErrors((prev) => ({ ...prev, question: null }));
-                }}
+                onChange={(e) => setQuestion(e.target.value)}
                 variant="outlined"
                 placeholder="Type your question here..."
                 error={!!errors.question}
@@ -292,7 +245,6 @@ function TableHighlightsQuestionContent() {
                                 label="Tab Key/Title"
                                 value={tab.tabKey}
                                 onChange={(e) => handleTabChange(index, "tabKey", e.target.value)}
-                                placeholder="e.g., Triage Note, Vital Signs"
                                 sx={{ mb: 2 }}
                                 size="small"
                             />
@@ -345,56 +297,41 @@ function TableHighlightsQuestionContent() {
                             </Box>
                         </Card>
                     ))}
-
                     <Button startIcon={<AddIcon />} onClick={handleAddTab} variant="outlined" size="small">
                         Add Tab
                     </Button>
-
-                    {errors.tabs && (
-                        <Typography color="error" variant="caption" sx={{ display: "block", mt: 1 }}>
-                            {errors.tabs}
-                        </Typography>
-                    )}
                 </AccordionDetails>
             </Accordion>
 
-            {/* Table Heading Section */}
+            {/* Table Header Section */}
             <Typography variant="h6" mb={1} color="primary">
-                Table Heading *
+                Table Header *
             </Typography>
             <Box display="flex" gap={2} flexWrap="wrap" mb={3}>
-                {headers.map((header, index) => (
-                    <TextField
-                        key={index}
-                        fullWidth
-                        label={`Header ${index + 1}`}
-                        value={header}
-                        onChange={(e) => {
-                            const newHeaders = [...headers];
-                            newHeaders[index] = e.target.value;
-                            setHeaders(newHeaders);
-                            setErrors((prev) => ({ ...prev, [`header_${index}`]: null }));
-                        }}
-                        variant="outlined"
-                        placeholder={`Enter column header ${index + 1}`}
-                        error={!!errors[`header_${index}`]}
-                        helperText={errors[`header_${index}`]}
-                    />
-                ))}
+                <TextField
+                    fullWidth
+                    label="Left Column Header"
+                    value={headers[0]}
+                    onChange={(e) => setHeaders([e.target.value, headers[1]])}
+                />
+                <TextField
+                    fullWidth
+                    label="Right Column Header"
+                    value={headers[1]}
+                    onChange={(e) => setHeaders([headers[0], e.target.value])}
+                />
             </Box>
 
-            {/* Dynamic Table Rows Section */}
+            {/* Table Rows Section */}
             <Accordion defaultExpanded sx={{ mb: 3 }}>
                 <AccordionSummary expandIcon={<ExpandMore />}>
                     <Typography variant="h6" color="primary">
                         Table Rows * ({rows.length})
                     </Typography>
                 </AccordionSummary>
-
                 <AccordionDetails>
                     {rows.map((row, rowIndex) => (
                         <Card key={rowIndex} sx={{ mb: 3, p: 2 }}>
-                            {/* Row Header */}
                             <Box display="flex" justifyContent="space-between" alignItems="center" mb={2}>
                                 <Typography variant="subtitle1" color="primary">
                                     Table Row {rowIndex + 1}
@@ -406,100 +343,61 @@ function TableHighlightsQuestionContent() {
                                 )}
                             </Box>
 
-                            {/* Row Label */}
                             <TextField
                                 fullWidth
-                                label="Row Label"
-                                value={row.rowLabel}
-                                onChange={(e) => handleRowLabelChange(rowIndex, e.target.value)}
-                                error={!!errors[`rowLabel_${rowIndex}`]}
-                                helperText={errors[`rowLabel_${rowIndex}`]}
-                                sx={{ mb: 3 }}
+                                label="Left Column content"
+                                value={row.options[0][0]}
+                                onChange={(e) => handleColumnOptionChange(rowIndex, 0, 0, e.target.value)}
+                                sx={{ mb: 2 }}
+                                error={!!errors[`options_${rowIndex}_0`]}
+                                helperText={errors[`options_${rowIndex}_0`] || ""}
                             />
 
-                            {/* Two Columns for Options */}
-                            <Box display="flex" gap={2} mb={3}>
-                                {[0, 1].map((colIndex) => (
-                                    <Box key={colIndex} flex={1}>
-                                        <Typography variant="subtitle2" mb={1}>
-                                            Column {colIndex + 1} Options
-                                        </Typography>
-
-                                        {row.options[colIndex].map((opt, optIndex) => (
-                                            <Box key={optIndex} display="flex" alignItems="center" mb={2} gap={1}>
-                                                <TextField
-                                                    fullWidth
-                                                    label={`Option ${optIndex + 1}`}
-                                                    value={opt}
-                                                    onChange={(e) => handleColumnOptionChange(rowIndex, colIndex, optIndex, e.target.value)}
-                                                />
-                                                {row.options[colIndex].length > 1 && (
-                                                    <IconButton
-                                                        onClick={() => handleRemoveColumnOption(rowIndex, colIndex, optIndex)}
-                                                        color="error"
-                                                    >
-                                                        <Delete />
-                                                    </IconButton>
-                                                )}
-                                            </Box>
-                                        ))}
-
-                                        <Button
-                                            startIcon={<AddIcon />}
-                                            onClick={() => handleAddColumnOption(rowIndex, colIndex)}
-                                            variant="outlined"
-                                            size="small"
-                                        >
-                                            Add Option
-                                        </Button>
-
-                                        {/* Correct Answer for this Column */}
-                                        <FormControl
-                                            fullWidth
-                                            variant="outlined"
-                                            error={!!errors[`answer_${rowIndex}_${colIndex}`]}
-                                            sx={{ mt: 2 }}
-                                        >
-                                            <InputLabel id={`select-answer-label-${rowIndex}-${colIndex}`}>
-                                                Correct Answer
-                                            </InputLabel>
-                                            <Select
-                                                labelId={`select-answer-label-${rowIndex}-${colIndex}`}
-                                                value={row.answer[colIndex] || ""}
-                                                onChange={(e) => handleColumnAnswerChange(rowIndex, colIndex, e.target.value)}
-                                                label="Correct Answer"
-                                            >
-                                                <MenuItem value="">
-                                                    <em>-- Select Answer --</em>
-                                                </MenuItem>
-                                                {row.options[colIndex].map((opt, i) => (
-                                                    <MenuItem key={i} value={opt}>
-                                                        {opt}
-                                                    </MenuItem>
-                                                ))}
-                                            </Select>
-                                            {errors[`answer_${rowIndex}_${colIndex}`] && (
-                                                <FormHelperText>{errors[`answer_${rowIndex}_${colIndex}`]}</FormHelperText>
-                                            )}
-                                        </FormControl>
-                                    </Box>
-                                ))}
-                            </Box>
+                            <TextField
+                                fullWidth
+                                label="Right Column content"
+                                value={row.options[1][0]}
+                                onChange={(e) => handleColumnOptionChange(rowIndex, 1, 0, e.target.value)}
+                                error={!!errors[`options_${rowIndex}_1`]}
+                                helperText={errors[`options_${rowIndex}_1`] || ""}
+                            />
                         </Card>
                     ))}
-
-                    <Button
-                        startIcon={<AddIcon />}
-                        onClick={handleAddRow}
-                        variant="contained"
-                        size="small"
-                    >
+                    <Button startIcon={<AddIcon />} onClick={handleAddRow} variant="contained" size="small">
                         Add Another Table Row
                     </Button>
                 </AccordionDetails>
             </Accordion>
 
-            {/* Instruction */}
+            {/* Checkbox Answers Section */}
+            <Typography variant="h6" mb={1} color="primary">
+                   Choose one or more correct answers from the Right Column entries *
+            </Typography>
+            <Box display="flex" flexDirection="column" mb={2}>
+                {rows.map((row, index) => {
+                    const option = row.options[1][0];
+                    return (
+                        <FormControlLabel
+                            key={index}
+                            control={
+                                <Checkbox
+                                    checked={answers.includes(option)}
+                                    onChange={() => handleAnswerChange(option)}
+                                    color="primary"
+                                />
+                            }
+                            label={
+                                <Typography variant="body1">
+                                    {option || `Option ${index + 1}`}
+                                </Typography>
+                            }
+                        />
+                    );
+                })}
+                {errors.answers && <FormHelperText error>{errors.answers}</FormHelperText>}
+            </Box>
+
+            {/* Instruction Section */}
             <Typography variant="h6" mb={1} color="primary">
                 Instruction *
             </Typography>
@@ -510,10 +408,7 @@ function TableHighlightsQuestionContent() {
                 minRows={3}
                 maxRows={6}
                 value={instruction}
-                onChange={(e) => {
-                    setInstruction(e.target.value);
-                    setErrors((prev) => ({ ...prev, instruction: null }));
-                }}
+                onChange={(e) => setInstruction(e.target.value)}
                 variant="outlined"
                 placeholder="Type your question instruction here..."
                 error={!!errors.instruction}
@@ -521,7 +416,7 @@ function TableHighlightsQuestionContent() {
                 sx={{ mb: 3 }}
             />
 
-            {/* Navigation */}
+            {/* Navigation Buttons */}
             <Box mt={4} display="flex" justifyContent="space-between">
                 <Button variant="outlined" startIcon={<ArrowBackIcon />} onClick={handleBack}>
                     Back
@@ -530,13 +425,12 @@ function TableHighlightsQuestionContent() {
                     variant="contained"
                     endIcon={<ArrowForwardIcon />}
                     onClick={handleNext}
-                    disabled={!isFormValid()}
                 >
                     Next: Add Explanation
                 </Button>
             </Box>
         </Box>
-    )
+    );
 }
 
-export default TableHighlightsQuestionContent
+export default TableHighlightsQuestionContent;

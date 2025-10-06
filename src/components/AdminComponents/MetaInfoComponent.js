@@ -121,7 +121,8 @@ const MetaInfoComponent = () => {
             'Fill in the Blanks': 7,
             'Fill in Blanks': 7,
             'Table Dropdown': 14,
-            'Multidropdown': 17
+            'Multidropdown': 17,
+            'Table Highlight': 15,
 
         };
         return typeMapping[questionType] || 1;
@@ -345,6 +346,7 @@ const MetaInfoComponent = () => {
         tableDropdownAnswers: receivedQuestionData.tableDropdownAnswers || [],
         tableHeaders: receivedQuestionData.tableHeaders || {},
         tableDropdownFields: receivedQuestionData.tableDropdownFields || [],
+
     })
 
 
@@ -365,6 +367,23 @@ const MetaInfoComponent = () => {
         headers: receivedQuestionData.headers || [],
     })
 
+    const tableHighlightFormData = () => ({
+        courseId: receivedQuestionData.cs_id,
+        questionType: receivedQuestionData.questionType,
+        question_type_id: receivedQuestionData.question_type_id,
+        exam_type: receivedQuestionData.exam_type,
+        question: receivedQuestionData.question || "",
+        difficulty: form.difficulty || "",
+        tabs: receivedQuestionData.tabs || [],
+        instruction: receivedQuestionData.instruction || "",
+        explanationHeading: receivedQuestionData.explanationHeading || "",
+        explanationText: receivedQuestionData.explanationText || "",
+        info: receivedQuestionData.additionalInfo || "",
+        marks: form.marks,
+        answers: receivedQuestionData.answers || [],
+        tableFields: receivedQuestionData.tableFields || [],
+        tableHeaders: receivedQuestionData.tableHeaders || [],
+    })
 
 
 
@@ -398,6 +417,9 @@ const MetaInfoComponent = () => {
 
             case 'Multidropdown':
                 return multiDropDownFormData();
+
+            case 'Table Highlight':
+                return tableHighlightFormData();
 
             default:
                 return getMCQFormData(); // fallback to MCQ format
@@ -611,6 +633,27 @@ const MetaInfoComponent = () => {
     })
 
 
+    const getTableHighlightBaseData = () => ({
+        courseId: receivedQuestionData.cs_id,
+        questionType: receivedQuestionData.questionType,
+        question_type_id: receivedQuestionData.question_type_id,
+        exam_type: receivedQuestionData.exam_type,
+        question: receivedQuestionData.question || "",
+        difficulty: form.difficulty || "",
+        tabs: receivedQuestionData.tabs || [],
+        instructions: receivedQuestionData.instruction || "",
+        explanationHeading: receivedQuestionData.explanationHeading || "",
+        explanationText: receivedQuestionData.explanationText || "",
+        info: receivedQuestionData.additionalInfo || "",
+        infoImage: receivedQuestionData.infoImage || null,
+        marks: form.marks,
+        answers: receivedQuestionData.answers || [],
+        tableFields: receivedQuestionData.tableFields || [],
+        tableHeaders: receivedQuestionData.tableHeaders || [],
+
+    })
+
+
     // ✅ Main function - still same pattern
     const constructQuestionData = () => {
         const questionType = receivedQuestionData.questionType || 'MCQ';
@@ -641,6 +684,9 @@ const MetaInfoComponent = () => {
 
             case 'Multidropdown':
                 return getMultiDropDownBaseData();
+
+            case 'Table Highlight':
+                return getTableHighlightBaseData();
 
             default:
                 console.warn(" Unknown questionType:", receivedQuestionData.questionType);

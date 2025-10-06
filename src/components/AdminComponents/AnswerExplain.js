@@ -170,7 +170,7 @@ const AnswerExplain = () => {
 
             //for table dropdown
             tableDropdownAnswers: previousQuestionData.tableDropdownAnswers,
-            tableHeaders:previousQuestionData.tableHeaders,
+            tableHeaders: previousQuestionData.tableHeaders,
             tableDropdownFields: previousQuestionData.tableDropdownFields,
 
             //for sentence highlight question
@@ -182,6 +182,11 @@ const AnswerExplain = () => {
             //for multi-dropdown question
             rows: previousQuestionData.rows,
             headers: previousQuestionData.headers,
+
+            //for Table Highlight
+            answers: previousQuestionData.answers,
+            tableFields: previousQuestionData.tableFields,
+            tableHeaders: previousQuestionData.tableHeaders,
 
             // Current explanation data
             explanationHeading: explanationHeading.trim(),
@@ -278,13 +283,17 @@ const AnswerExplain = () => {
 
             //for table dropdown
             tableDropdownAnswers: previousQuestionData.tableDropdownAnswers,
-            tableHeaders:previousQuestionData.tableHeaders,
+            tableHeaders: previousQuestionData.tableHeaders,
             tableDropdownFields: previousQuestionData.tableDropdownFields,
-
 
             //for multi-dropdown question
             rows: previousQuestionData.rows,
             headers: previousQuestionData.headers,
+
+            //for Table Highlight
+            answers: previousQuestionData.answers,
+            tableFields: previousQuestionData.tableFields,
+            tableHeaders: previousQuestionData.tableHeaders,
 
             // Current explanation data
             explanationHeading: explanationHeading.trim(),
@@ -330,6 +339,10 @@ const AnswerExplain = () => {
 
             case "Multidropdown":
                 route = "/admin/multiDropDown";
+                break;
+
+            case "Table Highlight":
+                route = "/admin/table-Highlight";
                 break;
 
             // add more cases as needed

@@ -10,5 +10,4 @@ export const QUESTION_TYPE_TO_ROUTE = {
     'Table Dropdown': '/admin/table-dropDown',
     'Multidropdown': '/admin/multiDropDown',
     'Table Highlight': '/admin/table-Highlight'
-
 };
