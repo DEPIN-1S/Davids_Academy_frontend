@@ -121,6 +121,7 @@ const MetaInfoComponent = () => {
             'Fill in the Blanks': 7,
             'Fill in Blanks': 7,
             'Table Dropdown': 14,
+            'Multidropdown': 17
 
         };
         return typeMapping[questionType] || 1;
@@ -347,6 +348,26 @@ const MetaInfoComponent = () => {
     })
 
 
+    const multiDropDownFormData = () => ({
+        courseId: receivedQuestionData.cs_id,
+        questionType: receivedQuestionData.questionType,
+        question_type_id: receivedQuestionData.question_type_id,
+        exam_type: receivedQuestionData.exam_type,
+        question: receivedQuestionData.question || "",
+        difficulty: form.difficulty || "",
+        tabs: receivedQuestionData.tabs || [],
+        instruction: receivedQuestionData.instruction || "",
+        explanationHeading: receivedQuestionData.explanationHeading || "",
+        explanationText: receivedQuestionData.explanationText || "",
+        info: receivedQuestionData.additionalInfo || "",
+        marks: form.marks,
+        rows: receivedQuestionData.rows || [],
+        headers: receivedQuestionData.headers || [],
+    })
+
+
+
+
     const constructQuestionFormData = () => {
         console.log("🟢 Received questionType:", receivedQuestionData.questionType);
         const questionType = receivedQuestionData.questionType || 'MCQ';
@@ -373,7 +394,10 @@ const MetaInfoComponent = () => {
                 return getSentenceHighlightFormData();
 
             case 'Table Dropdown':
-                return getTableDropdownFormData()
+                return getTableDropdownFormData();
+
+            case 'Multidropdown':
+                return multiDropDownFormData();
 
             default:
                 return getMCQFormData(); // fallback to MCQ format
@@ -563,8 +587,27 @@ const MetaInfoComponent = () => {
         infoImage: receivedQuestionData.infoImage || null,
         marks: form.marks,
         tableDropdownAnswers: receivedQuestionData.tableDropdownAnswers || [],
-        tableHeaders:receivedQuestionData.tableHeaders || {},
+        tableHeaders: receivedQuestionData.tableHeaders || {},
         tableDropdownFields: receivedQuestionData.tableDropdownFields || [],
+    })
+
+
+    const getMultiDropDownBaseData = () => ({
+        courseId: receivedQuestionData.cs_id,
+        questionType: receivedQuestionData.questionType,
+        question_type_id: receivedQuestionData.question_type_id,
+        exam_type: receivedQuestionData.exam_type,
+        question: receivedQuestionData.question || "",
+        difficulty: form.difficulty || "",
+        tabs: receivedQuestionData.tabs || [],
+        instructions: receivedQuestionData.instruction || "",
+        explanationHeading: receivedQuestionData.explanationHeading || "",
+        explanationText: receivedQuestionData.explanationText || "",
+        info: receivedQuestionData.additionalInfo || "",
+        infoImage: receivedQuestionData.infoImage || null,
+        marks: form.marks,
+        rows: receivedQuestionData.rows || [],
+        headers: receivedQuestionData.headers || [],
     })
 
 
@@ -595,6 +638,9 @@ const MetaInfoComponent = () => {
 
             case 'Table Dropdown':
                 return getTableDropdownBaseData();
+
+            case 'Multidropdown':
+                return getMultiDropDownBaseData();
 
             default:
                 console.warn(" Unknown questionType:", receivedQuestionData.questionType);

@@ -36,6 +36,7 @@ import SortingQuestionView from "../Admin Question View/SortingQuestionView";
 import ViewProgress from "../Admin Question View/ViewProgress";
 import TableDropdownQuestionContent from "../components/AdminComponents/TableDropdownQuestionContent";
 import MultiDropDownQuestionContent from "../components/AdminComponents/MultiDropDownQuestionContent";
+import TableHighlightsQuestionContent from "../components/AdminComponents/TableHighlightsQuestionContent";
 
 const AdminRoutes = () => (
     <>
@@ -119,6 +120,12 @@ const AdminRoutes = () => (
                 </ProtectedRoutes>
             } />
 
+            <Route path="/admin/table-Highlight" element={
+                <ProtectedRoutes allowedRoles={['admin']}>
+                    <TableHighlightsQuestionContent />
+                </ProtectedRoutes>
+            } />
+
 
             {/* ✅ Question Management Flow Routes */}
             <Route path="/admin/answer-explain" element={
@@ -126,6 +133,9 @@ const AdminRoutes = () => (
                     <McqAnswerExplanation />
                 </ProtectedRoutes>
             } />
+
+
+
             <Route path="/admin/meta-info" element={
                 <ProtectedRoutes allowedRoles={['admin']}>
 

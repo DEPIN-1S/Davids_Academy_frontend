@@ -179,6 +179,10 @@ const AnswerExplain = () => {
             correctHighlights: previousQuestionData.correctHighlights,
             answer: previousQuestionData.answer,
 
+            //for multi-dropdown question
+            rows: previousQuestionData.rows,
+            headers: previousQuestionData.headers,
+
             // Current explanation data
             explanationHeading: explanationHeading.trim(),
             explanationText: explanationText.trim(),
@@ -258,6 +262,7 @@ const AnswerExplain = () => {
             drag_and_drop: previousQuestionData.drag_and_drop,
             drag_drop_content: previousQuestionData.drag_drop_content,
 
+
             //for sorting
             sortitems: previousQuestionData.sortItems,
 
@@ -275,6 +280,11 @@ const AnswerExplain = () => {
             tableDropdownAnswers: previousQuestionData.tableDropdownAnswers,
             tableHeaders:previousQuestionData.tableHeaders,
             tableDropdownFields: previousQuestionData.tableDropdownFields,
+
+
+            //for multi-dropdown question
+            rows: previousQuestionData.rows,
+            headers: previousQuestionData.headers,
 
             // Current explanation data
             explanationHeading: explanationHeading.trim(),
@@ -317,6 +327,10 @@ const AnswerExplain = () => {
             case "Table Dropdown":
                 route = "/admin/table-dropDown";
                 break
+
+            case "Multidropdown":
+                route = "/admin/multiDropDown";
+                break;
 
             // add more cases as needed
             default:
