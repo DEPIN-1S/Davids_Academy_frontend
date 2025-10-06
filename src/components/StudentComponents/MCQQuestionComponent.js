@@ -9,6 +9,7 @@ import {
   ListItem,
   ListItemText,
 } from "@mui/material";
+import CheckIcon from "@mui/icons-material/Check";
 import "../../styles/DashboardStyles/RadioButtonQuestionComponent.css";
 import RevealAnswerComponent from "./RevealAnswerComponent";
 
@@ -83,6 +84,32 @@ const MCQQuestionComponent = ({ question }) => {
                   (selectedOptions.length === 3 &&
                     !selectedOptions.includes(optionObj.option))
                 }
+                icon={
+                  <Box
+                    sx={{
+                      width: 20,
+                      height: 20,
+                      borderRadius: "10px",
+                      border: "1px solid #cfcfcf",
+                      boxSizing: "border-box",
+                    }}
+                  />
+                }
+                checkedIcon={
+                  <Box
+                    sx={{
+                      width: 20,
+                      height: 20,
+                      borderRadius: "10px",
+                      backgroundColor: "#2F3B6C",
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                    }}
+                  >
+                    <CheckIcon sx={{ color: "#fff", fontSize: 16 }} />
+                  </Box>
+                }
               />
             }
             label={<span className="radio-label">{optionObj.option}</span>}
@@ -153,7 +180,7 @@ const MCQQuestionComponent = ({ question }) => {
                 <ListItem key={index}>
                   <ListItemText
                     primary={answerItem}
-                    style={{ fontWeight: 600 }}
+                    style={{ fontWeight: 600, color: "green" }}
                   />
                 </ListItem>
               ))

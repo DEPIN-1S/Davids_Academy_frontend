@@ -18,91 +18,127 @@ import DropSortQuestionPage from "../pages/StudentPages/FillInQuestionPage";
 import StudentLayout from "../components/StudentComponents/StudentLayout";
 import ExamContainer from "../components/StudentComponents/ExamContainer";
 const StudentRoutes = () => (
-    <>
-        <Route element={<StudentLayout />}>
-            <Route path="/student/question-bank" element={<ProtectedRoutes allowedRoles={['student']}><QuestionBankPage /></ProtectedRoutes>} />
-            <Route path="/student/recorded-class" element={<ProtectedRoutes allowedRoles={['student']}><RecordedClassesPage /></ProtectedRoutes>} />
-            <Route path="/student/notes" element={<ProtectedRoutes allowedRoles={['student']}><NotesPage /></ProtectedRoutes>} />
-            <Route path="/student/tests" element={<ProtectedRoutes allowedRoles={['student']}><PreviousTestPage /></ProtectedRoutes>} />
-            <Route path="/student/exam" element={<ProtectedRoutes allowedRoles={['student']}><ExamContainer /></ProtectedRoutes>} />
-            {/* question routers end */}
-            <Route
-                path="/student/mcq/:id"
-                element={
-                    <ProtectedRoutes allowedRoles={['student']}>
-                        <RadioButtonQuestionPage />
-                    </ProtectedRoutes>
-                }
-            />
+  <>
+    <Route element={<StudentLayout />}>
+      <Route
+        path="/student/question-bank"
+        element={
+          <ProtectedRoutes allowedRoles={["student"]}>
+            <QuestionBankPage />
+          </ProtectedRoutes>
+        }
+      />
+      <Route
+        path="/student/recorded-class"
+        element={
+          <ProtectedRoutes allowedRoles={["student"]}>
+            <RecordedClassesPage />
+          </ProtectedRoutes>
+        }
+      />
+      <Route
+        path="/student/notes"
+        element={
+          <ProtectedRoutes allowedRoles={["student"]}>
+            <NotesPage />
+          </ProtectedRoutes>
+        }
+      />
+      <Route
+        path="/student/tests"
+        element={
+          <ProtectedRoutes allowedRoles={["student"]}>
+            <PreviousTestPage />
+          </ProtectedRoutes>
+        }
+      />
+      <Route
+        path="/student/exam"
+        element={
+          <ProtectedRoutes allowedRoles={["student"]}>
+            <ExamContainer />
+          </ProtectedRoutes>
+        }
+      />
+      {/* question routers end */}
+      <Route
+        path="/student/mcq/:id"
+        element={
+          <ProtectedRoutes allowedRoles={["student"]}>
+            <RadioButtonQuestionPage />
+          </ProtectedRoutes>
+        }
+      />
 
-            <Route
-                path="/student/dropdown-question/:id"
-                element={
-                    <ProtectedRoutes allowedRoles={['student']}>
-                        <DropdownQuestionPage />
-                    </ProtectedRoutes>
-                }
-            />
+      <Route
+        path="/student/dropdown-question/:id"
+        element={
+          <ProtectedRoutes allowedRoles={["student"]}>
+            <DropdownQuestionPage />
+          </ProtectedRoutes>
+        }
+      />
 
-            <Route
-                path="/student/dragdrop-question/:id"
-                element={
-                    <ProtectedRoutes allowedRoles={['student']}>
-                        <DragDropQuestionPage />
-                    </ProtectedRoutes>
-                }
-            />
+      <Route
+        path="/student/dragdrop-question/:id"
+        element={
+          <ProtectedRoutes allowedRoles={["student"]}>
+            <DragDropQuestionPage />
+          </ProtectedRoutes>
+        }
+      />
 
-            <Route
-                path="/student/multi-radio-question/:id"
-                element={
-                    <ProtectedRoutes allowedRoles={['student']}>
-                        <MultiRadioQuestionPage />
-                    </ProtectedRoutes>
-                }
-            />
+      <Route
+        path="/student/multi-radio-question/:id"
+        element={
+          <ProtectedRoutes allowedRoles={["student"]}>
+            <MultiRadioQuestionPage />
+          </ProtectedRoutes>
+        }
+      />
 
-            <Route
-                path="/student/sort-question/:id"
-                element={
-                    <ProtectedRoutes allowedRoles={['student']}>
-                        <SortQuestionPage />
-                    </ProtectedRoutes>
-                }
-            />
+      <Route
+        path="/student/sort-question/:id"
+        element={
+          <ProtectedRoutes allowedRoles={["student"]}>
+            <SortQuestionPage />
+          </ProtectedRoutes>
+        }
+      />
 
-            <Route
-                path="/student/sentence-question/:id"
-                element={
-                    <ProtectedRoutes allowedRoles={['student']}>
-                        <SentenceQuestionPage />
-                    </ProtectedRoutes>
-                }
-            />
+      <Route
+        path="/student/sentence-question/:id"
+        element={
+          <ProtectedRoutes allowedRoles={["student"]}>
+            <SentenceQuestionPage />
+          </ProtectedRoutes>
+        }
+      />
 
-            <Route
-                path="/student/fill-in-question/:id"
-                element={
-                    <ProtectedRoutes allowedRoles={['student']}>
-                        <DropSortQuestionPage />
-                    </ProtectedRoutes>
-                }
-            />
+      <Route
+        path="/student/fill-in-question/:id"
+        element={
+          <ProtectedRoutes allowedRoles={["student"]}>
+            <DropSortQuestionPage />
+          </ProtectedRoutes>
+        }
+      />
 
-            
-
-            {/* question routers start */}
-            {/* answer routes start */}
-            <Route path="/student/reveal-answer"
-                element={<ProtectedRoutes allowedRoles={['student']}>
-
-                    <RevealAnswerRadioPage />
-                </ProtectedRoutes>} />
-            {/* answer routes end */}
-{/* 
+      {/* question routers start */}
+      {/* answer routes start */}
+      <Route
+        path="/student/reveal-answer"
+        element={
+          <ProtectedRoutes allowedRoles={["student"]}>
+            <RevealAnswerRadioPage />
+          </ProtectedRoutes>
+        }
+      />
+      {/* answer routes end */}
+      {/* 
             <Route path="/student/score" element={<ProtectedRoutes allowedRoles={['student']}><ScorePage /></ProtectedRoutes>} /> */}
-        </Route>
-    </>
+    </Route>
+  </>
 );
 
 export default StudentRoutes;

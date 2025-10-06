@@ -54,8 +54,19 @@ const DropdownQuestionComponent = ({ question, onSubmit }) => {
     setActiveTab(newValue);
   };
 
+  // Keep activeTab within bounds when tabsInfo changes
+  useEffect(() => {
+    if (!tabsInfo || !tabsInfo.length) {
+      setActiveTab(0);
+      return;
+    }
+    setActiveTab((prev) => Math.min(prev, tabsInfo.length - 1));
+  }, [tabsInfo]);
+
   // Handle dropdown selection
   const handleDropdownChange = (id) => (event) => {
+    // Prevent changing answers after reveal
+    if (showReveal) return;
     setDropdownValues((prev) => ({
       ...prev,
       [id]: event.target.value,
@@ -74,30 +85,36 @@ const DropdownQuestionComponent = ({ question, onSubmit }) => {
       })
       .join(", ");
 
-    // Correct answer: assuming from drag_drop_answer or first option (customize based on data)
+    // Correct answer: prefer backend-provided dt.dropdownanswer, fallback to an explicit option or first option
     const correctAnswerStr = dropdownquestiontext
       .map((dt) => {
-        const correctOpt =
+        const backendAnswer = dt.dropdownanswer;
+        const fallbackOpt =
           dt.dropdownoption?.find((opt) => opt.is_correct) ||
-          dt.dropdownoption[0];
-        return `${dt.dropdownField || "Option"}: ${
-          correctOpt?.dropdownValue || "Not available"
-        }`;
+          dt.dropdownoption?.[0];
+        const correctDisplay =
+          backendAnswer ?? fallbackOpt?.dropdownValue ?? "Not available";
+        return `${dt.dropdownField || "Option"}: ${correctDisplay}`;
       })
       .join(", ");
 
-    // Check correctness (exact match for all dropdowns)
+    // Check correctness (compare selected value to backend dropdownanswer when available)
     const correctStatus = dropdownquestiontext.every((dt) => {
       const dropdownId = dt.id;
-      const correctVal =
+      const backendAnswer = dt.dropdownanswer;
+      const fallbackVal =
         dt.dropdownoption?.find((opt) => opt.is_correct)?.dropdownValue ||
-        dt.dropdownoption[0]?.dropdownValue;
-      return dropdownValues[dropdownId] === correctVal;
+        dt.dropdownoption?.[0]?.dropdownValue;
+      const correctVal = backendAnswer ?? fallbackVal;
+      // compare as strings
+      return String(dropdownValues[dropdownId]) === String(correctVal);
     });
     const mark = correctStatus ? question?.marks || 5 : 0;
 
-    // Call onSubmit from ExamContainer
-    onSubmit(questionId, correctStatus, mark, userAnswerStr);
+    // Call onSubmit from ExamContainer if provided
+    if (typeof onSubmit === "function") {
+      onSubmit(questionId, correctStatus, mark, userAnswerStr);
+    }
 
     // Set states for reveal
     setUserAnswer(userAnswerStr);
@@ -116,102 +133,223 @@ const DropdownQuestionComponent = ({ question, onSubmit }) => {
   }
 
   return (
-    <Box
-      sx={{
-        backgroundColor: "#fff",
-        borderRadius: "1.5rem",
-        padding: "2rem",
-        margin: "2rem auto",
-        maxWidth: "950px",
-        boxShadow: "0 4px 12px rgba(0,0,0,0.06)",
-      }}
-    >
-      {/* Question Text */}
+    <Box sx={{ width: "100%" }}>
+      {/* Header row */}
+      <Box sx={{ width: "100%", px: { xs: 2, md: 6 }, pt: 2, mb: 1 }}>
+        <Box
+          sx={{
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+            color: "#6b7280",
+          }}
+        >
+          <Typography>Mark : {question?.marks || ""}</Typography>
+          <Typography sx={{ textAlign: "center" }}>
+            Difficulty : {question?.difficulty || ""}
+          </Typography>
+          <Typography sx={{ textAlign: "right" }}>
+            Question Type : Dropdown
+          </Typography>
+        </Box>
+      </Box>
+
+      {/* Title */}
       <Typography
         variant="h6"
         fontWeight={700}
         mb={2}
-        sx={{ textAlign: "center", color: "#2e3760" }}
+        sx={{
+          textAlign: "center",
+          color: "#2e3760",
+          pt: 3,
+          fontSize: { xs: "1rem", md: "1.25rem" },
+        }}
       >
         {questionText}
       </Typography>
 
-      {tabsInfo.length > 0 && (
-        <>
-          <Tabs
-            value={Math.min(activeTab, tabsInfo.length - 1)}
-            onChange={handleTabChange}
-            centered={!isMobile}
-            variant={isMobile ? "scrollable" : "standard"}
-            scrollButtons={isMobile ? "auto" : false}
-            sx={{ mb: 2 }}
-          >
-            {tabsInfo.map((tab, i) => (
-              <Tab label={tab?.tabKey || `Tab ${i + 1}`} key={tab?.id || i} />
-            ))}
-          </Tabs>
-          <Box
-            sx={{
-              backgroundColor: "#f8f9ff",
-              borderRadius: "10px",
-              padding: "1rem",
-              mb: 4,
-              minHeight: "100px",
-            }}
-          >
-            <Typography variant="body1" sx={{ color: "#333" }}>
-              {tabsInfo[Math.min(activeTab, tabsInfo.length - 1)]?.tabValue ||
-                "No content available"}
-            </Typography>
-          </Box>
-        </>
-      )}
-
-      {/* Dropdown */}
+      {/* White card with centered pill tab and note box */}
       <Box
         sx={{
-          display: "flex",
-          flexDirection: isMobile ? "column" : "row",
-          gap: "1rem",
-          justifyContent: "center",
-          alignItems: "center",
-          mb: 4,
-          flexWrap: "wrap",
+          backgroundColor: "#fff",
+          borderRadius: "1.5rem",
+          padding: { xs: 3, md: 5 },
+          margin: "1.5rem auto",
+          maxWidth: 950,
+          boxShadow: "0 6px 18px rgba(15,23,42,0.06)",
         }}
       >
-        {dropdownquestiontext.map((dt, index) => {
-          if (!dt) return null;
-          const dropdownId = dt.id || index;
-          const dropdownOptions = dt.dropdownoption || [];
-          const dropdownLabel = dt.dropdownField || `Option ${index + 1}`;
+        <Box
+          sx={{
+            display: "flex",
+            justifyContent: "center",
+            mb: 2,
+            px: 1,
+            position: "relative",
+          }}
+        >
+          <Tabs
+            value={activeTab}
+            onChange={handleTabChange}
+            variant="scrollable"
+            scrollButtons="auto"
+            TabIndicatorProps={{
+              sx: { display: "none" },
+            }}
+            sx={{
+              minHeight: 42,
+              "& .MuiTabs-flexContainer": {
+                gap: 1,
+              },
+              "& .MuiTab-root": {
+                minHeight: 42,
+                minWidth: 110,
+                borderRadius: "999px",
+                textTransform: "none",
+                fontSize: { xs: "0.9rem", md: "1rem" },
+                fontWeight: 500,
+                color: "#475569",
+                border: "1px solid #e6eaef",
+                padding: { xs: "7px 18px", md: "8px 24px" },
+                transition: "all 200ms cubic-bezier(0.4, 0, 0.2, 1)",
+                "&:hover": {
+                  backgroundColor: "#f8fafc",
+                  borderColor: "#e6eaef",
+                },
+                "&.Mui-selected": {
+                  color: "#fff",
+                  fontWeight: 600,
+                  backgroundColor: "#2e3760",
+                  border: "1px solid #2e3760",
+                  boxShadow: "0 6px 18px rgba(15,23,42,0.12)",
+                },
+              },
+            }}
+          >
+            {tabsInfo?.map((tab, idx) => (
+              <Tab
+                key={tab.id || idx}
+                label={tab.tabKey}
+                value={idx}
+                disableRipple
+              />
+            ))}
+          </Tabs>
+        </Box>
 
-          return (
-            <FormControl sx={{ minWidth: 160 }} size="small" key={dropdownId}>
-              <InputLabel>{dropdownLabel}</InputLabel>
-              <Select
-                value={dropdownValues[dropdownId] || ""}
-                label={dropdownLabel}
-                onChange={handleDropdownChange(dropdownId)}
-              >
-                <MenuItem value="">
-                  <em>Select an option</em>
-                </MenuItem>
-                {dropdownOptions.map((opt, optIndex) => (
-                  <MenuItem
-                    key={opt.id || optIndex}
-                    value={opt.dropdownValue || `Option ${optIndex + 1}`}
-                  >
-                    {opt.dropdownValue || `Option ${optIndex + 1}`}
-                  </MenuItem>
-                ))}
-              </Select>
-            </FormControl>
-          );
-        })}
+        <Box
+          sx={{
+            backgroundColor: "#f3f4f6",
+            borderRadius: 2,
+            p: { xs: 2, md: 2.5 },
+            minHeight: { xs: "auto", md: 56 },
+          }}
+        >
+          <Typography
+            sx={{
+              color: "#6b7280",
+              whiteSpace: "pre-line",
+              fontSize: { xs: "0.95rem", md: "1rem" },
+            }}
+          >
+            {tabsInfo[activeTab]?.tabValue || ""}
+          </Typography>
+          {tabsInfo[activeTab]?.tabImage && (
+            <Box sx={{ mt: 2, textAlign: "center" }}>
+              <img
+                src={
+                  tabsInfo[activeTab].tabImage.startsWith("http")
+                    ? tabsInfo[activeTab].tabImage
+                    : `${"https://lunarsenterprises.com:8002"}${
+                        tabsInfo[activeTab].tabImage
+                      }`
+                }
+                alt="tab"
+                style={{ maxWidth: "100%", borderRadius: 8 }}
+              />
+            </Box>
+          )}
+        </Box>
       </Box>
 
-      {/* Submit Button */}
-      <Box textAlign="center">
+      {/* Big inline dropdown container like screenshot */}
+      <Box sx={{ px: { xs: 2, md: 6 }, mb: 6 }}>
+        <Box
+          sx={{
+            backgroundColor: "#f1f5f9",
+            borderRadius: 2,
+            p: { xs: 2, md: 3 },
+            display: "flex",
+            flexDirection: { xs: "column", md: "row" },
+            alignItems: { xs: "stretch", md: "center" },
+            gap: 2,
+            minHeight: 64,
+          }}
+        >
+          {/* Build inline content: label + select + spacer + label + select */}
+          {dropdownquestiontext.map((dt, index) => {
+            const id = dt.id || index;
+            const label = dt.dropdownField || `Select ${index + 1}`;
+            const options = dt.dropdownoption || [];
+
+            return (
+              <Box
+                key={id}
+                sx={{
+                  display: "flex",
+                  flexDirection: { xs: "column", md: "row" },
+                  alignItems: { xs: "flex-start", md: "center" },
+                  gap: 1,
+                  width: { xs: "100%", md: "auto" },
+                }}
+              >
+                <Typography sx={{ color: "#0f172a", mb: { xs: 1, md: 0 } }}>
+                  {label}
+                </Typography>
+                <FormControl
+                  size="small"
+                  sx={{ width: { xs: "100%", md: "auto" } }}
+                >
+                  <Select
+                    value={dropdownValues[id] || ""}
+                    onChange={handleDropdownChange(id)}
+                    disabled={showReveal}
+                    displayEmpty
+                    sx={{
+                      minWidth: { xs: "100%", md: 140 },
+                      width: { xs: "100%", md: "auto" },
+                      height: 40,
+                      borderRadius: "12px",
+                      backgroundColor: "#fff",
+                      border: "1px solid #e5e7eb",
+                      px: 1,
+                      transition: "box-shadow 200ms",
+                      "&.Mui-focused": {
+                        boxShadow: "0 4px 12px rgba(47,59,108,0.08)",
+                      },
+                    }}
+                  >
+                    <MenuItem value="">
+                      <em>Select</em>
+                    </MenuItem>
+                    {options.map((opt, oi) => (
+                      <MenuItem
+                        key={opt.id || oi}
+                        value={opt.dropdownValue || `Option ${oi + 1}`}
+                      >
+                        {opt.dropdownValue || `Option ${oi + 1}`}
+                      </MenuItem>
+                    ))}
+                  </Select>
+                </FormControl>
+              </Box>
+            );
+          })}
+        </Box>
+      </Box>
+      {/* Reveal Button */}
+      <Box textAlign="center" sx={{ mb: 4 }}>
         <Button
           variant="contained"
           onClick={handleReveal}
@@ -219,11 +357,10 @@ const DropdownQuestionComponent = ({ question, onSubmit }) => {
             backgroundColor: "#f4c300",
             color: "#000",
             fontWeight: 600,
-            padding: "0.6rem 2.5rem",
+            padding: { xs: "0.5rem 1.25rem", md: "0.6rem 2.5rem" },
             borderRadius: "10px",
-            "&:hover": {
-              backgroundColor: "#e0b000",
-            },
+            fontSize: { xs: "0.9rem", md: "1rem" },
+            "&:hover": { backgroundColor: "#e0b000" },
           }}
         >
           Reveal Answer
@@ -232,7 +369,7 @@ const DropdownQuestionComponent = ({ question, onSubmit }) => {
 
       {/* Reveal Section */}
       {showReveal && (
-        <Box sx={{ mt: 4 }}>
+        <Box sx={{ mt: 2, px: { xs: 2, md: 6 }, mb: 6 }}>
           <Typography
             variant="subtitle1"
             fontWeight={600}
@@ -242,11 +379,28 @@ const DropdownQuestionComponent = ({ question, onSubmit }) => {
             Your Answer:
           </Typography>
           <List dense>
-            {userAnswer.split(", ").map((item, idx) => (
-              <ListItem key={idx} disablePadding>
-                <ListItemText primary={item} />
-              </ListItem>
-            ))}
+            {dropdownquestiontext.map((dt, idx) => {
+              const dropdownId = dt.id;
+              const label = dt.dropdownField || `Option ${idx + 1}`;
+              const userVal = dropdownValues[dropdownId] || "Not selected";
+              const backendAnswer = dt.dropdownanswer;
+              const fallbackVal =
+                dt.dropdownoption?.find((opt) => opt.is_correct)
+                  ?.dropdownValue || dt.dropdownoption?.[0]?.dropdownValue;
+              const correctVal =
+                backendAnswer ?? fallbackVal ?? "Not available";
+              const correct = String(userVal) === String(correctVal);
+              return (
+                <ListItem key={dropdownId ?? idx} disablePadding>
+                  <ListItemText
+                    primary={`${label}: ${userVal}`}
+                    primaryTypographyProps={{
+                      color: correct ? "green" : "red",
+                    }}
+                  />
+                </ListItem>
+              );
+            })}
           </List>
 
           <Typography
@@ -259,11 +413,21 @@ const DropdownQuestionComponent = ({ question, onSubmit }) => {
             Correct Answer:
           </Typography>
           <List dense>
-            {correctAnswer.split(", ").map((item, idx) => (
-              <ListItem key={idx} disablePadding>
-                <ListItemText primary={item} />
-              </ListItem>
-            ))}
+            {dropdownquestiontext.map((dt, idx) => {
+              const dropdownId = dt.id;
+              const label = dt.dropdownField || `Option ${idx + 1}`;
+              const backendAnswer = dt.dropdownanswer;
+              const fallbackVal =
+                dt.dropdownoption?.find((opt) => opt.is_correct)
+                  ?.dropdownValue || dt.dropdownoption?.[0]?.dropdownValue;
+              const correctVal =
+                backendAnswer ?? fallbackVal ?? "Not available";
+              return (
+                <ListItem key={dropdownId ?? idx} disablePadding>
+                  <ListItemText primary={`${label}: ${correctVal}`} />
+                </ListItem>
+              );
+            })}
           </List>
 
           <Typography
@@ -283,8 +447,10 @@ const DropdownQuestionComponent = ({ question, onSubmit }) => {
               explanation.map((exp) => exp.explanation) || []
             }
             additionalInfoHeading="Additional Info"
-            additionalInfoParagraphs={[]}
-            additionalInfoImage={null}
+            additionalInfoParagraphs={
+              (question.additionalInfo || []).map((a) => a.info) || []
+            }
+            additionalInfoImage={question.additionalInfo?.[0]?.image || null}
           />
         </Box>
       )}
