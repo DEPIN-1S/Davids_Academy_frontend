@@ -305,6 +305,7 @@ import SentenceHighlight from "./SentenceQuestionComponent";
 import MultiRadio from "./MultiRadioQuestionComponent";
 import TableDropdownQuestionComponent from "./TableDropdownQuestionComponent";
 import TableMultipleDropdownComponent from "./TableMultipleDropdownComponent";
+import TableHighlightSelectComponent from "./TableHighlightSelectComponent";
 import {
   getQBankQuestions,
   getQBankQuestionData,
@@ -328,6 +329,8 @@ const questionTypeToComponent = {
   "Multiple Radio": MultiRadio,
   "Table Dropdown": TableDropdownQuestionComponent,
   Multidropdown: TableMultipleDropdownComponent,
+  "Table highlight": TableHighlightSelectComponent,
+  "Table Highlight": TableHighlightSelectComponent,
 };
 
 const ExamContainer = ({ user }) => {
@@ -514,25 +517,38 @@ const ExamContainer = ({ user }) => {
     }
   };
 
-  const handleAnswerSubmit = async (questionId, is_correct, mark) => {
-    if (isTestMode) {
-      try {
-        const currentQuestionId = questionIds[currentIndex];
-        await submitTestQuestion(testId, currentQuestionId, is_correct, mark);
-        setAnswers((prev) => ({
-          ...prev,
-          [currentQuestionId]: { is_correct, mark },
-        }));
-        setAnsweredIndices((prev) => new Set([...prev, currentIndex]));
-        if (is_correct) {
-          setCorrectCount((prev) => prev + 1);
-        } else {
-          setIncorrectCount((prev) => prev + 1);
-        }
-      } catch (err) {
-        setError(err.message || "Failed to submit answer.");
+  const handleAnswerSubmit = async (
+    questionId,
+    is_correct,
+    mark,
+    _userAnswerStr,
+    incomingTestId
+  ) => {
+    // if (isTestMode) {
+    try {
+      const currentQuestionId = questionIds[currentIndex];
+      const testIdToUse = incomingTestId ?? testId;
+      await submitTestQuestion(
+        testIdToUse,
+        questionId,
+        is_correct,
+        mark,
+        currentQuestionId
+      );
+      setAnswers((prev) => ({
+        ...prev,
+        [currentQuestionId]: { is_correct, mark },
+      }));
+      setAnsweredIndices((prev) => new Set([...prev, currentIndex]));
+      if (is_correct) {
+        setCorrectCount((prev) => prev + 1);
+      } else {
+        setIncorrectCount((prev) => prev + 1);
       }
+    } catch (err) {
+      setError(err.message || "Failed to submit answer.");
     }
+    // }
   };
 
   const formatTime = (secs) => {
@@ -591,6 +607,7 @@ const ExamContainer = ({ user }) => {
           <QuestionComponent
             question={currentQuestion}
             onSubmit={handleAnswerSubmit}
+            testId={testId}
           />
         ) : currentQuestion ? (
           <div>
