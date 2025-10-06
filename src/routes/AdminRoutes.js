@@ -37,6 +37,9 @@ import ViewProgress from "../Admin Question View/ViewProgress";
 import TableDropdownQuestionContent from "../components/AdminComponents/TableDropdownQuestionContent";
 import MultiDropDownQuestionContent from "../components/AdminComponents/MultiDropDownQuestionContent";
 import TableHighlightsQuestionContent from "../components/AdminComponents/TableHighlightsQuestionContent";
+import TableDropDownQuestionView from "../Admin Question View/TableDropDownQuestionView";
+import MultiDropdownQuestionView from "../Admin Question View/MultiDropdownQuestionView";
+import TableHighlightQuestionView from "../Admin Question View/TableHighlightQuestionView";
 
 const AdminRoutes = () => (
     <>
@@ -249,6 +252,24 @@ const AdminRoutes = () => (
             <Route path="/admin/fillInTheBlanks-question-view/:questionId" element={
                 <ProtectedRoutes allowedRoles={['admin']}>
                     <FillinTheBlanksQuestionView />
+                </ProtectedRoutes>
+            } />
+
+            <Route path="/admin/TableDropdown-question-view/:questionId" element={
+                <ProtectedRoutes allowedRoles={['admin']}>
+                    <TableDropDownQuestionView />
+                </ProtectedRoutes>
+            } />
+
+            <Route path="/admin/MultiDropdown-question-view/:questionId" element={
+                <ProtectedRoutes allowedRoles={['admin']}>
+                    <MultiDropdownQuestionView />
+                </ProtectedRoutes>
+            } />
+
+            <Route path="/admin/TableHighlight-question-view/:questionId" element={
+                <ProtectedRoutes allowedRoles={['admin']}>
+                    <TableHighlightQuestionView />
                 </ProtectedRoutes>
             } />
 
