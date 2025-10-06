@@ -152,10 +152,10 @@ const AnswerExplain = () => {
             createdAt: previousQuestionData.createdAt,
             questionId: previousQuestionData.questionId,
             instruction: previousQuestionData.instruction,
+
             //for dropdown data
             tabs: previousQuestionData.tabs || [],
             dropdowns: previousQuestionData.dropdowns || [],
-
 
             //for drag and drop
             drag_and_drop: previousQuestionData.drag_and_drop,
@@ -168,18 +168,16 @@ const AnswerExplain = () => {
             question_content: previousQuestionData.question_content,
             radio_options: previousQuestionData.radio_options,
 
+            //for table dropdown
+            tableDropdownAnswers: previousQuestionData.tableDropdownAnswers,
+            tableHeaders:previousQuestionData.tableHeaders,
+            tableDropdownFields: previousQuestionData.tableDropdownFields,
 
             //for sentence highlight question
             passage: previousQuestionData.passage,
             highlightInstructions: previousQuestionData.highlightInstructions,
             correctHighlights: previousQuestionData.correctHighlights,
             answer: previousQuestionData.answer,
-
-            /* 
-                        //for filling the blanks
-                        FTBquestion_content: previousQuestionData.FTBquestion_content,
-                        FTBoptions: previousQuestionData.FTBoptions, */
-
 
             // Current explanation data
             explanationHeading: explanationHeading.trim(),
@@ -247,11 +245,14 @@ const AnswerExplain = () => {
             correctAnswer: previousQuestionData.correctAnswer,
             createdAt: previousQuestionData.createdAt,
             questionId: previousQuestionData.questionId,
+            tableDropdownAnswers: previousQuestionData.tableDropdownAnswers,
+            instruction: previousQuestionData.instruction,
+            tableHeaders: previousQuestionData.tableHeaders,
+            tableDropdownFields: previousQuestionData.tableDropdownFields,
 
             //for dropdown data
             tabs: previousQuestionData.tabs || [],
             dropdowns: previousQuestionData.dropdowns || [],
-
 
             //for drag and drop
             drag_and_drop: previousQuestionData.drag_and_drop,
@@ -264,12 +265,16 @@ const AnswerExplain = () => {
             question_content: previousQuestionData.question_content,
             radio_options: previousQuestionData.radio_options,
 
-
             //for sentence highlight question
             passage: previousQuestionData.passage,
             highlightInstructions: previousQuestionData.highlightInstructions,
             correctHighlights: previousQuestionData.correctHighlights,
             answer: previousQuestionData.answer,
+
+            //for table dropdown
+            tableDropdownAnswers: previousQuestionData.tableDropdownAnswers,
+            tableHeaders:previousQuestionData.tableHeaders,
+            tableDropdownFields: previousQuestionData.tableDropdownFields,
 
             // Current explanation data
             explanationHeading: explanationHeading.trim(),
@@ -308,6 +313,11 @@ const AnswerExplain = () => {
             case "Drag Drop":
                 route = "/admin/dragdrop-content";
                 break;
+
+            case "Table Dropdown":
+                route = "/admin/table-dropDown";
+                break
+
             // add more cases as needed
             default:
                 route = "/admin/mcq-content";
@@ -333,9 +343,6 @@ const AnswerExplain = () => {
             }
         });
     };
-
-
-
 
 
     // Helper functions
@@ -385,29 +392,6 @@ const AnswerExplain = () => {
                         <Typography variant="body1" paragraph>
                             <strong>Q:</strong> {previousQuestionData.question}
                         </Typography>
-
-                        {/* Display Options */}
-                        {/* {previousQuestionData.options && previousQuestionData.options.length > 0 && (
-                            <Box mb={2}>
-                                <Typography variant="subtitle2" gutterBottom>
-                                    Answer Options:
-                                </Typography>
-                                {previousQuestionData.options.map((option, index) => (
-                                    <Typography
-                                        key={index}
-                                        variant="body2"
-                                        sx={{
-                                            color: option === previousQuestionData.correctAnswer ? 'success.main' : 'text.secondary',
-                                            fontWeight: option === previousQuestionData.correctAnswer ? 'bold' : 'normal',
-                                            ml: 1
-                                        }}
-                                    >
-                                        {String.fromCharCode(65 + index)}) {option}
-                                        {option === previousQuestionData.correctAnswer && " ✅ Correct"}
-                                    </Typography>
-                                ))}
-                            </Box>
-                        )} */}
 
 
                         {/* Display Options */}
@@ -532,19 +516,6 @@ const AnswerExplain = () => {
                 sx={{ mb: 3 }}
             />
 
-            {/* Additional Info Heading */}
-            {/* <Typography variant="h6" mb={1} color="secondary">
-                Additional Information Heading
-            </Typography>
-            <TextField
-                fullWidth
-                label="Enter additional info heading (Optional)"
-                value={additionalInfoHeading}
-                onChange={(e) => setAdditionalInfoHeading(e.target.value)}
-                variant="outlined"
-                placeholder="e.g., Important Notes, Clinical Tips, Remember"
-                sx={{ mb: 3 }}
-            /> */}
 
             {/* Additional Info Text Area */}
             <Typography variant="h6" mb={1} color="secondary">

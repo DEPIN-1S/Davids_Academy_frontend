@@ -19,7 +19,6 @@ const DropdownQuestionComponent = () => {
   const dispatch = useDispatch();
   const { questionData, loading, error } = useSelector((state) => state.exam);
   const { questionId } = useParams();
-
   const [activeTab, setActiveTab] = useState("");
   const [dropdownValues, setDropdownValues] = useState({});
 
@@ -218,9 +217,6 @@ const DropdownQuestionComponent = () => {
         <div className="note-box">
           <p>{tabsInfo.find((t) => t.tabKey === activeTab)?.tabValue}</p>
         </div>
-
-        {/* Fill in the Blanks Section */}
-
 
       </Box>
 

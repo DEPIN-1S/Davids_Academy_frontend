@@ -34,7 +34,8 @@ import SentenceHighlightQuestionView from "../Admin Question View/SentenceHighli
 import FillinTheBlanksQuestionView from "../Admin Question View/FillinTheBlanksQuestionView";
 import SortingQuestionView from "../Admin Question View/SortingQuestionView";
 import ViewProgress from "../Admin Question View/ViewProgress";
-import TableDropDown from "../components/AdminComponents/TableDropDown";
+import TableDropdownQuestionContent from "../components/AdminComponents/TableDropdownQuestionContent";
+import MultiDropDownQuestionContent from "../components/AdminComponents/MultiDropDownQuestionContent";
 
 const AdminRoutes = () => (
     <>
@@ -109,7 +110,12 @@ const AdminRoutes = () => (
             } />
             <Route path="/admin/table-dropDown" element={
                 <ProtectedRoutes allowedRoles={['admin']} >
-                    <TableDropDown />
+                    <TableDropdownQuestionContent />
+                </ProtectedRoutes>
+            } />
+            <Route path="/admin/multiDropDown" element={
+                <ProtectedRoutes allowedRoles={['admin']} >
+                    <MultiDropDownQuestionContent />
                 </ProtectedRoutes>
             } />
 

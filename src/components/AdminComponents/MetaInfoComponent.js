@@ -119,7 +119,9 @@ const MetaInfoComponent = () => {
             'Sort': 5,
             'Sentence Highlight': 6,
             'Fill in the Blanks': 7,
-            'Fill in Blanks': 7
+            'Fill in Blanks': 7,
+            'Table Dropdown': 14,
+
         };
         return typeMapping[questionType] || 1;
     };
@@ -206,6 +208,7 @@ const MetaInfoComponent = () => {
         question_type_id: receivedQuestionData.question_type_id,
         question: receivedQuestionData.question || "",
         exam_type: receivedQuestionData.exam_type,
+        instruction: receivedQuestionData.instruction || "",
         difficulty: form.difficulty,
         explanationHeading: receivedQuestionData.explanationHeading || "",
         explanationText: receivedQuestionData.explanationText || "",
@@ -241,6 +244,7 @@ const MetaInfoComponent = () => {
         courseId: receivedQuestionData.cs_id,
         exam_type: receivedQuestionData.exam_type,
         question: receivedQuestionData.question || "",
+        instruction: receivedQuestionData.instruction || "",
         drag_drop_content: receivedQuestionData.drag_drop_content || "",
         difficulty: form.difficulty || "",
         tabs: receivedQuestionData.tabs || [],
@@ -260,6 +264,7 @@ const MetaInfoComponent = () => {
         exam_type: receivedQuestionData.exam_type,
         question: receivedQuestionData.question || "",
         sortItems: receivedQuestionData.sortitems || [],
+        instruction: receivedQuestionData.instruction || "",
         difficulty: form.difficulty || "",
         explanationHeading: receivedQuestionData.explanationHeading || "",
         explanationText: receivedQuestionData.explanationText || "",
@@ -276,6 +281,7 @@ const MetaInfoComponent = () => {
         question_type_id: receivedQuestionData.question_type_id,
         answer: receivedQuestionData?.question_content?.[0]?.fill_blanks_answer,
         difficulty: form.difficulty || "",
+        instruction: receivedQuestionData.instruction || "",
         question_content: receivedQuestionData.question_content,
         options: receivedQuestionData.options,
         explanationHeading: receivedQuestionData.explanationHeading || "",
@@ -291,6 +297,7 @@ const MetaInfoComponent = () => {
         exam_type: receivedQuestionData.exam_type,
         question: receivedQuestionData.question || "",
         difficulty: form.difficulty || "",
+        instruction: receivedQuestionData.instruction || "",
         tabs: receivedQuestionData.tabs || [],
         /* question_content:receivedQuestionData.question_content, */
         question_content: receivedQuestionData.question_content,
@@ -310,6 +317,7 @@ const MetaInfoComponent = () => {
         question: receivedQuestionData.question || "",
         difficulty: form.difficulty || "",
         tabs: receivedQuestionData.tabs || [],
+        instruction: receivedQuestionData.instruction || "",
         highlightoptions: receivedQuestionData.correctHighlights,
         passage: receivedQuestionData.passage,
         explanationHeading: receivedQuestionData.explanationHeading || "",
@@ -320,7 +328,27 @@ const MetaInfoComponent = () => {
     });
 
 
+    const getTableDropdownFormData = () => ({
+        courseId: receivedQuestionData.cs_id,
+        questionType: receivedQuestionData.questionType,
+        question_type_id: receivedQuestionData.question_type_id,
+        exam_type: receivedQuestionData.exam_type,
+        question: receivedQuestionData.question || "",
+        difficulty: form.difficulty || "",
+        tabs: receivedQuestionData.tabs || [],
+        instruction: receivedQuestionData.instruction || "",
+        explanationHeading: receivedQuestionData.explanationHeading || "",
+        explanationText: receivedQuestionData.explanationText || "",
+        info: receivedQuestionData.additionalInfo || "",
+        marks: form.marks,
+        tableDropdownAnswers: receivedQuestionData.tableDropdownAnswers || [],
+        tableHeaders: receivedQuestionData.tableHeaders || {},
+        tableDropdownFields: receivedQuestionData.tableDropdownFields || [],
+    })
+
+
     const constructQuestionFormData = () => {
+        console.log("🟢 Received questionType:", receivedQuestionData.questionType);
         const questionType = receivedQuestionData.questionType || 'MCQ';
 
         switch (questionType) {
@@ -335,7 +363,7 @@ const MetaInfoComponent = () => {
             case 'Sorting':
                 return getSortingFormData();
 
-            case 'Multiple Radio"':
+            case 'Multiple Radio':
                 return getMultiRadioFormData();
 
             case 'Fill in the Blanks':
@@ -343,6 +371,9 @@ const MetaInfoComponent = () => {
 
             case 'Sentence Highlight':
                 return getSentenceHighlightFormData();
+
+            case 'Table Dropdown':
+                return getTableDropdownFormData()
 
             default:
                 return getMCQFormData(); // fallback to MCQ format
@@ -451,7 +482,7 @@ const MetaInfoComponent = () => {
         courseId: receivedQuestionData.cs_id,
         exam_type: receivedQuestionData.exam_type,
         question: receivedQuestionData.question || "",
-       
+        instructions: receivedQuestionData.instruction || "",
         sortItems: receivedQuestionData.sortitems || [],
         difficulty: form.difficulty || "",
         explanationHeading: receivedQuestionData.explanationHeading || "",
@@ -469,6 +500,7 @@ const MetaInfoComponent = () => {
         question_type_id: receivedQuestionData.question_type_id,
         answer: receivedQuestionData?.question_content?.[0]?.fill_blanks_answer,
         difficulty: form.difficulty || "",
+        instructions: receivedQuestionData.instruction || "",
         question_content: receivedQuestionData.question_content,
         options: receivedQuestionData.options,
         explanationHeading: receivedQuestionData.explanationHeading || "",
@@ -516,6 +548,25 @@ const MetaInfoComponent = () => {
     });
 
 
+    const getTableDropdownBaseData = () => ({
+        courseId: receivedQuestionData.cs_id,
+        questionType: receivedQuestionData.questionType,
+        question_type_id: receivedQuestionData.question_type_id,
+        exam_type: receivedQuestionData.exam_type,
+        question: receivedQuestionData.question || "",
+        difficulty: form.difficulty || "",
+        tabs: receivedQuestionData.tabs || [],
+        instructions: receivedQuestionData.instruction || "",
+        explanationHeading: receivedQuestionData.explanationHeading || "",
+        explanationText: receivedQuestionData.explanationText || "",
+        info: receivedQuestionData.additionalInfo || "",
+        infoImage: receivedQuestionData.infoImage || null,
+        marks: form.marks,
+        tableDropdownAnswers: receivedQuestionData.tableDropdownAnswers || [],
+        tableHeaders:receivedQuestionData.tableHeaders || {},
+        tableDropdownFields: receivedQuestionData.tableDropdownFields || [],
+    })
+
 
     // ✅ Main function - still same pattern
     const constructQuestionData = () => {
@@ -541,6 +592,9 @@ const MetaInfoComponent = () => {
 
             case 'Sentence Highlight':
                 return getSentenceHighlightBaseData();
+
+            case 'Table Dropdown':
+                return getTableDropdownBaseData();
 
             default:
                 console.warn(" Unknown questionType:", receivedQuestionData.questionType);

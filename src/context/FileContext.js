@@ -136,7 +136,24 @@ export const FileProvider = ({ children }) => {
                 formData.append("explanationText", questionData.explanationText ?? "");
                 formData.append("info", questionData.info ?? "");
                 formData.append("marks", questionData.marks)
+                break;
 
+            case "Table Dropdown":
+                formData.append("courseId", questionData.courseId ?? "");
+                formData.append("questionType", questionData.questionType ?? "");
+                formData.append("question_type_id", questionData.question_type_id ?? "");
+                formData.append("exam_type", questionData.exam_type ?? "");
+                formData.append("question", questionData.question ?? "");
+                formData.append("difficulty", questionData.difficulty ?? "");
+                formData.append("instructions", questionData.instruction);
+                formData.append("tabs", JSON.stringify(questionData.tabs || []));
+                formData.append("tableDropdownAnswers", questionData.tableDropdownAnswers || []);
+                formData.append("tableHeaders",questionData.tableHeaders || {});
+                formData.append("tableDropdownFields", questionData.tableDropdownFields || []);
+                formData.append("explanationHeading", questionData.explanationHeading ?? "");
+                formData.append("explanationText", questionData.explanationText ?? "");
+                formData.append("info", questionData.info ?? "");
+                formData.append("marks", questionData.marks)
             default:
                 console.warn(" Unknown questionType:", questionData.questionType);
                 break;
