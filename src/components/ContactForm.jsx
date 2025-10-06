@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { submitContact } from "../features/contact/contactSlice"; // Adjust path
-import { fetchCourses } from "../features/courses/courseSlice"; // Adjust path
+import { submitContact } from "../features/contact/contactSlice";
+import { fetchCourses } from "../features/courses/courseSlice";
 import { useNavigate } from "react-router-dom";
 import {
   Button,
