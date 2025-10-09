@@ -13,14 +13,16 @@ import CheckIcon from "@mui/icons-material/Check";
 import "../../styles/DashboardStyles/RadioButtonQuestionComponent.css";
 import RevealAnswerComponent from "./RevealAnswerComponent";
 
-const MCQQuestionComponent = ({ question }) => {
+const MCQQuestionComponent = ({ question, onSubmit }) => {
   const {
+    id: questionId,
     question: questionText,
     mcqoptions = [],
     mcqAnswers = [],
     exhibit,
     explanation = [],
     additionalInfo = [],
+    marks,
   } = question || {};
 
   const answerArray = Array.isArray(mcqAnswers)
@@ -29,6 +31,7 @@ const MCQQuestionComponent = ({ question }) => {
 
   const [selectedOptions, setSelectedOptions] = useState([]);
   const [showAnswer, setShowAnswer] = useState(false);
+  const [isCorrect, setIsCorrect] = useState(false);
 
   const handleChange = (event) => {
     const value = event.target.value;
@@ -42,10 +45,27 @@ const MCQQuestionComponent = ({ question }) => {
   };
 
   const handleReveal = () => {
-    if (selectedOptions.length === 0) {
-      alert("Please select at least one option before revealing the answer.");
-      return;
-    }
+    const selectedArray = Array.from(selectedOptions || []);
+    const correctAnswers = answerArray || [];
+
+    // Normalize values for comparison
+    const selectedNorm = selectedArray.map((s) => (s ?? "").trim());
+    const correctNorm = correctAnswers.map((s) => (s ?? "").trim());
+
+    // Check if selected items match the correct answers (order-insensitive)
+    const allCorrect =
+      selectedNorm.length === correctNorm.length &&
+      selectedNorm.every((item) => correctNorm.includes(item)) &&
+      correctNorm.every((item) => selectedNorm.includes(item));
+
+    const userAnswerStr =
+      selectedNorm.length > 0 ? selectedNorm.join(", ") : "No items selected";
+
+    const mark = allCorrect ? Math.abs(marks) || 0 : 0;
+    if (typeof onSubmit === "function")
+      onSubmit(questionId, allCorrect, mark, userAnswerStr);
+
+    setIsCorrect(allCorrect);
     setShowAnswer(true);
   };
 
@@ -164,6 +184,16 @@ const MCQQuestionComponent = ({ question }) => {
               </ListItem>
             )}
           </List>
+
+          <Typography
+            variant="subtitle1"
+            fontWeight={600}
+            mt={2}
+            mb={1}
+            color={isCorrect ? "green" : "red"}
+          >
+            {isCorrect ? "✅ Correct!" : "❌ Incorrect"}
+          </Typography>
 
           <Typography
             variant="subtitle1"
