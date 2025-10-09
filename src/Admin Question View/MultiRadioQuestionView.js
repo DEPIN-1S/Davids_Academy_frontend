@@ -97,7 +97,7 @@ function MultiRadioQuestionView() {
           <table className="radio-table">
             <thead>
               <tr>
-                <th>Client findings</th>
+                <th>{questionData?.data?.multiradioHeading}</th>
                 {answerGroups.map((group) => (
                   <th key={group}>{group}</th>
                 ))}

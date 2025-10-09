@@ -43,6 +43,7 @@ const MultiradioQuestionContent = () => {
     const exam_type = location.state?.exam_type || "";
     const question_type_id = location.state?.question_type_id || "";
     const [instruction, setInstruction] = useState(existingData.instruction || "")
+    const [multiradioHeading, setMultiradioHeading] = useState(existingData.multiradioHeading || "")
     // Form state
     const [question, setQuestion] = useState(existingData.question || "");
     const [tabs, setTabs] = useState(existingData.tabs || [
@@ -226,6 +227,10 @@ const MultiradioQuestionContent = () => {
             newErrors.question = 'Question is required';
         }
 
+        if (!multiradioHeading.trim()) {
+            newErrors.multiradioHeading = 'Sentence Column heading is required';
+        }
+
         const validTabs = tabs.filter(tab => tab.tabKey.trim() && tab.tabValue.trim());
         if (validTabs.length === 0) {
             newErrors.tabs = 'At least one tab with key and value is required';
@@ -240,6 +245,8 @@ const MultiradioQuestionContent = () => {
         if (validRadioOptions.length < 2) {
             newErrors.radioOptions = 'At least two radio options are required';
         }
+
+
 
         setErrors(newErrors);
         return Object.keys(newErrors).length === 0;
@@ -261,6 +268,7 @@ const MultiradioQuestionContent = () => {
             instruction: instruction.trim(),
             tabs: tabs.filter(tab => tab.tabKey.trim() && tab.tabValue.trim()),
             question_content: questionContent.filter(q => q.question_text.trim() && q.question_answer.trim()),
+            multiradioHeading: multiradioHeading.trim(),
             radio_options: radioOptions.filter(option => option.option_value.trim()),
             // ✅ No file objects in navigation state
             createdAt: existingData.createdAt || new Date().toISOString(),
@@ -331,9 +339,11 @@ const MultiradioQuestionContent = () => {
         const hasValidTabs = tabs.some(tab => tab.tabKey.trim() && tab.tabValue.trim());
         const hasValidQuestions = questionContent.some(q => q.question_text.trim() && q.question_answer.trim());
         const hasValidRadioOptions = radioOptions.filter(option => option.option_value.trim()).length >= 2;
-        const hasValidInstruction = instruction.trim() !== ""
-        return hasValidQuestion && hasValidTabs && hasValidQuestions && hasValidRadioOptions && hasValidInstruction;
+        const hasValidInstruction = instruction.trim() !== "";
+        const hasValidHeading = multiradioHeading.trim() !== ""; // ✅ added
+        return hasValidQuestion && hasValidTabs && hasValidQuestions && hasValidRadioOptions && hasValidInstruction && hasValidHeading;
     };
+
 
     // Cleanup on unmount
     React.useEffect(() => {
@@ -583,6 +593,26 @@ const MultiradioQuestionContent = () => {
                 error={!!errors.instruction}
                 helperText={errors.instruction}
                 sx={{ mb: 3 }}
+            />
+
+
+
+            <Typography variant="h6" mb={1} color="primary">
+                Table Heading *
+            </Typography>
+            <TextField
+                sx={{ mb: 1 }}
+                fullWidth
+                label="Enter Sentence Column Heading here..."
+                value={multiradioHeading}
+                onChange={(e) => {
+                    setMultiradioHeading(e.target.value);
+                    setErrors((prev) => ({ ...prev, multiradioHeading: null }));
+                }}
+                variant="outlined"
+                placeholder="Enter left header"
+                error={!!errors.multiradioHeading}
+                helperText={errors.multiradioHeading}
             />
 
 

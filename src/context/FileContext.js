@@ -163,6 +163,7 @@ export const FileProvider = ({ children }) => {
                 formData.append("question", questionData.question ?? "");
                 formData.append("difficulty", questionData.difficulty ?? "");
                 formData.append("instructions", questionData.instruction);
+                formData.append("multiradioHeading", questionData.multiradioHeading);
                 formData.append("tabs", JSON.stringify(questionData.tabs || []));
                 formData.append("rows", JSON.stringify(questionData.rows || []));
                 formData.append("headers", JSON.stringify(questionData.headers || []));

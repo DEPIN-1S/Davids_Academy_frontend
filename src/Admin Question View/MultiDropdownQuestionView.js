@@ -195,7 +195,7 @@ function MultiDropdownQuestionView({ onSubmit }) {
                 <Table>
                     <TableHead>
                         <TableRow sx={{ backgroundColor: "#f1f5f9" }}>
-                            <TableCell sx={{ fontWeight: 600 }}>Client</TableCell>
+                            
                             {headers.map((h, idx) => (
                                 <TableCell key={idx} sx={{ fontWeight: 600 }}>
                                     {h}

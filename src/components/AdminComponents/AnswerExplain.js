@@ -167,6 +167,7 @@ const AnswerExplain = () => {
             //for multiple radio
             question_content: previousQuestionData.question_content,
             radio_options: previousQuestionData.radio_options,
+            multiradioHeading: previousQuestionData.multiradioHeading,
 
             //for table dropdown
             tableDropdownAnswers: previousQuestionData.tableDropdownAnswers,
@@ -274,6 +275,7 @@ const AnswerExplain = () => {
             //for multiple radio
             question_content: previousQuestionData.question_content,
             radio_options: previousQuestionData.radio_options,
+            multiradioHeading: previousQuestionData.multiradioHeading,
 
             //for sentence highlight question
             passage: previousQuestionData.passage,

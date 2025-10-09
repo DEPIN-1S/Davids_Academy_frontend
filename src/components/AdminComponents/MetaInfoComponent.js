@@ -301,6 +301,7 @@ const MetaInfoComponent = () => {
         difficulty: form.difficulty || "",
         instruction: receivedQuestionData.instruction || "",
         tabs: receivedQuestionData.tabs || [],
+        multiradioHeading: receivedQuestionData.multiradioHeading,
         /* question_content:receivedQuestionData.question_content, */
         question_content: receivedQuestionData.question_content,
         radio_options: receivedQuestionData.radio_options || [],
@@ -566,6 +567,7 @@ const MetaInfoComponent = () => {
         instructions: receivedQuestionData.instruction || "",
         tabs: receivedQuestionData.tabs || [],
         question_content: receivedQuestionData.question_content,
+        multiradioHeading: receivedQuestionData.multiradioHeading,
         radio_options: receivedQuestionData.radio_options || [],
         explanationHeading: receivedQuestionData.explanationHeading || "",
         explanationText: receivedQuestionData.explanationText || "",
