@@ -113,26 +113,27 @@ function MultiDropdownQuestionView({ onSubmit }) {
             <Typography
                 variant="h6"
                 fontWeight={700}
-                sx={{ textAlign: "center", mb: 2, pt:4, fontSize: { xs: "1rem", md: "1.45rem" } }}
+                sx={{ textAlign: "center", mb: 2, pt: 4, fontSize: { xs: "1rem", md: "1.45rem" } }}
             >
                 {questionText}
             </Typography>
 
 
-              {instructions && (
-                    <Typography
-                      sx={{
+            {instructions && (
+                <Typography
+                    sx={{
                         textAlign: "center", color: "#4b5563", mb: 4, pt: 4,
                         fontSize: { xs: "0.9rem", md: "1.25rem" },
-                      }}
-                    >
-                      {instructions}
-                    </Typography>
-                  )}
+                    }}
+                >
+                    {instructions}
+                </Typography>
+            )}
 
-            {/* ✅ Modern Tabs Design (like TableDropDownQuestionView) */}
+            {/* ✅ Modern Tabs Design  */}
             {tabsInfo?.length > 0 && (
                 <>
+                    {/* Tabs */}
                     <Box
                         sx={{
                             display: "flex",
@@ -161,41 +162,72 @@ function MultiDropdownQuestionView({ onSubmit }) {
                             }}
                         >
                             {tabsInfo.map((tab) => (
-                                <Tab
-                                    key={tab.id ?? tab.tabKey}
-                                    label={tab.tabKey}
-                                    value={tab.tabKey}
-                                />
+                                <Tab key={tab.id ?? tab.tabKey} label={tab.tabKey} value={tab.tabKey} />
                             ))}
                         </Tabs>
                     </Box>
 
+                    {/* Tab Content */}
                     <Box
                         sx={{
                             backgroundColor: "#f8f9ff",
                             borderRadius: "10px",
-                            py: 2,
+                            py: 3,
                             px: 3,
                             m: 2,
-                            minHeight: "100px",
+                            minHeight: "120px",
+                            textAlign: "center", // center image + text
                         }}
                     >
-                        <Typography variant="body1" sx={{ color: "#333" }}>
-                            {tabsInfo.find((t) => t.tabKey === activeTab)?.tabValue || ""}
-                        </Typography>
+                        {(() => {
+                            const activeTabData = tabsInfo.find((t) => t.tabKey === activeTab);
+                            if (!activeTabData) return null;
+
+                            return (
+                                <>
+                                    {activeTabData?.tabImage && (
+                                        <img
+                                            src={`https://lunarsenterprises.com:6040/${activeTabData.tabImage}`}
+                                            alt="Exhibit"
+                                            style={{
+                                                display: "block", // center image
+                                                margin: "0 auto 16px",
+                                                width: 300,
+                                                maxWidth: "100%",
+                                                borderRadius: 8,
+                                            }}
+                                        />
+                                    )}
+                                    <Typography variant="body1" sx={{ color: "#333" }}>
+                                        {activeTabData?.tabValue || ""}
+                                    </Typography>
+                                </>
+                            );
+                        })()}
                     </Box>
                 </>
             )}
 
+
+            {questionData?.data?.instructions &&
+                <Box sx={{ py: 4, alignItems: "center", justifyContent: "center", textAlign: "center" }} >
+                    <Typography sx={{ fontWeight: 200 }} ><h4>Question Instruction</h4></Typography>
+                    <Typography variant="h3" sx={{ fontWeight: 200, fontSize: 15, pt: 2, }}>
+                        {questionData?.data?.instructions}
+                    </Typography>
+                </Box>
+            }
+
+
             {/* Table */}
             <TableContainer
                 component={Paper}
-                sx={{ maxWidth: 900, margin: "0 auto", mb: 3 ,mt: 6}}
+                sx={{ maxWidth: 900, margin: "0 auto", mb: 3, mt: 2 }}
             >
                 <Table>
                     <TableHead>
                         <TableRow sx={{ backgroundColor: "#f1f5f9" }}>
-                            
+
                             {headers.map((h, idx) => (
                                 <TableCell key={idx} sx={{ fontWeight: 600 }}>
                                     {h}
@@ -252,7 +284,7 @@ function MultiDropdownQuestionView({ onSubmit }) {
                         borderRadius: "8px",
                         textTransform: "none",
                         fontWeight: 600,
-                        
+
                     }}
                 >
                     Back To Question Management

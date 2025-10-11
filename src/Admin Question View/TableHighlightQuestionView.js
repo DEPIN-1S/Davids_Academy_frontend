@@ -127,26 +127,13 @@ function TableHighlightQuestionView({ onSubmit }) {
                     color: "#2e3760",
                     pt: 3,
                     fontSize: { xs: "1rem", md: "1.45rem" },
-                    mb: 1,
+                    mb: 3,
                 }}
             >
                 {questionText}
             </Typography>
 
-            {/* Instructions */}
-            {instructions && (
-                <Typography
-                    sx={{
-                        textAlign: "center",
-                        color: "#4b5563",
-                        pt:4,
-                        mb: 4,
-                        fontSize: { xs: "0.9rem", md: "1.25rem" },
-                    }}
-                >
-                    {instructions}
-                </Typography>
-            )}
+          
 
             {/* Tabs */}
             {tabsInfo?.length > 0 && (
@@ -197,8 +184,17 @@ function TableHighlightQuestionView({ onSubmit }) {
                 </>
             )}
 
+            {questionData?.data?.instructions &&
+                <Box sx={{ py: 4, alignItems: "center", justifyContent: "center", textAlign: "center" }} >
+                    <Typography sx={{ fontWeight: 200 }} ><h4>Question Instruction</h4></Typography>
+                    <Typography variant="h3" sx={{ fontWeight: 200, fontSize: 15, pt: 2, pb: 4 }}>
+                        {questionData?.data?.instructions}
+                    </Typography>
+                </Box>
+            }
+
             {/* Table */}
-            <Box sx={{ px: { xs: 2, md: 6 }, mb: 4 ,pt: 6}}>
+            <Box sx={{ px: { xs: 2, md: 6 }, mb: 4, pt: 6 }}>
                 <TableContainer
                     component={Paper}
                     sx={{

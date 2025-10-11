@@ -168,6 +168,7 @@ function TableDropDownQuestionView({ onSubmit }) {
       {/* Tabs */}
       {tabsInfo?.length > 0 && (
         <>
+          {/* Tab Buttons */}
           <Box sx={{ display: "flex", justifyContent: "center", mb: 2, px: 1 }}>
             <Tabs
               value={activeTab}
@@ -181,6 +182,7 @@ function TableDropDownQuestionView({ onSubmit }) {
                   textTransform: "none",
                   backgroundColor: "#fff",
                   border: "1px solid #e6eaef",
+                  marginRight: "8px",
                   "&.Mui-selected": {
                     backgroundColor: "#2e3760",
                     color: "#fff",
@@ -198,41 +200,52 @@ function TableDropDownQuestionView({ onSubmit }) {
             </Tabs>
           </Box>
 
+          {/* Tab Content */}
           <Box
             sx={{
               backgroundColor: "#f8f9ff",
               borderRadius: "10px",
-              py: 2,
+              py: 3,
               px: 3,
               m: 2,
-              minHeight: "100px",
+              minHeight: "120px",
+              textAlign: "center", // ✅ center everything
             }}
           >
-            <>
-            {tabsInfo.find((t) => t.tabKey === activeTab)?.tabImage && (
-              <img
-                src={`https://lunarsenterprises.com:6040/${tabsInfo.find((t) => t.tabKey === activeTab)?.tabImage}`}
-                alt="Exhibit"
-                style={{
-                  width: 300,
-                  borderRadius: "8px",
-                  marginBottom: "1rem",
-                }}
-              />
-            )}
-            <Typography variant="body1" sx={{ color: "#333" }}>
-              {tabsInfo.find((t) => t.tabKey === activeTab)?.tabValue || ""}
-            </Typography>
-            </>
+            {(() => {
+              const activeTabData = tabsInfo.find((t) => t.tabKey === activeTab);
+              if (!activeTabData) return null;
+
+              return (
+                <>
+                  {activeTabData?.tabImage && (
+                    <img
+                      src={`https://lunarsenterprises.com:6040/${activeTabData.tabImage}`}
+                      alt="tabImage"
+                      style={{
+                        display: "block", // ✅ center image
+                        margin: "0 auto 16px",
+                        width: 300,
+                        maxWidth: "100%", // responsive
+                        borderRadius: 8,
+                      }}
+                    />
+                  )}
+                  <Typography variant="body1" sx={{ color: "#333" }}>
+                    {activeTabData?.tabValue || ""}
+                  </Typography>
+                </>
+              );
+            })()}
           </Box>
         </>
       )}
 
 
       {questionData?.data?.instructions &&
-        <Box sx={{  py: 4, alignItems: "center", justifyContent: "center", textAlign: "center" }} >
+        <Box sx={{ py: 4, alignItems: "center", justifyContent: "center", textAlign: "center" }} >
           <Typography sx={{ fontWeight: 200 }} ><h4>Question Instruction</h4></Typography>
-          <Typography variant="h3" sx={{ fontWeight: 200, fontSize: 15, pt: 2, pb:4  }}>
+          <Typography variant="h3" sx={{ fontWeight: 200, fontSize: 15, pt: 2, pb: 4 }}>
             {questionData?.data?.instructions}
           </Typography>
         </Box>
