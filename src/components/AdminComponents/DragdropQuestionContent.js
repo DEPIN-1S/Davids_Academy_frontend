@@ -144,8 +144,6 @@ const DragdropQuestionContent = () => {
         }
       };
 
-
-
     const handleRemoveFile = () => {
         if (selectedFile) {
             URL.revokeObjectURL(selectedFile.url);
@@ -207,7 +205,6 @@ const DragdropQuestionContent = () => {
             setDragAndDrop(newDragAndDrop);
         }
     };
-
 
     const handleRemoveDragDropSection = (index) => {
         if (dragAndDrop.length > 1) {

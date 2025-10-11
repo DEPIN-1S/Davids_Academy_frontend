@@ -27,7 +27,6 @@ function SentenceHighlightQuestionView() {
     }
   }, [questionData]);
 
-
   const mark = questionData?.data?.marks || "";
   const difficulty = questionData?.data?.difficulty || "";
   const question_type = questionData?.data?.question_type || "";
@@ -36,11 +35,6 @@ function SentenceHighlightQuestionView() {
     setActiveTab(tabKey);
   };
 
-  const tabContent =
-    questionData?.data?.tabsInfo?.reduce((acc, tab) => {
-      acc[tab.tabKey] = tab.tabValue;
-      return acc;
-    }, {}) || {};
 
   const handleToggleSentence = (sentence) => {
     if (selectedSentences.includes(sentence)) {
@@ -121,9 +115,16 @@ function SentenceHighlightQuestionView() {
         <Typography>Question Type : {question_type}</Typography>
       </Box>
 
-      <div className="heading">
-        <h4>{questionData?.data?.question}</h4>
-      </div>
+     
+      {/* Question Text */}
+      <Typography
+        variant="h6"
+        fontWeight={700}
+        sx={{ textAlign: "center", mb: 2, pt: 4, fontSize: { xs: "1rem", md: "1.45rem", color: "#2e3760" } }}
+      >
+        {questionData?.data?.question}
+      </Typography>
+
 
       {/* Tabs */}
       <div className="tabs">
@@ -149,7 +150,7 @@ function SentenceHighlightQuestionView() {
               {currentTab.tabImage && (
                 <img
                   src={`https://lunarsenterprises.com:6040/${currentTab.tabImage}`}
-                  alt="Exhibit"
+
                   style={{
                     width: 300,
                     borderRadius: "8px",

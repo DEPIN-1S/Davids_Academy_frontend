@@ -76,7 +76,7 @@ function MultiRadioQuestionView() {
           {questionText}
         </Typography>
 
-        
+
 
         {/* Tabs */}
         <div className="tabs">
@@ -101,21 +101,16 @@ function MultiRadioQuestionView() {
             if (!activeTabData) return null;
 
             return (
-              <div style={{ textAlign: "center" }}>
-                {activeTabData.tabImage && (
+              <Box sx={{ textAlign: "center", py: 2 }}>
+                {activeTabData?.tabImage && (
                   <img
-                    width={500}
                     src={`https://lunarsenterprises.com:6040/${activeTabData.tabImage}`}
-                    alt="Exhibit"
-                    style={{
-                      maxWidth: "100%",
-                      marginBottom: "1rem",
-                      borderRadius: 8,
-                    }}
+                    alt="Tab Image"
+                    style={{ maxWidth: "100%", width: 300, borderRadius: 8, marginBottom: 8 }}
                   />
                 )}
-                <p>{activeTabData.tabValue}</p>
-              </div>
+                <Typography>{activeTabData?.tabValue}</Typography>
+              </Box>
             );
           })()}
         </div>

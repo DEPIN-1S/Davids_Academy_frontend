@@ -20,14 +20,13 @@ import { useNavigate, useLocation } from 'react-router-dom';
 const SortQuestionContent = () => {
     const navigate = useNavigate();
     const location = useLocation();
-
     // Get any existing data from previous steps
     const existingData = location.state?.questionData || {};
     const questionType = location.state?.questionType || existingData.questionType || "Sorting";
     const cs_id = location.state?.cs_id || "";
     const exam_type = location.state?.exam_type || "";
     const question_type_id = location.state?.question_type_id || "";
-
+    const [instruction, setInstruction] = useState(existingData.instruction || "");
     // Form state
     const [question, setQuestion] = useState(existingData.question || "");
     const [sortItems, setSortItems] = useState(existingData.sortItems || [
@@ -38,47 +37,7 @@ const SortQuestionContent = () => {
 
     const fileInputRef = useRef(null);
 
-    // File upload handlers
-    const handleFileSelect = (event) => {
-        const file = event.target.files[0];
-        if (file) {
-            if (file.size > 10 * 1024 * 1024) {
-                setErrors(prev => ({ ...prev, file: 'File size must be less than 10MB' }));
-                return;
-            }
 
-            const allowedTypes = ['image/jpeg', 'image/png', 'image/gif', 'application/pdf', 'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'];
-            if (!allowedTypes.includes(file.type)) {
-                setErrors(prev => ({ ...prev, file: 'Only images, PDF, and Word documents are allowed' }));
-                return;
-            }
-
-            const fileData = {
-                file: file,
-                name: file.name,
-                size: file.size,
-                type: file.type,
-                url: URL.createObjectURL(file),
-                uploadedAt: new Date().toISOString()
-            };
-
-            setSelectedFile(fileData);
-            setErrors(prev => ({ ...prev, file: null }));
-        }
-        event.target.value = '';
-    };
-
-    const handleButtonClick = () => {
-        fileInputRef.current?.click();
-    };
-
-    const handleRemoveFile = () => {
-        if (selectedFile) {
-            URL.revokeObjectURL(selectedFile.url);
-            setSelectedFile(null);
-            setErrors(prev => ({ ...prev, file: null }));
-        }
-    };
 
     // Sort item handlers
     const handleSortItemChange = (index, value) => {
@@ -138,6 +97,10 @@ const SortQuestionContent = () => {
             newErrors.question = 'Question is required';
         }
 
+        if (!instruction.trim()) {
+            newErrors.instruction = 'Instruction is required'; // ✅ added validation
+        }
+
         const validSortItems = sortItems.filter(item => item.sortItem.trim());
         if (validSortItems.length < 2) {
             newErrors.sortItems = 'At least two sort items are required';
@@ -153,6 +116,7 @@ const SortQuestionContent = () => {
         setErrors(newErrors);
         return Object.keys(newErrors).length === 0;
     };
+
 
     // Navigation handlers
     const handleNext = () => {
@@ -171,6 +135,7 @@ const SortQuestionContent = () => {
                 itemOrder: index + 1 // Ensure sequential ordering
             })),
             exhibit: selectedFile,
+            instruction: instruction.trim(),
             createdAt: existingData.createdAt || new Date().toISOString(),
             updatedAt: new Date().toISOString(),
             questionId: existingData.questionId || `${questionType}_${Date.now()}`,
@@ -206,26 +171,14 @@ const SortQuestionContent = () => {
         });
     };
 
-    // Helper functions
-    const getFileIcon = (fileType) => {
-        if (fileType?.startsWith('image/')) return <Image />;
-        if (fileType === 'application/pdf') return <PictureAsPdf />;
-        return <Description />;
-    };
-
-    const formatFileSize = (bytes) => {
-        if (bytes === 0) return '0 Bytes';
-        const k = 1024;
-        const sizes = ['Bytes', 'KB', 'MB', 'GB'];
-        const i = Math.floor(Math.log(bytes) / Math.log(k));
-        return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
-    };
 
     const isFormValid = () => {
         const hasValidQuestion = question.trim() !== "";
+        const hasValidInstruction = instruction.trim() !== ""; // ✅ added
         const hasValidSortItems = sortItems.filter(item => item.sortItem.trim()).length >= 2;
-        return hasValidQuestion && hasValidSortItems;
+        return hasValidQuestion && hasValidInstruction && hasValidSortItems;
     };
+
 
     // Cleanup on unmount
     React.useEffect(() => {
@@ -273,63 +226,28 @@ const SortQuestionContent = () => {
                 sx={{ mb: 3 }}
             />
 
-            {/* File Upload Section */}
-          {/*   <Box display="flex" justifyContent="flex-end" mt={1} mb={3} gap={1}>
-                <input
-                    type="file"
-                    ref={fileInputRef}
-                    onChange={handleFileSelect}
-                    accept="image/*,.pdf,.doc,.docx"
-                    style={{ display: 'none' }}
-                />
-                <Button
-                    variant="outlined"
-                    onClick={handleButtonClick}
-                    startIcon={<CloudUpload />}
-                    size="small"
-                >
-                    + Add Exhibit
-                </Button>
-            </Box>
 
-          
-            {errors.file && (
-                <Alert severity="error" sx={{ mb: 2 }}>
-                    {errors.file}
-                </Alert>
-            )}
- */}
-            {/* Display Uploaded File */}
-            {selectedFile && (
-                <Card sx={{ mb: 3 }}>
-                    <CardContent sx={{ p: 2, '&:last-child': { pb: 2 } }}>
-                        <Box display="flex" alignItems="center" gap={2}>
-                            {getFileIcon(selectedFile.type)}
-                            <Box flex={1}>
-                                <Typography variant="body2" fontWeight={500}>
-                                    {selectedFile.name}
-                                </Typography>
-                                <Chip
-                                    label={formatFileSize(selectedFile.size)}
-                                    size="small"
-                                    variant="outlined"
-                                />
-                            </Box>
-                            {selectedFile.type.startsWith('image/') && (
-                                <Box
-                                    component="img"
-                                    src={selectedFile.url}
-                                    alt={selectedFile.name}
-                                    sx={{ width: 60, height: 60, objectFit: 'cover', borderRadius: 1 }}
-                                />
-                            )}
-                            <IconButton onClick={handleRemoveFile} color="error" size="small">
-                                <Delete />
-                            </IconButton>
-                        </Box>
-                    </CardContent>
-                </Card>
-            )}
+            <Typography variant="h6" mb={1} color="primary">
+                Instruction*
+            </Typography>
+            <TextField
+                fullWidth
+                label="Enter Question instruction"
+                multiline
+                minRows={3}
+                maxRows={6}
+                value={instruction}
+                onChange={(e) => {
+                    setInstruction(e.target.value);
+                    setErrors(prev => ({ ...prev, instruction: null }));
+                }}
+                variant="outlined"
+                placeholder="Type your drag drop question instruction here..."
+                error={!!errors.instruction}
+                helperText={errors.instruction}
+                sx={{ mb: 3 }}
+            />
+
 
             {/* Sort Items Section */}
             <Typography variant="h6" mb={2} color="primary">
