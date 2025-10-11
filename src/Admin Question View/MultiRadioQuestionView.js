@@ -67,9 +67,16 @@ function MultiRadioQuestionView() {
       </Box>
       {/*  <QuestionHeader /> */}
       <div className="multi-radio-container">
-        <div className="heading">
-          <h4>{questionText}</h4>
-        </div>
+        <Typography
+          variant="h6"
+          fontWeight={700}
+          mb={2}
+          sx={{ textAlign: "center", color: "#2e3760", pt: 4 }}
+        >
+          {questionText}
+        </Typography>
+
+        
 
         {/* Tabs */}
         <div className="tabs">
@@ -86,11 +93,41 @@ function MultiRadioQuestionView() {
 
         {/* Tab Content */}
         <div className="note-box">
-          <p>
-            {questionData?.data?.tabsInfo?.find((t) => t.tabKey === activeTab)
-              ?.tabValue}
-          </p>
+          {(() => {
+            const activeTabData = questionData?.data?.tabsInfo?.find(
+              (t) => t.tabKey === activeTab
+            );
+
+            if (!activeTabData) return null;
+
+            return (
+              <div style={{ textAlign: "center" }}>
+                {activeTabData.tabImage && (
+                  <img
+                    width={500}
+                    src={`https://lunarsenterprises.com:6040/${activeTabData.tabImage}`}
+                    alt="Exhibit"
+                    style={{
+                      maxWidth: "100%",
+                      marginBottom: "1rem",
+                      borderRadius: 8,
+                    }}
+                  />
+                )}
+                <p>{activeTabData.tabValue}</p>
+              </div>
+            );
+          })()}
         </div>
+
+        {questionData?.data?.instructions &&
+          <Box sx={{ pb: "10px", py: 4, alignItems: "center", justifyContent: "center", textAlign: "center" }} >
+            <Typography sx={{ fontWeight: 200 }} ><h4>Question Instruction</h4></Typography>
+            <Typography variant="h3" sx={{ fontWeight: 200, fontSize: 15, pt: 2 }}>
+              {questionData?.data?.instructions}
+            </Typography>
+          </Box>
+        }
 
         {/* Radio Table */}
         <div className="table-wrapper">

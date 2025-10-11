@@ -476,6 +476,7 @@ const MetaInfoComponent = () => {
         exam_type: receivedQuestionData.exam_type,
         exhibit: null,
         difficulty: form.difficulty,
+        instructions: receivedQuestionData.instruction || "",
         explanationHeading: receivedQuestionData.explanationHeading || "",
         explanationText: receivedQuestionData.explanationText || "",
         info: receivedQuestionData.additionalInfo || "",

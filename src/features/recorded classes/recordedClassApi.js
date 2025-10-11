@@ -1,6 +1,6 @@
 export async function listRecordedClasses(token, page = 1, limit = 10, searchQuery = "") {
   const response = await fetch(
-    `https://lunarsenterprises.com:8002/davidsacademy/admin/record/list`,
+    `https://lunarsenterprises.com:6040/davidsacademy/admin/record/list`,
     {
       method: "POST",
       headers: {
@@ -29,7 +29,7 @@ export async function DeleteRecordedClass(recording_id) {
 
     try {
         const response = await fetch(
-            `https://lunarsenterprises.com:8002/davidsacademy/admin/record/delete`,
+            `https://lunarsenterprises.com:6040/davidsacademy/admin/record/delete`,
             {
                 method: "POST",
                 headers: {
@@ -80,7 +80,7 @@ export async function createRecording(token, recordingData) {
         }
     }
 
-    const response = await fetch(`https://lunarsenterprises.com:8002/davidsacademy/admin/record/create`, {
+    const response = await fetch(`https://lunarsenterprises.com:6040/davidsacademy/admin/record/create`, {
         method: "POST",
         headers: {
             "Authorization": `Bearer ${token}`

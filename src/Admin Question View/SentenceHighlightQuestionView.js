@@ -11,7 +11,6 @@ function SentenceHighlightQuestionView() {
   const { questionId } = useParams();
   const navigate = useNavigate();
   const dispatch = useDispatch();
-
   const { questionData, loading, error } = useSelector((state) => state.exam);
 
   useEffect(() => {
@@ -21,16 +20,18 @@ function SentenceHighlightQuestionView() {
     }
   }, [dispatch, questionId]);
 
+
   useEffect(() => {
     if (questionData?.data?.tabsInfo?.length > 0) {
       setActiveTab(questionData.data.tabsInfo[0].tabKey);
     }
   }, [questionData]);
 
+
   const mark = questionData?.data?.marks || "";
   const difficulty = questionData?.data?.difficulty || "";
   const question_type = questionData?.data?.question_type || "";
-
+  const tabsInfo = questionData?.data?.tabsInfo || [];
   const handleTabClick = (tabKey) => {
     setActiveTab(tabKey);
   };
@@ -126,7 +127,7 @@ function SentenceHighlightQuestionView() {
 
       {/* Tabs */}
       <div className="tabs">
-        {questionData?.data?.tabsInfo?.map((tab) => (
+        {tabsInfo.map((tab) => (
           <button
             key={tab.id}
             className={`tab-button ${activeTab === tab.tabKey ? "active" : ""}`}
@@ -138,21 +139,42 @@ function SentenceHighlightQuestionView() {
       </div>
 
       {/* Tab Content */}
-      <div className="note-box">
-        <p>{tabContent[activeTab]}</p>
+      <div className="note-box" style={{ marginTop: "1rem", textAlign: "center" }}>
+        {tabsInfo.length > 0 && (() => {
+          const currentTab = tabsInfo.find((t) => t.tabKey === activeTab);
+          if (!currentTab) return null;
+
+          return (
+            <>
+              {currentTab.tabImage && (
+                <img
+                  src={`https://lunarsenterprises.com:6040/${currentTab.tabImage}`}
+                  alt="Exhibit"
+                  style={{
+                    width: 300,
+                    borderRadius: "8px",
+                    marginBottom: "1rem",
+                  }}
+                />
+              )}
+              <Typography variant="body1">{currentTab.tabValue}</Typography>
+            </>
+          );
+        })()}
       </div>
 
-      {/* Highlight Section */}
+
+      {questionData?.data?.instructions &&
+        <Box sx={{ pb: "10px", py: 4, alignItems: "center", justifyContent: "center", textAlign: "center" }} >
+          <Typography sx={{ fontWeight: 200 }} ><h4>Question Instruction</h4></Typography>
+          <Typography variant="h3" sx={{ fontWeight: 200, fontSize: 18, pt: 2 }}>
+            {questionData?.data?.instructions}
+          </Typography>
+        </Box>
+      }
+
       {/* Highlight Section */}
       <div className="highlight-question-wrapper" style={{ marginTop: "20px" }}>
-        <Typography
-          variant="subtitle1"
-          sx={{ fontWeight: 600, mb: 2, color: "#444" }}
-        >
-          Click to highlight the findings in the progress note that indicate
-          the client is not meeting the treatment goals:
-        </Typography>
-
         <div
           className="highlight-scroll-box"
           style={{

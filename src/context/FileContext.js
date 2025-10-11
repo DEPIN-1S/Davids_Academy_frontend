@@ -27,6 +27,7 @@ export const FileProvider = ({ children }) => {
                 formData.append("question", questionData.question);
                 formData.append("exam_type", questionData.exam_type);
                 formData.append("difficulty", questionData.difficulty);
+                formData.append("instructions", questionData.instruction);
                 formData.append("explanationHeading", questionData.explanationHeading);
                 formData.append("explanationText", questionData.explanationText);
                 formData.append("info", questionData.info);
@@ -111,6 +112,7 @@ export const FileProvider = ({ children }) => {
                 formData.append("question", questionData.question);
                 formData.append("difficulty", questionData.difficulty);
                 formData.append("instructions", questionData.instruction);
+                formData.append("multiradioHeading", questionData.multiradioHeading);
                 formData.append("tabs", JSON.stringify(questionData.tabs || []));
                 formData.append("question_content", JSON.stringify(questionData.question_content || []));
                 formData.append("radio_options", JSON.stringify(questionData.radio_options || []));
@@ -163,7 +165,6 @@ export const FileProvider = ({ children }) => {
                 formData.append("question", questionData.question ?? "");
                 formData.append("difficulty", questionData.difficulty ?? "");
                 formData.append("instructions", questionData.instruction);
-                formData.append("multiradioHeading", questionData.multiradioHeading);
                 formData.append("tabs", JSON.stringify(questionData.tabs || []));
                 formData.append("rows", JSON.stringify(questionData.rows || []));
                 formData.append("headers", JSON.stringify(questionData.headers || []));

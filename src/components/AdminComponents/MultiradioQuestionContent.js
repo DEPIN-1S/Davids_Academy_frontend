@@ -625,7 +625,10 @@ const MultiradioQuestionContent = () => {
                 </AccordionSummary>
                 <AccordionDetails>
                     <Typography variant="body2" color="textSecondary" mb={2}>
-                        These are the answer choices that will be available for each sentence.
+                        These are the answer choices that will be available for each sentence
+                    </Typography>
+                    <Typography variant="body2" color="textSecondary" ml={1} mb={2}>
+                        Provide multiple options (minimum two)
                     </Typography>
 
                     {radioOptions.map((option, index) => (

@@ -8,44 +8,40 @@ import {
   MenuItem,
   useMediaQuery,
   useTheme,
+  Button,
 } from "@mui/material";
 import { useDispatch, useSelector } from "react-redux";
 import { getQuestionData } from "../features/exam/examSlice";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
+import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 
 const DropdownQuestionComponent = () => {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
   const dispatch = useDispatch();
-  const { questionData, loading, error } = useSelector((state) => state.exam);
+  const { questionData } = useSelector((state) => state.exam);
   const { questionId } = useParams();
   const [activeTab, setActiveTab] = useState("");
   const [dropdownValues, setDropdownValues] = useState({});
+  const navigate = useNavigate();
 
-  // 🔹 Fetch question data when component mounts
+  // Fetch question data
   useEffect(() => {
-    if (questionId) {
-      dispatch(getQuestionData(questionId));
-    }
+    if (questionId) dispatch(getQuestionData(questionId));
   }, [dispatch, questionId]);
 
+
+  // Set default tab immediately after questionData loads
   useEffect(() => {
-    console.log("Updated questionData in state:", questionData);
+    if (questionData?.data?.tabsInfo?.length > 0) {
+      setActiveTab(questionData.data.tabsInfo[0].tabKey);
+    }
   }, [questionData]);
 
-  // 🔹 Set default tab only once when data loads
-  useEffect(() => {
-    const firstTab = questionData?.data?.tabsInfo?.[0]?.tabKey;
-    if (firstTab && !activeTab) {
-      setActiveTab(firstTab);
-    }
-  }, [questionData?.data?.tabsInfo]);
 
-  // 🔹 Initialize dropdown values from API data
+  // Initialize dropdown values
   useEffect(() => {
     const dropdowns = questionData?.data?.dropdowns || [];
-    if (!dropdowns.length) return;
-
     const initialValues = {};
     dropdowns.forEach((dt) => {
       if (dt?.id && dt?.blankOrNot === "1") {
@@ -55,7 +51,8 @@ const DropdownQuestionComponent = () => {
     setDropdownValues(initialValues);
   }, [questionData?.data?.dropdowns]);
 
-  // Handle dropdown selection
+
+  // Handlers
   const handleDropdownChange = (id) => (event) => {
     setDropdownValues((prev) => ({
       ...prev,
@@ -63,88 +60,62 @@ const DropdownQuestionComponent = () => {
     }));
   };
 
-  // Handle tab change
-  const handleTabClick = (tabKey) => {
-    setActiveTab(tabKey);
-  };
-
-  // Render fill-in-the-blanks content
+  const handleTabClick = (tabKey) => setActiveTab(tabKey);
+  // Render dropdown question text
   const renderFillInTheBlanks = () => {
     const dropdowns = questionData?.data?.dropdowns || [];
 
     return (
-      <Box sx={{
-        fontSize: '1.1rem',
-        lineHeight: 1.8,
-        textAlign: 'left',
-        p: 2,
-        backgroundColor: '#f8f9fa',
-        borderRadius: '8px',
-        border: '1px solid #e9ecef'
-      }}>
+      <Box
+        sx={{
+          fontSize: "1.1rem",
+          lineHeight: 1.8,
+          textAlign: "left",
+          p: 2,
+          backgroundColor: "#f8f9fa",
+          borderRadius: "8px",
+          border: "1px solid #e9ecef",
+        }}
+      >
         {dropdowns.map((dt, index) => {
           if (!dt) return null;
-
           const dropdownId = dt.id || index;
-          const dropdownField = dt.dropdownField || '';
           const blankOrNot = dt.blankOrNot === "1";
-          const dropdownOptions = dt.dropdownoption || [];
 
           return (
-            <span key={dropdownId} style={{ display: 'inline' }}>
-              {/* Always show the dropdown field text */}
-              <span style={{ marginRight: blankOrNot ? '8px' : '4px', marginBottom: '10px', display: 'inline-block' }}>
-                {dropdownField}
+            <span key={dropdownId}>
+              <span style={{ marginRight: blankOrNot ? "8px" : "4px" }}>
+                {dt.dropdownField}
               </span>
 
-              {/* Show dropdown only if blankOrNot is "1" */}
               {blankOrNot && (
-                <span style={{
-                  display: 'inline-block',
-                  verticalAlign: 'middle',
-                  margin: '0 4px'
-                }}>
-                  <FormControl
-                    sx={{
-                      minWidth: 120,
-                      '& .MuiOutlinedInput-root': {
-                        height: '32px',
-                        fontSize: '0.9rem'
-                      },
-                      '& .MuiInputLabel-root': {
-                        fontSize: '0.8rem',
-                        transform: 'translate(14px, 8px) scale(1)'
-                      },
-                      '& .MuiInputLabel-shrink': {
-                        transform: 'translate(14px, -6px) scale(0.75)'
-                      }
-                    }}
-                    size="small"
+                <FormControl
+                  sx={{
+                    minWidth: 120,
+                    "& .MuiOutlinedInput-root": {
+                      height: "32px",
+                      fontSize: "0.9rem",
+                    },
+                  }}
+                  size="small"
+                >
+                  <InputLabel>Select</InputLabel>
+                  <Select
+                    value={dropdownValues[dropdownId] || ""}
+                    label="Select"
+                    onChange={handleDropdownChange(dropdownId)}
                   >
-                    <InputLabel>Select</InputLabel>
-                    <Select
-                      value={dropdownValues[dropdownId] || ""}
-                      label="Select"
-                      onChange={handleDropdownChange(dropdownId)}
-                    >
-                      <MenuItem value="">
-                        <em>Choose...</em>
+                    <MenuItem value="">
+                      <em>Choose...</em>
+                    </MenuItem>
+                    {dt.dropdownoption?.map((opt, i) => (
+                      <MenuItem key={i} value={opt.dropdownValue}>
+                        {opt.dropdownValue}
                       </MenuItem>
-                      {dropdownOptions.map((opt, optIndex) => (
-                        <MenuItem
-                          key={opt.id || optIndex}
-                          value={opt.dropdownValue || `Option ${optIndex + 1}`}
-                        >
-                          {opt.dropdownValue || `Option ${optIndex + 1}`}
-                        </MenuItem>
-                      ))}
-                    </Select>
-                  </FormControl>
-                </span>
+                    ))}
+                  </Select>
+                </FormControl>
               )}
-
-              {/* Add space after each item except the last one */}
-              {index < dropdowns.length - 1 && ' '}
             </span>
           );
         })}
@@ -152,17 +123,13 @@ const DropdownQuestionComponent = () => {
     );
   };
 
-  // Extract data safely
-  const questionText = questionData?.data?.question || "";
-  const mark = questionData?.data?.marks || "";
-  const difficulty = questionData?.data?.difficulty || "";
-  const question_type = questionData?.data?.question_type || "";
-  const tabsInfo = questionData?.data?.tabsInfo || [];
-  const dropdowns = questionData?.data?.dropdowns || [];
+  // Extract question info
+  const q = questionData?.data || {};
+  const tabsInfo = q.tabsInfo || [];
 
   return (
     <>
-      {/* Header Info */}
+      {/* Question Header */}
       <Box
         sx={{
           display: "flex",
@@ -172,9 +139,9 @@ const DropdownQuestionComponent = () => {
           p: 2,
         }}
       >
-        <Typography>Mark : {mark}</Typography>
-        <Typography>Difficulty : {difficulty}</Typography>
-        <Typography>Question Type : {question_type}</Typography>
+        <Typography>Mark: {q.marks}</Typography>
+        <Typography>Difficulty: {q.difficulty}</Typography>
+        <Typography>Type: {q.question_type}</Typography>
       </Box>
 
       {/* Question Text */}
@@ -182,46 +149,77 @@ const DropdownQuestionComponent = () => {
         variant="h6"
         fontWeight={700}
         mb={2}
-        sx={{ textAlign: "center", color: "#2e3760", pt:5 }}
+        sx={{ textAlign: "center", color: "#2e3760", py: 4 }}
       >
-        {questionText}
+        {q.question}
       </Typography>
 
-      {/* Main Box */}
-      <Box
-        sx={{
-          backgroundColor: "#fff",
-          borderRadius: "1.5rem",
-          padding: "2rem",
-          margin: "2rem auto",
-          maxWidth: "950px",
-          boxShadow: "0 4px 12px rgba(0,0,0,0.06)",
-        }}
-      >
 
-
-        {/* Tabs */}
+      {/* Tabs */}
+      {tabsInfo.length > 0 && (
         <div className="tabs">
           {tabsInfo.map((tab) => (
             <button
               key={tab.id}
-              className={`tab-button ${activeTab === tab.tabKey ? "active" : ""}`}
+              className={`tab-button ${activeTab === tab.tabKey ? "active" : ""
+                }`}
               onClick={() => handleTabClick(tab.tabKey)}
             >
               {tab.tabKey}
             </button>
           ))}
         </div>
+      )}
 
-        {/* Tab Content */}
-        <div className="note-box">
-          <p>{tabsInfo.find((t) => t.tabKey === activeTab)?.tabValue}</p>
-        </div>
 
-      </Box>
+      {/* Tab Content */}
+      <div className="note-box" style={{ marginTop: "1rem", textAlign: "center" }}>
+        {tabsInfo.length > 0 && (
+          <>
+            {tabsInfo.find((t) => t.tabKey === activeTab)?.tabImage && (
+              <img
+                src={`https://lunarsenterprises.com:6040/${tabsInfo.find((t) => t.tabKey === activeTab)?.tabImage}`}
+                alt="Exhibit"
+                style={{
+                  width: 300,
+                  borderRadius: "8px",
+                  marginBottom: "1rem",
+                }}
+              />
+            )}
+            <Typography variant="body1">
+              {tabsInfo.find((t) => t.tabKey === activeTab)?.tabValue}
+            </Typography>
+          </>
+        )}
+      </div>
 
-      <Box sx={{ mb: 4 }}>
-        {renderFillInTheBlanks()}
+      {/* Question instruction */}
+      {q.instructions &&
+        <Box sx={{ pb: "10px", py: 4, alignItems: "center", justifyContent: "center", textAlign: "center" }} >
+          <Typography sx={{ fontWeight: 200 }} ><h4>Question Instruction</h4></Typography>
+          <Typography variant="h3" sx={{ fontWeight: 200, fontSize: 15, pt: 2 }}>
+            {q.instructions}
+          </Typography>
+        </Box>
+      }
+
+      {/* Dropdown Content */}
+      <Box sx={{ mb: 4, px: 3 }}>{renderFillInTheBlanks()}</Box>
+
+      <Box sx={{ display: "flex", justifyContent: "center", pt: 5 }}>
+        <Button
+          variant="outlined"
+          startIcon={<ArrowBackIcon />}
+          onClick={() => navigate(-1)} // 👈 goes back
+          sx={{
+            borderRadius: "8px",
+            textTransform: "none",
+            fontWeight: 600,
+          }}
+        >
+          Back To Question Management
+        </Button>
       </Box>
     </>
   );
