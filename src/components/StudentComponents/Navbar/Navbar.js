@@ -33,12 +33,12 @@ const NavBar = () => {
         " Practice, learn, and improve with our curated set of questions designed to match real exam patterns and enhance your preparation.",
       // icon: <FaBook />
     },
-    "/student/notes": {
-      title: "Notes",
-      subtitle:
-        " Practice, learn, and improve with our curated set of questions designed to match real exam patterns and enhance your preparation.",
-      // icon: <FaClipboardList />
-    },
+    // "/student/notes": {
+    //   title: "Notes",
+    //   subtitle:
+    //     " Practice, learn, and improve with our curated set of questions designed to match real exam patterns and enhance your preparation.",
+    //   // icon: <FaClipboardList />
+    // },
     "/student/tests": {
       title: "Mock Tests",
       subtitle:
