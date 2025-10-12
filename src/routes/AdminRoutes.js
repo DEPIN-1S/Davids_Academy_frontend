@@ -34,7 +34,13 @@ import SentenceHighlightQuestionView from "../Admin Question View/SentenceHighli
 import FillinTheBlanksQuestionView from "../Admin Question View/FillinTheBlanksQuestionView";
 import SortingQuestionView from "../Admin Question View/SortingQuestionView";
 import ViewProgress from "../Admin Question View/ViewProgress";
-import TableDropDown from "../components/AdminComponents/TableDropDown";
+import TableDropdownQuestionContent from "../components/AdminComponents/TableDropdownQuestionContent";
+import MultiDropDownQuestionContent from "../components/AdminComponents/MultiDropDownQuestionContent";
+import TableHighlightsQuestionContent from "../components/AdminComponents/TableHighlightsQuestionContent";
+import TableDropDownQuestionView from "../Admin Question View/TableDropDownQuestionView";
+import MultiDropdownQuestionView from "../Admin Question View/MultiDropdownQuestionView";
+import TableHighlightQuestionView from "../Admin Question View/TableHighlightQuestionView";
+import ManageSuccessStories from "../pages/AdminPages/ManageSuccessStories";
 
 const AdminRoutes = () => (
     <>
@@ -47,6 +53,12 @@ const AdminRoutes = () => (
             <Route path="/admin/student-manage" element={
                 <ProtectedRoutes allowedRoles={['admin']}>
                     <StudentManage />
+                </ProtectedRoutes>
+            } />
+
+             <Route path="/admin/manage-success-stories" element={
+                <ProtectedRoutes allowedRoles={['admin']}>
+                    <ManageSuccessStories />
                 </ProtectedRoutes>
             } />
 
@@ -109,7 +121,18 @@ const AdminRoutes = () => (
             } />
             <Route path="/admin/table-dropDown" element={
                 <ProtectedRoutes allowedRoles={['admin']} >
-                    <TableDropDown />
+                    <TableDropdownQuestionContent />
+                </ProtectedRoutes>
+            } />
+            <Route path="/admin/multiDropDown" element={
+                <ProtectedRoutes allowedRoles={['admin']} >
+                    <MultiDropDownQuestionContent />
+                </ProtectedRoutes>
+            } />
+
+            <Route path="/admin/table-Highlight" element={
+                <ProtectedRoutes allowedRoles={['admin']}>
+                    <TableHighlightsQuestionContent />
                 </ProtectedRoutes>
             } />
 
@@ -120,6 +143,9 @@ const AdminRoutes = () => (
                     <McqAnswerExplanation />
                 </ProtectedRoutes>
             } />
+
+
+
             <Route path="/admin/meta-info" element={
                 <ProtectedRoutes allowedRoles={['admin']}>
 
@@ -233,6 +259,24 @@ const AdminRoutes = () => (
             <Route path="/admin/fillInTheBlanks-question-view/:questionId" element={
                 <ProtectedRoutes allowedRoles={['admin']}>
                     <FillinTheBlanksQuestionView />
+                </ProtectedRoutes>
+            } />
+
+            <Route path="/admin/TableDropdown-question-view/:questionId" element={
+                <ProtectedRoutes allowedRoles={['admin']}>
+                    <TableDropDownQuestionView />
+                </ProtectedRoutes>
+            } />
+
+            <Route path="/admin/MultiDropdown-question-view/:questionId" element={
+                <ProtectedRoutes allowedRoles={['admin']}>
+                    <MultiDropdownQuestionView />
+                </ProtectedRoutes>
+            } />
+
+            <Route path="/admin/TableHighlight-question-view/:questionId" element={
+                <ProtectedRoutes allowedRoles={['admin']}>
+                    <TableHighlightQuestionView />
                 </ProtectedRoutes>
             } />
 

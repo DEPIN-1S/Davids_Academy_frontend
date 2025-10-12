@@ -40,11 +40,11 @@ const NewsletterFooter = () => {
           <div>
             <h4>Courses</h4>
             <ul>
-              <li><a href="/">Prometric</a></li>
-              <li><a href="/">DHA – UAE</a></li>
-              <li><a href="/">HAAD – Abu Dhabi</a></li>
-              <li><a href="/">NCLEX – RN – USA</a></li>
-              <li><a href="/">Crash Courses</a></li>
+              <li>Prometric</li>
+              <li>DHA – UAE</li>
+              <li>HAAD – Abu Dhabi</li>
+              <li>NCLEX – RN – USA</li>
+              <li>Crash Courses</li>
             </ul>
           </div>
         </div>

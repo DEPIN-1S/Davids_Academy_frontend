@@ -1,7 +1,9 @@
 import React from 'react';
 import '../styles/ClassesAvailable.css';
+import { Link } from 'react-router-dom';
 
 const ClassesAvailable = () => {
+
   return (
     <section className="classes-section">
       {/* Floating yellow circles */}
@@ -20,7 +22,9 @@ const ClassesAvailable = () => {
         <p className="classes-subtitle">
           On David Academy and prepare for international healthcare exams from anywhere or at our campus.
         </p>
-        <a href="#join" className="join-link">Join Now →</a>
+        <Link to="/contact-us" >
+          <a href="#join" className="join-link">Join Now →</a>
+        </Link>
       </div>
     </section>
   );

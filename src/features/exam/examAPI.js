@@ -212,7 +212,7 @@ export async function fetchTestQuestionsAPI() {
   console.log("Inside fetch test questions :::: ");
 
   /*  const response = await fetch(
-         "https://lunarsenterprises.com:6040/davidsacademy/student/test/list",
+         "https://lunarsenterprises.com:8002/davidsacademy/student/test/list",
          {
              method: "GET",
              headers: {
@@ -359,21 +359,20 @@ export const adminGetMockTestQuestions = async (page = 1, limit = 10) => {
 
 // fetch test questions in admin side
 export async function adminGetTestQuestions(page = 1, limit = 10) {
-    try {
-        console.log("✅ Inside admin test questions :: ");
-        const token = sessionStorage.getItem("accessToken");
-        const response = await fetch(
-            /*  ${baseUrl}/exam/list/questions/${page}?exam_type=mock test&limit=${limit}`; */
-            `https://lunarsenterprises.com:8002/davidsacademy/exam/list/test/${page}`,
-            {
-                method: "GET",
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                    "Content-Type": "application/json"
-
-                },
-            }
-        );
+  try {
+    console.log("✅ Inside admin test questions :: ");
+    const token = sessionStorage.getItem("accessToken");
+    const response = await fetch(
+      /*  ${baseUrl}/exam/list/questions/${page}?exam_type=mock test&limit=${limit}`; */
+      `https://lunarsenterprises.com:6040/davidsacademy/exam/list/test/${page}`,
+      {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+      }
+    );
 
     if (!response.ok) {
       throw new Error(`Failed to fetch test questions: ${response.status}`);
@@ -593,6 +592,80 @@ export const fetchSampleQuestionData = async (questionId) => {
 
     const data = await response.json();
     return data.data; // Assumes structure with question details
+  } catch (error) {
+    throw error;
+  }
+};
+
+// API call to add a success story
+export const addSuccessStoryApi = async (formData) => {
+  try {
+    const token = sessionStorage.getItem("accessToken");
+
+    const response = await fetch(`${baseUrl}/admin/success-story/create`, {
+      method: "POST",
+      body: formData, // multipart/form-data
+      headers: {
+        Authorization: `Bearer ${token}`, 
+     
+      },
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(errorData.message || "Failed to add success story");
+    }
+
+    const data = await response.json();
+    return data; // server response
+  } catch (error) {
+    throw error;
+  }
+};
+
+
+export const fetchSuccessStoriesApi = async () => {
+  try {
+    const token = sessionStorage.getItem("accessToken");
+    const response = await fetch(`${baseUrl}/student/success-story/list`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(errorData.message || "Failed to fetch success stories");
+    }
+
+    return await response.json(); // should be an array of stories
+  } catch (error) {
+    throw error;
+  }
+};
+
+
+
+export const deleteSuccessStoryApi = async (id) => {
+  console.log("inside delete story");
+  try {
+    const token = sessionStorage.getItem("accessToken");
+    console.log("id::::",id);
+    const response = await fetch(
+      `${baseUrl}/admin/success-story/delete/${id}`,
+      {
+        method: "DELETE",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(errorData.message || "Failed to delete success story");
+    }
+
+    return await response.json();
   } catch (error) {
     throw error;
   }

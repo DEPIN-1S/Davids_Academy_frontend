@@ -7,7 +7,7 @@ const About = () => {
   return (
     <div id="HomeAbout"  className="about">
       {/* Left side image */}
-      <img src="/images/Group9.png" alt="About David Academy" className="about-img" />
+      <img src="/images/Group9.svg" alt="About David Academy" className="about-img" />
 
       {/* Right side text */}
       <div className="about-txt">

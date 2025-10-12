@@ -151,25 +151,29 @@ const StudentManage = () => {
         </table>
 
         {/* ✅ Pagination controls */}
-        <div className="pagination-controls">
-          <button
-            disabled={page === 1}
-            onClick={() => handlePageChange(page - 1)}
-          >
-            Prev
-          </button>
+        {/* ✅ Pagination controls — shown only if there are students */}
+        {students.length > 0 && (
+          <div className="pagination-controls">
+            <button
+              disabled={page === 1}
+              onClick={() => handlePageChange(page - 1)}
+            >
+              Prev
+            </button>
 
-          <span>
-            Page {currentPage || 1} of {totalPages || 1}
-          </span>
+            <span>
+              Page {currentPage || 1} of {totalPages || 1}
+            </span>
 
-          <button
-            disabled={page === totalPages}
-            onClick={() => handlePageChange(page + 1)}
-          >
-            Next
-          </button>
-        </div>
+            <button
+              disabled={page === totalPages}
+              onClick={() => handlePageChange(page + 1)}
+            >
+              Next
+            </button>
+          </div>
+        )}
+
 
         {/* Edit Student Modal */}
         {selectedStudentId && (
@@ -177,7 +181,11 @@ const StudentManage = () => {
             <div className="modal-content">
               <EditStudentForm
                 studentId={selectedStudentId}
-                onClose={() => setSelectedStudentId(null)}
+
+                onClose={() => {
+                  setSelectedStudentId(null); // close modal
+                  dispatch(fetchStudents({ page, limit: 10, searchQuery, filterStatus }));
+                }}
               />
             </div>
           </div>

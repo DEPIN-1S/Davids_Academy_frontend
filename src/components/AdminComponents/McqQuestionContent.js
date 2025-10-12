@@ -1,4 +1,4 @@
- import React, { useRef, useState } from "react";
+import React, { useRef, useState } from "react";
 import {
     Box,
     Button,
@@ -34,7 +34,7 @@ const McqQuestionContent = () => {
         questionData: existingQuestionData,
         cs_id,
     } = state;
-
+   const [instruction, setInstruction] = useState(existingQuestionData?.instruction || "")
     React.useEffect(() => {
         if (!exam_type || !question_type_id || !questionTypeName || !cs_id) {
             navigate("/admin/question-type");
@@ -123,10 +123,16 @@ const McqQuestionContent = () => {
 
     const validateForm = () => {
         const newErrors = {};
+
         if (!question.trim()) {
             newErrors.question = 'Question is required';
         } else if (question.trim().length < 10) {
             newErrors.question = 'Question must be at least 10 characters long';
+        }
+
+        // ✅ Instruction validation added
+        if (!instruction.trim()) {
+            newErrors.instruction = 'Instruction is required';
         }
 
         const validOptions = options.filter(opt => opt.trim() !== "");
@@ -149,6 +155,7 @@ const McqQuestionContent = () => {
         return Object.keys(newErrors).length === 0;
     };
 
+
     const handleNext = () => {
         if (!validateForm()) {
             return;
@@ -162,6 +169,7 @@ const McqQuestionContent = () => {
             question: question.trim(),
             options: options.filter(opt => opt.trim() !== "").map(opt => opt.trim()),
             correctAnswer: correctAnswer,
+            instruction: instruction.trim(),
             createdAt: existingQuestionData?.createdAt || new Date().toISOString(),
             updatedAt: new Date().toISOString(),
             questionId: existingQuestionData?.questionId || `${questionTypeName}_${Date.now()}`,
@@ -217,12 +225,14 @@ const McqQuestionContent = () => {
     // ✅ FIXED: updated to work with array
     const isFormValid = () => {
         const validOptions = options.filter(opt => opt.trim() !== "");
+        const hasValidInstruction = instruction.trim() !== "";
         return (
             question.trim() !== "" &&
             question.trim().length >= 10 &&
             validOptions.length >= 2 &&
             correctAnswer.length > 0 &&
             correctAnswer.every(ans => validOptions.includes(ans))
+
         );
     };
 
@@ -403,6 +413,27 @@ const McqQuestionContent = () => {
                 </Card>
             )}
 
+            <Typography variant="h6" mb={1} color="primary">
+                Instruction *
+            </Typography>
+            <TextField
+                fullWidth
+                label="Enter Question Instruction *"
+                multiline
+                minRows={3}
+                maxRows={6}
+                value={instruction}
+                onChange={(e) => {
+                    setInstruction(e.target.value);
+                    setErrors(prev => ({ ...prev, instruction: null }));
+                }}
+                variant="outlined"
+                placeholder="Type your question instruction here..."
+                error={!!errors.instruction}
+                sx={{ mb: 3 }}
+            />
+
+
             {/* Options List */}
             <Typography variant="subtitle1" mb={2}>
                 Answer Options *
@@ -547,4 +578,3 @@ const McqQuestionContent = () => {
 
 export default McqQuestionContent;
 
- 

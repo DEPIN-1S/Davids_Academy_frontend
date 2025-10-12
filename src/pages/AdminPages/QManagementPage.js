@@ -69,6 +69,23 @@ const QManagementPage = () => {
             case 'Sorting':
                 navigate(`/admin/Sorting-question-view/${questionId}`);
                 break;
+
+            case 'Table Dropdown':
+                navigate(`/admin/TableDropdown-question-view/${questionId}`);
+
+             /*  path="/admin/TableDropdown-question-view/:questionId"  */
+                break;
+
+            case 'Table Highlight':
+                navigate(`/admin/TableHighlight-question-view/${questionId}`);
+            /*     path="/admin/TableHighlight-question-view/:questionId" */
+                break;
+
+                case 'Multidropdown':
+                navigate(`/admin/MultiDropdown-question-view/${questionId}`);
+                  /* "/admin/MultiDropdown-question-view/:questionId" */
+                break; 
+
             default:
                 console.warn('Unknown question type:', questionType);
                 break;

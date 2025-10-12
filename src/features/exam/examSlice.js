@@ -8,6 +8,8 @@ import {
   fetchQBankQuestionData,
   uploadTabImageApi,
   deleteTabImageApi,
+  fetchSuccessStoriesApi,
+  deleteSuccessStoryApi,
 } from "./examAPI";
 import {
   adminGetQBankQuestions,
@@ -20,6 +22,7 @@ import { fetchMockTestQuestionsByCourseId } from "../../features/exam/examAPI";
 import { adminCreateTest } from "../../features/exam/examAPI";
 import { apiDeleteTest } from "../../features/exam/examAPI";
 import { adminFetchQuestionByQID } from "../../features/exam/examAPI";
+import { addSuccessStoryApi } from "../../features/exam/examAPI";
 
 // Thunk for deleting a Q-Bank & mock test questions
 export const adminDeleteQBankQuestion = createAsyncThunk(
@@ -247,6 +250,50 @@ export const getQuestionData = createAsyncThunk(
   }
 );
 
+
+// Async thunk to add a success story
+export const addSuccessStory = createAsyncThunk(
+  "exam/addSuccessStory",
+  async (formData, { rejectWithValue }) => {
+    try {
+      const data = await addSuccessStoryApi(formData);
+      return data;
+    } catch (error) {
+      return rejectWithValue(error.message);
+    }
+  }
+);
+
+
+export const fetchSuccessStories = createAsyncThunk(
+  "exam/fetchSuccessStories",
+  async (_, { rejectWithValue }) => {
+    try {
+      const response = await fetchSuccessStoriesApi();
+      return response.data; // assuming API returns { data: [...] }
+    } catch (error) {
+      return rejectWithValue(error.message);
+    }
+  }
+);
+
+// ✅ DELETE SUCCESS STORY
+export const deleteSuccessStory = createAsyncThunk(
+  "exam/deleteSuccessStory",
+  async (id, { rejectWithValue }) => {
+    console.log("id in d",id);
+    
+    try {
+      const result = await deleteSuccessStoryApi(id);
+      return result;
+    } catch (error) {
+      return rejectWithValue(error.message);
+    }
+  }
+);
+
+
+
 const questionSlice = createSlice({
   name: "questions",
   initialState: {
@@ -312,6 +359,21 @@ const questionSlice = createSlice({
     adminCreateTestResult: null, // stores API response
     adminCreateTestLoading: false, // loading flag
     adminCreateTestError: null,
+
+    //for adding success story
+    addSuccessStoryLoading: false,
+    addSuccessStoryError: null,
+    addSuccessStoryResult: null,
+
+    deleteSuccessStoryLoading: false,
+    deleteSuccessStoryError: null,
+    deleteSuccessStoryResult: null,
+
+    fetchLoading: false,
+    fetchError: null,
+    successStories: [],
+
+
   },
   reducers: {
     resetStatus: (state) => {
@@ -584,7 +646,54 @@ const questionSlice = createSlice({
       .addCase(getQuestionData.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload || "Failed to fetch question";
-      });
+      })
+
+
+      // Add success story
+      .addCase(addSuccessStory.pending, (state) => {
+        state.addSuccessStoryLoading = true;
+        state.addSuccessStoryError = null;
+        state.addSuccessStoryResult = null;
+      })
+      .addCase(addSuccessStory.fulfilled, (state, action) => {
+        state.addSuccessStoryLoading = false;
+        state.addSuccessStoryResult = action.payload;
+      })
+      .addCase(addSuccessStory.rejected, (state, action) => {
+        state.addSuccessStoryLoading = false;
+        state.addSuccessStoryError = action.payload;
+      })
+
+      .addCase(fetchSuccessStories.pending, (state) => {
+        state.fetchLoading = true;
+        state.fetchError = null;
+      })
+      .addCase(fetchSuccessStories.fulfilled, (state, action) => {
+        state.fetchLoading = false;
+        state.successStories = action.payload;
+      })
+      .addCase(fetchSuccessStories.rejected, (state, action) => {
+        state.fetchLoading = false;
+        state.fetchError = action.payload;
+      })
+
+      .addCase(deleteSuccessStory.pending, (state) => {
+        state.deleteSuccessStoryLoading = true;
+        state.deleteSuccessStoryError = null;
+      })
+      .addCase(deleteSuccessStory.fulfilled, (state, action) => {
+        state.deleteSuccessStoryLoading = false;
+        state.deleteSuccessStoryResult = action.payload;
+        // remove deleted story from list immediately
+        state.successStories = state.successStories.filter(
+          (story) => story.id !== action.meta.arg
+        );
+      })
+      .addCase(deleteSuccessStory.rejected, (state, action) => {
+        state.deleteSuccessStoryLoading = false;
+        state.deleteSuccessStoryError = action.payload;
+      })
+
   },
 });
 

@@ -261,7 +261,7 @@ const DropdownQuestionComponent = ({ question, onSubmit }) => {
                 src={
                   tabsInfo[activeTab].tabImage.startsWith("http")
                     ? tabsInfo[activeTab].tabImage
-                    : `${"https://lunarsenterprises.com:8002"}${
+                    : `${"https://lunarsenterprises.com:6040"}${
                         tabsInfo[activeTab].tabImage
                       }`
                 }

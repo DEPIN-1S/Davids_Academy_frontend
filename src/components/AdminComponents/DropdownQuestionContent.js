@@ -640,12 +640,12 @@ const DropdownQuestionContent = () => {
                   onClick={() => handleToggleBlankOrNot(dropdownIndex)}
                   size="small"
                 >
-                  {dropdown.blank_or_not ? "Dropdown Field" : "Text Only"}
+                  {dropdown.blank_or_not ? "Text Only" : "Dropdown Field"}
                 </Button>
                 <Typography variant="caption" color="textSecondary">
                   {dropdown.blank_or_not
-                    ? "Has dropdown options"
-                    : "Text field only"}
+                    ? "Text field only"
+                    : "Has dropdown options"}
                 </Typography>
               </Box>
 

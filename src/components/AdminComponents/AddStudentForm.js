@@ -11,12 +11,14 @@ import {
 } from '@mui/icons-material';
 import { useDispatch, useSelector } from 'react-redux';
 import { fetchCourses } from '../../features/courses/courseSlice';
+import { toast, ToastContainer } from 'react-toastify';
 
 const AddStudentForm = ({ onSuccess, onClose }) => {   // ✅ accept callbacks
     const theme = useTheme();
     const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
     const { list: courses } = useSelector((state) => state.course);
     const dispatch = useDispatch();
+    const [backendError, setBackendError] = useState('');
 
     useEffect(() => {
         dispatch(fetchCourses());
@@ -41,8 +43,18 @@ const AddStudentForm = ({ onSuccess, onClose }) => {   // ✅ accept callbacks
         return `${cleanName}${randomNum}`;
     };
 
+
     const handleInputChange = (field) => (event) => {
-        const value = event.target.value;
+        let value = event.target.value;
+
+        // Restrict phone number field to digits only and max 10 digits
+        if (field === 'phoneNumber') {
+            // Remove non-digit characters
+            value = value.replace(/\D/g, '');
+            // Limit to 10 digits
+            if (value.length > 10) value = value.slice(0, 10);
+        }
+
         setFormData((prev) => {
             const updated = { ...prev, [field]: value };
             if (field === 'fullName' && prev.autoGeneratePassword) {
@@ -51,6 +63,7 @@ const AddStudentForm = ({ onSuccess, onClose }) => {   // ✅ accept callbacks
             return updated;
         });
     };
+
 
     const handleToggleChange = (field) => (event) => {
         const checked = event.target.checked;
@@ -107,11 +120,21 @@ const AddStudentForm = ({ onSuccess, onClose }) => {   // ✅ accept callbacks
         dispatch(createStudent(payload))
             .unwrap()
             .then(() => {
+                alert("✅Student added successfully")
                 console.log("Student added successfully");
-                if (onSuccess) onSuccess();   // ✅ close modal after success
+                if (onSuccess) onSuccess(); // close modal after success
+                
             })
-            .catch((error) => console.error("Error adding student:", error));
+            .catch((error) => {
+                //  Use error.message
+                console.log("errorkkkkkkkk", error);
+                console.error("Error adding student:", error);
+               alert(error)
+                // Optional: display it in UI using state
+                setBackendError(error);
+            });
     };
+
 
     const handleCancel = () => {
         if (onClose) onClose();
@@ -120,7 +143,7 @@ const AddStudentForm = ({ onSuccess, onClose }) => {   // ✅ accept callbacks
     return (
         <Container maxWidth="md" sx={{ py: { xs: 2, sm: 3, md: 4 } }}>
             {/* Header */}
-
+            <ToastContainer position="top-right" autoClose={5000} hideProgressBar={false} />
 
             {/* Form Card */}
             <Card

@@ -126,10 +126,12 @@ const EditStudentForm = ({ studentId, onClose }) => {
             .unwrap()
             .then(() => {
 
-                console.log("Student updated successfully");
-                alert("✅ Student updated successfully!");
-                onClose?.(); // close form after update
-                dispatch(fetchCourses());
+                dispatch(updateStudent(payload))
+                    .unwrap()
+                    .then(() => {
+                        alert("✅ Student updated successfully!");
+                        onClose?.(); // <-- trigger parent refresh here
+                    });
             })
             .catch((error) => {
                 console.error("Error updating student:", error);
@@ -140,7 +142,7 @@ const EditStudentForm = ({ studentId, onClose }) => {
 
 
     const handleCancel = () => {
-        navigate(-1); // Go back to previous page
+        onClose()
     };
 
     return (

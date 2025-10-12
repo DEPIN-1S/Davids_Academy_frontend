@@ -28,6 +28,7 @@ const MultiRadioQuestionComponent = ({ question, onSubmit }) => {
   const {
     id: questionId,
     question: questionText,
+    multiradioHeading,
     tabsInfo = [],
     clientfindings = [],
     radioOption = [],
@@ -215,7 +216,7 @@ const MultiRadioQuestionComponent = ({ question, onSubmit }) => {
                   borderTopLeftRadius: "8px",
                 }}
               >
-                Client findings
+               {multiradioHeading}
               </TableCell>
               {uniqueAnswers.map((answer, colIdx) => (
                 <TableCell

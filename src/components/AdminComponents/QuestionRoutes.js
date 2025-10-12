@@ -7,5 +7,7 @@ export const QUESTION_TYPE_TO_ROUTE = {
     'Sorting': '/admin/sort-content',
     'Sentence Highlight': '/admin/sentence-content',
     'Fill in the Blanks': '/admin/fill-content',
-    'Table Dropdown' : '/admin/table-dropDown'
+    'Table Dropdown': '/admin/table-dropDown',
+    'Multidropdown': '/admin/multiDropDown',
+    'Table Highlight': '/admin/table-Highlight'
 };

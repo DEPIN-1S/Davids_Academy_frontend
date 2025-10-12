@@ -22,6 +22,8 @@ import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
 import { CloudUpload, Delete, Image, PictureAsPdf, Description, ExpandMore, DragIndicator } from '@mui/icons-material';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useFileContext } from '../../context/FileContext'; // ✅ Import the Context
+import { deleteTabImage, uploadTabImage } from "../../features/exam/examSlice";
+import { useDispatch } from "react-redux";
 
 
 const DragdropQuestionContent = () => {
@@ -42,13 +44,7 @@ const DragdropQuestionContent = () => {
     const [tabs, setTabs] = useState(existingData.tabs || [
         { tabKey: "", tabValue: "" }
     ]);
-    /* const [dragAndDrop, setDragAndDrop] = useState(existingData.drag_and_drop || [
-        {
-            option_heading: "",
-            question_answer: "",
-            option_value: [""]
-        }
-    ]); */
+ 
 
     const [dragAndDrop, setDragAndDrop] = useState(
         existingData.drag_and_drop || Array.from({ length: 5 }, () => ({
@@ -60,7 +56,7 @@ const DragdropQuestionContent = () => {
 
     const [selectedFile, setSelectedFile] = useState(null); // ✅ Local state for UI, Context for persistence
     const [errors, setErrors] = useState({});
-    const fileInputRef = useRef(null);
+
 
     // ✅ Initialize with existing file from context if available
     React.useEffect(() => {
@@ -69,42 +65,84 @@ const DragdropQuestionContent = () => {
         }
     }, [questionFile]);
 
-    // ✅ File upload handlers - Store in Context instead of passing through navigation
-    const handleFileSelect = (event) => {
-        const file = event.target.files[0];
-        if (file) {
-            if (file.size > 10 * 1024 * 1024) {
-                setErrors(prev => ({ ...prev, file: 'File size must be less than 10MB' }));
-                return;
-            }
 
-            const allowedTypes = ['image/jpeg', 'image/png', 'image/gif', 'application/pdf', 'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'];
-            if (!allowedTypes.includes(file.type)) {
-                setErrors(prev => ({ ...prev, file: 'Only images, PDF, and Word documents are allowed' }));
-                return;
-            }
 
-            const fileData = {
-                file: file,
-                name: file.name,
-                size: file.size,
-                type: file.type,
-                url: URL.createObjectURL(file),
-                uploadedAt: new Date().toISOString()
-            };
+    // here tab image is added to backend when user selects image from their local machine at that moment api call is triggered
+    // File upload handler for tab image
+    const dispatch = useDispatch();
+    const handleTabFileUpload = async (index, event) => {
+      const file = event.target.files[0];
+      if (!file) return;
+  
+      const allowedTypes = ["image/jpeg", "image/png", "image/gif"];
+      if (!allowedTypes.includes(file.type)) {
+        setErrors((prev) => ({
+          ...prev,
+          [`tabFile_${index}`]: "Only images are allowed",
+        }));
+        return;
+      }
+  
+      // Local preview
+      const previewUrl = URL.createObjectURL(file);
+      const newTabs = [...tabs];
+      newTabs[index].previewUrl = previewUrl;
+      setTabs(newTabs);
+  
+      try {
+        // Upload immediately
+        const result = await dispatch(uploadTabImage(file)).unwrap();
+        console.log("Upload result:", result);
+  
+        // ✅ Store uploaded image URL in `tabImage` key
+        newTabs[index].tabImage = result?.data?.imageUrl || null;
+        setTabs(newTabs);
+      } catch (err) {
+        console.error("Upload failed:", err);
+        setErrors((prev) => ({
+          ...prev,
+          [`tabFile_${index}`]: "Upload failed. Try again.",
+        }));
+        newTabs[index].previewUrl = null;
+        setTabs(newTabs);
+      }
+    };
 
-            // ✅ Store in both local state (for UI) and Context (for persistence)
-            setSelectedFile(fileData);
-            addQuestionFile(fileData); // Store in Context
-            setErrors(prev => ({ ...prev, file: null }));
 
-            console.log('File stored in Context:', fileData.name);
+
+      // Delete handler
+      const handleDeleteTabImage = async (index) => {
+        const tab = tabs[index];
+        console.log("Inside delete img::");
+    
+        if (!tab.tabImage) {
+          // No uploaded image, just remove preview
+          const newTabs = [...tabs];
+          newTabs[index].previewUrl = null;
+          setTabs(newTabs);
+          return;
         }
-        event.target.value = '';
-    };
-    const handleButtonClick = () => {
-        fileInputRef.current?.click();
-    };
+    
+        try {
+          console.log("Inside try :::");
+    
+          // Extract only filename
+          const fileName = tab.tabImage.split("/").pop();
+          console.log("Sending filename to delete API:", fileName);
+    
+          // Call delete API
+          await dispatch(deleteTabImage(fileName)).unwrap();
+    
+          const newTabs = [...tabs];
+          newTabs[index].previewUrl = null;
+          newTabs[index].tabImage = null; // ✅ Clear tabImage
+          setTabs(newTabs);
+    
+          console.log("Tab image deleted successfully");
+        } catch (error) {
+          console.error("Failed to delete tab image:", error);
+        }
+      };
 
     const handleRemoveFile = () => {
         if (selectedFile) {
@@ -167,17 +205,6 @@ const DragdropQuestionContent = () => {
             setDragAndDrop(newDragAndDrop);
         }
     };
-
-    const handleAddDragDropSection = () => {
-        setDragAndDrop([...dragAndDrop, {
-            option_heading: "",
-            question_answer: "",
-            option_value: [""]
-        }]);
-    };
-
-
-
 
     const handleRemoveDragDropSection = (index) => {
         if (dragAndDrop.length > 1) {
@@ -517,7 +544,63 @@ const DragdropQuestionContent = () => {
                                 placeholder="Enter the content that will be displayed in this tab..."
                             />
 
-                            
+
+                            <Box
+                                display="flex"
+                                flexDirection="column"
+                                alignItems="flex-start"
+                                mt={2}
+                            >
+                                <input
+                                    type="file"
+                                    accept="image/*"
+                                    style={{ display: "none" }}
+                                    id={`tab-file-input-${index}`}
+                                    onChange={(e) => handleTabFileUpload(index, e)}
+                                />
+                                <Button
+                                    variant="outlined"
+                                    component="span"
+                                    onClick={() =>
+                                        document.getElementById(`tab-file-input-${index}`).click()
+                                    }
+                                    startIcon={<CloudUpload />}
+                                    size="small"
+                                >
+                                    {tab.previewUrl ? "Change Image" : "Add Image"}
+                                </Button>
+
+
+                                {tab.previewUrl && (
+                                    <Box mt={1} display="flex" alignItems="center" gap={1}>
+                                        <img
+                                            src={tab.previewUrl}
+                                            alt={`Tab ${index} preview`}
+                                            style={{
+                                                maxWidth: "200px",
+                                                maxHeight: "150px",
+                                                objectFit: "cover",
+                                                borderRadius: "4px",
+                                            }}
+                                        />
+                                        <IconButton
+                                            onClick={() => handleDeleteTabImage(index)}
+                                            color="error"
+                                            size="small"
+                                        >
+                                            <Delete />
+                                        </IconButton>
+                                    </Box>
+                                )}
+
+                                {errors[`tabFile_${index}`] && (
+                                    <Typography variant="caption" color="error">
+                                        {errors[`tabFile_${index}`]}
+                                    </Typography>
+                                )}
+                            </Box>
+
+
                         </Card>
                     ))}
 
@@ -554,7 +637,7 @@ const DragdropQuestionContent = () => {
                     setErrors(prev => ({ ...prev, instruction: null }));
                 }}
                 variant="outlined"
-                placeholder="Type your dropdown question instruction here..."
+                placeholder="Type your drag drop question instruction here..."
                 error={!!errors.instruction}
                 helperText={errors.instruction}
                 sx={{ mb: 3 }}

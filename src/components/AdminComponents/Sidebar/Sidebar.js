@@ -15,6 +15,8 @@ import { useNavigate, useLocation } from "react-router-dom";
 import { useDispatch, useSelector } from 'react-redux';
 import { logout } from '../../../features/user/userSlice';
 import "../../../styles/AdminStyles/Sidebar.css";
+import { FaTrophy } from "react-icons/fa6";
+
 
 const Sidebar = ({ isOpen, isCollapsed, toggleSidebar, toggleCollapse }) => {
   const navigate = useNavigate();
@@ -32,6 +34,7 @@ const Sidebar = ({ isOpen, isCollapsed, toggleSidebar, toggleCollapse }) => {
     },
     { name: "Recorded Classes", icon: <FaVideo />, path: "/admin/recorded-class" },
     { name: "Enquiries & Leads", icon: <FaPhone />, path: "/admin/enquire-lead" },
+    { name: "Manage Success Stories", icon: <FaTrophy />, path: "/admin/manage-success-stories" },
   ];
 
   const handleNavigation = (path) => {

@@ -62,59 +62,81 @@ function McqQuestionView() {
       </Box>
 
       <Box sx={{
+        width: "full",
+        alignItems: "center",
+        justifyContent: "center"
+      }} >
 
-        pt: 5,
-      }}  >
+        <Typography
+          variant="h6"
+          fontWeight={700}
+          mb={2}
+          sx={{ textAlign: "center", color: "#2e3760", pt: 4 }}
+        >
+          {questionText}
+        </Typography>
 
-        <Box className="exhibit-img" >
-          <h1>Exhibit Image uploaded :</h1>
-          {questionData?.data?.exhibit && (
-            <img
-              width={500}
-              src={`https://lunarsenterprises.com:6040/${questionData.data.exhibit}`}
-              alt="Exhibit"
-              style={{ maxWidth: '100%', marginBottom: '1rem', borderRadius: 8 }}
-            />
-          )}
-        </Box>
+        <Box>
 
-        <Box className="radio-container">
-
-
-          <Typography variant="body1" className="question-text" gutterBottom>
-            {questionText}
-          </Typography>
-
-          <RadioGroup
-            value={selectedOption}
-            onChange={handleChange}
-            className="radio-options"
-          >
-            {mcqoptions.map((optionObj) => (
-              <FormControlLabel
-                key={optionObj.id}
-                value={optionObj.option}
-                control={<Radio />}
-                label={<span className="radio-label">{optionObj.option}</span>}
+          <Box className="exhibit-img" >
+            {questionData?.data?.exhibit && (
+              <img
+                width={500}
+                src={`https://lunarsenterprises.com:6040/${questionData.data.exhibit}`}
+                alt="Exhibit"
+                style={{ maxWidth: '100%', marginBottom: '1rem', borderRadius: 8 }}
               />
-            ))}
-          </RadioGroup>
+            )}
+          </Box>
+
+          {questionData?.data?.instructions &&
+            <Box sx={{ pb: "10px", py: 4, alignItems: "center", justifyContent: "center", textAlign: "center" }} >
+              <Typography sx={{ fontWeight: 200 }} ><h4>Question Instruction</h4></Typography>
+              <Typography variant="h3" sx={{ fontWeight: 200, fontSize: 15, pt: 2 }}>
+                {questionData?.data?.instructions}
+              </Typography>
+            </Box>
+          }
+
+          <Box className="radio-container">
+            <RadioGroup
+              value={selectedOption}
+              onChange={handleChange}
+              className="radio-options"
+            >
+              {mcqoptions.map((optionObj) => (
+                <FormControlLabel
+                  key={optionObj.id}
+                  value={optionObj.option}
+                  control={<Radio />}
+                  label={<span className="radio-label">{optionObj.option}</span>}
+                  sx={{
+                    display: "flex",
+                    alignItems: "center", // aligns radio at top-left
+                    mb: 1,
+                    width: "100%", px: 4,
+                    justifyContent: "flex-start",
+                  }}
+                />
+              ))}
+            </RadioGroup>
+          </Box>
 
 
-        </Box>
-        <Box sx={{ display: "flex", justifyContent: "center", pt: 5 }}>
-          <Button
-            variant="outlined"
-            startIcon={<ArrowBackIcon />}
-            onClick={() => navigate(-1)} // 👈 goes back
-            sx={{
-              borderRadius: "8px",
-              textTransform: "none",
-              fontWeight: 600,
-            }}
-          >
-            Back To Question Management
-          </Button>
+          <Box sx={{ display: "flex", justifyContent: "center", pt: 5 }}>
+            <Button
+              variant="outlined"
+              startIcon={<ArrowBackIcon />}
+              onClick={() => navigate(-1)} // 👈 goes back
+              sx={{
+                borderRadius: "8px",
+                textTransform: "none",
+                fontWeight: 600,
+              }}
+            >
+              Back To Question Management
+            </Button>
+          </Box>
         </Box>
       </Box>
     </>

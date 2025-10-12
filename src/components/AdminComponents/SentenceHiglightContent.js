@@ -26,6 +26,8 @@ import { CloudUpload, Delete, Image, PictureAsPdf, Description, ExpandMore, High
 import { useNavigate, useLocation } from 'react-router-dom';
 /* import { FormControl } from "react-bootstrap"; */
 import { FormControl } from "@mui/material";
+import { deleteTabImage, uploadTabImage } from "../../features/exam/examSlice";
+import { useDispatch } from "react-redux";
 
 const SentenceHighlightContent = () => {
     const navigate = useNavigate();
@@ -37,53 +39,102 @@ const SentenceHighlightContent = () => {
     const cs_id = location.state?.cs_id || "";
     const exam_type = location.state?.exam_type || "";
     const question_type_id = location.state?.question_type_id || "";
-
+    const [instruction, setInstruction] = useState(existingData.instruction || "")
     // Form state
     const [question, setQuestion] = useState(existingData.question || "");
     const [tabs, setTabs] = useState(existingData.tabs || [
         { tabKey: "", tabValue: "" }
     ]);
     const [passage, setPassage] = useState(existingData.passage || "");
-    const [highlightInstructions, setHighlightInstructions] = useState(existingData.highlightInstructions || "");
     const [correctHighlights, setCorrectHighlights] = useState(existingData.correctHighlights || [""]);
     const [selectedFile, setSelectedFile] = useState(existingData.exhibit || null);
     const [errors, setErrors] = useState({});
     const [answer, setAnswer] = useState(existingData?.answer || [])
 
     const fileInputRef = useRef(null);
-    // File upload handlers
-    const handleFileSelect = (event) => {
+
+
+    // here tab image is added to backend when user selects image from their local machine at that moment api call is triggered
+    // File upload handler for tab image
+    const dispatch = useDispatch();
+    const handleTabFileUpload = async (index, event) => {
         const file = event.target.files[0];
-        if (file) {
-            if (file.size > 10 * 1024 * 1024) {
-                setErrors(prev => ({ ...prev, file: 'File size must be less than 10MB' }));
-                return;
-            }
+        if (!file) return;
 
-            const allowedTypes = ['image/jpeg', 'image/png', 'image/gif', 'application/pdf', 'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'];
-            if (!allowedTypes.includes(file.type)) {
-                setErrors(prev => ({ ...prev, file: 'Only images, PDF, and Word documents are allowed' }));
-                return;
-            }
-
-            const fileData = {
-                file: file,
-                name: file.name,
-                size: file.size,
-                type: file.type,
-                url: URL.createObjectURL(file),
-                uploadedAt: new Date().toISOString()
-            };
-
-            setSelectedFile(fileData);
-            setErrors(prev => ({ ...prev, file: null }));
+        const allowedTypes = ["image/jpeg", "image/png", "image/gif"];
+        if (!allowedTypes.includes(file.type)) {
+            setErrors((prev) => ({
+                ...prev,
+                [`tabFile_${index}`]: "Only images are allowed",
+            }));
+            return;
         }
-        event.target.value = '';
+
+        // Local preview
+        const previewUrl = URL.createObjectURL(file);
+        const newTabs = [...tabs];
+        newTabs[index].previewUrl = previewUrl;
+        setTabs(newTabs);
+
+        try {
+            // Upload immediately
+            const result = await dispatch(uploadTabImage(file)).unwrap();
+            console.log("Upload result:", result);
+
+            // ✅ Store uploaded image URL in `tabImage` key
+            newTabs[index].tabImage = result?.data?.imageUrl || null;
+            setTabs(newTabs);
+        } catch (err) {
+            console.error("Upload failed:", err);
+            setErrors((prev) => ({
+                ...prev,
+                [`tabFile_${index}`]: "Upload failed. Try again.",
+            }));
+            newTabs[index].previewUrl = null;
+            setTabs(newTabs);
+        }
     };
 
-    const handleButtonClick = () => {
-        fileInputRef.current?.click();
+
+
+    // Delete handler
+    const handleDeleteTabImage = async (index) => {
+        const tab = tabs[index];
+        console.log("Inside delete img::");
+
+        if (!tab.tabImage) {
+            // No uploaded image, just remove preview
+            const newTabs = [...tabs];
+            newTabs[index].previewUrl = null;
+            setTabs(newTabs);
+            return;
+        }
+
+        try {
+            console.log("Inside try :::");
+
+            // Extract only filename
+            const fileName = tab.tabImage.split("/").pop();
+            console.log("Sending filename to delete API:", fileName);
+
+            // Call delete API
+            await dispatch(deleteTabImage(fileName)).unwrap();
+
+            const newTabs = [...tabs];
+            newTabs[index].previewUrl = null;
+            newTabs[index].tabImage = null; // ✅ Clear tabImage
+            setTabs(newTabs);
+
+            console.log("Tab image deleted successfully");
+        } catch (error) {
+            console.error("Failed to delete tab image:", error);
+        }
     };
+
+
+
+
+
 
     const handleRemoveFile = () => {
         if (selectedFile) {
@@ -148,10 +199,6 @@ const SentenceHighlightContent = () => {
             newErrors.passage = 'Passage text is required';
         }
 
-        if (!highlightInstructions.trim()) {
-            newErrors.highlightInstructions = 'Highlight instructions are required';
-        }
-
         const validHighlights = correctHighlights.filter(highlight => highlight.trim());
         if (validHighlights.length === 0) {
             newErrors.correctHighlights = 'At least one correct highlight text is required';
@@ -180,7 +227,7 @@ const SentenceHighlightContent = () => {
             tabs: tabs.filter(tab => tab.tabKey.trim() && tab.tabValue.trim()),
             passage: passage.trim(),
             answer: answer,
-            highlightInstructions: highlightInstructions.trim(),
+            instruction: instruction.trim(),
             correctHighlights: correctHighlights.filter(highlight => highlight.trim()),
             exhibit: selectedFile,
             createdAt: existingData.createdAt || new Date().toISOString(),
@@ -205,7 +252,7 @@ const SentenceHighlightContent = () => {
             question: question.trim(),
             tabs: tabs,
             passage: passage.trim(),
-            highlightInstructions: highlightInstructions.trim(),
+        
             correctHighlights: correctHighlights,
             exhibit: selectedFile
         };
@@ -238,10 +285,10 @@ const SentenceHighlightContent = () => {
         const hasValidQuestion = question.trim() !== "";
         const hasValidTabs = tabs.some(tab => tab.tabKey.trim() && tab.tabValue.trim());
         const hasValidPassage = passage.trim() !== "";
-        const hasValidInstructions = highlightInstructions.trim() !== "";
+    
         const hasValidHighlights = correctHighlights.some(highlight => highlight.trim());
-
-        return hasValidQuestion && hasValidTabs && hasValidPassage && hasValidInstructions && hasValidHighlights;
+        const hasValidInstruction = instruction.trim() !== ""
+        return hasValidQuestion && hasValidTabs && hasValidPassage && hasValidHighlights && hasValidInstruction;
     };
 
     // Helper function to create highlighted preview
@@ -381,6 +428,61 @@ const SentenceHighlightContent = () => {
                                 onChange={(e) => handleTabChange(index, 'tabValue', e.target.value)}
                                 placeholder="Enter the content that will be displayed in this tab..."
                             />
+
+                            <Box
+                                display="flex"
+                                flexDirection="column"
+                                alignItems="flex-start"
+                                mt={2}
+                            >
+                                <input
+                                    type="file"
+                                    accept="image/*"
+                                    style={{ display: "none" }}
+                                    id={`tab-file-input-${index}`}
+                                    onChange={(e) => handleTabFileUpload(index, e)}
+                                />
+                                <Button
+                                    variant="outlined"
+                                    component="span"
+                                    onClick={() =>
+                                        document.getElementById(`tab-file-input-${index}`).click()
+                                    }
+                                    startIcon={<CloudUpload />}
+                                    size="small"
+                                >
+                                    {tab.previewUrl ? "Change Image" : "Add Image"}
+                                </Button>
+
+
+                                {tab.previewUrl && (
+                                    <Box mt={1} display="flex" alignItems="center" gap={1}>
+                                        <img
+                                            src={tab.previewUrl}
+                                            alt={`Tab ${index} preview`}
+                                            style={{
+                                                maxWidth: "200px",
+                                                maxHeight: "150px",
+                                                objectFit: "cover",
+                                                borderRadius: "4px",
+                                            }}
+                                        />
+                                        <IconButton
+                                            onClick={() => handleDeleteTabImage(index)}
+                                            color="error"
+                                            size="small"
+                                        >
+                                            <Delete />
+                                        </IconButton>
+                                    </Box>
+                                )}
+
+                                {errors[`tabFile_${index}`] && (
+                                    <Typography variant="caption" color="error">
+                                        {errors[`tabFile_${index}`]}
+                                    </Typography>
+                                )}
+                            </Box>
                         </Card>
                     ))}
 
@@ -400,6 +502,28 @@ const SentenceHighlightContent = () => {
                     )}
                 </AccordionDetails>
             </Accordion>
+
+            <Typography variant="h6" mb={1} color="primary">
+                Instruction*
+            </Typography>
+            <TextField
+                fullWidth
+                label="Enter Question instruction"
+                multiline
+                minRows={3}
+                maxRows={6}
+                value={instruction}
+                onChange={(e) => {
+                    setInstruction(e.target.value);
+                    setErrors(prev => ({ ...prev, instruction: null }));
+                }}
+                variant="outlined"
+                placeholder="Type your drag drop question instruction here..."
+                error={!!errors.instruction}
+                helperText={errors.instruction}
+                sx={{ mb: 3 }}
+            />
+
 
             {/* Passage Section */}
             <Typography variant="h6" mb={1} color="primary">
@@ -425,27 +549,7 @@ const SentenceHighlightContent = () => {
                 helperText={errors.passage || `${passage.length} characters`}
                 sx={{ mb: 3 }}
             />
-
-            {/* Highlight Instructions */}
-            <Typography variant="h6" mb={1} color="primary">
-                Highlight Instructions *
-            </Typography>
-            <TextField
-                fullWidth
-                label="Highlighting instructions"
-                multiline
-                minRows={2}
-                value={highlightInstructions}
-                onChange={(e) => {
-                    setHighlightInstructions(e.target.value);
-                    setErrors(prev => ({ ...prev, highlightInstructions: null }));
-                }}
-                variant="outlined"
-                placeholder="e.g., Highlight the symptoms that indicate respiratory distress..."
-                error={!!errors.highlightInstructions}
-                helperText={errors.highlightInstructions || "Instructions telling students what to highlight"}
-                sx={{ mb: 3 }}
-            />
+            
 
             {/* Correct Highlights Section */}
             <Typography variant="h6" mb={1} color="primary">
@@ -586,7 +690,7 @@ const SentenceHighlightContent = () => {
                         • Passage: {passage ? `✅ ${passage.length} characters` : '❌ Required'}
                     </Typography>
                     <Typography variant="body2">
-                        • Instructions: {highlightInstructions ? '✅ Complete' : '❌ Required'}
+                        • Instructions: {instruction ? '✅ Complete' : '❌ Required'}
                     </Typography>
                     <Typography variant="body2">
                         • Correct Highlights: {correctHighlights.filter(h => h.trim()).length} defined
