@@ -37,6 +37,8 @@ function MultiDropdownQuestionView({ onSubmit }) {
 
     // Initialize dropdown values
     useEffect(() => {
+        console.log("qData",questionData?.data);
+        
         const rows = questionData?.data?.rows || [];
         const initial = {};
         rows.forEach((row, rIdx) => {

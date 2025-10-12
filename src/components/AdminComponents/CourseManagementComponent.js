@@ -121,16 +121,16 @@ const CourseManagementComponent = () => {
                     startIcon={<AddIcon />}
                     onClick={handleAddCourse}
                     sx={{
-                        bgcolor: '#F5C842',
-                        color: 'black',
-                        fontWeight: 600,
-                        px: { xs: 2, sm: 3 },
-                        py: { xs: 1, sm: 1.5 },
+                        bgcolor: '#ff9800',
+                        color: '#ffff',
+                        fontWeight: 500,
+                        px: { xs: 2, sm: "13px" },
+                        py: { xs: 1, sm: "8px" },
                         borderRadius: 2,
                         textTransform: 'none',
-                        fontSize: { xs: '0.875rem', sm: '1rem' },
+                        fontSize: { xs: '0.875rem', sm: '0.85rem' },
                         minWidth: { xs: '100%', sm: 'auto' },
-                        '&:hover': { bgcolor: '#E6B53C' }
+                        '&:hover': { bgcolor: '#e88b00' }
                     }}
                 >
                     Add Course

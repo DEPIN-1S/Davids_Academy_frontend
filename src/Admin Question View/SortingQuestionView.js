@@ -122,12 +122,21 @@ function SortingQuestionView() {
         sx={{
           maxWidth: "900px",
           mx: "auto",
-          mt: 6,
+          mt: 3,
           p: 4,
 
         }}
         className="sort-question-container"
       >
+
+        {questionData?.data?.instructions &&
+          <Box sx={{  pb: 5, alignItems: "center", justifyContent: "center", textAlign: "center" }} >
+            <Typography sx={{ fontWeight: 200 }} ><h4>Question Instruction</h4></Typography>
+            <Typography variant="h3" sx={{ fontWeight: 200, fontSize: 18, pt: 2 }}>
+              {questionData?.data?.instructions}
+            </Typography>
+          </Box>
+        }
 
         {/* Sorting Box */}
         {!showReveal && (
@@ -181,14 +190,7 @@ function SortingQuestionView() {
         )}
       </Box>
 
-      {questionData?.data?.instructions &&
-        <Box sx={{ pb: "10px", py: 4, alignItems: "center", justifyContent: "center", textAlign: "center" }} >
-          <Typography sx={{ fontWeight: 200 }} ><h4>Question Instruction</h4></Typography>
-          <Typography variant="h3" sx={{ fontWeight: 200, fontSize: 18, pt: 2 }}>
-            {questionData?.data?.instructions}
-          </Typography>
-        </Box>
-      }
+
 
       {/* Back Button */}
       <Box sx={{ display: "flex", justifyContent: "center", pt: 4 }}>

@@ -40,6 +40,7 @@ import TableHighlightsQuestionContent from "../components/AdminComponents/TableH
 import TableDropDownQuestionView from "../Admin Question View/TableDropDownQuestionView";
 import MultiDropdownQuestionView from "../Admin Question View/MultiDropdownQuestionView";
 import TableHighlightQuestionView from "../Admin Question View/TableHighlightQuestionView";
+import ManageSuccessStories from "../pages/AdminPages/ManageSuccessStories";
 
 const AdminRoutes = () => (
     <>
@@ -52,6 +53,12 @@ const AdminRoutes = () => (
             <Route path="/admin/student-manage" element={
                 <ProtectedRoutes allowedRoles={['admin']}>
                     <StudentManage />
+                </ProtectedRoutes>
+            } />
+
+             <Route path="/admin/manage-success-stories" element={
+                <ProtectedRoutes allowedRoles={['admin']}>
+                    <ManageSuccessStories />
                 </ProtectedRoutes>
             } />
 
