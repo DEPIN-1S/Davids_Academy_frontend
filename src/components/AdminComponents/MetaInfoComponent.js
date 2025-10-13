@@ -480,7 +480,7 @@ const MetaInfoComponent = () => {
         explanationHeading: receivedQuestionData.explanationHeading || "",
         explanationText: receivedQuestionData.explanationText || "",
         info: receivedQuestionData.additionalInfo || "",
-        infoImage: null,
+        infoimage: null,
         answer: receivedQuestionData.correctAnswer || [],
         options: receivedQuestionData.options || [],
         marks: form.marks
@@ -501,7 +501,7 @@ const MetaInfoComponent = () => {
         explanationHeading: receivedQuestionData.explanationHeading || "",
         explanationText: receivedQuestionData.explanationText || "",
         info: receivedQuestionData.additionalInfo || "",
-        infoImage: null, // or receivedQuestionData.infoImage if you want actual image link
+        infoimage: null, // or receivedQuestionData.infoImage if you want actual image link
         marks: form.marks
     });
 
@@ -519,7 +519,7 @@ const MetaInfoComponent = () => {
         explanationHeading: receivedQuestionData.explanationHeading || "",
         explanationText: receivedQuestionData.explanationText || "",
         info: receivedQuestionData.additionalInfo || "",
-        infoImage: receivedQuestionData.infoImage || null,
+        infoimage: receivedQuestionData.infoImage || null,
         marks: form.marks
     });
 
@@ -536,7 +536,7 @@ const MetaInfoComponent = () => {
         explanationHeading: receivedQuestionData.explanationHeading || "",
         explanationText: receivedQuestionData.explanationText || "",
         info: receivedQuestionData.additionalInfo || "",
-        infoImage: receivedQuestionData.infoImage || null,
+        infoimage: receivedQuestionData.infoImage || null,
         marks: form.marks
     });
 
@@ -554,7 +554,7 @@ const MetaInfoComponent = () => {
         explanationHeading: receivedQuestionData.explanationHeading || "",
         explanationText: receivedQuestionData.explanationText || "",
         info: receivedQuestionData.additionalInfo || "",
-        infoImage: receivedQuestionData.infoImage || null,
+        infoimage: receivedQuestionData.infoImage || null,
         marks: form.marks
     });
 
@@ -573,7 +573,7 @@ const MetaInfoComponent = () => {
         explanationHeading: receivedQuestionData.explanationHeading || "",
         explanationText: receivedQuestionData.explanationText || "",
         info: receivedQuestionData.additionalInfo || "",
-        infoImage: receivedQuestionData.infoImage || null,
+        infoimage: receivedQuestionData.infoImage || null,
         marks: form.marks
     });
 
@@ -592,7 +592,7 @@ const MetaInfoComponent = () => {
         explanationText: receivedQuestionData.explanationText || "",
         info: receivedQuestionData.additionalInfo || "",
         answers: receivedQuestionData.answer || [],
-        infoImage: receivedQuestionData.infoImage || null,
+        infoimage: receivedQuestionData.infoImage || null,
         marks: form.marks
     });
 
@@ -609,7 +609,7 @@ const MetaInfoComponent = () => {
         explanationHeading: receivedQuestionData.explanationHeading || "",
         explanationText: receivedQuestionData.explanationText || "",
         info: receivedQuestionData.additionalInfo || "",
-        infoImage: receivedQuestionData.infoImage || null,
+        infoimage: receivedQuestionData.infoImage || null,
         marks: form.marks,
         tableDropdownAnswers: receivedQuestionData.tableDropdownAnswers || [],
         tableHeaders: receivedQuestionData.tableHeaders || {},
@@ -629,7 +629,7 @@ const MetaInfoComponent = () => {
         explanationHeading: receivedQuestionData.explanationHeading || "",
         explanationText: receivedQuestionData.explanationText || "",
         info: receivedQuestionData.additionalInfo || "",
-        infoImage: receivedQuestionData.infoImage || null,
+        infoimage: receivedQuestionData.infoImage || null,
         marks: form.marks,
         rows: receivedQuestionData.rows || [],
         headers: receivedQuestionData.headers || [],
@@ -648,7 +648,7 @@ const MetaInfoComponent = () => {
         explanationHeading: receivedQuestionData.explanationHeading || "",
         explanationText: receivedQuestionData.explanationText || "",
         info: receivedQuestionData.additionalInfo || "",
-        infoImage: receivedQuestionData.infoImage || null,
+        infoimage: receivedQuestionData.infoImage || null,
         marks: form.marks,
         answers: receivedQuestionData.answers || [],
         tableFields: receivedQuestionData.tableFields || [],
