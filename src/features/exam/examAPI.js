@@ -279,7 +279,7 @@ export const fetchQBankQuestionData = async (questionId) => {
     console.log("Inside Question Data :: ");
 
     const response = await fetch(
-      process.env.REACT_APP_API_URL + "/student/questions/data",
+      baseUrl + "/student/questions/data",
       {
         method: "POST",
         headers: {
@@ -334,7 +334,6 @@ export const adminGetQBankQuestions = async (page = 1, limit = 10) => {
 export const adminGetMockTestQuestions = async (page = 1, limit = 10) => {
   try {
     const url = `${baseUrl}/exam/list/questions/${page}?exam_type=mock test&limit=${limit}`;
-    console.log("Fetching URL:", url);
     const token = sessionStorage.getItem("accessToken");
     const response = await fetch(url, {
       method: "GET",
@@ -364,7 +363,7 @@ export async function adminGetTestQuestions(page = 1, limit = 10) {
     const token = sessionStorage.getItem("accessToken");
     const response = await fetch(
       /*  ${baseUrl}/exam/list/questions/${page}?exam_type=mock test&limit=${limit}`; */
-      `https://lunarsenterprises.com:6040/davidsacademy/exam/list/test/${page}`,
+      `${baseUrl}/exam/list/test/${page}`,
       {
         method: "GET",
         headers: {
@@ -606,8 +605,8 @@ export const addSuccessStoryApi = async (formData) => {
       method: "POST",
       body: formData, // multipart/form-data
       headers: {
-        Authorization: `Bearer ${token}`, 
-     
+        Authorization: `Bearer ${token}`,
+
       },
     });
 
@@ -650,7 +649,7 @@ export const deleteSuccessStoryApi = async (id) => {
   console.log("inside delete story");
   try {
     const token = sessionStorage.getItem("accessToken");
-    console.log("id::::",id);
+    console.log("id::::", id);
     const response = await fetch(
       `${baseUrl}/admin/success-story/delete/${id}`,
       {

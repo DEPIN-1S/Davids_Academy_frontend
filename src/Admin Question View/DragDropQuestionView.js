@@ -80,7 +80,7 @@ const DragDropQuestionView = () => {
           <>
             {tabsInfo.find((t) => t.tabKey === activeTab)?.tabImage && (
               <img
-                src={`https://lunarsenterprises.com:6040/${tabsInfo.find((t) => t.tabKey === activeTab)?.tabImage}`}
+                src={`${process.env.BASE_URL}/${tabsInfo.find((t) => t.tabKey === activeTab)?.tabImage}`}
                 alt="Exhibit"
                 style={{ width: 300, borderRadius: "8px", marginBottom: "1rem" }}
               />

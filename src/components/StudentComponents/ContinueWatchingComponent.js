@@ -1,18 +1,18 @@
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { fetchStudentRecordedClasses } from '../../features/recorded classes/studentRecordedClassSlice';
-import { 
-  Grid, 
-  Card, 
-  CardContent, 
-  CardMedia, 
-  Typography, 
-  Button, 
-  Pagination, 
-  CircularProgress, 
-  Alert, 
-  Modal, 
-  Box, 
+import {
+  Grid,
+  Card,
+  CardContent,
+  CardMedia,
+  Typography,
+  Button,
+  Pagination,
+  CircularProgress,
+  Alert,
+  Modal,
+  Box,
   IconButton,
   LinearProgress
 } from '@mui/material';
@@ -36,14 +36,14 @@ const modalStyle = {
 
 const formatYoutubeUrl = (url) => {
   if (!url) return '';
-  
+
   const regExp = /^.*(youtu\.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
   const match = url.match(regExp);
-  
+
   if (match && match[2].length === 11) {
     return `https://www.youtube.com/embed/${match[2]}`;
   }
-  
+
   if (url.includes('embed')) return url;
   return url;
 };
@@ -56,9 +56,9 @@ const ContinueWatchingComponent = () => {
   useEffect(() => {
     const token = sessionStorage.getItem('accessToken');
     if (token) {
-      dispatch(fetchStudentRecordedClasses({ 
-        token, 
-        page: 1, 
+      dispatch(fetchStudentRecordedClasses({
+        token,
+        page: 1,
         limit: 10
       }));
     }
@@ -66,9 +66,9 @@ const ContinueWatchingComponent = () => {
 
   const handlePageChange = (event, newPage) => {
     const token = sessionStorage.getItem('accessToken');
-    dispatch(fetchStudentRecordedClasses({ 
-      token, 
-      page: newPage, 
+    dispatch(fetchStudentRecordedClasses({
+      token,
+      page: newPage,
       limit
     }));
   };
@@ -84,13 +84,13 @@ const ContinueWatchingComponent = () => {
     if (rec.progress && rec.progress > 0 && rec.progress < 1) return true;
     if (rec.watch_progress && rec.watch_progress > 0 && rec.watch_progress < 100) return true;
     if (rec.watchProgress && rec.watchProgress > 0 && rec.watchProgress < 100) return true;
-    
+
     // Option 2: Check completed status
     if (rec.completed === false || rec.is_completed === false) return true;
-    
+
     // Option 3: Check watch time vs duration
     if (rec.watch_time && rec.total_time && rec.watch_time > 0 && rec.watch_time < rec.total_time) return true;
-    
+
     // Option 4: For testing - return false to show no recordings (change to true to show all)
     return false;
   }) || [];
@@ -104,7 +104,7 @@ const ContinueWatchingComponent = () => {
       <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
         Total recordings: {recordings?.length || 0} | In progress: {inProgressRecordings.length}
       </Typography>
-      
+
       {inProgressRecordings.length > 0 ? (
         <>
           <Grid container spacing={2}>
@@ -115,15 +115,15 @@ const ContinueWatchingComponent = () => {
                     <CardMedia
                       component="img"
                       height="140"
-                      image={rec.r_thumbnail ? `https://lunarsenterprises.com:6040/${rec.r_thumbnail}` : 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzAwIiBoZWlnaHQ9IjE0MCIgdmlld0JveD0iMCAwIDMwMCAxNDAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIzMDAiIGhlaWdodD0iMTQwIiBmaWxsPSIjZjVmNWY1Ii8+Cjx0ZXh0IHg9IjE1MCIgeT0iNzAiIGZvbnQtZmFtaWx5PSJBcmlhbCwgc2Fucy1zZXJpZiIgZm9udC1zaXplPSIxNCIgZmlsbD0iIzk5OTk5OSIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZHk9Ii4zZW0iPk5vIEltYWdlPC90ZXh0Pgo8L3N2Zz4K'}
+                      image={rec.r_thumbnail ? `${process.env.BASE_URL}/${rec.r_thumbnail}` : 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzAwIiBoZWlnaHQ9IjE0MCIgdmlld0JveD0iMCAwIDMwMCAxNDAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIzMDAiIGhlaWdodD0iMTQwIiBmaWxsPSIjZjVmNWY1Ii8+Cjx0ZXh0IHg9IjE1MCIgeT0iNzAiIGZvbnQtZmFtaWx5PSJBcmlhbCwgc2Fucy1zZXJpZiIgZm9udC1zaXplPSIxNCIgZmlsbD0iIzk5OTk5OSIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZHk9Ii4zZW0iPk5vIEltYWdlPC90ZXh0Pgo8L3N2Zz4K'}
                       alt={rec.r_title || rec.title || 'Video'}
                     />
-                    <IconButton 
+                    <IconButton
                       onClick={() => handlePlay(rec.r_video_url || rec.video_url || rec.url)}
-                      sx={{ 
-                        position: 'absolute', 
-                        top: '50%', 
-                        left: '50%', 
+                      sx={{
+                        position: 'absolute',
+                        top: '50%',
+                        left: '50%',
                         transform: 'translate(-50%, -50%)',
                         backgroundColor: 'rgba(0, 0, 0, 0.6)',
                         color: 'white',
@@ -134,16 +134,16 @@ const ContinueWatchingComponent = () => {
                     >
                       <PlayArrowIcon fontSize="large" />
                     </IconButton>
-                    
+
                     {/* Progress bar overlay */}
                     {(rec.progress || rec.watch_progress || rec.watchProgress) && (
                       <Box sx={{ position: 'absolute', bottom: 0, left: 0, right: 0 }}>
-                        <LinearProgress 
-                          variant="determinate" 
+                        <LinearProgress
+                          variant="determinate"
                           value={
                             rec.progress ? rec.progress * 100 :
-                            rec.watch_progress ? rec.watch_progress :
-                            rec.watchProgress ? rec.watchProgress : 0
+                              rec.watch_progress ? rec.watch_progress :
+                                rec.watchProgress ? rec.watchProgress : 0
                           }
                           sx={{ height: 4 }}
                         />
@@ -164,8 +164,8 @@ const ContinueWatchingComponent = () => {
                       <Typography variant="body2" color="primary">
                         Progress: {Math.round(
                           rec.progress ? rec.progress * 100 :
-                          rec.watch_progress ? rec.watch_progress :
-                          rec.watchProgress ? rec.watchProgress : 0
+                            rec.watch_progress ? rec.watch_progress :
+                              rec.watchProgress ? rec.watchProgress : 0
                         )}%
                       </Typography>
                     )}
@@ -175,11 +175,11 @@ const ContinueWatchingComponent = () => {
             ))}
           </Grid>
           {totalPages > 1 && (
-            <Pagination 
-              count={totalPages} 
-              page={page} 
-              onChange={handlePageChange} 
-              sx={{ mt: 2, display: 'flex', justifyContent: 'center' }} 
+            <Pagination
+              count={totalPages}
+              page={page}
+              onChange={handlePageChange}
+              sx={{ mt: 2, display: 'flex', justifyContent: 'center' }}
             />
           )}
         </>
@@ -193,21 +193,21 @@ const ContinueWatchingComponent = () => {
           </Typography>
         </Box>
       )}
-      
+
       <Modal open={!!selectedVideo} onClose={() => setSelectedVideo(null)}>
         <Box sx={modalStyle}>
-          <IconButton 
-            onClick={() => setSelectedVideo(null)} 
+          <IconButton
+            onClick={() => setSelectedVideo(null)}
             sx={{ position: 'absolute', top: 8, right: 8 }}
           >
             <CloseIcon />
           </IconButton>
-          <iframe 
-            width="100%" 
-            height="450" 
-            src={selectedVideo} 
-            frameBorder="0" 
-            allowFullScreen 
+          <iframe
+            width="100%"
+            height="450"
+            src={selectedVideo}
+            frameBorder="0"
+            allowFullScreen
             title="Video Player"
             style={{ borderRadius: 8 }}
           />
