@@ -37,6 +37,10 @@ export const postQuestion = async (questionData) => {
 
     return result; // ✅ return after logging
   } catch (error) {
+<<<<<<< Updated upstream
+=======
+    
+>>>>>>> Stashed changes
     console.error("❌ API Error:", error);
     throw error;
   }

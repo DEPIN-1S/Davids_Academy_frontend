@@ -79,7 +79,10 @@ export const FileProvider = ({ children }) => {
                 formData.append("courseId", questionData.courseId);
                 formData.append("exam_type", questionData.exam_type);
                 formData.append("question", questionData.question);
+<<<<<<< Updated upstream
 
+=======
+>>>>>>> Stashed changes
                 formData.append("sortItems", JSON.stringify(questionData.sortItems || []));
                 formData.append("difficulty", questionData.difficulty);
                 formData.append("explanationHeading", questionData.explanationHeading);

@@ -53,7 +53,20 @@ const NewsletterFooter = () => {
       {/* Bottom Info */}
       <div className="footer-contact">
         <div><strong>▶ Phone / WhatsApp</strong><br />+91 88912 27455</div>
+<<<<<<< Updated upstream
         <div><strong>▶ Email</strong><br />info@davidacademy.in</div>
+=======
+        <a
+          href="mailto:info@davidacademy.in"
+          style={{ textDecoration: "none", color: "inherit" }}
+        >
+          <div>
+            <strong>▶ Email</strong><br />
+            info@davidacademy.in
+          </div>
+        </a>
+
+>>>>>>> Stashed changes
         <div><strong>▶ Working Hours</strong><br />Mon – Sat 9.00 AM – 6.00 PM, Sunday : Closed</div>
       </div>
 
