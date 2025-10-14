@@ -5,7 +5,7 @@ import { useNavigate } from "react-router-dom";
 import { FaRegCalendarAlt } from "react-icons/fa";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchRecordedClasses, deleteRecordedClass } from "../../features/recorded classes/recordedClassSlice";
-
+const baseUrl = process.env.BASE_URL;
 const CourseManagement = () => {
     const dispatch = useDispatch();
     const navigate = useNavigate();
@@ -97,7 +97,7 @@ const CourseManagement = () => {
                         <div key={cls.r_id} className="class-card">
                             <div className="card-thumbnail">
                                 <img
-                                    src={`${process.env.BASE_URL}/${cls.r_thumbnail}`}
+                                    src={`${baseUrl}/${cls.r_thumbnail}`}
                                     alt={cls.r_title}
                                 />
                                 <div className="play-overlay" onClick={() => handlePlay(cls.r_video_url)}>
