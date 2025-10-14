@@ -27,6 +27,7 @@ export const FileProvider = ({ children }) => {
                 formData.append("question", questionData.question);
                 formData.append("exam_type", questionData.exam_type);
                 formData.append("difficulty", questionData.difficulty);
+                formData.append("tabs", JSON.stringify(questionData.tabs || []));
                 formData.append("instructions", questionData.instruction);
                 formData.append("explanationHeading", questionData.explanationHeading);
                 formData.append("explanationText", questionData.explanationText);
@@ -79,6 +80,7 @@ export const FileProvider = ({ children }) => {
                 formData.append("courseId", questionData.courseId);
                 formData.append("exam_type", questionData.exam_type);
                 formData.append("question", questionData.question);
+                formData.append("tabs", JSON.stringify(questionData.tabs || []));
                 formData.append("sortItems", JSON.stringify(questionData.sortItems || []));
                 formData.append("difficulty", questionData.difficulty);
                 formData.append("explanationHeading", questionData.explanationHeading);

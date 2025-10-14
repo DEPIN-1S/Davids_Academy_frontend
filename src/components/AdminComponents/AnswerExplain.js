@@ -412,71 +412,10 @@ const AnswerExplain = () => {
             </Typography>
 
             {/* Question Preview with File Info */}
-            {previousQuestionData.question && (
-                <Card sx={{ mb: 3, bgcolor: 'grey.50' }}>
-                    <CardContent>
-                        <Typography variant="h6" gutterBottom color="primary">
-                            📝 Question Preview ({previousQuestionData.questionType || 'MCQ'})
-                        </Typography>
-                        <Typography variant="body1" paragraph>
-                            <strong>Q:</strong> {previousQuestionData.question}
-                        </Typography>
-
-
-                        {/* Display Options */}
-                        {previousQuestionData.options && previousQuestionData.options.length > 0 && (
-                            <Box mb={2}>
-                                <Typography variant="subtitle2" gutterBottom>
-                                    Answer Options:
-                                </Typography>
-
-                                {previousQuestionData.options.map((option, index) => (
-                                    <Box key={index} ml={1} mb={1}>
-                                        {/* Heading */}
-                                        <Typography variant="body2" fontWeight="bold">
-                                            {String.fromCharCode(65 + index)}) {option.option_heading}
-                                        </Typography>
-
-                                        {/* Values under heading */}
-                                        {option.option_value?.map((val, valIndex) => (
-                                            <Typography
-                                                key={valIndex}
-                                                variant="body2"
-                                                sx={{
-                                                    color: val === previousQuestionData.correctAnswer ? 'success.main' : 'text.secondary',
-                                                    fontWeight: val === previousQuestionData.correctAnswer ? 'bold' : 'normal',
-                                                    ml: 2
-                                                }}
-                                            >
-                                                - {val}
-                                                {val === previousQuestionData.correctAnswer && " ✅ Correct"}
-                                            </Typography>
-                                        ))}
-                                    </Box>
-                                ))}
-                            </Box>
-                        )}
-
-
-                        {/* ✅ Display Previous Question File Info from Context */}
-                        {hasQuestionFile && questionFile && (
-                            <Box sx={{ mt: 2, p: 1, bgcolor: 'primary.light', borderRadius: 1 }}>
-                                <Typography variant="subtitle2" color="primary.contrastText">
-                                    📎 Question Exhibit: {questionFile.name}
-                                </Typography>
-                                <Typography variant="body2" color="primary.contrastText">
-                                    Size: {formatFileSize(questionFile.size)} |
-                                    Type: {questionFile.type} |
-                                    Status: ✅ Available in Context
-                                </Typography>
-                            </Box>
-                        )}
-                    </CardContent>
-                </Card>
-            )}
+           
 
             {/* ✅ Enhanced Context Status Display */}
-            <Card sx={{ mb: 3, bgcolor: 'success.light', color: 'success.contrastText' }}>
+            <Card sx={{ mb: 3, bgcolor: 'success.light', color: '#FFFF' }}>
                 <CardContent>
                     <Typography variant="subtitle2" gutterBottom>
                         🗂️ React Context File Management:

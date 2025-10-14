@@ -14,8 +14,7 @@ function ManageSuccessStories() {
     addSuccessStoryLoading,
     addSuccessStoryError,
     addSuccessStoryResult,
-    getSuccessStoriesLoading,
-    getSuccessStoriesError,
+    
     successStories,
   } = useSelector((state) => state.exam);
 
