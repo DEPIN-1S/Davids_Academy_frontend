@@ -25,7 +25,7 @@ const Hero = () => {
               <p>Positive Reviews</p>
             </div>
             <div className="stat-item">
-              <h2>30+</h2>
+              <h2>5+</h2>
               <p>Course Count</p>
             </div>
             <div className="stat-item">
@@ -33,8 +33,8 @@ const Hero = () => {
               <p>Experienced Mentors</p>
             </div>
             <div className="stat-item">
-              <h2>15+ Countries</h2>
-              <p>Placement Assistance</p>
+              <h2>GCC Opportunities</h2>
+              <p>Seamless Placement Assistance</p>
             </div>
           </div>
 

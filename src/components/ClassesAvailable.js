@@ -18,9 +18,9 @@ const ClassesAvailable = () => {
 
       {/* Main Content */}
       <div className="classes-content">
-        <h2 className="classes-title">Online & Offline Classes Available</h2>
+        <h2 className="classes-title">Interactive Online Sessions</h2>
         <p className="classes-subtitle">
-          On David Academy and prepare for international healthcare exams from anywhere or at our campus.
+          David's academy prepares you for your international exams from anywhere at your convenience.
         </p>
         <Link to="/contact-us" >
           <a href="#join" className="join-link">Join Now →</a>

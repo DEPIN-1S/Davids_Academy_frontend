@@ -9,13 +9,18 @@ import {
     CardContent,
     Chip,
     Alert,
-    Paper
+    Paper,
+    Accordion,
+    AccordionSummary,
+    AccordionDetails
 } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
-import { CloudUpload, Delete, Image, PictureAsPdf, Description, DragIndicator } from '@mui/icons-material';
+import { CloudUpload, Delete, Image, PictureAsPdf, Description, DragIndicator, ExpandMore } from '@mui/icons-material';
 import { useNavigate, useLocation } from 'react-router-dom';
+import { useDispatch } from "react-redux";
+import { deleteTabImage, uploadTabImage } from "../../features/exam/examSlice";
 
 const SortQuestionContent = () => {
     const navigate = useNavigate();
@@ -27,6 +32,7 @@ const SortQuestionContent = () => {
     const exam_type = location.state?.exam_type || "";
     const question_type_id = location.state?.question_type_id || "";
     const [instruction, setInstruction] = useState(existingData.instruction || "");
+
     // Form state
     const [question, setQuestion] = useState(existingData.question || "");
     const [sortItems, setSortItems] = useState(existingData.sortItems || [
@@ -34,9 +40,8 @@ const SortQuestionContent = () => {
     ]);
     const [selectedFile, setSelectedFile] = useState(existingData.exhibit || null);
     const [errors, setErrors] = useState({});
-
     const fileInputRef = useRef(null);
-
+    const dispatch = useDispatch()
 
 
     // Sort item handlers
@@ -89,6 +94,108 @@ const SortQuestionContent = () => {
         }
     };
 
+
+    //tabs section 
+    const [tabs, setTabs] = useState(
+        existingData?.tabs || [{ tabKey: "", tabValue: "" }]
+    );
+
+
+
+    // here tab image is added to backend when user selects image from their local machine at that moment api call is triggered
+    // File upload handler for tab image
+    const handleTabFileUpload = async (index, event) => {
+        const file = event.target.files[0];
+        if (!file) return;
+
+        const allowedTypes = ["image/jpeg", "image/png", "image/gif"];
+        if (!allowedTypes.includes(file.type)) {
+            setErrors((prev) => ({
+                ...prev,
+                [`tabFile_${index}`]: "Only images are allowed",
+            }));
+            return;
+        }
+
+        // Local preview
+        const previewUrl = URL.createObjectURL(file);
+        const newTabs = [...tabs];
+        newTabs[index].previewUrl = previewUrl;
+        setTabs(newTabs);
+
+        try {
+            // Upload immediately
+            const result = await dispatch(uploadTabImage(file)).unwrap();
+            console.log("Upload result:", result);
+
+            // ✅ Store uploaded image URL in `tabImage` key
+            newTabs[index].tabImage = result?.data?.imageUrl || null;
+            setTabs(newTabs);
+        } catch (err) {
+            console.error("Upload failed:", err);
+            setErrors((prev) => ({
+                ...prev,
+                [`tabFile_${index}`]: "Upload failed. Try again.",
+            }));
+            newTabs[index].previewUrl = null;
+            setTabs(newTabs);
+        }
+    };
+
+    // Delete handler
+    const handleDeleteTabImage = async (index) => {
+        const tab = tabs[index];
+        console.log("Inside delete img::");
+
+        if (!tab.tabImage) {
+            // No uploaded image, just remove preview
+            const newTabs = [...tabs];
+            newTabs[index].previewUrl = null;
+            setTabs(newTabs);
+            return;
+        }
+
+        try {
+            console.log("Inside try :::");
+
+            // Extract only filename
+            const fileName = tab.tabImage.split("/").pop();
+            console.log("Sending filename to delete API:", fileName);
+
+            // Call delete API
+            await dispatch(deleteTabImage(fileName)).unwrap();
+
+            const newTabs = [...tabs];
+            newTabs[index].previewUrl = null;
+            newTabs[index].tabImage = null; // ✅ Clear tabImage
+            setTabs(newTabs);
+
+            console.log("Tab image deleted successfully");
+        } catch (error) {
+            console.error("Failed to delete tab image:", error);
+        }
+    };
+
+    // Tab handlers
+    const handleTabChange = (index, field, value) => {
+        const newTabs = [...tabs];
+        newTabs[index][field] = value;
+        setTabs(newTabs);
+        setErrors((prev) => ({ ...prev, tabs: null }));
+    };
+
+    const handleAddTab = () => {
+        setTabs([...tabs, { tabKey: "", tabValue: "" }]);
+    };
+
+    const handleRemoveTab = (index) => {
+        if (tabs.length > 1) {
+            const newTabs = tabs.filter((_, i) => i !== index);
+            setTabs(newTabs);
+        }
+    };
+
+
     // Validation
     const validateForm = () => {
         const newErrors = {};
@@ -136,6 +243,7 @@ const SortQuestionContent = () => {
             })),
             exhibit: selectedFile,
             instruction: instruction.trim(),
+            tabs: tabs.filter((tab) => tab.tabKey.trim() && tab.tabValue.trim()),
             createdAt: existingData.createdAt || new Date().toISOString(),
             updatedAt: new Date().toISOString(),
             questionId: existingData.questionId || `${questionType}_${Date.now()}`,
@@ -225,6 +333,143 @@ const SortQuestionContent = () => {
                 helperText={errors.question}
                 sx={{ mb: 3 }}
             />
+
+            <Accordion defaultExpanded sx={{ mb: 3 }}>
+                <AccordionSummary expandIcon={<ExpandMore />}>
+                    <Typography variant="h6" color="primary">
+                        Question Tabs * ({tabs.length})
+                    </Typography>
+                </AccordionSummary>
+                <AccordionDetails>
+                    {tabs.map((tab, index) => (
+                        <Card key={index} sx={{ mb: 2, p: 2 }}>
+                            <Box
+                                display="flex"
+                                justifyContent="space-between"
+                                alignItems="center"
+                                mb={2}
+                            >
+                                <Typography variant="subtitle1">Tab {index + 1}</Typography>
+                                {tabs.length > 1 && (
+                                    <IconButton
+                                        onClick={() => handleRemoveTab(index)}
+                                        color="error"
+                                        size="small"
+                                    >
+                                        <Delete />
+                                    </IconButton>
+                                )}
+                            </Box>
+
+                            <TextField
+                                fullWidth
+                                label="Tab Key/Title"
+                                value={tab.tabKey}
+                                onChange={(e) =>
+                                    handleTabChange(index, "tabKey", e.target.value)
+                                }
+                                placeholder="e.g., Triage Note, Vital Signs"
+                                sx={{ mb: 2 }}
+                                size="small"
+                            />
+
+                            <TextField
+                                fullWidth
+                                label="Tab Content"
+                                multiline
+                                minRows={3}
+                                value={tab.tabValue}
+                                onChange={(e) =>
+                                    handleTabChange(index, "tabValue", e.target.value)
+                                }
+                                placeholder="Enter the content that will be displayed in this tab..."
+                            />
+
+                            <Box
+                                display="flex"
+                                flexDirection="column"
+                                alignItems="flex-start"
+                                mt={2}
+                            >
+                                <input
+                                    type="file"
+                                    accept="image/*"
+                                    style={{ display: "none" }}
+                                    id={`tab-file-input-${index}`}
+                                    onChange={(e) => handleTabFileUpload(index, e)}
+                                />
+                                <Button
+                                    variant="outlined"
+                                    component="span"
+                                    onClick={() =>
+                                        document.getElementById(`tab-file-input-${index}`).click()
+                                    }
+                                    startIcon={<CloudUpload />}
+                                    size="small"
+                                >
+                                    {tab.previewUrl ? "Change Image" : "Add Image"}
+                                </Button>
+
+                                {/*   {tab.previewUrl && (
+                                                <Box mt={1}>
+                                                    <img
+                                                        src={tab.previewUrl}
+                                                        alt={`Tab ${index} preview`}
+                                                        style={{ maxWidth: "200px", maxHeight: "150px", objectFit: "cover", borderRadius: "4px" }}
+                                                    />
+                                                </Box>
+                                            )} */}
+                                {tab.previewUrl && (
+                                    <Box mt={1} display="flex" alignItems="center" gap={1}>
+                                        <img
+                                            src={tab.previewUrl}
+                                            alt={`Tab ${index} preview`}
+                                            style={{
+                                                maxWidth: "200px",
+                                                maxHeight: "150px",
+                                                objectFit: "cover",
+                                                borderRadius: "4px",
+                                            }}
+                                        />
+                                        <IconButton
+                                            onClick={() => handleDeleteTabImage(index)}
+                                            color="error"
+                                            size="small"
+                                        >
+                                            <Delete />
+                                        </IconButton>
+                                    </Box>
+                                )}
+
+                                {errors[`tabFile_${index}`] && (
+                                    <Typography variant="caption" color="error">
+                                        {errors[`tabFile_${index}`]}
+                                    </Typography>
+                                )}
+                            </Box>
+                        </Card>
+                    ))}
+
+                    <Button
+                        startIcon={<AddIcon />}
+                        onClick={handleAddTab}
+                        variant="outlined"
+                        size="small"
+                    >
+                        Add Tab
+                    </Button>
+
+                    {errors.tabs && (
+                        <Typography
+                            color="error"
+                            variant="caption"
+                            sx={{ display: "block", mt: 1 }}
+                        >
+                            {errors.tabs}
+                        </Typography>
+                    )}
+                </AccordionDetails>
+            </Accordion>
 
 
             <Typography variant="h6" mb={1} color="primary">

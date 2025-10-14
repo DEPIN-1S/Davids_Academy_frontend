@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 import '../styles/Courses.css';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { fetchCourses } from '../features/courses/courseSlice';
 import { useDispatch } from 'react-redux';
 
@@ -25,13 +25,17 @@ const courses = [
 
 
 const Courses = () => {
-
   const dispatch = useDispatch();
   useEffect(() => {
     dispatch(fetchCourses());
     console.log("courses in course management ::::", fetchCourses);
   }, [dispatch]);
 
+
+  const navigate = useNavigate()
+  const navigateToContactUs = () => {
+    navigate('/contact-us')
+  }
 
   return (
     <section id="HomeCourses" className="our-courses">
@@ -48,7 +52,7 @@ const Courses = () => {
             <p className="duration">
               <strong>Duration:</strong> {course.duration}
             </p>
-            <button className="learn-more">Learn More →</button>
+            <button  onClick={navigateToContactUs} className="learn-more">Learn More →</button>
           </div>
         ))}
       </div>

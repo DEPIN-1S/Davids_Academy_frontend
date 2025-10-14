@@ -14,40 +14,41 @@ const features = [
   },
   {
     title: 'Global Placement Assistance',
-    description: 'We support your career goals with placement help in 15+ countries worldwide.',
+    description: 'We support your career goals with placement help in GCC countries, USA and Canada',
   },
   {
     title: 'Proven Student Success',
     description: 'We support your career goals with placement help in 15+ countries worldwide.',
   },
   {
-    title: 'Global Placement Assistance',
-    description: 'We support your career goals with placement help in 15+ countries worldwide.',
+    title: 'Study Abroad Programme',
+    description: 'Our Study Abroad Programme opens global opportunities, offering world-class education, cultural immersion, and career advancement through partnerships with top international universities.',
   },
   {
-    title: 'Proven Student Success',
-    description: 'We support your career goals with placement help in 15+ countries worldwide.',
+    title: 'Documentation service',
+    description: 'We provide complete documentation assistance for licensure and registration in the USA, Canada, Australia, and GCC countries—ensuring a smooth, accurate, and hassle-free process for healthcare professionals pursuing international careers.',
   },
+
 ];
 
 const WhyChoose = () => {
   return (
     <section className="why-choose-section">
-     
+
       <div className="bg-decoration bg-decoration-left">
         <svg viewBox="0 0 600 800" fill="none">
-          <path d="M0 200C80 120 160 80 280 140C400 200 480 280 520 400C480 520 400 600 280 560C160 520 80 440 0 360V200Z" fill="#4A90E2" opacity="0.08"/>
-          <path d="M-100 300C20 220 100 180 220 240C340 300 420 380 460 500C420 620 340 700 220 660C100 620 20 540 -100 460V300Z" fill="#50C878" opacity="0.06"/>
+          <path d="M0 200C80 120 160 80 280 140C400 200 480 280 520 400C480 520 400 600 280 560C160 520 80 440 0 360V200Z" fill="#4A90E2" opacity="0.08" />
+          <path d="M-100 300C20 220 100 180 220 240C340 300 420 380 460 500C420 620 340 700 220 660C100 620 20 540 -100 460V300Z" fill="#50C878" opacity="0.06" />
         </svg>
       </div>
-      
+
       <div className="bg-decoration bg-decoration-right">
         <svg viewBox="0 0 600 800" fill="none">
-          <path d="M600 150C520 70 440 30 320 90C200 150 120 230 80 350C120 470 200 550 320 510C440 470 520 390 600 310V150Z" fill="#4A90E2" opacity="0.08"/>
-          <path d="M700 250C620 170 540 130 420 190C300 250 220 330 180 450C220 570 300 650 420 610C540 570 620 490 700 410V250Z" fill="#50C878" opacity="0.06"/>
+          <path d="M600 150C520 70 440 30 320 90C200 150 120 230 80 350C120 470 200 550 320 510C440 470 520 390 600 310V150Z" fill="#4A90E2" opacity="0.08" />
+          <path d="M700 250C620 170 540 130 420 190C300 250 220 330 180 450C220 570 300 650 420 610C540 570 620 490 700 410V250Z" fill="#50C878" opacity="0.06" />
         </svg>
       </div>
-      
+
       <div className="why-choose-container">
         <div className="why-header">
           <div className="text-block">
@@ -56,9 +57,9 @@ const WhyChoose = () => {
           </div>
           <div className="image-block">
             <div className="image-container">
-           <img src="/images/groupImage.png" alt="Students" />
+              <img src="/images/groupImage.png" alt="Students" />
               {/* Star decoration */}
-           
+
             </div>
           </div>
         </div>

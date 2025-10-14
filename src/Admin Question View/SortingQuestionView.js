@@ -24,6 +24,8 @@ import {
   Paper,
   Divider,
   CircularProgress,
+  Tab,
+  Tabs,
 } from "@mui/material";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 
@@ -32,10 +34,9 @@ function SortingQuestionView() {
   const dispatch = useDispatch();
   const { questionData, loading } = useSelector((state) => state.exam);
   const navigate = useNavigate();
-
   const [steps, setSteps] = useState([]);
   const [showReveal, setShowReveal] = useState(false);
-
+  const [activeTab, setActiveTab] = useState("");
   const question = questionData?.data || {};
   const sortingOptions = question?.sortingoptions || [];
   const mark = questionData?.data?.marks;
@@ -46,7 +47,18 @@ function SortingQuestionView() {
     if (questionId) {
       dispatch(getQuestionData(questionId));
     }
+
   }, [dispatch, questionId]);
+
+  // ✅ Log questionData once it's updated
+  useEffect(() => {
+    if (questionData) {
+      console.log("📦 Full questionData:", questionData);
+      console.log("📝 Question:", questionData?.data?.question);
+      console.log("🪜 Sorting Options:", questionData?.data?.sortingoptions);
+      console.log("📑 Tabs Info:", questionData?.data?.tabsInfo);
+    }
+  }, [questionData]);
 
   useEffect(() => {
     if (sortingOptions.length > 0) {
@@ -69,6 +81,23 @@ function SortingQuestionView() {
       setSteps((prev) => arrayMove(prev, oldIndex, newIndex));
     }
   };
+
+  const tabsInfo = questionData?.data?.tabsInfo || [];
+  const handleTabChange = (_event, newTab) => {
+    setActiveTab(newTab);
+  };
+  console.log("tf:::", tabsInfo);
+
+
+  // set default active tab when tabsInfo loads
+  useEffect(() => {
+    const firstTabKey = tabsInfo?.[0]?.tabKey;
+    if (firstTabKey && !activeTab) {
+      setActiveTab(firstTabKey);
+    }
+  }, [tabsInfo]);
+
+
 
   const handleReveal = () => {
     setShowReveal(true);
@@ -118,6 +147,84 @@ function SortingQuestionView() {
         {question?.question}
       </Typography>
 
+
+      {/* Tabs */}
+      {tabsInfo?.length > 0 && (
+        <>
+          {/* Tab Buttons */}
+          <Box sx={{ display: "flex", justifyContent: "center", mb: 2, px: 1 }}>
+            <Tabs
+              value={activeTab}
+              onChange={handleTabChange}
+              variant="scrollable"
+              scrollButtons="auto"
+              TabIndicatorProps={{ sx: { display: "none" } }}
+              sx={{
+                "& .MuiTab-root": {
+                  borderRadius: "999px",
+                  textTransform: "none",
+                  backgroundColor: "#fff",
+                  border: "1px solid #e6eaef",
+                  marginRight: "8px",
+                  "&.Mui-selected": {
+                    backgroundColor: "#2e3760",
+                    color: "#fff",
+                  },
+                },
+              }}
+            >
+              {tabsInfo.map((tab) => (
+                <Tab
+                  key={tab.id ?? tab.tabKey}
+                  label={tab.tabKey}
+                  value={tab.tabKey}
+                />
+              ))}
+            </Tabs>
+          </Box>
+
+          {/* Tab Content */}
+          <Box
+            sx={{
+              backgroundColor: "#f8f9ff",
+              borderRadius: "10px",
+              py: 3,
+              px: 3,
+              m: 2,
+              minHeight: "120px",
+              textAlign: "center", // ✅ center everything
+            }}
+          >
+            {(() => {
+              const activeTabData = tabsInfo.find((t) => t.tabKey === activeTab);
+              if (!activeTabData) return null;
+
+              return (
+                <>
+                  {activeTabData?.tabImage && (
+                    <img
+                      src={`https://lunarsenterprises.com:6040/${activeTabData.tabImage}`}
+                      alt="tabImage"
+                      style={{
+                        display: "block", // ✅ center image
+                        margin: "0 auto 16px",
+                        width: 300,
+                        maxWidth: "100%", // responsive
+                        borderRadius: 8,
+                      }}
+                    />
+                  )}
+                  <Typography variant="body1" sx={{ color: "#333" }}>
+                    {activeTabData?.tabValue || ""}
+                  </Typography>
+                </>
+              );
+            })()}
+          </Box>
+        </>
+      )}
+
+
       <Box
         sx={{
           maxWidth: "900px",
@@ -130,7 +237,7 @@ function SortingQuestionView() {
       >
 
         {questionData?.data?.instructions &&
-          <Box sx={{  pb: 5, alignItems: "center", justifyContent: "center", textAlign: "center" }} >
+          <Box sx={{ pb: 5, alignItems: "center", justifyContent: "center", textAlign: "center" }} >
             <Typography sx={{ fontWeight: 200 }} ><h4>Question Instruction</h4></Typography>
             <Typography variant="h3" sx={{ fontWeight: 200, fontSize: 18, pt: 2 }}>
               {questionData?.data?.instructions}

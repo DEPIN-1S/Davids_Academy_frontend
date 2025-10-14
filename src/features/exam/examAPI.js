@@ -37,6 +37,7 @@ export const postQuestion = async (questionData) => {
 
     return result; // ✅ return after logging
   } catch (error) {
+
     console.error("❌ API Error:", error);
     throw error;
   }
@@ -76,7 +77,6 @@ export const uploadTabImageApi = async (formData) => {
 export const deleteTabImageApi = async (fileName) => {
   console.log("Filename inside api call ::", fileName); // should log just "1759497132590-771453467.png"
   const token = sessionStorage.getItem("accessToken");
-
   try {
     const response = await fetch(baseUrl + "/exam/tab-image", {
       method: "DELETE", // backend expects DELETE
@@ -651,7 +651,9 @@ export const deleteSuccessStoryApi = async (id) => {
     const token = sessionStorage.getItem("accessToken");
     console.log("id::::", id);
     const response = await fetch(
-      `${baseUrl}/admin/success-story/delete/${id}`,
+      /* `${baseUrl}/admin/success-story/delete/${id}`, */
+      ` ${baseUrl}/admin/success-story/${id}`,
+    
       {
         method: "DELETE",
         headers: {
@@ -663,7 +665,6 @@ export const deleteSuccessStoryApi = async (id) => {
       const errorData = await response.json();
       throw new Error(errorData.message || "Failed to delete success story");
     }
-
     return await response.json();
   } catch (error) {
     throw error;
