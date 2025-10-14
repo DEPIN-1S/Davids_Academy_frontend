@@ -104,7 +104,7 @@ function MultiRadioQuestionView() {
               <Box sx={{ textAlign: "center", py: 2 }}>
                 {activeTabData?.tabImage && (
                   <img
-                    src={`https://lunarsenterprises.com:6040/${activeTabData.tabImage}`}
+                    src={`${process.env.BASE_URL}/${activeTabData.tabImage}`}
                     alt="Tab Image"
                     style={{ maxWidth: "100%", width: 300, borderRadius: 8, marginBottom: 8 }}
                   />

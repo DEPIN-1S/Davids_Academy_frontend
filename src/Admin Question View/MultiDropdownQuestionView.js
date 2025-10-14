@@ -37,8 +37,8 @@ function MultiDropdownQuestionView({ onSubmit }) {
 
     // Initialize dropdown values
     useEffect(() => {
-        console.log("qData",questionData?.data);
-        
+        console.log("qData", questionData?.data);
+
         const rows = questionData?.data?.rows || [];
         const initial = {};
         rows.forEach((row, rIdx) => {
@@ -189,7 +189,7 @@ function MultiDropdownQuestionView({ onSubmit }) {
                                 <>
                                     {activeTabData?.tabImage && (
                                         <img
-                                            src={`https://lunarsenterprises.com:6040/${activeTabData.tabImage}`}
+                                            src={`${process.env.BASE_URL}/${activeTabData.tabImage}`}
                                             alt="Exhibit"
                                             style={{
                                                 display: "block", // center image

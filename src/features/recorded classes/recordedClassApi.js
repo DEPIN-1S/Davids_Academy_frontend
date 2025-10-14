@@ -1,20 +1,21 @@
+const baseUrl = process.env.REACT_APP_API_URL;
 export async function listRecordedClasses(token, page = 1, limit = 10, searchQuery = "") {
-  const response = await fetch(
-    `https://lunarsenterprises.com:6040/davidsacademy/admin/record/list`,
-    {
-      method: "POST",
-      headers: {
-        "Authorization": `Bearer ${token}`,
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ page, limit, searchQuery })  // 👈 correct param
-    }
-  );
+    const response = await fetch(
+        { baseUrl }`/admin/record/list`,
+        {
+            method: "POST",
+            headers: {
+                "Authorization": `Bearer ${token}`,
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ page, limit, searchQuery })  // 👈 correct param
+        }
+    );
 
-  if (!response.ok) {
-    throw new Error("Failed to fetch recorded classes");
-  }
-  return await response.json();
+    if (!response.ok) {
+        throw new Error("Failed to fetch recorded classes");
+    }
+    return await response.json();
 }
 
 
@@ -23,13 +24,12 @@ export async function listRecordedClasses(token, page = 1, limit = 10, searchQue
 //Delete recorded class
 export async function DeleteRecordedClass(recording_id) {
     console.log("Inside delete recording api::", recording_id);
-
     const token = sessionStorage.getItem("accessToken");
     console.log("Token found:", token);
 
     try {
         const response = await fetch(
-            `https://lunarsenterprises.com:6040/davidsacademy/admin/record/delete`,
+            { baseUrl } `/admin/record/delete`,
             {
                 method: "POST",
                 headers: {
@@ -61,8 +61,8 @@ export async function DeleteRecordedClass(recording_id) {
 
 
 export async function createRecording(token, recordingData) {
-    console.log("recording data ::: ",recordingData);
-    
+    console.log("recording data ::: ", recordingData);
+
     console.log("Inside add recording API");
     const formData = new FormData();
     Object.entries(recordingData).forEach(([key, value]) => {
@@ -80,7 +80,7 @@ export async function createRecording(token, recordingData) {
         }
     }
 
-    const response = await fetch(`https://lunarsenterprises.com:6040/davidsacademy/admin/record/create`, {
+    const response = await fetch({ baseUrl }` /admin/record/create`, {
         method: "POST",
         headers: {
             "Authorization": `Bearer ${token}`

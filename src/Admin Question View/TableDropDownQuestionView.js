@@ -220,7 +220,7 @@ function TableDropDownQuestionView({ onSubmit }) {
                 <>
                   {activeTabData?.tabImage && (
                     <img
-                      src={`https://lunarsenterprises.com:6040/${activeTabData.tabImage}`}
+                      src={`${process.env.BASE_URL}/${activeTabData.tabImage}`}
                       alt="tabImage"
                       style={{
                         display: "block", // ✅ center image

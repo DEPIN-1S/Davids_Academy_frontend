@@ -1,6 +1,7 @@
+const baseUrl = process.env.REACT_APP_API_URL;
 export async function listStudents(token, page = 1, limit = 10, searchQuery = "", filterStatus = "all") {
   const response = await fetch(
-    `${process.env.REACT_APP_API_URL}/admin/student/list`,
+    `${baseUrl}/admin/student/list`,
     {
       method: "POST",
       headers: {
@@ -36,7 +37,7 @@ export async function fetchStudentTestProgress(studentId) {
   }
 
   const response = await fetch(
-    "https://lunarsenterprises.com:6040/davidsacademy/admin/student/test",
+    `${baseUrl}/admin/student/test`,
     {
       method: "POST",
       headers: {
@@ -61,7 +62,7 @@ export async function fetchStudentTestProgress(studentId) {
 
 export async function editStudent(studentData, token) {
   const response = await fetch(
-    "https://lunarsenterprises.com:6040/davidsacademy/admin/student/edit",
+    `${baseUrl} /admin/student/edit`,
     {
       method: "POST",
       headers: {
@@ -98,7 +99,7 @@ export async function addStudent(studentData, token) {
   console.log("adding in student api");
 
   const response = await fetch(
-    `${process.env.REACT_APP_API_URL}/admin/student/create`,
+    `${baseUrl}/admin/student/create`,
     {
       method: "POST",
       headers: {
@@ -127,7 +128,7 @@ export async function deleteStudent(id, token) {
   console.log("Sending delete body:", { student_id: id });
 
   const response = await fetch(
-    `${process.env.REACT_APP_API_URL}/admin/student/update-status`,
+    `${baseUrl}/admin/student/update-status`,
     {
       method: "POST",
       headers: {
