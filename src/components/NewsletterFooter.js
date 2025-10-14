@@ -10,18 +10,7 @@ const NewsletterFooter = () => {
       {/* Top Grid */}
       <div className="footer-grid">
         {/* Left: Logo & Newsletter */}
-        <div className="footer-left">
-          <img src='/images/logo.png' alt="David's Academy Logo" className="footer-logo" />
-          <h3 className="newsletter-title">Subscribe to Newsletter</h3>
-          <div className="newsletter-form">
-            <input type="email" placeholder="Enter your email" />
-            <button>Subscribe</button>
-          </div>
-          <label className="terms">
-            <input type="checkbox" />
-            I agree to the terms and conditions.
-          </label>
-        </div>
+
 
         {/* Right: Quick Links & Courses */}
         <div className="footer-links-section">
@@ -53,7 +42,16 @@ const NewsletterFooter = () => {
       {/* Bottom Info */}
       <div className="footer-contact">
         <div><strong>▶ Phone / WhatsApp</strong><br />+91 88912 27455</div>
-        <div><strong>▶ Email</strong><br />info@davidacademy.in</div>
+        <a
+          href="mailto:info@davidacademy.in"
+          style={{ textDecoration: "none", color: "inherit" }}
+        >
+          <div>
+            <strong>▶ Email</strong><br />
+            info@davidacademy.in
+          </div>
+        </a>
+
         <div><strong>▶ Working Hours</strong><br />Mon – Sat 9.00 AM – 6.00 PM, Sunday : Closed</div>
       </div>
 

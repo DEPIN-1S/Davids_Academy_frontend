@@ -37,6 +37,7 @@ export const postQuestion = async (questionData) => {
 
     return result; // ✅ return after logging
   } catch (error) {
+    
     console.error("❌ API Error:", error);
     throw error;
   }

@@ -6,6 +6,9 @@ import { fetchStudents, removeStudent } from "../../features/students/studentSli
 import AddStudentForm from "../../components/AdminComponents/AddStudentForm";
 import EditStudentForm from "../../components/AdminComponents/EditStudentForm";
 import { useNavigate } from "react-router-dom";
+import { FaKey } from "react-icons/fa";
+import { resetPassword } from "../../features/students/studentSlice";
+
 
 const StudentManage = () => {
   const dispatch = useDispatch();
@@ -18,6 +21,9 @@ const StudentManage = () => {
   const [showAddForm, setShowAddForm] = useState(false);
   const [selectedStudentId, setSelectedStudentId] = useState(null);
   const [searchQuery, setSearchQuery] = useState("");
+  const [changePasswordModal, setShowPasswordModal] = useState(false)
+
+
 
   // ✅ Fetch students whenever page, search, or filter changes
   useEffect(() => {
@@ -49,6 +55,44 @@ const StudentManage = () => {
 
   // ✅ No frontend filtering anymore, just take list directly from backend
   const students = !loading && Array.isArray(list) ? list : [];
+
+  //change password 
+
+  const [email, setEmail] = useState("");
+  const [newPassword, setNewPassword] = useState("");
+
+
+  const changePassword = (studentEmail) => {
+    setEmail(studentEmail);
+    setShowPasswordModal(true);
+
+  }
+
+  const handleSave = () => {
+
+    if (!email || !newPassword) {
+      alert("Please enter email and new password");
+      return;
+    }
+
+    // ✅ Password length validation
+    if (newPassword.length < 6) {
+      alert("Password must be at least 6 characters long");
+      return;
+    }
+
+    dispatch(resetPassword({ email, newPassword }))
+      .unwrap()
+      .then(() => {
+        alert("✅ Student password updated successfully!");
+        setShowPasswordModal(false);
+        setEmail("");
+        setNewPassword("");
+      })
+      .catch((err) => {
+        alert(`❌ ${err}`);
+      });
+  };
 
   return (
     <>
@@ -137,6 +181,13 @@ const StudentManage = () => {
                     >
                       <FaEdit />
                     </button>
+
+                    <button
+                      className="key-btn"
+                      onClick={() => changePassword(student.email)}
+                    >
+                      <FaKey />
+                    </button>
                   </td>
                 </tr>
               ))
@@ -150,7 +201,7 @@ const StudentManage = () => {
           </tbody>
         </table>
 
-        {/* ✅ Pagination controls */}
+
         {/* ✅ Pagination controls — shown only if there are students */}
         {students.length > 0 && (
           <div className="pagination-controls">
@@ -190,6 +241,38 @@ const StudentManage = () => {
             </div>
           </div>
         )}
+
+        {/* change password modal*/}
+
+        {
+          changePasswordModal && (
+            <div className="modal-overlay" onClick={() => setShowPasswordModal(false)}>
+              <div className="modal-box" onClick={(e) => e.stopPropagation()}>
+                <h2>Change Password</h2>
+                <input
+                  type="email"
+                  placeholder="Enter student email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                />
+                <input
+                  type="password"
+                  placeholder="Enter new password (min 6 characters)"
+                  value={newPassword}
+                  onChange={(e) => setNewPassword(e.target.value)}
+                />
+                <div className="modal-actions">
+                  <button className="cancel-btn" onClick={() => setShowPasswordModal(false)}>
+                    Cancel
+                  </button>
+                  <button className="save-btn" onClick={handleSave}>
+                    Save
+                  </button>
+                </div>
+              </div>
+            </div>
+          )
+        }
 
         {/* Add Student Modal */}
         {showAddForm && (

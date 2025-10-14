@@ -149,3 +149,36 @@ export async function deleteStudent(id, token) {
 }
 
 
+//reset password api
+export async function resetStudentPassword(email, newPassword) {
+  const token = sessionStorage.getItem("accessToken");
+  console.log("reset studen password ::");
+  console.log(email);
+  if (!token) throw new Error("No access token found");
+  const response = await fetch(
+    `${process.env.REACT_APP_API_URL}/admin/student/reset-password`,
+    {
+    
+      
+      method: "POST",
+      headers: {
+        "Authorization": `Bearer ${token}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        email,
+        newPassword,
+      }),
+    }
+  );
+ console.log("inside trigger");
+ 
+  const data = await response.json();
+  console.log("Reset Password API Response:", data);
+
+  if (!response.ok || data.result === false) {
+    throw new Error(data.message || "Failed to reset password");
+  }
+
+  return data;
+}
