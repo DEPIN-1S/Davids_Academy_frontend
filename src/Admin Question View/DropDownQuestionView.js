@@ -178,7 +178,7 @@ const DropdownQuestionComponent = () => {
           <>
             {tabsInfo.find((t) => t.tabKey === activeTab)?.tabImage && (
               <img
-                src={`https://lunarsenterprises.com:6040/${tabsInfo.find((t) => t.tabKey === activeTab)?.tabImage}`}
+                src={`${process.env.BASE_URL}/${tabsInfo.find((t) => t.tabKey === activeTab)?.tabImage}`}
                 alt="Exhibit"
                 style={{
                   width: 300,
@@ -186,6 +186,7 @@ const DropdownQuestionComponent = () => {
                   marginBottom: "1rem",
                 }}
               />
+
             )}
             <Typography variant="body1">
               {tabsInfo.find((t) => t.tabKey === activeTab)?.tabValue}

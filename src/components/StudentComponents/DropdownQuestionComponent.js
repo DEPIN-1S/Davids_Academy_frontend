@@ -79,9 +79,8 @@ const DropdownQuestionComponent = ({ question, onSubmit }) => {
     const userAnswerStr = dropdownquestiontext
       .map((dt) => {
         const dropdownId = dt.id;
-        return `${dt.dropdownField || "Option"}: ${
-          dropdownValues[dropdownId] || "Not selected"
-        }`;
+        return `${dt.dropdownField || "Option"}: ${dropdownValues[dropdownId] || "Not selected"
+          }`;
       })
       .join(", ");
 
@@ -261,12 +260,12 @@ const DropdownQuestionComponent = ({ question, onSubmit }) => {
                 src={
                   tabsInfo[activeTab].tabImage.startsWith("http")
                     ? tabsInfo[activeTab].tabImage
-                    : `${"https://lunarsenterprises.com:6040"}${
-                        tabsInfo[activeTab].tabImage
-                      }`
+                    : `${process.env.BASE_URL}}${
+                tabsInfo[activeTab].tabImage
+              }`
                 }
-                alt="tab"
-                style={{ maxWidth: "100%", borderRadius: 8 }}
+              alt="tab"
+              style={{ maxWidth: "100%", borderRadius: 8 }}
               />
             </Box>
           )}

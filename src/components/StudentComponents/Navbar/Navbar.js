@@ -109,7 +109,7 @@ const NavBar = () => {
       routeConfig[path] || {
         title: "Question Bank",
         subtitle:
-          "Lorem Ipsum is simply dummy text of the printing and typesetting industry.",
+          "Comprehensive practice questions to enhance your knowledge and exam readiness.",
         // icon: <FaThLarge />
       }
     );
