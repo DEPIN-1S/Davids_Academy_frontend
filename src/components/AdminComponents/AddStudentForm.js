@@ -151,7 +151,8 @@ const AddStudentForm = ({ onSuccess, onClose }) => {   // ✅ accept callbacks
                     borderRadius: { xs: 2, sm: 3 },
                     boxShadow: '0 4px 20px rgba(0,0,0,0.08)',
                     border: '1px solid',
-                    borderColor: 'grey.200'
+                    borderColor: 'grey.200',
+                 
                 }}
             >
                 <CardContent sx={{ p: { xs: 3, sm: 4 } }}>

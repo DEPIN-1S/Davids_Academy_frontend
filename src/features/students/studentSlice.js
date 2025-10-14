@@ -1,5 +1,5 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import { editStudent, listStudents } from "../../features/students/studentApi";
+import { editStudent, listStudents, resetStudentPassword } from "../../features/students/studentApi";
 import { addStudent } from '../../features/students/studentApi'
 import { deleteStudent } from "../../features/students/studentApi";
 import { fetchStudentTestProgress } from "../../features/students/studentApi"
@@ -62,6 +62,8 @@ export const createStudent = createAsyncThunk(
 export const removeStudent = createAsyncThunk(
   "students/removeStudent",
   async (studentId, { rejectWithValue }) => {
+
+
     try {
       const token = sessionStorage.getItem("accessToken");
       const data = await deleteStudent(studentId, token);
@@ -81,6 +83,7 @@ export const removeStudent = createAsyncThunk(
 export const updateStudent = createAsyncThunk(
   "students/updateStudent",
   async (studentData, { rejectWithValue }) => {
+
     try {
       const token = sessionStorage.getItem("accessToken");
       if (!token) return rejectWithValue("No access token found");
@@ -96,17 +99,37 @@ export const updateStudent = createAsyncThunk(
   }
 );
 
+//reset password
+export const resetPassword = createAsyncThunk(
+  "students/resetPassword",
+  async ({ email, newPassword }, { rejectWithValue }) => {
+    console.log("Inside student pass");
+    console.log(email);
+
+    try {
+      const data = await resetStudentPassword(email, newPassword);
+      return data;
+    } catch (error) {
+      return rejectWithValue(error.message);
+    }
+  }
+);
+
 
 const studentSlice = createSlice({
   name: "students",
   initialState: {
-    tests: [], 
+    tests: [],
     list: [],
     loading: false,
     error: null,
     totalPages: 1,
     currentPage: 1,
     total: 0,
+
+    resetLoading: false,
+    resetSuccess: false,
+    resetError: null,
   },
   reducers: {},
   extraReducers: (builder) => {
@@ -142,32 +165,48 @@ const studentSlice = createSlice({
         state.error = action.payload;
       })
 
-    .addCase(removeStudent.fulfilled, (state, action) => {
-      state.list = state.list.filter(
-        (student) => student.id !== action.payload
-      );
-    })
+      .addCase(removeStudent.fulfilled, (state, action) => {
+        state.list = state.list.filter(
+          (student) => student.id !== action.payload
+        );
+      })
 
 
-    .addCase(updateStudent.pending, (state) => {
-      state.loading = true;
-      state.error = null;
-    })
-    .addCase(updateStudent.fulfilled, (state, action) => {
-      state.loading = false;
-      const updated = action.payload;
-      if (updated) {
-        const index = state.list.findIndex((s) => s.id === updated.id);
-        if (index !== -1) {
-          state.list[index] = { ...state.list[index], ...updated };
+      .addCase(updateStudent.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(updateStudent.fulfilled, (state, action) => {
+        state.loading = false;
+        const updated = action.payload;
+        if (updated) {
+          const index = state.list.findIndex((s) => s.id === updated.id);
+          if (index !== -1) {
+            state.list[index] = { ...state.list[index], ...updated };
+          }
         }
-      }
-    })
-    .addCase(updateStudent.rejected, (state, action) => {
-      state.loading = false;
-      state.error = action.payload;
-    })
-},
+      })
+      .addCase(updateStudent.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+      })
+
+
+      //reset password
+      .addCase(resetPassword.pending, (state) => {
+        state.resetLoading = true;
+        state.resetSuccess = false;
+        state.resetError = null;
+      })
+      .addCase(resetPassword.fulfilled, (state) => {
+        state.resetLoading = false;
+        state.resetSuccess = true;
+      })
+      .addCase(resetPassword.rejected, (state, action) => {
+        state.resetLoading = false;
+        state.resetError = action.payload;
+      })
+  },
 });
 
 export default studentSlice.reducer;

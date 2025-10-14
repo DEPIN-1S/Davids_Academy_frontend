@@ -153,9 +153,12 @@ const MetaInfoComponent = () => {
             const completeQuestionData = constructQuestionFormData();
             // ✅ Create FormData using Context
             const completeFormData = createCompleteFormData(completeQuestionData);
-            console.log('🚀 Submitting with Context FormData (multipart/form-data)');
-            console.log('📦 FormData created from Context::::', completeQuestionData);
-            console.log("📁 Adding files inside createCompleteFormData:");
+            /*             console.log('🚀 Submitting with Context FormData (multipart/form-data)');
+                        console.log('📦 FormData created from Context::::', completeQuestionData);
+                        console.log("📁 Adding files inside createCompleteFormData:"); */
+            console.log("Question type in final submission for formdata :: ", completeFormData.exam_type);
+            console.log("Does exam_type exist? ", completeFormData.has('exam_type'));
+            console.log("Value of exam_type: ", completeFormData.get('exam_type'));
             console.log("📦Final FormData entries:");
             for (let [key, value] of completeFormData.entries()) {
                 console.log(key, value);
@@ -212,6 +215,7 @@ const MetaInfoComponent = () => {
         exam_type: receivedQuestionData.exam_type,
         instruction: receivedQuestionData.instruction || "",
         difficulty: form.difficulty,
+        tabs: receivedQuestionData.tabs || [],
         explanationHeading: receivedQuestionData.explanationHeading || "",
         explanationText: receivedQuestionData.explanationText || "",
         info: receivedQuestionData.additionalInfo || "",
@@ -266,6 +270,7 @@ const MetaInfoComponent = () => {
         exam_type: receivedQuestionData.exam_type,
         question: receivedQuestionData.question || "",
         sortItems: receivedQuestionData.sortitems || [],
+        tabs: receivedQuestionData.tabs || [],
         instruction: receivedQuestionData.instruction || "",
         difficulty: form.difficulty || "",
         explanationHeading: receivedQuestionData.explanationHeading || "",
@@ -475,6 +480,7 @@ const MetaInfoComponent = () => {
         question: receivedQuestionData.question || "",
         exam_type: receivedQuestionData.exam_type,
         exhibit: null,
+        tabs: receivedQuestionData.tabs || [],
         difficulty: form.difficulty,
         instructions: receivedQuestionData.instruction || "",
         explanationHeading: receivedQuestionData.explanationHeading || "",
@@ -532,6 +538,7 @@ const MetaInfoComponent = () => {
         question: receivedQuestionData.question || "",
         instructions: receivedQuestionData.instruction || "",
         sortItems: receivedQuestionData.sortitems || [],
+        tabs: receivedQuestionData.tabs || [],
         difficulty: form.difficulty || "",
         explanationHeading: receivedQuestionData.explanationHeading || "",
         explanationText: receivedQuestionData.explanationText || "",

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Box, Typography, Radio, RadioGroup, FormControlLabel, Button, } from '@mui/material';
+import { Box, Typography, Radio, RadioGroup, FormControlLabel, Button, Tab, Tabs, } from '@mui/material';
 import { getQuestionData } from "../features/exam/examSlice"
 import '../styles/DashboardStyles/RadioButtonQuestionComponent.css';
 import { useNavigate, useParams } from 'react-router-dom';
@@ -30,6 +30,24 @@ function McqQuestionView() {
   const difficulty = questionData?.data?.difficulty || "";
   const question_type = questionData?.data?.question_type || "";
   const mcqoptions = questionData?.data?.mcqoptions || [];
+  const [activeTab, setActiveTab] = useState("");
+
+  const tabsInfo = questionData?.data?.tabsInfo || [];
+  const handleTabChange = (_event, newTab) => {
+    setActiveTab(newTab);
+  };
+  console.log("tf:::", tabsInfo);
+
+
+  // set default active tab when tabsInfo loads
+  useEffect(() => {
+    const firstTabKey = tabsInfo?.[0]?.tabKey;
+    if (firstTabKey && !activeTab) {
+      setActiveTab(firstTabKey);
+    }
+  }, [tabsInfo]);
+
+
 
   const handleChange = (event) => {
     setSelectedOption(event.target.value);
@@ -88,6 +106,83 @@ function McqQuestionView() {
               />
             )}
           </Box>
+
+
+          {/* Tabs */}
+          {tabsInfo?.length > 0 && (
+            <>
+              {/* Tab Buttons */}
+              <Box sx={{ display: "flex", justifyContent: "center", mb: 2, px: 1 }}>
+                <Tabs
+                  value={activeTab}
+                  onChange={handleTabChange}
+                  variant="scrollable"
+                  scrollButtons="auto"
+                  TabIndicatorProps={{ sx: { display: "none" } }}
+                  sx={{
+                    "& .MuiTab-root": {
+                      borderRadius: "999px",
+                      textTransform: "none",
+                      backgroundColor: "#fff",
+                      border: "1px solid #e6eaef",
+                      marginRight: "8px",
+                      "&.Mui-selected": {
+                        backgroundColor: "#2e3760",
+                        color: "#fff",
+                      },
+                    },
+                  }}
+                >
+                  {tabsInfo.map((tab) => (
+                    <Tab
+                      key={tab.id ?? tab.tabKey}
+                      label={tab.tabKey}
+                      value={tab.tabKey}
+                    />
+                  ))}
+                </Tabs>
+              </Box>
+
+              {/* Tab Content */}
+              <Box
+                sx={{
+                  backgroundColor: "#f8f9ff",
+                  borderRadius: "10px",
+                  py: 3,
+                  px: 3,
+                  m: 2,
+                  minHeight: "120px",
+                  textAlign: "center", // ✅ center everything
+                }}
+              >
+                {(() => {
+                  const activeTabData = tabsInfo.find((t) => t.tabKey === activeTab);
+                  if (!activeTabData) return null;
+
+                  return (
+                    <>
+                      {activeTabData?.tabImage && (
+                        <img
+                          src={`https://lunarsenterprises.com:6040/${activeTabData.tabImage}`}
+                          alt="tabImage"
+                          style={{
+                            display: "block", // ✅ center image
+                            margin: "0 auto 16px",
+                            width: 300,
+                            maxWidth: "100%", // responsive
+                            borderRadius: 8,
+                          }}
+                        />
+                      )}
+                      <Typography variant="body1" sx={{ color: "#333" }}>
+                        {activeTabData?.tabValue || ""}
+                      </Typography>
+                    </>
+                  );
+                })()}
+              </Box>
+            </>
+          )}
 
           {questionData?.data?.instructions &&
             <Box sx={{ pb: "10px", py: 4, alignItems: "center", justifyContent: "center", textAlign: "center" }} >

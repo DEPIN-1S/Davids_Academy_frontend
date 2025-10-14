@@ -10,18 +10,7 @@ const NewsletterFooter = () => {
       {/* Top Grid */}
       <div className="footer-grid">
         {/* Left: Logo & Newsletter */}
-        <div className="footer-left">
-          <img src='/images/logo.png' alt="David's Academy Logo" className="footer-logo" />
-          <h3 className="newsletter-title">Subscribe to Newsletter</h3>
-          <div className="newsletter-form">
-            <input type="email" placeholder="Enter your email" />
-            <button>Subscribe</button>
-          </div>
-          <label className="terms">
-            <input type="checkbox" />
-            I agree to the terms and conditions.
-          </label>
-        </div>
+
 
         {/* Right: Quick Links & Courses */}
         <div className="footer-links-section">
@@ -44,7 +33,7 @@ const NewsletterFooter = () => {
               <li>DHA – UAE</li>
               <li>HAAD – Abu Dhabi</li>
               <li>NCLEX – RN – USA</li>
-              <li>Crash Courses</li>
+
             </ul>
           </div>
         </div>
@@ -52,10 +41,33 @@ const NewsletterFooter = () => {
 
       {/* Bottom Info */}
       <div className="footer-contact">
-        <div><strong>▶ Phone / WhatsApp</strong><br />+91 88912 27455</div>
-<<<<<<< Updated upstream
-        <div><strong>▶ Email</strong><br />info@davidacademy.in</div>
-=======
+        {/* Phone / WhatsApp */}
+        <div>
+          <strong>
+            ▶
+            <a
+              href="https://wa.me/918891263199"
+              target="_blank"
+              rel="noopener noreferrer"
+              style={{ textDecoration: "none", color: "inherit", paddingLeft:"6px" ,paddingRight:"2px"  }}
+            > 
+              WhatsApp 
+            </a>
+            / 
+            <a
+              href="tel:+918891263199"
+              style={{ textDecoration: "none", color: "inherit" , paddingLeft:"2px" ,paddingRight:"2px" }}
+            >
+              Phone
+            </a>
+          </strong>
+          <br />
+          <a href="tel:+918891263199" style={{ textDecoration: "none", color: "inherit",  }}>
+            +91 8891263199
+          </a>
+        </div>
+
+        {/* Email */}
         <a
           href="mailto:info@davidacademy.in"
           style={{ textDecoration: "none", color: "inherit" }}
@@ -66,9 +78,13 @@ const NewsletterFooter = () => {
           </div>
         </a>
 
->>>>>>> Stashed changes
-        <div><strong>▶ Working Hours</strong><br />Mon – Sat 9.00 AM – 6.00 PM, Sunday : Closed</div>
+        {/* Working Hours */}
+        <div>
+          <strong>▶ Working Hours</strong><br />
+          Mon – Sat 9.00 AM – 6.00 PM, Sunday : Closed
+        </div>
       </div>
+
 
       <hr />
 

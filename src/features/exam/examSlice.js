@@ -281,13 +281,16 @@ export const fetchSuccessStories = createAsyncThunk(
 export const deleteSuccessStory = createAsyncThunk(
   "exam/deleteSuccessStory",
   async (id, { rejectWithValue }) => {
-    console.log("id in d",id);
-    
     try {
-      const result = await deleteSuccessStoryApi(id);
+      console.log("🆔 ID in thunk:", id);
+
+      const result = await deleteSuccessStoryApi(id);  // ✅ Pass ID to API
+      console.log("✅ Delete success response:", result);
+
       return result;
     } catch (error) {
-      return rejectWithValue(error.message);
+      console.error("❌ Delete failed:", error);
+      return rejectWithValue(error.message || "Failed to delete success story");
     }
   }
 );
