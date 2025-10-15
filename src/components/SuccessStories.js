@@ -19,15 +19,8 @@ const SuccessStories = () => {
     dispatch(fetchSuccessStories());
   }, [dispatch]);
 
-  // Use fetched successStories if available and has imageUrl; fallback to static testimonials
-  const stories = successStories && successStories.length > 0
-    ? successStories
-    : [
-      { imageUrl: 'images/asha.png', quote: 'David Academy’s personalized coaching. I passed my NCLEX in my very first attempt and secured my dream placement in the UK.', name: 'Asha P.', role: 'Nursing in UK' },
-      { imageUrl: 'images/rahul.png', quote: 'Great faculty, structured learning, and excellent placement guidance. I cleared the HAAD exam and got placed in Abu Dhabi.', name: 'Rahul M.', role: 'Nursing, UAE' },
-      { imageUrl: 'images/sneha.png', quote: 'Their SAT prep program was spot on! I improved my score by 200 points and got admission into my first-choice college.', name: 'Sneha R.', role: 'SAT Student' },
-    ];
 
+  const stories = successStories && successStories.length > 0 ? successStories : [];
   console.log("Success Stories Data:", stories);
 
   // Auto-slide effect every 5 seconds

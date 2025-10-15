@@ -1,7 +1,7 @@
 const baseUrl = process.env.REACT_APP_API_URL;
 export async function listRecordedClasses(token, page = 1, limit = 10, searchQuery = "") {
     const response = await fetch(
-        { baseUrl }`/admin/record/list`,
+         baseUrl + `/admin/record/list`,
         {
             method: "POST",
             headers: {

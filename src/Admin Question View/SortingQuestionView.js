@@ -208,7 +208,7 @@ function SortingQuestionView() {
                       style={{
                         display: "block", // ✅ center image
                         margin: "0 auto 16px",
-                        width: 300,
+                        width: 500,
                         maxWidth: "100%", // responsive
                         borderRadius: 8,
                       }}

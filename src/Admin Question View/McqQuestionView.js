@@ -12,7 +12,7 @@ function McqQuestionView() {
   const dispatch = useDispatch();
   const { questionData, loading, error } = useSelector((state) => state.exam);
   console.log("Question id in params", questionId);
-  const exhibit = 'https://via.placeholder.com/600x250.png?text=Exhibit+Image';
+ 
   const navigate = useNavigate();
   useEffect(() => {
     if (questionId) {
@@ -30,6 +30,7 @@ function McqQuestionView() {
   const difficulty = questionData?.data?.difficulty || "";
   const question_type = questionData?.data?.question_type || "";
   const mcqoptions = questionData?.data?.mcqoptions || [];
+  const exhibit = questionData?.data?.exhibit;
   const [activeTab, setActiveTab] = useState("");
 
   const tabsInfo = questionData?.data?.tabsInfo || [];
@@ -99,8 +100,9 @@ function McqQuestionView() {
           <Box className="exhibit-img" >
             {questionData?.data?.exhibit && (
               <img
-                width={500}
-                src={`${process.env.BASE_URL}/${questionData.data.exhibit}`}
+                width={400}
+                 src={`https://lunarsenterprises.com:6040/${exhibit}`}
+              
                 alt="Exhibit"
                 style={{ maxWidth: '100%', marginBottom: '1rem', borderRadius: 8 }}
               />
@@ -168,7 +170,7 @@ function McqQuestionView() {
                           style={{
                             display: "block", // ✅ center image
                             margin: "0 auto 16px",
-                            width: 300,
+                            width: 500,
                             maxWidth: "100%", // responsive
                             borderRadius: 8,
                           }}
