@@ -193,7 +193,7 @@ const DropdownQuestionComponent = () => {
               />
 
             )}
-            <Typography variant="body1">
+            <Typography sx={{ textAlign: 'left' }} variant="body1">
               {tabsInfo.find((t) => t.tabKey === activeTab)?.tabValue}
             </Typography>
           </>

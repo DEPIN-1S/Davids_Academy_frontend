@@ -158,7 +158,7 @@ function SentenceHighlightQuestionView() {
                   }}
                 />
               )}
-              <Typography variant="body1">{currentTab.tabValue}</Typography>
+              <Typography  sx={{ textAlign: 'left' }} variant="body1">{currentTab.tabValue}</Typography>
             </>
           );
         })()}

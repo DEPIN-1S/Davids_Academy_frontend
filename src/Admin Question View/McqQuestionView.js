@@ -176,7 +176,7 @@ function McqQuestionView() {
                           }}
                         />
                       )}
-                      <Typography variant="body1" sx={{ color: "#333" }}>
+                      <Typography  variant="body1" sx={{ color: "#333", textAlign: 'left' }}>
                         {activeTabData?.tabValue || ""}
                       </Typography>
                     </>

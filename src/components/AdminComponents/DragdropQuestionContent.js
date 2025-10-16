@@ -334,7 +334,7 @@ const DragdropQuestionContent = () => {
         const hasValidQuestion = question.trim() !== "";
         const hasValidContent = dragDropContent.trim() !== "";
         const hasValidTabs = tabs.some(tab => tab.tabKey.trim() && tab.tabValue.trim());
-        const hasValidInstruction = instruction.trim() !== ""
+
         // ✅ Require ALL sections to be valid
         const hasValidSections = dragAndDrop.every(section =>
             section.option_heading.trim() &&
@@ -342,7 +342,7 @@ const DragdropQuestionContent = () => {
             section.option_value.some(val => val.trim())
         );
 
-        return hasValidQuestion && hasValidContent && hasValidTabs && hasValidSections && hasValidInstruction;
+        return hasValidQuestion && hasValidContent && hasValidTabs && hasValidSections 
     };
 
 

@@ -204,9 +204,7 @@ const SortQuestionContent = () => {
             newErrors.question = 'Question is required';
         }
 
-        if (!instruction.trim()) {
-            newErrors.instruction = 'Instruction is required'; // ✅ added validation
-        }
+       
 
         const validSortItems = sortItems.filter(item => item.sortItem.trim());
         if (validSortItems.length < 2) {
@@ -282,9 +280,9 @@ const SortQuestionContent = () => {
 
     const isFormValid = () => {
         const hasValidQuestion = question.trim() !== "";
-        const hasValidInstruction = instruction.trim() !== ""; // ✅ added
+   
         const hasValidSortItems = sortItems.filter(item => item.sortItem.trim()).length >= 2;
-        return hasValidQuestion && hasValidInstruction && hasValidSortItems;
+        return hasValidQuestion  && hasValidSortItems;
     };
 
 

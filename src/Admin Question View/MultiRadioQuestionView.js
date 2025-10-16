@@ -109,7 +109,7 @@ function MultiRadioQuestionView() {
                     style={{ maxWidth: "100%", width: 500, borderRadius: 8, marginBottom: 8 }}
                   />
                 )}
-                <Typography>{activeTabData?.tabValue}</Typography>
+                <Typography  sx={{ textAlign: 'left' }} >{activeTabData?.tabValue}</Typography>
               </Box>
             );
           })()}

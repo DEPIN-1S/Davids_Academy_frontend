@@ -87,7 +87,7 @@ const DragDropQuestionView = () => {
             )}
           </>
         )}
-        <Typography variant="body1">
+        <Typography sx={{ color: "#333", textAlign: 'left' }} variant="body1">
           {tabsInfo.find((t) => t.tabKey === activeTab)?.tabValue}
         </Typography>
       </div>

@@ -200,7 +200,7 @@ function MultiDropdownQuestionView({ onSubmit }) {
                                             }}
                                         />
                                     )}
-                                    <Typography variant="body1" sx={{ color: "#333" }}>
+                                    <Typography variant="body1" sx={{textAlign: 'left', color: "#333" }}>
                                         {activeTabData?.tabValue || ""}
                                     </Typography>
                                 </>
