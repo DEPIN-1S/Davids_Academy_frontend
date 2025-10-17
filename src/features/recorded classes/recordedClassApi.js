@@ -17,10 +17,6 @@ export async function listRecordedClasses(token, page = 1, limit = 10, searchQue
     }
     return await response.json();
 }
-
-
-
-
 //Delete recorded class
 export async function DeleteRecordedClass(recording_id) {
     console.log("Inside delete recording api::", recording_id);
@@ -29,7 +25,7 @@ export async function DeleteRecordedClass(recording_id) {
 
     try {
         const response = await fetch(
-            { baseUrl } `/admin/record/delete`,
+            baseUrl + `/admin/record/delete`,
             {
                 method: "POST",
                 headers: {
