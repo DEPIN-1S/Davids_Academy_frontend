@@ -133,7 +133,7 @@ function TableHighlightQuestionView({ onSubmit }) {
                 {questionText}
             </Typography>
 
-          
+
 
             {/* Tabs */}
             {tabsInfo?.length > 0 && (
@@ -177,9 +177,31 @@ function TableHighlightQuestionView({ onSubmit }) {
                             minHeight: "100px",
                         }}
                     >
-                        <Typography variant="body1" sx={{ color: "#333" }}>
-                            {tabsInfo.find((t) => t.tabKey === activeTab)?.tabValue || ""}
-                        </Typography>
+                        {(() => {
+                            const activeTabData = tabsInfo.find((t) => t.tabKey === activeTab);
+                            if (!activeTabData) return null;
+
+                            return (
+                                <>
+                                    {activeTabData?.tabImage && (
+                                        <img
+                                            src={`https://lunarsenterprises.com:6040/${activeTabData.tabImage}`}
+                                            alt="tabImage"
+                                            style={{
+                                                display: "block", // ✅ center image
+                                                margin: "0 auto 16px",
+                                                width: 600,
+                                                maxWidth: "100%", // responsive
+                                                borderRadius: 8,
+                                            }}
+                                        />
+                                    )}
+                                    <Typography variant="body1" sx={{ color: "#333", textAlign: 'left'}}>
+                                        {activeTabData?.tabValue || ""}
+                                    </Typography>
+                                </>
+                            );
+                        })()}
                     </Box>
                 </>
             )}

@@ -189,18 +189,18 @@ function MultiDropdownQuestionView({ onSubmit }) {
                                 <>
                                     {activeTabData?.tabImage && (
                                         <img
-                                            src={`${process.env.BASE_URL}/${activeTabData.tabImage}`}
+                                            src={`https://lunarsenterprises.com:6040/${activeTabData.tabImage}`}
                                             alt="Exhibit"
                                             style={{
                                                 display: "block", // center image
                                                 margin: "0 auto 16px",
-                                                width: 300,
+                                                width: 500,
                                                 maxWidth: "100%",
                                                 borderRadius: 8,
                                             }}
                                         />
                                     )}
-                                    <Typography variant="body1" sx={{ color: "#333" }}>
+                                    <Typography variant="body1" sx={{textAlign: 'left', color: "#333" }}>
                                         {activeTabData?.tabValue || ""}
                                     </Typography>
                                 </>

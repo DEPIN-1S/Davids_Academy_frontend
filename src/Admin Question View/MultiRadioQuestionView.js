@@ -104,12 +104,12 @@ function MultiRadioQuestionView() {
               <Box sx={{ textAlign: "center", py: 2 }}>
                 {activeTabData?.tabImage && (
                   <img
-                    src={`${process.env.BASE_URL}/${activeTabData.tabImage}`}
+                    src={`https://lunarsenterprises.com:6040/${activeTabData.tabImage}`}
                     alt="Tab Image"
-                    style={{ maxWidth: "100%", width: 300, borderRadius: 8, marginBottom: 8 }}
+                    style={{ maxWidth: "100%", width: 500, borderRadius: 8, marginBottom: 8 }}
                   />
                 )}
-                <Typography>{activeTabData?.tabValue}</Typography>
+                <Typography  sx={{ textAlign: 'left' }} >{activeTabData?.tabValue}</Typography>
               </Box>
             );
           })()}

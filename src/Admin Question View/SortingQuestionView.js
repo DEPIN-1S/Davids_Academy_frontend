@@ -208,13 +208,13 @@ function SortingQuestionView() {
                       style={{
                         display: "block", // ✅ center image
                         margin: "0 auto 16px",
-                        width: 300,
+                        width: 500,
                         maxWidth: "100%", // responsive
                         borderRadius: 8,
                       }}
                     />
                   )}
-                  <Typography variant="body1" sx={{ color: "#333" }}>
+                  <Typography   variant="body1" sx={{textAlign: 'left', color: "#333" }}>
                     {activeTabData?.tabValue || ""}
                   </Typography>
                 </>

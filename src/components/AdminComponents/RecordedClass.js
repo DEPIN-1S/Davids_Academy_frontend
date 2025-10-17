@@ -97,7 +97,7 @@ const CourseManagement = () => {
                         <div key={cls.r_id} className="class-card">
                             <div className="card-thumbnail">
                                 <img
-                                    src={`${baseUrl}/${cls.r_thumbnail}`}
+                                    src={`https://lunarsenterprises.com:6040/${cls.r_thumbnail}`}
                                     alt={cls.r_title}
                                 />
                                 <div className="play-overlay" onClick={() => handlePlay(cls.r_video_url)}>

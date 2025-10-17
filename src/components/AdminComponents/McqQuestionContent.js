@@ -136,10 +136,7 @@ const McqQuestionContent = () => {
             newErrors.question = 'Question must be at least 10 characters long';
         }
 
-        // ✅ Instruction validation added
-        if (!instruction.trim()) {
-            newErrors.instruction = 'Instruction is required';
-        }
+     
 
         const validOptions = options.filter(opt => opt.trim() !== "");
         if (validOptions.length < 2) {
@@ -342,7 +339,7 @@ const McqQuestionContent = () => {
     // ✅ FIXED: updated to work with array
     const isFormValid = () => {
         const validOptions = options.filter(opt => opt.trim() !== "");
-        const hasValidInstruction = instruction.trim() !== "";
+        
         return (
             question.trim() !== "" &&
             question.trim().length >= 10 &&

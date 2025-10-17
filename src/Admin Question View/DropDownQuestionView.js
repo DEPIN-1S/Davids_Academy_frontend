@@ -22,6 +22,7 @@ const DropdownQuestionComponent = () => {
   const { questionData } = useSelector((state) => state.exam);
   const { questionId } = useParams();
   const [activeTab, setActiveTab] = useState("");
+
   const [dropdownValues, setDropdownValues] = useState({});
   const navigate = useNavigate();
 
@@ -126,6 +127,8 @@ const DropdownQuestionComponent = () => {
   // Extract question info
   const q = questionData?.data || {};
   const tabsInfo = q.tabsInfo || [];
+  console.log("tab info  ::: ", tabsInfo);
+
 
   return (
     <>
@@ -178,17 +181,19 @@ const DropdownQuestionComponent = () => {
           <>
             {tabsInfo.find((t) => t.tabKey === activeTab)?.tabImage && (
               <img
-                src={`${process.env.BASE_URL}/${tabsInfo.find((t) => t.tabKey === activeTab)?.tabImage}`}
+               /*  src={`${process.env.BASE_URL}/${tabsInfo.find((t) => t.tabKey === activeTab)?.tabImage}`} */
+               src={`https://lunarsenterprises.com:6040/${tabsInfo.find((t) => t.tabKey === activeTab)?.tabImage}`}
+
                 alt="Exhibit"
                 style={{
-                  width: 300,
+                  width: 500,
                   borderRadius: "8px",
                   marginBottom: "1rem",
                 }}
               />
 
             )}
-            <Typography variant="body1">
+            <Typography sx={{ textAlign: 'left' }} variant="body1">
               {tabsInfo.find((t) => t.tabKey === activeTab)?.tabValue}
             </Typography>
           </>
