@@ -17,7 +17,7 @@ const RevealAnswerComponent = ({
 }) => {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('md'));
-
+  console.log('Additional Info Image:', additionalInfoImage)
   return (
     <Box
       sx={{
@@ -72,8 +72,10 @@ const RevealAnswerComponent = ({
         ))}
 
         {/* Placeholder for additional info image */}
+
         {additionalInfoImage && (
-          <Box
+
+          < Box
             component="img"
             src={additionalInfoImage}
             alt="Additional Info"

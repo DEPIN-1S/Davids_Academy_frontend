@@ -76,7 +76,7 @@ const MCQQuestionComponent = ({ question, onSubmit }) => {
     <Box className="radio-container">
       {exhibit && (
         <img
-          src={`${process.env.BASE_URL}` + exhibit}
+          src={`https://lunarsenterprises.com:6040` + exhibit}
           alt="Exhibit"
           style={{ maxWidth: "100%", marginBottom: "1rem", borderRadius: 8 }}
         />
