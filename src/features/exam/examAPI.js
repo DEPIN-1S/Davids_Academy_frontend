@@ -474,6 +474,7 @@ export const fetchTestQuestionData = async (test_id, questionId) => {
 
 // Submit test question (POST based on provided testapis)
 export const submitTestQuestion = async (
+  mode,
   test_id,
   questionId,
   is_correct,
@@ -487,7 +488,7 @@ export const submitTestQuestion = async (
         Authorization: `Bearer ${token}`,
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ test_id, questionId, is_correct, mark }),
+      body: JSON.stringify({ mode, test_id, questionId, is_correct, mark }),
     });
     if (!response.ok) {
       throw new Error("Failed to submit test question");
@@ -653,7 +654,7 @@ export const deleteSuccessStoryApi = async (id) => {
     const response = await fetch(
       /* `${baseUrl}/admin/success-story/delete/${id}`, */
       ` ${baseUrl}/admin/success-story/${id}`,
-    
+
       {
         method: "DELETE",
         headers: {
