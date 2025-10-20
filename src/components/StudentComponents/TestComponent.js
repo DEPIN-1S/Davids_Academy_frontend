@@ -8,7 +8,6 @@ const TestComponent = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const navigate = useNavigate();
-
   const styles = {
     wrapper: {
       padding: "1.5rem",
@@ -50,7 +49,7 @@ const TestComponent = () => {
     },
     tableHeader: {
       display: "grid",
-      gridTemplateColumns: "1fr 2fr 1fr 1.5fr 1fr 1fr 2fr",
+      gridTemplateColumns: "1fr 2fr 1fr 1.5fr 1fr 1fr 1fr 1fr 2fr",
       padding: "0.8rem 1rem",
       backgroundColor: "#2e3760",
       color: "white",
@@ -59,7 +58,7 @@ const TestComponent = () => {
     },
     tableRow: {
       display: "grid",
-      gridTemplateColumns: "1fr 2fr 1fr 1.5fr 1fr 1fr 2fr",
+      gridTemplateColumns: "1fr 2fr 1fr 1.5fr 1fr 1fr 1fr 1fr 2fr",
       padding: "0.8rem 1rem",
       backgroundColor: "#f9f9f9",
       borderBottom: "1px solid #eee",
@@ -106,6 +105,7 @@ const TestComponent = () => {
       // De-duplicate: Group by id, prioritize completed (is_submitted=1), then highest st_score
       const uniqueTests = {};
       rawData.forEach((item) => {
+        console.log("Item:", item);
         const testId = item.id;
         if (!uniqueTests[testId]) {
           uniqueTests[testId] = item;
@@ -137,6 +137,7 @@ const TestComponent = () => {
 
         let action = "";
         let buttonText = "";
+
         if (status === "Completed" || status === "Expired") {
           action = status;
         } else {
@@ -149,14 +150,15 @@ const TestComponent = () => {
           name: item.testTitle || "Untitled Test",
           date: fromDate
             ? fromDate.toLocaleDateString("en-US", {
-                month: "short",
-                day: "numeric",
-                year: "numeric",
-              })
+              month: "short",
+              day: "numeric",
+              year: "numeric",
+            })
             : "N/A",
-          totalQuestions: item.totalQuestions || "N/A",
-          score:
-            item.st_score !== undefined ? item.st_score : item.score || "N/A",
+          totalQuestions: item.totalQuestions,
+          attemptedQuestions: item.submittedQuestions,
+          correctAnswers: item.correctAnswers,
+          wrongAnswers: item.wrongAnswers,
           status,
           action,
           buttonText,
@@ -218,7 +220,9 @@ const TestComponent = () => {
           <span>Test Title</span>
           <span>Date</span>
           <span style={styles.hiddenOnMobile}>Total Questions</span>
-          <span style={styles.hiddenOnMobile}>Score</span>
+          <span style={styles.hiddenOnMobile}> Attempted</span>
+          <span style={styles.hiddenOnMobile}> Correct</span>
+          <span style={styles.hiddenOnMobile}> Wrong</span>
           <span style={styles.hiddenOnMobile}>Status</span>
           <span style={styles.hiddenOnMobile}>Action</span>
         </div>
@@ -234,7 +238,9 @@ const TestComponent = () => {
               <span>{test.name}</span>
               <span>{test.date}</span>
               <span style={styles.hiddenOnMobile}>{test.totalQuestions}</span>
-              <span style={styles.hiddenOnMobile}>{test.score}</span>
+              <span style={styles.hiddenOnMobile}>{test.attemptedQuestions}</span>
+              <span style={styles.hiddenOnMobile}>{test.correctAnswers}</span>
+              <span style={styles.hiddenOnMobile}>{test.wrongAnswers}</span>
               <span style={styles.hiddenOnMobile}>{test.status}</span>
               <span style={styles.hiddenOnMobile}>
                 {test.action ? (
