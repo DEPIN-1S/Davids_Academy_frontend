@@ -216,9 +216,9 @@ const TestComponent = () => {
 
       <div style={styles.table}>
         <div style={styles.tableHeader}>
+          <span>Date</span>
           <span>Test ID</span>
           <span>Test Title</span>
-          <span>Date</span>
           <span style={styles.hiddenOnMobile}>Total Questions</span>
           <span style={styles.hiddenOnMobile}> Attempted</span>
           <span style={styles.hiddenOnMobile}> Correct</span>
@@ -234,9 +234,9 @@ const TestComponent = () => {
         ) : (
           filteredTests.map((test) => (
             <div style={styles.tableRow} key={test.id}>
+              <span>{test.date}</span>
               <span>{test.id}</span>
               <span>{test.name}</span>
-              <span>{test.date}</span>
               <span style={styles.hiddenOnMobile}>{test.totalQuestions}</span>
               <span style={styles.hiddenOnMobile}>{test.attemptedQuestions}</span>
               <span style={styles.hiddenOnMobile}>{test.correctAnswers}</span>
