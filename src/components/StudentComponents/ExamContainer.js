@@ -236,6 +236,7 @@ const ExamContainer = ({ user }) => {
       const currentQuestionId = questionIds[currentIndex];
       const testIdToUse = incomingTestId ?? testId;
       await submitTestQuestion(
+        mode,
         testIdToUse,
         questionId,
         is_correct,

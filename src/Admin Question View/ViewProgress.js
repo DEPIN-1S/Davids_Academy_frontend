@@ -87,8 +87,8 @@ function ViewProgress() {
                         <tbody>
                             <tr>
                                 <td>{qBank.totalQuestions}</td>
-                                <td>{qBank.correct_count}</td>
                                 <td>{qBank.total_attempted}</td>
+                                <td>{qBank.correct_count}</td>
                                 <td>{qBank.wrong_count}</td>
                             </tr>
                         </tbody>
