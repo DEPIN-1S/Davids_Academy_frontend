@@ -99,7 +99,7 @@ const TableMultipleDropdownComponent = ({ question, onSubmit }) => {
   // Loading or no data state
   if (!question || !rows || !rows.length || !headers || !headers.length) {
     return (
-      <Box sx={{ padding: 2, textAlign: "center" }}>
+      <Box sx={{ padding: 2, textAlign: "left" }}>
         <Typography>No table data available</Typography>
       </Box>
     );
@@ -132,7 +132,7 @@ const TableMultipleDropdownComponent = ({ question, onSubmit }) => {
         variant="h6"
         fontWeight={700}
         sx={{
-          textAlign: "center",
+          textAlign: "left",
           color: "#2e3760",
           pt: 3,
           fontSize: { xs: "1rem", md: "1.25rem" },
@@ -146,7 +146,7 @@ const TableMultipleDropdownComponent = ({ question, onSubmit }) => {
       {instructions && (
         <Typography
           sx={{
-            textAlign: "center",
+            textAlign: "left",
             color: "#4b5563",
             mb: 4,
             fontSize: { xs: "0.9rem", md: "1rem" },
@@ -178,7 +178,7 @@ const TableMultipleDropdownComponent = ({ question, onSubmit }) => {
                 minHeight: 42,
                 "& .MuiTabs-flexContainer": {
                   gap: 2,
-                  alignItems: "center",
+                  alignItems: "left",
                 },
                 "& .MuiTab-root": {
                   minHeight: 42,
@@ -253,15 +253,6 @@ const TableMultipleDropdownComponent = ({ question, onSubmit }) => {
                   backgroundColor: "#f1f5f9",
                 }}
               >
-                <TableCell
-                  sx={{
-                    fontWeight: 600,
-                    color: "#475569",
-                    borderBottom: "1px solid #e2e8f0",
-                  }}
-                >
-                  Client
-                </TableCell>
                 {headers.map((h, idx) => (
                   <TableCell
                     key={h + idx}
@@ -318,8 +309,8 @@ const TableMultipleDropdownComponent = ({ question, onSubmit }) => {
                               ? isCorrectAnswer
                                 ? "#e6f4ea"
                                 : isWrongAnswer
-                                ? "#ffecec"
-                                : "white"
+                                  ? "#ffecec"
+                                  : "white"
                               : "white",
                             borderRadius: "12px",
                             border: "1px solid #e5e7eb",
@@ -328,8 +319,8 @@ const TableMultipleDropdownComponent = ({ question, onSubmit }) => {
                                 ? isCorrectAnswer
                                   ? "#1b7a3b"
                                   : isWrongAnswer
-                                  ? "#c0392b"
-                                  : "#475569"
+                                    ? "#c0392b"
+                                    : "#475569"
                                 : "#475569",
                             },
                           }}
@@ -338,7 +329,7 @@ const TableMultipleDropdownComponent = ({ question, onSubmit }) => {
                             <em>Select</em>
                           </MenuItem>
                           {Array.isArray(col.options) &&
-                          col.options.length > 0 ? (
+                            col.options.length > 0 ? (
                             col.options.map((opt, i) => (
                               <MenuItem
                                 key={opt + i}
@@ -413,16 +404,15 @@ const TableMultipleDropdownComponent = ({ question, onSubmit }) => {
                   return (
                     <ListItem key={key} disablePadding sx={{ pl: 3 }}>
                       <ListItemText
-                        primary={`${
-                          headers[col.colIndex] || `Col ${col.colIndex}`
-                        }: ${userVal}`}
+                        primary={`${headers[col.colIndex] || `Col ${col.colIndex}`
+                          }: ${userVal}`}
                         primaryTypographyProps={{
                           sx: {
                             color: isCellCorrect
                               ? "green"
                               : correctVal !== null
-                              ? "red"
-                              : "#374151",
+                                ? "red"
+                                : "#374151",
                             fontWeight: 500,
                           },
                         }}
@@ -459,9 +449,8 @@ const TableMultipleDropdownComponent = ({ question, onSubmit }) => {
                     sx={{ pl: 3 }}
                   >
                     <ListItemText
-                      primary={`${
-                        headers[col.colIndex] || `Col ${col.colIndex}`
-                      }: ${col.answer || "-"}`}
+                      primary={`${headers[col.colIndex] || `Col ${col.colIndex}`
+                        }: ${col.answer || "-"}`}
                       primaryTypographyProps={{
                         sx: {
                           color: col.answer ? "green" : "#374151",
