@@ -23,7 +23,7 @@ import RevealAnswerComponent from "./RevealAnswerComponent";
 const MultiRadioQuestionComponent = ({ question, onSubmit }) => {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
-
+  console.log("MultiRadioQuestionComponent", question);
   // Extract data from question prop
   const {
     id: questionId,
@@ -72,8 +72,7 @@ const MultiRadioQuestionComponent = ({ question, onSubmit }) => {
     const correctAnswerStr = clientfindings
       .map(
         (finding, idx) =>
-          `${finding.client_findings}: ${
-            correctAnswersMap[idx] || "Not available"
+          `${finding.client_findings}: ${correctAnswersMap[idx] || "Not available"
           }`
       )
       .join(", ");
@@ -216,7 +215,7 @@ const MultiRadioQuestionComponent = ({ question, onSubmit }) => {
                   borderTopLeftRadius: "8px",
                 }}
               >
-               {multiradioHeading}
+                {multiradioHeading}
               </TableCell>
               {uniqueAnswers.map((answer, colIdx) => (
                 <TableCell

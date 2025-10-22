@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Box,
   Typography,
@@ -8,6 +8,9 @@ import {
   List,
   ListItem,
   ListItemText,
+  Tabs,
+  Tab,
+
 } from "@mui/material";
 import CheckIcon from "@mui/icons-material/Check";
 import "../../styles/DashboardStyles/RadioButtonQuestionComponent.css";
@@ -22,7 +25,9 @@ const MCQQuestionComponent = ({ question, onSubmit }) => {
     exhibit,
     explanation = [],
     additionalInfo = [],
+    tabsInfo = [],
     marks,
+    instructions
   } = question || {};
 
   const answerArray = Array.isArray(mcqAnswers)
@@ -32,6 +37,16 @@ const MCQQuestionComponent = ({ question, onSubmit }) => {
   const [selectedOptions, setSelectedOptions] = useState([]);
   const [showAnswer, setShowAnswer] = useState(false);
   const [isCorrect, setIsCorrect] = useState(false);
+  const [activeTab, setActiveTab] = useState(() =>
+    tabsInfo && tabsInfo.length ? tabsInfo[0].tabKey : ""
+  );
+  useEffect(() => {
+    if (tabsInfo && tabsInfo.length) setActiveTab(tabsInfo[0].tabKey);
+  }, [tabsInfo]);
+
+  const handleTabChange = (_event, newValue) => {
+    setActiveTab(newValue);
+  };
 
   const handleChange = (event) => {
     const value = event.target.value;
@@ -84,7 +99,101 @@ const MCQQuestionComponent = ({ question, onSubmit }) => {
       <Typography variant="body1" className="question-text" gutterBottom>
         {questionText}
       </Typography>
-
+      {/* Instructions */}
+      {instructions && (
+        <>
+          <Typography variant="h6" align="left" component="h2" sx={{ mb: 1, color: 'text.primary' }}>
+            Instructions
+          </Typography>
+          <Typography
+            sx={{
+              textAlign: 'left',
+              color: 'black',
+              mb: 4,
+              fontSize: { xs: '0.9rem', md: '1rem' },
+            }}
+          >
+            {instructions}
+          </Typography>
+        </>
+      )}
+      {/* Tabs for Contextual Information */}
+      {tabsInfo.length > 0 && (
+        <>
+          <Box
+            sx={{
+              display: "flex",
+              justifyContent: "center",
+              mb: 2,
+              px: 1,
+              position: "relative",
+            }}
+          >
+            <Tabs
+              value={activeTab}
+              onChange={handleTabChange}
+              variant="scrollable"
+              scrollButtons="auto"
+              TabIndicatorProps={{
+                sx: { display: "none" },
+              }}
+              sx={{
+                minHeight: 42,
+                "& .MuiTabs-flexContainer": {
+                  gap: 1,
+                },
+                "& .MuiTab-root": {
+                  minHeight: 42,
+                  minWidth: 110,
+                  borderRadius: "999px",
+                  textTransform: "none",
+                  fontSize: { xs: "0.9rem", md: "1rem" },
+                  fontWeight: 500,
+                  color: "#475569",
+                  border: "1px solid #e6eaef",
+                  padding: { xs: "7px 18px", md: "8px 24px" },
+                  transition: "all 200ms cubic-bezier(0.4, 0, 0.2, 1)",
+                  "&:hover": {
+                    backgroundColor: "#f8fafc",
+                    borderColor: "#e6eaef",
+                  },
+                  "&.Mui-selected": {
+                    color: "#fff",
+                    fontWeight: 600,
+                    backgroundColor: "#2e3760",
+                    border: "1px solid #2e3760",
+                    boxShadow: "0 6px 18px rgba(15,23,42,0.12)",
+                  },
+                },
+              }}
+            >
+              {tabsInfo.map((tab) => (
+                <Tab
+                  label={tab.tabKey}
+                  value={tab.tabKey}
+                  key={tab.id || tab.tabKey}
+                  disableRipple
+                />
+              ))}
+            </Tabs>
+          </Box>
+          <Box
+            sx={{
+              backgroundColor: "#f8f9ff",
+              borderRadius: "10px",
+              py: { xs: 2 },
+              px: { xs: 3 },
+              m: 2,
+              minHeight: "100px",
+            }}
+          >
+            <Typography align="left" variant="body1" sx={{ color: "#333" }}>
+              {tabsInfo.find((tab) => tab.tabKey === activeTab)?.tabValue ||
+                "No content available"}
+            </Typography>
+          </Box>
+        </>
+      )}
       <Box
         className="radio-options"
         display="flex"
