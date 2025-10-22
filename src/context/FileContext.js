@@ -16,6 +16,9 @@ export const FileProvider = ({ children }) => {
     const createCompleteFormData = (questionData) => {
         const formData = new FormData();
 
+        console.log("Question data in file context :", questionData);
+        
+
         console.log("explanation file in file context:::", explanationFile);
         console.log("question file in file context:::", questionFile);
 

@@ -336,6 +336,9 @@ const MetaInfoComponent = () => {
     });
 
 
+    
+    
+
     const getTableDropdownFormData = () => ({
         courseId: receivedQuestionData.cs_id,
         questionType: receivedQuestionData.questionType,
@@ -835,7 +838,7 @@ const MetaInfoComponent = () => {
 
             {/* Heading */}
             <Typography variant="h5" mt={2} mb={1}>
-                Add Tags &  rmation
+                Add Tags & Information
             </Typography>
             <Typography variant="body2" color="textSecondary" mb={3}>
                 Label your {receivedQuestionData.questionType || 'MCQ'} question with relevant categories for better organization and performance insights.
