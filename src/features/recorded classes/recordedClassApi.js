@@ -17,10 +17,6 @@ export async function listRecordedClasses(token, page = 1, limit = 10, searchQue
     }
     return await response.json();
 }
-
-
-
-
 //Delete recorded class
 // Delete recorded class
 export async function DeleteRecordedClass(recording_id) {
