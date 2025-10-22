@@ -89,6 +89,10 @@ const MCQQuestionComponent = ({ question, onSubmit }) => {
 
   return (
     <Box className="radio-container">
+
+      <Typography variant="body1" className="question-text" gutterBottom>
+        {questionText}
+      </Typography>
       {exhibit && (
         <img
           src={`https://lunarsenterprises.com:6040` + exhibit}
@@ -96,9 +100,6 @@ const MCQQuestionComponent = ({ question, onSubmit }) => {
           style={{ maxWidth: "100%", marginBottom: "1rem", borderRadius: 8 }}
         />
       )}
-      <Typography variant="body1" className="question-text" gutterBottom>
-        {questionText}
-      </Typography>
       {/* Instructions */}
       {instructions && (
         <>
