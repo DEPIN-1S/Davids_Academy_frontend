@@ -81,12 +81,8 @@ const DragDropQuestionComponent = ({ question }) => {
           mb: 4,
         }}
       >
-        <Typography sx={{ color: "#666" }}>Mark : {question.marks}</Typography>
         <Typography sx={{ color: "#666" }}>
           Difficulty : {question.difficulty}
-        </Typography>
-        <Typography sx={{ color: "#666" }}>
-          Question Type : {question.question_type}
         </Typography>
       </Box>
 

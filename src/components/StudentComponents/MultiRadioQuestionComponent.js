@@ -23,17 +23,18 @@ import RevealAnswerComponent from "./RevealAnswerComponent";
 const MultiRadioQuestionComponent = ({ question, onSubmit }) => {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
-  console.log("MultiRadioQuestionComponent", question);
-  // Extract data from question prop
+
   const {
     id: questionId,
     question: questionText,
     multiradioHeading,
     tabsInfo = [],
-    clientfindings = [],
+    questionContent = [],
     radioOption = [],
     explanation = [],
     additionalInfo = [],
+    marks,
+    instructions,
   } = question || {};
 
   const [activeTab, setActiveTab] = useState(tabsInfo[0]?.tabKey || "");
@@ -43,58 +44,49 @@ const MultiRadioQuestionComponent = ({ question, onSubmit }) => {
   const [correctAnswer, setCorrectAnswer] = useState("");
   const [isCorrect, setIsCorrect] = useState(false);
 
-  // Handle tab change
   const handleTabChange = (event, newValue) => {
     setActiveTab(newValue);
   };
 
-  // Handle radio selection
   const handleSelect = (findingIndex, selectedValue) => () => {
-    // Prevent changing answers after reveal
     if (showAnswer) return;
     setAnswers((prev) => ({ ...prev, [findingIndex]: selectedValue }));
   };
 
-  // Handle answer submission and reveal
   const handleReveal = () => {
-    // Map correct answers by finding ID
-    const correctAnswersMap = clientfindings.reduce((acc, finding, idx) => {
-      acc[idx] = finding.answer; // Use the 'answer' from clientfindings as correct
+    const correctAnswersMap = questionContent.reduce((acc, finding, idx) => {
+      acc[idx] = finding.answer;
       return acc;
     }, {});
 
-    const userAnswerStr = clientfindings
+    const userAnswerStr = questionContent
       .map(
         (finding, idx) =>
           `${finding.client_findings}: ${answers[idx] || "Not selected"}`
       )
       .join(", ");
-    const correctAnswerStr = clientfindings
+
+    const correctAnswerStr = questionContent
       .map(
         (finding, idx) =>
-          `${finding.client_findings}: ${correctAnswersMap[idx] || "Not available"
-          }`
+          `${finding.client_findings}: ${correctAnswersMap[idx] || "Not available"}`
       )
       .join(", ");
 
-    // Compare user selections with correct answers
-    const correctStatus = clientfindings.every(
+    const correctStatus = questionContent.every(
       (finding, idx) => answers[idx] === correctAnswersMap[idx]
     );
     const mark = correctStatus ? question?.marks || 5 : 0;
 
-    // Call onSubmit from ExamContainer
-    onSubmit(questionId, correctStatus, mark, userAnswerStr);
+    onSubmit?.(questionId, correctStatus, mark, userAnswerStr);
 
-    // Set states for reveal
     setUserAnswer(userAnswerStr);
     setCorrectAnswer(correctAnswerStr);
     setIsCorrect(correctStatus);
     setShowAnswer(true);
   };
 
-  // Loading or no data state
-  if (!question || !clientfindings.length || !radioOption.length) {
+  if (!question) {
     return (
       <Box sx={{ padding: 2, textAlign: "center" }}>
         <Typography>No multi-radio question data available</Typography>
@@ -102,8 +94,8 @@ const MultiRadioQuestionComponent = ({ question, onSubmit }) => {
     );
   }
 
-  // Get unique answers for columns
-  const uniqueAnswers = [...new Set(radioOption.map((opt) => opt.answer))];
+  // Use options for column headers (matches your data shape in the view)
+  const uniqueAnswers = [...new Set(radioOption.map((opt) => opt.options))];
 
   return (
     <Box
@@ -117,7 +109,7 @@ const MultiRadioQuestionComponent = ({ question, onSubmit }) => {
       }}
     >
       {/* Question Text */}
-      <Typography variant="h6" fontWeight={700} textAlign="center" mb={2}>
+      <Typography variant="h6" component="h1" fontWeight={700} textAlign="center" mb={2}>
         {questionText}
       </Typography>
 
@@ -134,18 +126,14 @@ const MultiRadioQuestionComponent = ({ question, onSubmit }) => {
             }}
           >
             <Tabs
-              value={activeTab}
+              value={activeTab || tabsInfo[0]?.tabKey || false}
               onChange={handleTabChange}
               variant="scrollable"
               scrollButtons="auto"
-              TabIndicatorProps={{
-                sx: { display: "none" },
-              }}
+              TabIndicatorProps={{ sx: { display: "none" } }}
               sx={{
                 minHeight: 42,
-                "& .MuiTabs-flexContainer": {
-                  gap: 1,
-                },
+                "& .MuiTabs-flexContainer": { gap: 1 },
                 "& .MuiTab-root": {
                   minHeight: 42,
                   minWidth: 110,
@@ -157,10 +145,7 @@ const MultiRadioQuestionComponent = ({ question, onSubmit }) => {
                   border: "1px solid #e6eaef",
                   padding: { xs: "7px 18px", md: "8px 24px" },
                   transition: "all 200ms cubic-bezier(0.4, 0, 0.2, 1)",
-                  "&:hover": {
-                    backgroundColor: "#f8fafc",
-                    borderColor: "#e6eaef",
-                  },
+                  "&:hover": { backgroundColor: "#f8fafc", borderColor: "#e6eaef" },
                   "&.Mui-selected": {
                     color: "#fff",
                     fontWeight: 600,
@@ -181,6 +166,7 @@ const MultiRadioQuestionComponent = ({ question, onSubmit }) => {
               ))}
             </Tabs>
           </Box>
+
           <Box
             sx={{
               backgroundColor: "#f8f9ff",
@@ -190,7 +176,7 @@ const MultiRadioQuestionComponent = ({ question, onSubmit }) => {
               minHeight: "100px",
             }}
           >
-            <Typography variant="body1" sx={{ color: "#333" }}>
+            <Typography variant="body1" sx={{ color: "#333", textAlign: "left" }}>
               {tabsInfo.find((tab) => tab.tabKey === activeTab)?.tabValue ||
                 "No content available"}
             </Typography>
@@ -198,10 +184,28 @@ const MultiRadioQuestionComponent = ({ question, onSubmit }) => {
         </>
       )}
 
+      {/* Instructions with left-aligned heading */}
+      {!!instructions && (
+        <Box sx={{ pb: 2, py: 3 }}>
+          <Typography variant="h6" component="h2" align="left" sx={{ mb: 1, color: "text.primary" }}>
+            Instructions
+          </Typography>
+          <Typography
+            variant="body1"
+            sx={{
+              textAlign: "left",
+              color: "black",
+              mb: 4,
+              fontSize: { xs: "0.9rem", md: "1rem" },
+            }}
+          >
+            {instructions}
+          </Typography>
+        </Box>
+      )}
+
       {/* Radio Table */}
-      <Box
-        sx={{ maxWidth: "1000px", margin: "0 auto", mb: 4, overflowX: "auto" }}
-      >
+      <Box sx={{ maxWidth: "1000px", margin: "0 auto", mb: 4, overflowX: "auto" }}>
         <Table>
           <TableHead>
             <TableRow>
@@ -238,12 +242,10 @@ const MultiRadioQuestionComponent = ({ question, onSubmit }) => {
             </TableRow>
           </TableHead>
           <TableBody>
-            {clientfindings.map((finding, rowIdx) => (
+            {questionContent.map((finding, rowIdx) => (
               <TableRow
                 key={finding.id || rowIdx}
-                sx={{
-                  backgroundColor: rowIdx % 2 === 0 ? "#f8f9fb" : "#ffffff",
-                }}
+                sx={{ backgroundColor: rowIdx % 2 === 0 ? "#f8f9fb" : "#ffffff" }}
               >
                 <TableCell
                   sx={{
@@ -257,10 +259,7 @@ const MultiRadioQuestionComponent = ({ question, onSubmit }) => {
                 {uniqueAnswers.map((answer, colIdx) => (
                   <TableCell
                     key={colIdx}
-                    sx={{
-                      textAlign: "center",
-                      padding: "16px 24px",
-                    }}
+                    sx={{ textAlign: "center", padding: "16px 24px" }}
                   >
                     <Radio
                       checked={answers[rowIdx] === answer}
@@ -268,11 +267,7 @@ const MultiRadioQuestionComponent = ({ question, onSubmit }) => {
                       disabled={showAnswer}
                       value={answer}
                       name={`finding-${rowIdx}-${colIdx}`}
-                      sx={{
-                        "&.Mui-checked": {
-                          color: "#2F3B6C",
-                        },
-                      }}
+                      sx={{ "&.Mui-checked": { color: "#2F3B6C" } }}
                     />
                   </TableCell>
                 ))}
@@ -293,9 +288,7 @@ const MultiRadioQuestionComponent = ({ question, onSubmit }) => {
             fontWeight: 600,
             padding: "0.6rem 2.5rem",
             borderRadius: "10px",
-            "&:hover": {
-              backgroundColor: "#e0b000",
-            },
+            "&:hover": { backgroundColor: "#e0b000" },
           }}
         >
           Reveal Answer
@@ -305,17 +298,11 @@ const MultiRadioQuestionComponent = ({ question, onSubmit }) => {
       {/* Reveal Section */}
       {showAnswer && (
         <Box sx={{ mt: 4 }}>
-          <Typography
-            variant="subtitle1"
-            fontWeight={600}
-            mt={2}
-            mb={1}
-            color="#2E3760"
-          >
+          <Typography variant="subtitle1" fontWeight={600} mt={2} mb={1} color="#2E3760">
             Your Answer:
           </Typography>
           <List dense>
-            {clientfindings.map((finding, idx) => {
+            {questionContent.map((finding, idx) => {
               const userSelection = answers[idx] || "Not selected";
               const correctSelection = finding.answer;
               const isMatch = userSelection === correctSelection;
@@ -334,16 +321,12 @@ const MultiRadioQuestionComponent = ({ question, onSubmit }) => {
               );
             })}
           </List>
-          <Typography
-            variant="subtitle1"
-            fontWeight={600}
-            mb={1}
-            color="#24a129ff"
-          >
+
+          <Typography variant="subtitle1" fontWeight={600} mb={1} color="#24a129ff">
             Correct Answer:
           </Typography>
           <List dense>
-            {clientfindings.map((finding, idx) => (
+            {questionContent.map((finding, idx) => (
               <ListItem key={idx} disablePadding>
                 <ListItemText
                   primary={`${finding.client_findings}: ${finding.answer}`}
@@ -368,17 +351,12 @@ const MultiRadioQuestionComponent = ({ question, onSubmit }) => {
             {isCorrect ? "✅ Correct!" : "❌ Incorrect"}
           </Typography>
 
-          {/* Common RevealAnswerComponent for explanation and additional info */}
           <RevealAnswerComponent
             questionText={questionText}
             explanationHeading={explanation[0]?.heading || "Explanation"}
-            explanationParagraphs={
-              explanation.map((exp) => exp.explanation) || []
-            }
+            explanationParagraphs={explanation.map((exp) => exp.explanation) || []}
             additionalInfoHeading="Additional Info"
-            additionalInfoParagraphs={
-              additionalInfo.map((info) => info.info) || []
-            }
+            additionalInfoParagraphs={additionalInfo.map((info) => info.info) || []}
             additionalInfoImage={additionalInfo[0]?.image || null}
           />
         </Box>
