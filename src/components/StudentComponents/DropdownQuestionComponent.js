@@ -273,7 +273,7 @@ const DropdownQuestionComponent = ({ question, onSubmit }) => {
                 src={
                   tabsInfo[activeTab].tabImage.startsWith("http")
                     ? tabsInfo[activeTab].tabImage
-                    : `${process.env.BASE_URL}${tabsInfo[activeTab].tabImage}`
+                    : `${'https://lunarsenterprises.com:6040/'}${tabsInfo[activeTab].tabImage}`
                 }
                 alt="tab"
                 style={{
@@ -521,7 +521,12 @@ const DropdownQuestionComponent = ({ question, onSubmit }) => {
             additionalInfoParagraphs={
               (question.additionalInfo || []).map((a) => a.info) || []
             }
-            additionalInfoImage={question.additionalInfo?.[0]?.image || null}
+            additionalInfoImage={
+              question.additionalInfo?.[0]?.image
+                ? `https://lunarsenterprises.com:6040/${question.additionalInfo[0].image}`
+                : null
+            }
+
           />
         </Box>
       )}

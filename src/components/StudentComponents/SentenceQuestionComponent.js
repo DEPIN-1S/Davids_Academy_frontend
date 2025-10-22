@@ -59,10 +59,10 @@ const SentenceQuestionComponent = ({ question, onSubmit }) => {
     const userAnswerStr =
       selectedSentences.length > 0
         ? selectedSentences
-            .map(
-              (id) => highlightOptions.find((o) => o.id === id)?.options || id
-            )
-            .join(", ")
+          .map(
+            (id) => highlightOptions.find((o) => o.id === id)?.options || id
+          )
+          .join(", ")
         : "Not selected";
 
     // Build correct answer ids from correctAnswerStr (e.g., "12" -> indices [0,1])
@@ -200,6 +200,23 @@ const SentenceQuestionComponent = ({ question, onSubmit }) => {
               {tabsInfo[Math.min(activeTab, tabsInfo.length - 1)]?.tabValue ||
                 "No content available"}
             </Typography>
+            {tabsInfo[activeTab]?.tabImage && (
+              <Box sx={{ mt: 2, textAlign: "center" }}>
+                <img
+                  src={
+                    tabsInfo[activeTab].tabImage.startsWith("http")
+                      ? tabsInfo[activeTab].tabImage
+                      : `${'https://lunarsenterprises.com:6040/'}${tabsInfo[activeTab].tabImage}`
+                  }
+                  alt="tab"
+                  style={{
+                    maxWidth: "100%",
+                    borderRadius: 8,
+                    height: "auto",
+                  }}
+                />
+              </Box>
+            )}
           </Box>
         </>
       )}
@@ -360,8 +377,8 @@ const SentenceQuestionComponent = ({ question, onSubmit }) => {
                       "&:hover": showAnswer
                         ? {}
                         : {
-                            backgroundColor: isSelected ? "#d0eef0" : "#f0f0f0",
-                          },
+                          backgroundColor: isSelected ? "#d0eef0" : "#f0f0f0",
+                        },
                     }}
                     role="button"
                     tabIndex={0}
@@ -464,7 +481,12 @@ const SentenceQuestionComponent = ({ question, onSubmit }) => {
             additionalInfoParagraphs={
               additionalInfo.map((info) => info.info) || []
             }
-            additionalInfoImage={additionalInfo[0]?.image || null}
+            additionalInfoImage={
+              question.additionalInfo?.[0]?.image
+                ? `https://lunarsenterprises.com:6040/${question.additionalInfo[0].image}`
+                : null
+            }
+
           />
         </Box>
       )}

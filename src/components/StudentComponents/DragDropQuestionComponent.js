@@ -11,7 +11,7 @@ import {
   Tab,
 } from "@mui/material";
 import RevealAnswerComponent from "./RevealAnswerComponent";
-
+const baseUrl = process.env.BASE_URL;
 const DragDropQuestionComponent = ({ question, onSubmit }) => {
   const {
     id: questionId,
@@ -108,9 +108,7 @@ const DragDropQuestionComponent = ({ question, onSubmit }) => {
         <Typography sx={{ color: "#666", fontSize: { xs: "0.875rem", md: "1rem" } }}>
           Difficulty: {difficulty}
         </Typography>
-        <Typography sx={{ color: "#666", fontSize: { xs: "0.875rem", md: "1rem" } }}>
-          Marks: {marks}
-        </Typography>
+
       </Box>
 
       {/* Question Title */}
@@ -240,7 +238,7 @@ const DragDropQuestionComponent = ({ question, onSubmit }) => {
                   src={
                     tabsInfo[activeTab].tabImage.startsWith("http")
                       ? tabsInfo[activeTab].tabImage
-                      : `${process.env.REACT_APP_API_URL}${tabsInfo[activeTab].tabImage}`
+                      : `${'https://lunarsenterprises.com:6040/'}${tabsInfo[activeTab].tabImage}`
                   }
                   alt={tabsInfo[activeTab].tabKey}
                   style={{
@@ -626,7 +624,12 @@ const DragDropQuestionComponent = ({ question, onSubmit }) => {
             additionalInfoParagraphs={
               additionalInfo.map((info) => info.info) || []
             }
-            additionalInfoImage={additionalInfo[0]?.image || null}
+            additionalInfoImage={
+              question.additionalInfo?.[0]?.image
+                ? `https://lunarsenterprises.com:6040/${question.additionalInfo[0].image}`
+                : null
+            }
+
           />
         </Box>
       )}

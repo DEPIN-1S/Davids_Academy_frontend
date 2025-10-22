@@ -220,6 +220,23 @@ const TableHighlightSelectComponent = ({ question, onSubmit }) => {
             <Typography variant="body1" sx={{ color: "#333" }}>
               {tabsInfo.find((tab) => tab.tabKey === activeTab)?.tabValue || ""}
             </Typography>
+            {tabsInfo[activeTab]?.tabImage && (
+                        <Box sx={{ mt: 2, textAlign: "center" }}>
+                          <img
+                            src={
+                              tabsInfo[activeTab].tabImage.startsWith("http")
+                                ? tabsInfo[activeTab].tabImage
+                                : `${'https://lunarsenterprises.com:6040/'}${tabsInfo[activeTab].tabImage}`
+                            }
+                            alt="tab"
+                            style={{
+                              maxWidth: "100%",
+                              borderRadius: 8,
+                              height: "auto",
+                            }}
+                          />
+                        </Box>
+                      )}
           </Box>
         </>
       )}
@@ -300,20 +317,20 @@ const TableHighlightSelectComponent = ({ question, onSubmit }) => {
                           ? isCorrectAnswer
                             ? "#e6f4ea"
                             : isWrongSelection
-                            ? "#ffecec"
-                            : "white"
+                              ? "#ffecec"
+                              : "white"
                           : isSelected
-                          ? "#e3f2fd"
-                          : "white",
+                            ? "#e3f2fd"
+                            : "white",
                         color: showReveal
                           ? isCorrectAnswer
                             ? "#1b7a3b"
                             : isWrongSelection
-                            ? "#c0392b"
-                            : "#475569"
+                              ? "#c0392b"
+                              : "#475569"
                           : isSelected
-                          ? "#1565c0"
-                          : "#475569",
+                            ? "#1565c0"
+                            : "#475569",
                         fontWeight: isSelected ? 600 : 400,
                         border:
                           isSelected && !showReveal
@@ -324,11 +341,11 @@ const TableHighlightSelectComponent = ({ question, onSubmit }) => {
                         "&:hover": showReveal
                           ? {}
                           : {
-                              backgroundColor: isSelected
-                                ? "#bbdefb"
-                                : "#f5f5f5",
-                              transform: "translateY(-1px)",
-                            },
+                            backgroundColor: isSelected
+                              ? "#bbdefb"
+                              : "#f5f5f5",
+                            transform: "translateY(-1px)",
+                          },
                       }}
                     >
                       {field.rightColumn}
@@ -471,7 +488,12 @@ const TableHighlightSelectComponent = ({ question, onSubmit }) => {
             additionalInfoParagraphs={
               additionalInfo.map((info) => info.info) || []
             }
-            additionalInfoImage={additionalInfo[0]?.image || null}
+            additionalInfoImage={
+              question.additionalInfo?.[0]?.image
+                ? `https://lunarsenterprises.com:6040/${question.additionalInfo[0].image}`
+                : null
+            }
+
           />
         </Box>
       )}

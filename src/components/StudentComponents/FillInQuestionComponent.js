@@ -69,6 +69,7 @@ const FillInQuestionComponent = ({ question, onSubmit }) => {
           </Tabs>
           <Box sx={{ background: '#fff', borderRadius: 2, my: 2, p: 2 }}>
             <Typography variant="body2">{tabs[tabIndex]?.tabValue}</Typography>
+
           </Box>
         </>
       )}
@@ -169,7 +170,12 @@ const FillInQuestionComponent = ({ question, onSubmit }) => {
             explanationParagraphs={explanation.map((exp) => exp.explanation) || []}
             additionalInfoHeading="Additional Info"
             additionalInfoParagraphs={additionalInfo.map((info) => info.info) || []}
-            additionalInfoImage={additionalInfo[0]?.image || null}
+            additionalInfoImage={
+              question.additionalInfo?.[0]?.image
+                ? `https://lunarsenterprises.com:6040/${question.additionalInfo[0].image}`
+                : null
+            }
+
           />
         </Box>
       )}

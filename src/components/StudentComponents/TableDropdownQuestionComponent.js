@@ -229,6 +229,23 @@ const TableDropdownQuestionComponent = ({ question, onSubmit }) => {
               {tabsInfo.find((tab) => tab.tabKey === activeTab)?.tabValue ||
                 "No content available"}
             </Typography>
+            {tabsInfo[activeTab]?.tabImage && (
+              <Box sx={{ mt: 2, textAlign: "center" }}>
+                <img
+                  src={
+                    tabsInfo[activeTab].tabImage.startsWith("http")
+                      ? tabsInfo[activeTab].tabImage
+                      : `${'https://lunarsenterprises.com:6040/'}${tabsInfo[activeTab].tabImage}`
+                  }
+                  alt="tab"
+                  style={{
+                    maxWidth: "100%",
+                    borderRadius: 8,
+                    height: "auto",
+                  }}
+                />
+              </Box>
+            )}
           </Box>
         </>
       )}
@@ -466,7 +483,12 @@ const TableDropdownQuestionComponent = ({ question, onSubmit }) => {
             additionalInfoParagraphs={
               additionalInfo.map((info) => info.info) || []
             }
-            additionalInfoImage={additionalInfo[0]?.image || null}
+            additionalInfoImage={
+              question.additionalInfo?.[0]?.image
+                ? `https://lunarsenterprises.com:6040/${question.additionalInfo[0].image}`
+                : null
+            }
+
           />
         </Box>
       )}
