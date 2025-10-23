@@ -185,7 +185,7 @@ function TableHighlightQuestionView({ onSubmit }) {
                                 <>
                                     {activeTabData?.tabImage && (
                                         <img
-                                            src={`https://lunarsenterprises.com:6040/${activeTabData.tabImage}`}
+                                            src={`https://lunarsenterprises.com:8002/${activeTabData.tabImage}`}
                                             alt="tabImage"
                                             style={{
                                                 display: "block", // ✅ center image

@@ -337,7 +337,6 @@ const MetaInfoComponent = () => {
 
 
     
-    
 
     const getTableDropdownFormData = () => ({
         courseId: receivedQuestionData.cs_id,
@@ -358,6 +357,8 @@ const MetaInfoComponent = () => {
 
     })
 
+
+    
 
     const multiDropDownFormData = () => ({
         courseId: receivedQuestionData.cs_id,
