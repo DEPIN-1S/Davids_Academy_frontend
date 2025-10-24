@@ -203,7 +203,7 @@ function SortingQuestionView() {
                 <>
                   {activeTabData?.tabImage && (
                     <img
-                      src={`https://lunarsenterprises.com:6040/${activeTabData.tabImage}`}
+                      src={`https://lunarsenterprises.com:8002/${activeTabData.tabImage}`}
                       alt="tabImage"
                       style={{
                         display: "block", // ✅ center image
@@ -214,9 +214,13 @@ function SortingQuestionView() {
                       }}
                     />
                   )}
-                  <Typography   variant="body1" sx={{textAlign: 'left', color: "#333" }}>
-                    {activeTabData?.tabValue || ""}
-                  </Typography>
+                  <Typography
+                    sx={{ textAlign: 'left' }}
+                    variant="body1"
+                    dangerouslySetInnerHTML={{
+                      __html: tabsInfo.find((t) => t.tabKey === activeTab)?.tabValue || ''
+                    }}
+                  />
                 </>
               );
             })()}

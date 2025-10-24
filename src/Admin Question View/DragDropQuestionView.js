@@ -80,16 +80,22 @@ const DragDropQuestionView = () => {
           <>
             {tabsInfo.find((t) => t.tabKey === activeTab)?.tabImage && (
               <img
-                src={`https://lunarsenterprises.com:6040/${tabsInfo.find((t) => t.tabKey === activeTab)?.tabImage}`}
+                src={`https://lunarsenterprises.com:8002/${tabsInfo.find((t) => t.tabKey === activeTab)?.tabImage}`}
                 alt="Exhibit"
                 style={{ width: 500, borderRadius: "8px", marginBottom: "1rem" }}
               />
             )}
           </>
         )}
-        <Typography sx={{ color: "#333", textAlign: 'left' }} variant="body1">
-          {tabsInfo.find((t) => t.tabKey === activeTab)?.tabValue}
-        </Typography>
+
+        <Typography
+          sx={{ textAlign: 'left' }}
+          variant="body1"
+          dangerouslySetInnerHTML={{
+            __html: tabsInfo.find((t) => t.tabKey === activeTab)?.tabValue || ''
+          }}
+        />
+        
       </div>
 
       {questionData?.data?.instructions &&

@@ -30,6 +30,8 @@ import { useNavigate, useLocation } from "react-router-dom";
 import { useFileContext } from "../../context/FileContext"; // ✅ Import the Context
 import { useDispatch } from "react-redux";
 import { deleteTabImage, uploadTabImage } from "../../features/exam/examSlice";
+import ReactQuill from 'react-quill-new'; // <-- CHANGE THIS
+import 'react-quill-new/dist/quill.snow.css';
 
 const DropdownQuestionContent = () => {
   const navigate = useNavigate();
@@ -72,6 +74,30 @@ const DropdownQuestionContent = () => {
       setSelectedFile(questionFile);
     }
   }, [questionFile]);
+
+
+
+  // Add this definition near your other constants/modules
+  const tabModules = {
+    toolbar: [
+      ['bold', 'italic', 'underline'], // Basic formatting
+      [{ 'list': 'bullet' }], // Bullet points
+      [{ 'color': [] },],
+
+    ],
+    clipboard: {
+      matchVisual: false, // Important!
+    },
+  };
+
+  const tabFormats = [
+    'bold', 'italic', 'underline',
+    'list', 'bullet',
+    'link',
+    'color',
+  ];
+
+
 
   // here tab image is added to backend when user selects image from their local machine at that moment api call is triggered
 
@@ -308,11 +334,11 @@ const DropdownQuestionContent = () => {
         hasFile: hasQuestionFile,
         fileInfo: selectedFile
           ? {
-              name: selectedFile.name,
-              type: selectedFile.type,
-              size: selectedFile.size,
-              // ✅ No 'file' or 'url' properties to avoid serialization issues
-            }
+            name: selectedFile.name,
+            type: selectedFile.type,
+            size: selectedFile.size,
+            // ✅ No 'file' or 'url' properties to avoid serialization issues
+          }
           : null,
         fromStep: "content",
       },
@@ -473,7 +499,7 @@ const DropdownQuestionContent = () => {
                 size="small"
               />
 
-              <TextField
+              {/* <TextField
                 fullWidth
                 label="Tab Content"
                 multiline
@@ -483,13 +509,30 @@ const DropdownQuestionContent = () => {
                   handleTabChange(index, "tabValue", e.target.value)
                 }
                 placeholder="Enter the content that will be displayed in this tab..."
-              />
+              /> */}
+
+              <Box sx={{ minHeight: '170px', mb: 2 }}> {/* Added marginBottom for spacing */}
+                <Typography variant="caption" sx={{ display: 'block', mb: 0.5 }}>Tab Content</Typography>
+                <ReactQuill
+                  theme="snow"
+                  value={tab.tabValue} // Bind to tab.tabValue
+                  onChange={(content) =>
+                    // Crucial: React-Quill returns the HTML string directly
+                    handleTabChange(index, "tabValue", content)
+                  }
+                  modules={tabModules} // Use the specific modules for tabs
+                  formats={tabFormats}
+                  placeholder="Enter the content that will be displayed in this tab..."
+                  // Setting a fixed height helps prevent layout shifts
+                  style={{ height: '120px', borderBottomLeftRadius: 4, borderBottomRightRadius: 4 }}
+                />
+              </Box>
 
               <Box
                 display="flex"
                 flexDirection="column"
                 alignItems="flex-start"
-                mt={2}
+                mt={5}
               >
                 <input
                   type="file"

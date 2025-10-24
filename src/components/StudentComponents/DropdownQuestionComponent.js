@@ -260,13 +260,18 @@ const DropdownQuestionComponent = ({ question, onSubmit }) => {
             sx={{
               color: "#374151",
               textAlign: "left",
-              whiteSpace: "pre-line",
+              whiteSpace: "pre-line", // Still useful for inline text
               fontSize: { xs: "0.9rem", md: "1rem" },
               lineHeight: 1.6,
+              // Fix Quill <p> spacing and inherit line height
+              '& p': { margin: 0, marginBottom: '0.5em' },
+              '& p:last-child': { marginBottom: 0 },
+              '& *': { lineHeight: 'inherit' },
             }}
-          >
-            {tabsInfo[activeTab]?.tabValue || ""}
-          </Typography>
+            dangerouslySetInnerHTML={{
+              __html: tabsInfo[activeTab]?.tabValue || ''
+            }}
+          />
           {tabsInfo[activeTab]?.tabImage && (
             <Box sx={{ mt: 2, textAlign: "center" }}>
               <img

@@ -189,7 +189,7 @@ function MultiDropdownQuestionView({ onSubmit }) {
                                 <>
                                     {activeTabData?.tabImage && (
                                         <img
-                                            src={`https://lunarsenterprises.com:6040/${activeTabData.tabImage}`}
+                                            src={`https://lunarsenterprises.com:8002/${activeTabData.tabImage}`}
                                             alt="Exhibit"
                                             style={{
                                                 display: "block", // center image
@@ -200,9 +200,20 @@ function MultiDropdownQuestionView({ onSubmit }) {
                                             }}
                                         />
                                     )}
-                                    <Typography variant="body1" sx={{textAlign: 'left', color: "#333" }}>
-                                        {activeTabData?.tabValue || ""}
-                                    </Typography>
+                                    <Typography
+                                        variant="body1"
+                                        sx={{
+                                            textAlign: 'left',
+                                            color: "#333",
+                                            // Prevent default <p> margins from Quill
+                                            '& p': { margin: 0, marginBottom: '0.5em' },
+                                            '& p:last-child': { marginBottom: 0 },
+                                            '& *': { lineHeight: 1.6 },
+                                        }}
+                                        dangerouslySetInnerHTML={{
+                                            __html: activeTabData?.tabValue || ''
+                                        }}
+                                    />
                                 </>
                             );
                         })()}

@@ -185,7 +185,7 @@ function TableHighlightQuestionView({ onSubmit }) {
                                 <>
                                     {activeTabData?.tabImage && (
                                         <img
-                                            src={`https://lunarsenterprises.com:6040/${activeTabData.tabImage}`}
+                                            src={`https://lunarsenterprises.com:8002/${activeTabData.tabImage}`}
                                             alt="tabImage"
                                             style={{
                                                 display: "block", // ✅ center image
@@ -196,9 +196,20 @@ function TableHighlightQuestionView({ onSubmit }) {
                                             }}
                                         />
                                     )}
-                                    <Typography variant="body1" sx={{ color: "#333", textAlign: 'left'}}>
-                                        {activeTabData?.tabValue || ""}
-                                    </Typography>
+                                    <Typography
+                                        variant="body1"
+                                        sx={{
+                                            color: "#333",
+                                            textAlign: 'left',
+                                            // Fix Quill <p> spacing
+                                            '& p': { margin: 0, marginBottom: '0.5em' },
+                                            '& p:last-child': { marginBottom: 0 },
+                                            '& *': { lineHeight: 1.6 },
+                                        }}
+                                        dangerouslySetInnerHTML={{
+                                            __html: activeTabData?.tabValue || ''
+                                        }}
+                                    />
                                 </>
                             );
                         })()}

@@ -24,6 +24,8 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import { useFileContext } from '../../context/FileContext'; // ✅ Import the Context
 import { deleteTabImage, uploadTabImage } from "../../features/exam/examSlice";
 import { useDispatch } from "react-redux";
+import ReactQuill from 'react-quill-new'; // <-- CHANGE THIS
+import 'react-quill-new/dist/quill.snow.css';
 
 
 const DragdropQuestionContent = () => {
@@ -44,7 +46,7 @@ const DragdropQuestionContent = () => {
     const [tabs, setTabs] = useState(existingData.tabs || [
         { tabKey: "", tabValue: "" }
     ]);
- 
+
 
     const [dragAndDrop, setDragAndDrop] = useState(
         existingData.drag_and_drop || Array.from({ length: 5 }, () => ({
@@ -56,6 +58,27 @@ const DragdropQuestionContent = () => {
 
     const [selectedFile, setSelectedFile] = useState(null); // ✅ Local state for UI, Context for persistence
     const [errors, setErrors] = useState({});
+
+
+    // Add this definition near your other constants/modules
+    const tabModules = {
+        toolbar: [
+            ['bold', 'italic', 'underline'], // Basic formatting
+            [{ 'list': 'bullet' }], // Bullet points
+            [{ 'color': [] },],
+
+        ],
+        clipboard: {
+            matchVisual: false, // Important!
+        },
+    };
+
+    const tabFormats = [
+        'bold', 'italic', 'underline',
+        'list', 'bullet',
+        'link',
+        'color',
+    ];
 
 
     // ✅ Initialize with existing file from context if available
@@ -71,78 +94,78 @@ const DragdropQuestionContent = () => {
     // File upload handler for tab image
     const dispatch = useDispatch();
     const handleTabFileUpload = async (index, event) => {
-      const file = event.target.files[0];
-      if (!file) return;
-  
-      const allowedTypes = ["image/jpeg", "image/png", "image/gif"];
-      if (!allowedTypes.includes(file.type)) {
-        setErrors((prev) => ({
-          ...prev,
-          [`tabFile_${index}`]: "Only images are allowed",
-        }));
-        return;
-      }
-  
-      // Local preview
-      const previewUrl = URL.createObjectURL(file);
-      const newTabs = [...tabs];
-      newTabs[index].previewUrl = previewUrl;
-      setTabs(newTabs);
-  
-      try {
-        // Upload immediately
-        const result = await dispatch(uploadTabImage(file)).unwrap();
-        console.log("Upload result:", result);
-  
-        // ✅ Store uploaded image URL in `tabImage` key
-        newTabs[index].tabImage = result?.data?.imageUrl || null;
+        const file = event.target.files[0];
+        if (!file) return;
+
+        const allowedTypes = ["image/jpeg", "image/png", "image/gif"];
+        if (!allowedTypes.includes(file.type)) {
+            setErrors((prev) => ({
+                ...prev,
+                [`tabFile_${index}`]: "Only images are allowed",
+            }));
+            return;
+        }
+
+        // Local preview
+        const previewUrl = URL.createObjectURL(file);
+        const newTabs = [...tabs];
+        newTabs[index].previewUrl = previewUrl;
         setTabs(newTabs);
-      } catch (err) {
-        console.error("Upload failed:", err);
-        setErrors((prev) => ({
-          ...prev,
-          [`tabFile_${index}`]: "Upload failed. Try again.",
-        }));
-        newTabs[index].previewUrl = null;
-        setTabs(newTabs);
-      }
+
+        try {
+            // Upload immediately
+            const result = await dispatch(uploadTabImage(file)).unwrap();
+            console.log("Upload result:", result);
+
+            // ✅ Store uploaded image URL in `tabImage` key
+            newTabs[index].tabImage = result?.data?.imageUrl || null;
+            setTabs(newTabs);
+        } catch (err) {
+            console.error("Upload failed:", err);
+            setErrors((prev) => ({
+                ...prev,
+                [`tabFile_${index}`]: "Upload failed. Try again.",
+            }));
+            newTabs[index].previewUrl = null;
+            setTabs(newTabs);
+        }
     };
 
 
 
-      // Delete handler
-      const handleDeleteTabImage = async (index) => {
+    // Delete handler
+    const handleDeleteTabImage = async (index) => {
         const tab = tabs[index];
         console.log("Inside delete img::");
-    
+
         if (!tab.tabImage) {
-          // No uploaded image, just remove preview
-          const newTabs = [...tabs];
-          newTabs[index].previewUrl = null;
-          setTabs(newTabs);
-          return;
+            // No uploaded image, just remove preview
+            const newTabs = [...tabs];
+            newTabs[index].previewUrl = null;
+            setTabs(newTabs);
+            return;
         }
-    
+
         try {
-          console.log("Inside try :::");
-    
-          // Extract only filename
-          const fileName = tab.tabImage.split("/").pop();
-          console.log("Sending filename to delete API:", fileName);
-    
-          // Call delete API
-          await dispatch(deleteTabImage(fileName)).unwrap();
-    
-          const newTabs = [...tabs];
-          newTabs[index].previewUrl = null;
-          newTabs[index].tabImage = null; // ✅ Clear tabImage
-          setTabs(newTabs);
-    
-          console.log("Tab image deleted successfully");
+            console.log("Inside try :::");
+
+            // Extract only filename
+            const fileName = tab.tabImage.split("/").pop();
+            console.log("Sending filename to delete API:", fileName);
+
+            // Call delete API
+            await dispatch(deleteTabImage(fileName)).unwrap();
+
+            const newTabs = [...tabs];
+            newTabs[index].previewUrl = null;
+            newTabs[index].tabImage = null; // ✅ Clear tabImage
+            setTabs(newTabs);
+
+            console.log("Tab image deleted successfully");
         } catch (error) {
-          console.error("Failed to delete tab image:", error);
+            console.error("Failed to delete tab image:", error);
         }
-      };
+    };
 
     const handleRemoveFile = () => {
         if (selectedFile) {
@@ -342,7 +365,7 @@ const DragdropQuestionContent = () => {
             section.option_value.some(val => val.trim())
         );
 
-        return hasValidQuestion && hasValidContent && hasValidTabs && hasValidSections 
+        return hasValidQuestion && hasValidContent && hasValidTabs && hasValidSections
     };
 
 
@@ -534,22 +557,29 @@ const DragdropQuestionContent = () => {
                                 size="small"
                             />
 
-                            <TextField
-                                fullWidth
-                                label="Tab Content"
-                                multiline
-                                minRows={3}
-                                value={tab.tabValue}
-                                onChange={(e) => handleTabChange(index, 'tabValue', e.target.value)}
-                                placeholder="Enter the content that will be displayed in this tab..."
-                            />
+                            <Box sx={{ minHeight: '170px', mb: 2 }}> {/* Added marginBottom for spacing */}
+                                <Typography variant="caption" sx={{ display: 'block', mb: 0.5 }}>Tab Content</Typography>
+                                <ReactQuill
+                                    theme="snow"
+                                    value={tab.tabValue} // Bind to tab.tabValue
+                                    onChange={(content) =>
+                                        // Crucial: React-Quill returns the HTML string directly
+                                        handleTabChange(index, "tabValue", content)
+                                    }
+                                    modules={tabModules} // Use the specific modules for tabs
+                                    formats={tabFormats}
+                                    placeholder="Enter the content that will be displayed in this tab..."
+                                    // Setting a fixed height helps prevent layout shifts
+                                    style={{ height: '120px', borderBottomLeftRadius: 4, borderBottomRightRadius: 4 }}
+                                />
+                            </Box>
 
 
                             <Box
                                 display="flex"
                                 flexDirection="column"
                                 alignItems="flex-start"
-                                mt={2}
+                                mt={5}
                             >
                                 <input
                                     type="file"

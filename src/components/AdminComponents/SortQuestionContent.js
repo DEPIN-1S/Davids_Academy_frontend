@@ -21,6 +21,8 @@ import { CloudUpload, Delete, Image, PictureAsPdf, Description, DragIndicator, E
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useDispatch } from "react-redux";
 import { deleteTabImage, uploadTabImage } from "../../features/exam/examSlice";
+import ReactQuill from 'react-quill-new'; // <-- CHANGE THIS
+import 'react-quill-new/dist/quill.snow.css';
 
 const SortQuestionContent = () => {
     const navigate = useNavigate();
@@ -42,6 +44,27 @@ const SortQuestionContent = () => {
     const [errors, setErrors] = useState({});
     const fileInputRef = useRef(null);
     const dispatch = useDispatch()
+
+
+    // Add this definition near your other constants/modules
+    const tabModules = {
+        toolbar: [
+            ['bold', 'italic', 'underline'], // Basic formatting
+            [{ 'list': 'bullet' }], // Bullet points
+            [{ 'color': [] },],
+
+        ],
+        clipboard: {
+            matchVisual: false, // Important!
+        },
+    };
+
+    const tabFormats = [
+        'bold', 'italic', 'underline',
+        'list', 'bullet',
+        'link',
+        'color',
+    ];
 
 
     // Sort item handlers
@@ -204,7 +227,7 @@ const SortQuestionContent = () => {
             newErrors.question = 'Question is required';
         }
 
-       
+
 
         const validSortItems = sortItems.filter(item => item.sortItem.trim());
         if (validSortItems.length < 2) {
@@ -280,9 +303,9 @@ const SortQuestionContent = () => {
 
     const isFormValid = () => {
         const hasValidQuestion = question.trim() !== "";
-   
+
         const hasValidSortItems = sortItems.filter(item => item.sortItem.trim()).length >= 2;
-        return hasValidQuestion  && hasValidSortItems;
+        return hasValidQuestion && hasValidSortItems;
     };
 
 
@@ -371,23 +394,28 @@ const SortQuestionContent = () => {
                                 size="small"
                             />
 
-                            <TextField
-                                fullWidth
-                                label="Tab Content"
-                                multiline
-                                minRows={3}
-                                value={tab.tabValue}
-                                onChange={(e) =>
-                                    handleTabChange(index, "tabValue", e.target.value)
-                                }
-                                placeholder="Enter the content that will be displayed in this tab..."
-                            />
+                            <Box sx={{ minHeight: '170px', mb: 2 }}> {/* Added marginBottom for spacing */}
+                                <Typography variant="caption" sx={{ display: 'block', mb: 0.5 }}>Tab Content</Typography>
+                                <ReactQuill
+                                    theme="snow"
+                                    value={tab.tabValue} // Bind to tab.tabValue
+                                    onChange={(content) =>
+                                        // Crucial: React-Quill returns the HTML string directly
+                                        handleTabChange(index, "tabValue", content)
+                                    }
+                                    modules={tabModules} // Use the specific modules for tabs
+                                    formats={tabFormats}
+                                    placeholder="Enter the content that will be displayed in this tab..."
+                                    // Setting a fixed height helps prevent layout shifts
+                                    style={{ height: '120px', borderBottomLeftRadius: 4, borderBottomRightRadius: 4 }}
+                                />
+                            </Box>
 
                             <Box
                                 display="flex"
                                 flexDirection="column"
                                 alignItems="flex-start"
-                                mt={2}
+                                mt={5}
                             >
                                 <input
                                     type="file"

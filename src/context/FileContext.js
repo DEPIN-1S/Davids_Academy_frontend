@@ -17,7 +17,7 @@ export const FileProvider = ({ children }) => {
         const formData = new FormData();
 
         console.log("Question data in file context :", questionData);
-        
+
 
         console.log("explanation file in file context:::", explanationFile);
         console.log("question file in file context:::", questionFile);
@@ -144,6 +144,25 @@ export const FileProvider = ({ children }) => {
                 formData.append("marks", questionData.marks)
                 break;
 
+                /* const getTableDropdownBaseData = () => ({
+                    courseId: receivedQuestionData.cs_id,
+                    questionType: receivedQuestionData.questionType,
+                    question_type_id: receivedQuestionData.question_type_id,
+                    exam_type: receivedQuestionData.exam_type,
+                    question: receivedQuestionData.question || "",
+                    difficulty: form.difficulty || "",
+                    tabs: receivedQuestionData.tabs || [],
+                    instructions: receivedQuestionData.instruction || "",
+                    explanationHeading: receivedQuestionData.explanationHeading || "",
+                    explanationText: receivedQuestionData.explanationText || "",
+                    info: receivedQuestionData.additionalInfo || "",
+                    infoimage: receivedQuestionData.infoImage || null,
+                    marks: form.marks,
+                    tableDropdownAnswers: receivedQuestionData.tableDropdownAnswers || [],
+                    tableHeaders: receivedQuestionData.tableHeaders || {},
+                    tableDropdownFields: receivedQuestionData.tableDropdownFields || [],
+                }) */
+
             case "Table Dropdown":
                 formData.append("courseId", questionData.courseId ?? "");
                 formData.append("questionType", questionData.questionType ?? "");
@@ -153,13 +172,14 @@ export const FileProvider = ({ children }) => {
                 formData.append("difficulty", questionData.difficulty ?? "");
                 formData.append("instructions", questionData.instruction);
                 formData.append("tabs", JSON.stringify(questionData.tabs || []));
-                formData.append("tableDropdownAnswers", questionData.tableDropdownAnswers || []);
-                formData.append("tableHeaders", questionData.tableHeaders || {});
-                formData.append("tableDropdownFields", questionData.tableDropdownFields || []);
+                formData.append("tableDropdownAnswers", JSON.stringify(questionData.tableDropdownAnswers || []));
+                formData.append("tableHeaders", JSON.stringify(questionData.tableHeaders));
+                formData.append("tableDropdownFields", JSON.stringify(questionData.tableDropdownFields || []));
                 formData.append("explanationHeading", questionData.explanationHeading ?? "");
                 formData.append("explanationText", questionData.explanationText ?? "");
                 formData.append("info", questionData.info ?? "");
-                formData.append("marks", questionData.marks)
+                formData.append("marks", questionData.marks);
+                break;
 
             case "Multidropdown":
                 formData.append("courseId", questionData.courseId ?? "");
@@ -178,6 +198,41 @@ export const FileProvider = ({ children }) => {
                 formData.append("marks", questionData.marks)
                 break;
 
+            case "Table Highlight":
+                formData.append("courseId", questionData.courseId ?? "");
+                formData.append("questionType", questionData.questionType ?? "");
+                formData.append("question_type_id", questionData.question_type_id ?? "");
+                formData.append("exam_type", questionData.exam_type ?? "");
+                formData.append("question", questionData.question ?? "");
+                formData.append("difficulty", questionData.difficulty ?? "");
+                formData.append("instructions", questionData.instruction);
+                formData.append("tabs", JSON.stringify(questionData.tabs || []));
+                formData.append("answers", JSON.stringify(questionData.answers || []))
+                formData.append("tableHeaders", JSON.stringify(questionData.tableHeaders || []));
+                formData.append("tableFields", JSON.stringify(questionData.tableFields || []));
+                formData.append("explanationHeading", questionData.explanationHeading ?? "");
+                formData.append("explanationText", questionData.explanationText ?? "");
+                formData.append("info", questionData.info ?? "");
+                formData.append("marks", questionData.marks)
+                break;
+
+            /* const tableHighlightFormData = () => ({
+                courseId: receivedQuestionData.cs_id,
+                questionType: receivedQuestionData.questionType,
+                question_type_id: receivedQuestionData.question_type_id,
+                exam_type: receivedQuestionData.exam_type,
+                question: receivedQuestionData.question || "",
+                difficulty: form.difficulty || "",
+                tabs: receivedQuestionData.tabs || [],
+                instruction: receivedQuestionData.instruction || "",
+                explanationHeading: receivedQuestionData.explanationHeading || "",
+                explanationText: receivedQuestionData.explanationText || "",
+                info: receivedQuestionData.additionalInfo || "",
+                marks: form.marks,
+                answers: receivedQuestionData.answers || [],
+                tableFields: receivedQuestionData.tableFields || [],
+                tableHeaders: receivedQuestionData.tableHeaders || [],
+            }) */
 
             default:
                 console.warn(" Unknown questionType:", questionData.questionType);

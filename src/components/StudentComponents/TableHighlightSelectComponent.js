@@ -217,26 +217,36 @@ const TableHighlightSelectComponent = ({ question, onSubmit }) => {
               minHeight: "100px",
             }}
           >
-            <Typography variant="body1" sx={{ color: "#333" }}>
-              {tabsInfo.find((tab) => tab.tabKey === activeTab)?.tabValue || ""}
-            </Typography>
+            <Typography
+              variant="body1"
+              sx={{
+                color: "#333",
+                // Fix spacing for <p> tags from Quill
+                '& p': { margin: 0, marginBottom: '0.5em' },
+                '& p:last-child': { marginBottom: 0 },
+                '& *': { lineHeight: 1.6 },
+              }}
+              dangerouslySetInnerHTML={{
+                __html: tabsInfo.find((tab) => tab.tabKey === activeTab)?.tabValue || ''
+              }}
+            />
             {tabsInfo[activeTab]?.tabImage && (
-                        <Box sx={{ mt: 2, textAlign: "center" }}>
-                          <img
-                            src={
-                              tabsInfo[activeTab].tabImage.startsWith("http")
-                                ? tabsInfo[activeTab].tabImage
-                                : `${'https://lunarsenterprises.com:6040/'}${tabsInfo[activeTab].tabImage}`
-                            }
-                            alt="tab"
-                            style={{
-                              maxWidth: "100%",
-                              borderRadius: 8,
-                              height: "auto",
-                            }}
-                          />
-                        </Box>
-                      )}
+              <Box sx={{ mt: 2, textAlign: "center" }}>
+                <img
+                  src={
+                    tabsInfo[activeTab].tabImage.startsWith("http")
+                      ? tabsInfo[activeTab].tabImage
+                      : `${'https://lunarsenterprises.com:6040/'}${tabsInfo[activeTab].tabImage}`
+                  }
+                  alt="tab"
+                  style={{
+                    maxWidth: "100%",
+                    borderRadius: 8,
+                    height: "auto",
+                  }}
+                />
+              </Box>
+            )}
           </Box>
         </>
       )}

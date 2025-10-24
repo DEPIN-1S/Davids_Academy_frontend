@@ -226,9 +226,19 @@ const TableMultipleDropdownComponent = ({ question, onSubmit }) => {
               minHeight: "100px",
             }}
           >
-            <Typography variant="body1" sx={{ color: "#333" }}>
-              {tabsInfo.find((tab) => tab.tabKey === activeTab)?.tabValue || ""}
-            </Typography>
+            <Typography
+  variant="body1"
+  sx={{
+    color: "#333",
+    // Prevent <p> tags from Quill from having unwanted margins
+    '& p': { margin: 0, marginBottom: '0.5em' },
+    '& p:last-child': { marginBottom: 0 },
+    '& *': { lineHeight: 1.6 },
+  }}
+  dangerouslySetInnerHTML={{
+    __html: tabsInfo.find((tab) => tab.tabKey === activeTab)?.tabValue || ''
+  }}
+/>
             {tabsInfo[activeTab]?.tabImage && (
               <Box sx={{ mt: 2, textAlign: "center" }}>
                 <img
