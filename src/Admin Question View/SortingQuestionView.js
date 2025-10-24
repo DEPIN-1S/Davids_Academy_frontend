@@ -214,9 +214,13 @@ function SortingQuestionView() {
                       }}
                     />
                   )}
-                  <Typography   variant="body1" sx={{textAlign: 'left', color: "#333" }}>
-                    {activeTabData?.tabValue || ""}
-                  </Typography>
+                  <Typography
+                    sx={{ textAlign: 'left' }}
+                    variant="body1"
+                    dangerouslySetInnerHTML={{
+                      __html: tabsInfo.find((t) => t.tabKey === activeTab)?.tabValue || ''
+                    }}
+                  />
                 </>
               );
             })()}

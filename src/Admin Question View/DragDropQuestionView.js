@@ -87,9 +87,15 @@ const DragDropQuestionView = () => {
             )}
           </>
         )}
-        <Typography sx={{ color: "#333", textAlign: 'left' }} variant="body1">
-          {tabsInfo.find((t) => t.tabKey === activeTab)?.tabValue}
-        </Typography>
+
+        <Typography
+          sx={{ textAlign: 'left' }}
+          variant="body1"
+          dangerouslySetInnerHTML={{
+            __html: tabsInfo.find((t) => t.tabKey === activeTab)?.tabValue || ''
+          }}
+        />
+        
       </div>
 
       {questionData?.data?.instructions &&

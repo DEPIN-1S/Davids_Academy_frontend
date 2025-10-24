@@ -20,6 +20,8 @@ import { useDispatch, useSelector } from "react-redux";
 import { useNavigate, useParams } from "react-router-dom";
 import { getQuestionData } from "../features/exam/examSlice";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
+import ReactQuill from 'react-quill-new'; // <-- CHANGE THIS
+import 'react-quill-new/dist/quill.snow.css';
 
 
 function TableDropDownQuestionView({ onSubmit }) {
@@ -231,9 +233,20 @@ function TableDropDownQuestionView({ onSubmit }) {
                       }}
                     />
                   )}
-                  <Typography variant="body1" sx={{  textAlign: 'left', color: "#333" }}>
-                    {activeTabData?.tabValue || ""}
-                  </Typography>
+                  <Typography
+                    variant="body1"
+                    sx={{
+                      textAlign: 'left',
+                      color: "#333",
+                      // Prevent default <p> margins from Quill
+                      '& p': { margin: 0, marginBottom: '0.5em' },
+                      '& p:last-child': { marginBottom: 0 },
+                      '& *': { lineHeight: 1.6 },
+                    }}
+                    dangerouslySetInnerHTML={{
+                      __html: activeTabData?.tabValue || ''
+                    }}
+                  />
                 </>
               );
             })()}

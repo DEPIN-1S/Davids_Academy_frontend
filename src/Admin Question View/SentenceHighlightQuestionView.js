@@ -115,7 +115,7 @@ function SentenceHighlightQuestionView() {
         <Typography>Question Type : {question_type}</Typography>
       </Box>
 
-     
+
       {/* Question Text */}
       <Typography
         variant="h6"
@@ -158,7 +158,18 @@ function SentenceHighlightQuestionView() {
                   }}
                 />
               )}
-              <Typography  sx={{ textAlign: 'left' }} variant="body1">{currentTab.tabValue}</Typography>
+              <Typography
+                sx={{
+                  textAlign: 'left',
+                  // Optional: Fix spacing between <p> tags from Quill
+                  '& p': { margin: 0, marginBottom: '0.5em' },
+                  '& p:last-child': { marginBottom: 0 },
+                }}
+                variant="body1"
+                dangerouslySetInnerHTML={{
+                  __html: currentTab.tabValue || ''
+                }}
+              />
             </>
           );
         })()}

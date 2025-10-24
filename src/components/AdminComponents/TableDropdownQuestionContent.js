@@ -23,12 +23,34 @@ import { useNavigate, useLocation } from "react-router-dom";
 import { useFileContext } from "../../context/FileContext";
 import { useDispatch } from "react-redux";
 import { deleteTabImage, uploadTabImage } from "../../features/exam/examSlice";
+import ReactQuill from 'react-quill-new';
+import 'react-quill-new/dist/quill.snow.css';
 
 function TableDropdownQuestionContent() {
     const navigate = useNavigate();
     const location = useLocation();
     const { questionFile, hasQuestionFile } = useFileContext();
     const dispatch = useDispatch();
+
+    // Add this definition near your other constants/modules
+    const tabModules = {
+        toolbar: [
+            ['bold', 'italic', 'underline'], // Basic formatting
+            [{ 'list': 'bullet' }], // Bullet points
+            [{ 'color': [] },],
+
+        ],
+        clipboard: {
+            matchVisual: false, // Important!
+        },
+    };
+
+    const tabFormats = [
+        'bold', 'italic', 'underline',
+        'list', 'bullet',
+        'link',
+        'color',
+    ];
 
     const existingData = location.state?.questionData || {};
     const questionType =
@@ -359,17 +381,24 @@ function TableDropdownQuestionContent() {
                                 size="small"
                             />
 
-                            <TextField
-                                fullWidth
-                                label="Tab Content"
-                                multiline
-                                minRows={3}
-                                value={tab.tabValue}
-                                onChange={(e) => handleTabChange(index, "tabValue", e.target.value)}
-                                placeholder="Enter content for this tab..."
-                            />
+                            <Box sx={{ minHeight: '170px', mb: 2 }}> {/* Added marginBottom for spacing */}
+                                <Typography variant="caption" sx={{ display: 'block', mb: 0.5 }}>Tab Content</Typography>
+                                <ReactQuill
+                                    theme="snow"
+                                    value={tab.tabValue} // Bind to tab.tabValue
+                                    onChange={(content) =>
+                                        // Crucial: React-Quill returns the HTML string directly
+                                        handleTabChange(index, "tabValue", content)
+                                    }
+                                    modules={tabModules} // Use the specific modules for tabs
+                                    formats={tabFormats}
+                                    placeholder="Enter the content that will be displayed in this tab..."
+                                    // Setting a fixed height helps prevent layout shifts
+                                    style={{ height: '120px', borderBottomLeftRadius: 4, borderBottomRightRadius: 4 }}
+                                />
+                            </Box>
 
-                            <Box display="flex" flexDirection="column" alignItems="flex-start" mt={2}>
+                            <Box display="flex" flexDirection="column" alignItems="flex-start" mt={5}>
                                 <input
                                     type="file"
                                     accept="image/*"
