@@ -12,7 +12,7 @@ function McqQuestionView() {
   const dispatch = useDispatch();
   const { questionData, loading, error } = useSelector((state) => state.exam);
   console.log("Question id in params", questionId);
- 
+
   const navigate = useNavigate();
   useEffect(() => {
     if (questionId) {
@@ -101,8 +101,8 @@ function McqQuestionView() {
             {questionData?.data?.exhibit && (
               <img
                 width={400}
-                 src={`https://lunarsenterprises.com:8002/${exhibit}`}
-              
+                src={`https://lunarsenterprises.com:6040/${exhibit}`}
+
                 alt="Exhibit"
                 style={{ maxWidth: '100%', marginBottom: '1rem', borderRadius: 8 }}
               />
@@ -165,7 +165,7 @@ function McqQuestionView() {
                     <>
                       {activeTabData?.tabImage && (
                         <img
-                          src={`https://lunarsenterprises.com:8002/${activeTabData.tabImage}`}
+                          src={`https://lunarsenterprises.com:6040/${activeTabData.tabImage}`}
                           alt="tabImage"
                           style={{
                             display: "block", // ✅ center image
@@ -176,7 +176,7 @@ function McqQuestionView() {
                           }}
                         />
                       )}
-                      <Typography  variant="body1" sx={{ color: "#333", textAlign: 'left' }}>
+                      <Typography variant="body1" sx={{ color: "#333", textAlign: 'left' }}>
                         {activeTabData?.tabValue || ""}
                       </Typography>
                     </>

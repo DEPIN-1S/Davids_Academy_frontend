@@ -80,7 +80,7 @@ const DragDropQuestionView = () => {
           <>
             {tabsInfo.find((t) => t.tabKey === activeTab)?.tabImage && (
               <img
-                src={`https://lunarsenterprises.com:8002/${tabsInfo.find((t) => t.tabKey === activeTab)?.tabImage}`}
+                src={`https://lunarsenterprises.com:6040/${tabsInfo.find((t) => t.tabKey === activeTab)?.tabImage}`}
                 alt="Exhibit"
                 style={{ width: 500, borderRadius: "8px", marginBottom: "1rem" }}
               />
@@ -95,7 +95,7 @@ const DragDropQuestionView = () => {
             __html: tabsInfo.find((t) => t.tabKey === activeTab)?.tabValue || ''
           }}
         />
-        
+
       </div>
 
       {questionData?.data?.instructions &&
