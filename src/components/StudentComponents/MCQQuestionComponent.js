@@ -228,7 +228,7 @@ const MCQQuestionComponent = ({ question, onSubmit }) => {
                 value={optionObj.option}
                 disabled={
                   isCheckboxDisabled ||
-                  (selectedOptions.length === 3 &&
+                  (
                     !selectedOptions.includes(optionObj.option))
                 }
                 icon={
