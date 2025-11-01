@@ -119,40 +119,36 @@ const MCQQuestionComponent = ({ question, onSubmit }) => {
         </>
       )}
       {/* Tabs for Contextual Information */}
-      {tabsInfo.length > 0 && (
-        <>
-          <Box
-            sx={{
-              display: "flex",
-              justifyContent: "center",
-              mb: 2,
-              px: 1,
-              position: "relative",
-            }}
-          >
+      {tabsInfo && tabsInfo.length > 0 && (
+        <Box
+          sx={{
+            backgroundColor: "#fff",
+            borderRadius: "1.5rem",
+            padding: { xs: 2, sm: 3, md: 4 },
+            mb: 4,
+            boxShadow: "0 6px 18px rgba(15,23,42,0.06)",
+          }}
+        >
+          <Box sx={{ display: "flex", justifyContent: "center", mb: 2 }}>
             <Tabs
               value={activeTab}
               onChange={handleTabChange}
               variant="scrollable"
               scrollButtons="auto"
-              TabIndicatorProps={{
-                sx: { display: "none" },
-              }}
+              TabIndicatorProps={{ sx: { display: "none" } }}
               sx={{
                 minHeight: 42,
-                "& .MuiTabs-flexContainer": {
-                  gap: 1,
-                },
+                "& .MuiTabs-flexContainer": { gap: 1 },
                 "& .MuiTab-root": {
                   minHeight: 42,
-                  minWidth: 110,
+                  minWidth: { xs: 90, md: 110 },
                   borderRadius: "999px",
                   textTransform: "none",
-                  fontSize: { xs: "0.9rem", md: "1rem" },
+                  fontSize: { xs: "0.85rem", md: "1rem" },
                   fontWeight: 500,
                   color: "#475569",
                   border: "1px solid #e6eaef",
-                  padding: { xs: "7px 18px", md: "8px 24px" },
+                  padding: { xs: "6px 14px", md: "8px 24px" },
                   transition: "all 200ms cubic-bezier(0.4, 0, 0.2, 1)",
                   "&:hover": {
                     backgroundColor: "#f8fafc",
@@ -168,30 +164,42 @@ const MCQQuestionComponent = ({ question, onSubmit }) => {
                 },
               }}
             >
-              {tabsInfo.map((tab) => (
+              {tabsInfo.map((tab, idx) => (
                 <Tab
+                  key={tab.id || idx}
                   label={tab.tabKey}
-                  value={tab.tabKey}
-                  key={tab.id || tab.tabKey}
+                  value={idx}
                   disableRipple
                 />
               ))}
             </Tabs>
           </Box>
+
+          {/* Tab Content */}
           <Box
             sx={{
-              backgroundColor: "#f8f9ff",
-              borderRadius: "10px",
-              py: { xs: 2 },
-              px: { xs: 3 },
-              m: 2,
-              minHeight: "100px",
+              backgroundColor: "#f3f4f6",
+              borderRadius: 2,
+              p: { xs: 2, md: 2.5 },
+              minHeight: { xs: "auto", md: 56 },
             }}
           >
-            <Typography align="left" variant="body1" sx={{ color: "#333" }}>
-              {tabsInfo.find((tab) => tab.tabKey === activeTab)?.tabValue ||
-                "No content available"}
-            </Typography>
+            <Typography
+              sx={{
+                color: "#374151",
+                textAlign: "left",
+                whiteSpace: "pre-line", // Keep this for plain text fallback
+                fontSize: { xs: "0.9rem", md: "1rem" },
+                lineHeight: 1.6,
+                // Fix Quill <p> spacing
+                '& p': { margin: 0, marginBottom: '0.5em' },
+                '& p:last-child': { marginBottom: 0 },
+                '& *': { lineHeight: 'inherit' },
+              }}
+              dangerouslySetInnerHTML={{
+                __html: tabsInfo[activeTab]?.tabValue || ''
+              }}
+            />
             {tabsInfo[activeTab]?.tabImage && (
               <Box sx={{ mt: 2, textAlign: "center" }}>
                 <img
@@ -200,17 +208,17 @@ const MCQQuestionComponent = ({ question, onSubmit }) => {
                       ? tabsInfo[activeTab].tabImage
                       : `${'https://lunarsenterprises.com:6040/'}${tabsInfo[activeTab].tabImage}`
                   }
-                  alt="tab"
+                  alt={tabsInfo[activeTab].tabKey}
                   style={{
                     maxWidth: "100%",
-                    borderRadius: 8,
                     height: "auto",
+                    borderRadius: 8,
                   }}
                 />
               </Box>
             )}
           </Box>
-        </>
+        </Box>
       )}
       <Box
         className="radio-options"
@@ -228,7 +236,7 @@ const MCQQuestionComponent = ({ question, onSubmit }) => {
                 value={optionObj.option}
                 disabled={
                   isCheckboxDisabled ||
-                  (
+                  (selectedOptions.length === 3 &&
                     !selectedOptions.includes(optionObj.option))
                 }
                 icon={
