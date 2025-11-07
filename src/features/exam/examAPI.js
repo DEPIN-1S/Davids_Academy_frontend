@@ -212,7 +212,7 @@ export async function fetchTestQuestionsAPI() {
   console.log("Inside fetch test questions :::: ");
 
   /*  const response = await fetch(
-         "https://lunarsenterprises.com:6040/davidsacademy/student/test/list",
+         "https://lunarsenterprises.com:8002/davidsacademy/student/test/list",
          {
              method: "GET",
              headers: {

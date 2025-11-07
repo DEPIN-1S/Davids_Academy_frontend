@@ -1,6 +1,8 @@
 const baseUrl = process.env.REACT_APP_API_URL;
 // login user
 export const loginUser = async (credentials) => {
+  console.log("baseUrlllll:::::::",baseUrl);
+  
   const res = await fetch(baseUrl + '/login', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
