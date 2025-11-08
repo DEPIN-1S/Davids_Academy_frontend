@@ -31,6 +31,7 @@ function ViewProgress() {
         const resultAction = await dispatch(resetQbank(studentId));
         if (resetQbank.fulfilled.match(resultAction)) {
             toast.success(resultAction.payload?.message || "Q-Bank reset successful!");
+             if (studentId) dispatch(fetchStudentProgress(studentId));
         } else {
             toast.error(resultAction.payload || "Failed to reset Q-Bank");
         }
@@ -41,6 +42,7 @@ function ViewProgress() {
         if (resetMockTest.fulfilled.match(resultAction)) {
             toast.success(resultAction.payload?.message || "Mock Test reset successful!");
             dispatch(fetchStudentProgress(studentId)); // optional refresh
+             if (studentId) dispatch(fetchStudentProgress(studentId));
         } else {
             toast.error(resultAction.payload || "Failed to reset Mock Test");
         }
