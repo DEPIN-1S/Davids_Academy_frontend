@@ -1,18 +1,14 @@
-body {
-  font-family: "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-  background: #f5f7fb;
-}
-
 .table-wrapper {
   display: flex;
   justify-content: center;
   margin-top: 40px;
+  overflow-x: auto; /* ✅ enables horizontal scrolling */
+  max-width: 100%; /* ✅ ensures responsiveness */
 }
 
 .styled-table {
   border-collapse: collapse;
-  width: 80%;
-  max-width: 700px;
+  min-width: 900px; /* ✅ prevents table from squishing on small screens */
   background: #ffffff;
   border: 1px solid #e6e6e6;
   border-radius: 12px;
@@ -29,18 +25,32 @@ body {
 .styled-table th,
 .styled-table td {
   padding: 14px 18px;
+  white-space: nowrap; /* ✅ prevents text from breaking onto multiple lines */
 }
 
 .styled-table tbody tr:nth-child(even) {
-  background-color: #f9f9f9; /* striped rows */
+  background-color: #f9f9f9;
 }
 
 .styled-table tbody tr:hover {
   background-color: #eef5ff;
- 
 }
 
 .styled-table td:nth-child(2) {
   font-weight: 600;
   color: #2e3760;
+}
+
+.action-btn {
+  background-color: #2e3760;
+  padding: 10px 15px;
+  color: #fff;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+}
+
+.action-btn:hover {
+  background-color: #3d497d;
+  transition: all 0.3s ease;
 }
