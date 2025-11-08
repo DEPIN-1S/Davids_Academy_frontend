@@ -95,7 +95,7 @@ const MCQQuestionComponent = ({ question, onSubmit }) => {
       </Typography>
       {exhibit && (
         <img
-          src={`https://lunarsenterprises.com:8002` + exhibit}
+          src={`https://lunarsenterprises.com:6040` + exhibit}
           alt="Exhibit"
           style={{ maxWidth: "100%", marginBottom: "1rem", borderRadius: 8 }}
         />
@@ -206,7 +206,7 @@ const MCQQuestionComponent = ({ question, onSubmit }) => {
                   src={
                     tabsInfo[activeTab].tabImage.startsWith("http")
                       ? tabsInfo[activeTab].tabImage
-                      : `${'https://lunarsenterprises.com:8002/'}${tabsInfo[activeTab].tabImage}`
+                      : `${'https://lunarsenterprises.com:6040/'}${tabsInfo[activeTab].tabImage}`
                   }
                   alt={tabsInfo[activeTab].tabKey}
                   style={{
@@ -365,7 +365,7 @@ const MCQQuestionComponent = ({ question, onSubmit }) => {
               additionalInfoParagraphs={additionalInfo.map((info) => info.info)}
               additionalInfoImage={
                 question.additionalInfo?.[0]?.image
-                  ? `https://lunarsenterprises.com:8002/${question.additionalInfo[0].image}`
+                  ? `https://lunarsenterprises.com:6040/${question.additionalInfo[0].image}`
                   : null
               }
 

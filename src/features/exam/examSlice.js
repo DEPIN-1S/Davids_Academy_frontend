@@ -10,6 +10,8 @@ import {
   deleteTabImageApi,
   fetchSuccessStoriesApi,
   deleteSuccessStoryApi,
+  resetQbankApi,
+  resetMockTestApi,
 } from "./examAPI";
 import {
   adminGetQBankQuestions,
@@ -295,7 +297,31 @@ export const deleteSuccessStory = createAsyncThunk(
   }
 );
 
+// ✅ Reset QBank Thunk
+export const resetQbank = createAsyncThunk(
+  "exam/resetQbank",
+  async (student_id, { rejectWithValue }) => {
+    try {
+      const response = await resetQbankApi(student_id);
+      return response;
+    } catch (error) {
+      return rejectWithValue(error.message || "Failed to reset QBank");
+    }
+  }
+);
 
+//for resetting mock test
+export const resetMockTest = createAsyncThunk(
+  "exam/resetMockTest",
+  async ({ student_id, test_id }, { rejectWithValue }) => {
+    try {
+      const response = await resetMockTestApi(student_id, test_id);
+      return response;
+    } catch (error) {
+      return rejectWithValue(error.message || "Failed to reset Mock Test");
+    }
+  }
+);
 
 const questionSlice = createSlice({
   name: "questions",
@@ -376,6 +402,11 @@ const questionSlice = createSlice({
     fetchError: null,
     successStories: [],
 
+    //reset Q-Bank
+    resetQbankResult: null,
+
+    //for resetting mock test
+    resetMockTestResult: null,
 
   },
   reducers: {
@@ -697,7 +728,39 @@ const questionSlice = createSlice({
         state.deleteSuccessStoryError = action.payload;
       })
 
-  },
+
+      //reset Q-BANK
+      .addCase(resetQbank.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(resetQbank.fulfilled, (state, action) => {
+        state.loading = false;
+        state.success = true;
+        state.resetQbankResult = action.payload;
+      })
+      .addCase(resetQbank.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+      })
+
+      // --- Reset Mock Test ---
+    .addCase(resetMockTest.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+        state.success = false;
+      })
+    .addCase(resetMockTest.fulfilled, (state, action) => {
+      state.loading = false;
+      state.success = true;
+      state.resetMockTestResult = action.payload;
+    })
+    .addCase(resetMockTest.rejected, (state, action) => {
+      state.loading = false;
+      state.error = action.payload;
+    });
+
+},
 });
 
 export const { resetStatus } = questionSlice.actions;

@@ -17,7 +17,7 @@ const buildImageUrl = (path) => {
   if (!path) return null;
   if (path.startsWith("http://") || path.startsWith("https://")) return path;
   const clean = path.replace(/^\/+/, "");
-  return `https://lunarsenterprises.com:8002/${clean}`;
+  return `https://lunarsenterprises.com:6040/${clean}`;
 };
 
 const escapeRegExp = (s) => s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
