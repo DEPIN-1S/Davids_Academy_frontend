@@ -671,3 +671,69 @@ export const deleteSuccessStoryApi = async (id) => {
     throw error;
   }
 };
+
+
+// ✅ Reset Q-Bank API (Admin side)
+export const resetQbankApi = async (student_id) => {
+  console.log("➡️ Resetting QBank for student:", student_id);
+  const token = sessionStorage.getItem("accessToken");
+
+  try {
+    const response = await fetch(
+      `${baseUrl}/admin/student/reset-qbank`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ student_id }),
+      }
+    );
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(errorData.message || "Failed to reset Q-Bank");
+    }
+
+    const result = await response.json();
+    console.log("✅ QBank Reset API Result:", result);
+    return result; // structure: { result: true, message: "...", ... }
+  } catch (error) {
+    console.error("❌ resetQbankApi Error:", error);
+    throw error;
+  }
+};
+
+
+
+export const resetMockTestApi = async (student_id, test_id) => {
+  console.log("➡️ Resetting Mock Test for student:", student_id, "test:", test_id);
+  const token = sessionStorage.getItem("accessToken");
+
+  try {
+    const response = await fetch(
+      `${baseUrl}/admin/student/reset-test`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ student_id, test_id }),
+      }
+    );
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(errorData.message || "Failed to reset Mock Test");
+    }
+
+    const result = await response.json();
+    console.log("✅ Mock Test Reset API Result:", result);
+    return result; // example: { result: true, message: "Mock test reset successfully" }
+  } catch (error) {
+    console.error("❌ resetMockTestApi Error:", error);
+    throw error;
+  }
+};
