@@ -101,7 +101,7 @@ function McqQuestionView() {
             {questionData?.data?.exhibit && (
               <img
                 width={400}
-                src={`https://lunarsenterprises.com:6040/${exhibit}`}
+                src={`https://lunarsenterprises.com:8002/${exhibit}`}
 
                 alt="Exhibit"
                 style={{ maxWidth: '100%', marginBottom: '1rem', borderRadius: 8 }}
@@ -165,7 +165,7 @@ function McqQuestionView() {
                     <>
                       {activeTabData?.tabImage && (
                         <img
-                          src={`https://lunarsenterprises.com:6040/${activeTabData.tabImage}`}
+                          src={`https://lunarsenterprises.com:8002/${activeTabData.tabImage}`}
                           alt="tabImage"
                           style={{
                             display: "block", // ✅ center image
