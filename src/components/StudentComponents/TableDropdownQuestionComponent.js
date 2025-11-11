@@ -246,7 +246,7 @@ const TableDropdownQuestionComponent = ({ question, onSubmit }) => {
                   src={
                     tabsInfo[activeTab].tabImage.startsWith("http")
                       ? tabsInfo[activeTab].tabImage
-                      : `${'https://lunarsenterprises.com:6040/'}${tabsInfo[activeTab].tabImage}`
+                      : `${'https://lunarsenterprises.com:8002/'}${tabsInfo[activeTab].tabImage}`
                   }
                   alt="tab"
                   style={{
@@ -496,7 +496,7 @@ const TableDropdownQuestionComponent = ({ question, onSubmit }) => {
             }
             additionalInfoImage={
               question.additionalInfo?.[0]?.image
-                ? `https://lunarsenterprises.com:6040/${question.additionalInfo[0].image}`
+                ? `https://lunarsenterprises.com:8002/${question.additionalInfo[0].image}`
                 : null
             }
 

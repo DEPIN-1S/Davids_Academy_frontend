@@ -15,6 +15,11 @@ import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
 import { CloudUpload, Delete, Image, PictureAsPdf, Description } from '@mui/icons-material';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useFileContext } from '../../context/FileContext'; // ✅ Import the Context
+import ReactQuill from "react-quill-new";
+
+
+
+
 
 const AnswerExplain = () => {
     const navigate = useNavigate();
@@ -101,6 +106,27 @@ const AnswerExplain = () => {
         event.target.value = '';
     };
 
+
+    const tabModules = {
+        toolbar: [
+            ["bold", "italic", "underline"],
+            [{ list: "ordered" }, { list: "bullet" }],
+            [{ 'color': [] },],
+        ],
+    };
+
+    const tabFormats = [
+        "bold",
+        "italic",
+        "underline",
+        "strike",
+        "list",
+        "bullet",
+        "link",
+        'color',
+    ];
+
+
     const handleButtonClick = () => {
         fileInputRef.current?.click();
     };
@@ -122,7 +148,7 @@ const AnswerExplain = () => {
             newErrors.explanationHeading = 'Explanation heading is required';
         }
 
-        if (!explanationText.trim()) {
+       if (!explanationText.replace(/<[^>]+>/g, '').trim()) {
             newErrors.explanationText = 'Explanation text is required';
         } else if (explanationText.trim().length < 20) {
             newErrors.explanationText = 'Explanation must be at least 20 characters long';
@@ -412,7 +438,7 @@ const AnswerExplain = () => {
             </Typography>
 
             {/* Question Preview with File Info */}
-           
+
 
             {/* ✅ Enhanced Context Status Display */}
             <Card sx={{ mb: 3, bgcolor: 'success.light', color: '#FFFF' }}>
@@ -447,60 +473,59 @@ const AnswerExplain = () => {
             <Typography variant="h6" mb={1} color="primary">
                 Explanation Heading *
             </Typography>
-            <TextField
-                fullWidth
-                label="Enter explanation heading"
+            <ReactQuill
+                theme="snow"
                 value={explanationHeading}
-                onChange={(e) => {
-                    setExplanationHeading(e.target.value);
+                onChange={(value) => {
+                    setExplanationHeading(value);
                     setErrors(prev => ({ ...prev, explanationHeading: null }));
                 }}
-                variant="outlined"
+                modules={tabModules}
+                formats={tabFormats}
                 placeholder="e.g., Why this answer is correct"
-                error={!!errors.explanationHeading}
-                helperText={errors.explanationHeading}
-                sx={{ mb: 3 }}
+                style={{ marginBottom: "24px", background: "#fff" }}
             />
+            {errors.explanationHeading && (
+                <Typography color="error" variant="body2">{errors.explanationHeading}</Typography>
+            )}
+
 
             {/* Explanation Text Area */}
             <Typography variant="h6" mb={1} color="primary">
                 Explanation Text *
             </Typography>
-            <TextField
-                fullWidth
-                label="Enter detailed explanation"
-                multiline
-                minRows={4}
-                maxRows={8}
+            <ReactQuill
+                theme="snow"
                 value={explanationText}
-                onChange={(e) => {
-                    setExplanationText(e.target.value);
+                onChange={(value) => {
+                    setExplanationText(value);
                     setErrors(prev => ({ ...prev, explanationText: null }));
                 }}
-                variant="outlined"
-                placeholder="Provide a comprehensive explanation of why this answer is correct..."
-                error={!!errors.explanationText}
-                helperText={errors.explanationText || `${explanationText.length} characters (minimum 20 required)`}
-                sx={{ mb: 3 }}
+                modules={tabModules}
+                formats={tabFormats}
+                placeholder="Provide a comprehensive explanation..."
+                style={{ marginBottom: "24px", background: "#fff" }}
             />
+            {errors.explanationText && (
+                <Typography color="error" variant="body2">{errors.explanationText}</Typography>
+            )}
+
 
 
             {/* Additional Info Text Area */}
             <Typography variant="h6" mb={1} color="secondary">
                 Additional Information
             </Typography>
-            <TextField
-                fullWidth
-                label="Enter additional information (Optional)"
-                multiline
-                minRows={3}
-                maxRows={6}
+            <ReactQuill
+                theme="snow"
                 value={additionalInfo}
-                onChange={(e) => setAdditionalInfo(e.target.value)}
-                variant="outlined"
+                onChange={setAdditionalInfo}
+                modules={tabModules}
+                formats={tabFormats}
                 placeholder="Any additional tips, warnings, or supplementary information..."
-                sx={{ mb: 3 }}
+                style={{ marginBottom: "24px", background: "#fff" }}
             />
+
 
             {/* File Upload Section */}
             <Typography variant="h6" mb={1} color="primary">
