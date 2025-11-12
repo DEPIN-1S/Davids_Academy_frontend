@@ -4,7 +4,6 @@ import {
   Typography,
   useTheme,
   useMediaQuery,
-  Divider,
 } from '@mui/material';
 
 const RevealAnswerComponent = ({
@@ -17,6 +16,7 @@ const RevealAnswerComponent = ({
 }) => {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('md'));
+
   return (
     <Box
       sx={{
@@ -37,44 +37,73 @@ const RevealAnswerComponent = ({
           boxShadow: '0 2px 6px rgba(0,0,0,0.05)',
         }}
       >
-        {/* Question */}
-        <Typography variant="h6" mb={3}>
-          {questionText}
-        </Typography>
+    
 
-        {/* Explanation heading */}
+        {/* Explanation heading (supports custom HTML) */}
         {explanationHeading && (
-          <Typography variant="h6" fontWeight={600} mb={1} color="#2E3760">
-            {explanationHeading}
-          </Typography>
+          <Typography
+            variant="h6"
+            fontWeight={600}
+            mb={1}
+            color="#2E3760"
+            sx={{
+              '& p': { margin: 0, marginBottom: '0.5em' },
+              '& p:last-child': { marginBottom: 0 },
+            }}
+            dangerouslySetInnerHTML={{ __html: explanationHeading }}
+          />
         )}
 
-        {/* Explanation paragraphs */}
+        {/* Explanation paragraphs (supports HTML) */}
         {explanationParagraphs.map((para, idx) => (
-          <Typography variant="body2" color="black" align='left' paragraph key={`exp-${idx}`}>
-            {para}
-          </Typography>
+          <Typography
+            key={`exp-${idx}`}
+            variant="body2"
+            color="black"
+            align="left"
+            paragraph
+            sx={{
+              '& p': { margin: 0, marginBottom: '0.5em' },
+              '& p:last-child': { marginBottom: 0 },
+            }}
+            dangerouslySetInnerHTML={{ __html: para }}
+          />
         ))}
 
-        {/* Additional Info heading */}
+        {/* Additional Info heading (supports custom HTML) */}
         {additionalInfoHeading && additionalInfoParagraphs.length > 0 && (
-          <Typography variant="h6" fontWeight={600} mt={3} mb={1} color="#2E3760">
-            {additionalInfoHeading}
-          </Typography>
+          <Typography
+            variant="h6"
+            fontWeight={600}
+            mt={3}
+            mb={1}
+            color="#2E3760"
+            sx={{
+              '& p': { margin: 0, marginBottom: '0.5em' },
+              '& p:last-child': { marginBottom: 0 },
+            }}
+            dangerouslySetInnerHTML={{ __html: additionalInfoHeading }}
+          />
         )}
 
-        {/* Additional Info paragraphs */}
+        {/* Additional Info paragraphs (supports HTML) */}
         {additionalInfoParagraphs.map((para, idx) => (
-          <Typography variant="body2" align='left' paragraph key={`info-${idx}`}>
-            {para}
-          </Typography>
+          <Typography
+            key={`info-${idx}`}
+            variant="body2"
+            align="left"
+            paragraph
+            sx={{
+              '& p': { margin: 0, marginBottom: '0.5em' },
+              '& p:last-child': { marginBottom: 0 },
+            }}
+            dangerouslySetInnerHTML={{ __html: para }}
+          />
         ))}
 
-        {/* Placeholder for additional info image */}
-
+        {/* Additional Info Image */}
         {additionalInfoImage && (
-
-          < Box
+          <Box
             component="img"
             src={'https://lunarsenterprises.com:8002' + additionalInfoImage}
             alt="Additional Info"
@@ -82,8 +111,6 @@ const RevealAnswerComponent = ({
           />
         )}
       </Box>
-
-
     </Box>
   );
 };

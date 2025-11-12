@@ -12,6 +12,7 @@ import {
   Tab,
 } from "@mui/material";
 import CheckIcon from "@mui/icons-material/Check";
+import { FaCheckCircle, FaTimesCircle } from "react-icons/fa";
 import "../../styles/DashboardStyles/RadioButtonQuestionComponent.css";
 import RevealAnswerComponent from "./RevealAnswerComponent";
 
@@ -53,15 +54,15 @@ const MCQQuestionComponent = ({ question, onSubmit }) => {
 
   const handleTabChange = (_event, newValue) => setActiveTab(newValue);
 
-  // No cap: toggle freely
   const handleChange = (event) => {
     const value = event.target.value;
     setSelectedOptions((prev) =>
-      prev.includes(value) ? prev.filter((opt) => opt !== value) : [...prev, value]
+      prev.includes(value)
+        ? prev.filter((opt) => opt !== value)
+        : [...prev, value]
     );
   };
 
-  // Select All / Clear All
   const allOptionValues = useMemo(() => mcqoptions.map((o) => o.option), [mcqoptions]);
   const allSelected =
     allOptionValues.length > 0 && selectedOptions.length === allOptionValues.length;
@@ -74,11 +75,8 @@ const MCQQuestionComponent = ({ question, onSubmit }) => {
   };
 
   const handleReveal = () => {
-    const selectedArray = Array.from(selectedOptions || []);
-    const correctAnswers = answerArray || [];
-
-    const selectedNorm = selectedArray.map((s) => (s ?? "").trim());
-    const correctNorm = correctAnswers.map((s) => (s ?? "").trim());
+    const selectedNorm = selectedOptions.map((s) => (s ?? "").trim());
+    const correctNorm = answerArray.map((s) => (s ?? "").trim());
 
     const allCorrect =
       selectedNorm.length === correctNorm.length &&
@@ -97,10 +95,25 @@ const MCQQuestionComponent = ({ question, onSubmit }) => {
 
   const isCheckboxDisabled = showAnswer;
 
+  // 🎨 Color Theme
+  const colors = {
+    correct: "#2E7D32",
+    incorrect: "#C62828",
+    heading: "#2E3760",
+    neutral: "#475569",
+  };
+
   return (
-    <Box className="radio-container">
+    <Box className="radio-container" sx={{ textAlign: "left" }}>
       {/* Question */}
-      <Typography variant="body1" className="question-text" gutterBottom>
+      <Typography
+        sx={{
+          color: "black",
+          mb: 2,
+          fontSize: { xs: "0.95rem", md: "17px" },
+          fontWeight: 500,
+        }}
+      >
         {questionText}
       </Typography>
 
@@ -116,15 +129,18 @@ const MCQQuestionComponent = ({ question, onSubmit }) => {
       {/* Instructions */}
       {instructions && (
         <>
-          <Typography variant="h6" align="left" component="h2" sx={{ mb: 1, color: "text.primary" }}>
+          <Typography
+            variant="h6"
+            sx={{ mb: 1, color: colors.heading, fontSize: "1rem" }}
+          >
             Instructions
           </Typography>
           <Typography
             sx={{
-              textAlign: "left",
               color: "black",
               mb: 2,
               fontSize: { xs: "0.9rem", md: "1rem" },
+              lineHeight: 1.6,
             }}
           >
             {instructions}
@@ -132,10 +148,10 @@ const MCQQuestionComponent = ({ question, onSubmit }) => {
         </>
       )}
 
-      {/* Tabs */}
+      {/* Tabs Section */}
       {tabsInfo.length > 0 && (
         <>
-          <Box sx={{ display: "flex", justifyContent: "center", mb: 2, px: 1, position: "relative" }}>
+          <Box sx={{ display: "flex", justifyContent: "center", mb: 2, px: 1 }}>
             <Tabs
               value={activeTab}
               onChange={handleTabChange}
@@ -143,30 +159,24 @@ const MCQQuestionComponent = ({ question, onSubmit }) => {
               scrollButtons="auto"
               TabIndicatorProps={{ sx: { display: "none" } }}
               sx={{
-                minHeight: 42,
                 "& .MuiTabs-flexContainer": { gap: 1 },
                 "& .MuiTab-root": {
-                  minHeight: 42,
-                  minWidth: 110,
+                  minHeight: 40,
                   borderRadius: "999px",
                   textTransform: "none",
                   fontSize: { xs: "0.9rem", md: "1rem" },
                   fontWeight: 500,
-                  color: "#475569",
+                  color: colors.neutral,
                   border: "1px solid #e6eaef",
-                  padding: { xs: "7px 18px", md: "8px 24px" },
                   "&.Mui-selected": {
                     color: "#fff",
-                    fontWeight: 600,
-                    backgroundColor: "#2e3760",
-                    border: "1px solid #2e3760",
-                    boxShadow: "0 6px 18px rgba(15,23,42,0.12)",
+                    backgroundColor: colors.heading,
                   },
                 },
               }}
             >
               {tabsInfo.map((tab) => (
-                <Tab key={tab.id || tab.tabKey} label={tab.tabKey} value={tab.tabKey} disableRipple />
+                <Tab key={tab.id || tab.tabKey} label={tab.tabKey} value={tab.tabKey} />
               ))}
             </Tabs>
           </Box>
@@ -178,13 +188,12 @@ const MCQQuestionComponent = ({ question, onSubmit }) => {
                 sx={{
                   backgroundColor: "#f8f9ff",
                   borderRadius: "10px",
-                  py: { xs: 2 },
-                  px: { xs: 3 },
+                  py: 2,
+                  px: 3,
                   m: 2,
-                  minHeight: "100px",
                 }}
               >
-                <Typography align="left" variant="body1" sx={{ color: "#333" }}>
+                <Typography sx={{ color: "#333", fontSize: "0.95rem" }}>
                   {active?.tabValue || "No content available"}
                 </Typography>
                 {active?.tabImage && (
@@ -192,7 +201,7 @@ const MCQQuestionComponent = ({ question, onSubmit }) => {
                     <img
                       src={buildImageUrl(active.tabImage)}
                       alt="tab"
-                      style={{ maxWidth: "100%", borderRadius: 8, height: "auto" }}
+                      style={{ maxWidth: "100%", borderRadius: 8 }}
                     />
                   </Box>
                 )}
@@ -218,102 +227,121 @@ const MCQQuestionComponent = ({ question, onSubmit }) => {
       </Box>
 
       {/* Options */}
-      <Box className="radio-options" display="flex" flexDirection="column" alignItems="flex-start">
-        {mcqoptions.map((optionObj, index) => (
-          <FormControlLabel
-            key={optionObj.id || index}
-            control={
-              <Checkbox
-                checked={selectedOptions.includes(optionObj.option)}
-                onChange={handleChange}
-                value={optionObj.option}
-                disabled={isCheckboxDisabled}
-                icon={
-                  <Box
-                    sx={{
-                      width: 20,
-                      height: 20,
-                      borderRadius: "10px",
-                      border: "1px solid #cfcfcf",
-                      boxSizing: "border-box",
-                    }}
-                  />
-                }
-                checkedIcon={
-                  <Box
-                    sx={{
-                      width: 20,
-                      height: 20,
-                      borderRadius: "10px",
-                      backgroundColor: "#2F3B6C",
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "center",
-                    }}
-                  >
-                    <CheckIcon sx={{ color: "#fff", fontSize: 16 }} />
-                  </Box>
-                }
-              />
-            }
-            label={<span className="radio-label">{optionObj.option}</span>}
-          />
-        ))}
+      <Box display="flex" flexDirection="column" alignItems="flex-start" gap={0.8}>
+        {mcqoptions.map((optionObj, index) => {
+          const optionText = optionObj.option;
+          const isSelected = selectedOptions.includes(optionText);
+          const isCorrectAnswer = answerArray.includes((optionText ?? "").trim());
+          const showFeedback = showAnswer;
+
+          const feedbackColor =
+            showFeedback && isCorrectAnswer
+              ? colors.correct
+              : showFeedback && isSelected && !isCorrectAnswer
+              ? colors.incorrect
+              : "inherit";
+
+          const feedbackIcon =
+            showFeedback && isCorrectAnswer ? (
+              <FaCheckCircle color={colors.correct} size={18} />
+            ) : showFeedback && isSelected && !isCorrectAnswer ? (
+              <FaTimesCircle color={colors.incorrect} size={18} />
+            ) : null;
+
+          return (
+            <FormControlLabel
+              key={optionObj.id || index}
+              control={
+                <Checkbox
+                  checked={isSelected}
+                  onChange={handleChange}
+                  value={optionText}
+                  disabled={isCheckboxDisabled}
+                  icon={
+                    <Box
+                      sx={{
+                        width: 20,
+                        height: 20,
+                        borderRadius: "10px",
+                        border: "1px solid #cfcfcf",
+                      }}
+                    />
+                  }
+                  checkedIcon={
+                    <Box
+                      sx={{
+                        width: 20,
+                        height: 20,
+                        borderRadius: "10px",
+                        backgroundColor: colors.heading,
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                      }}
+                    >
+                      <CheckIcon sx={{ color: "#fff", fontSize: 16 }} />
+                    </Box>
+                  }
+                />
+              }
+              label={
+                <span
+                  style={{
+                    color: feedbackColor,
+                    fontWeight: showFeedback && isCorrectAnswer ? 600 : "normal",
+                    display: "flex",
+                    alignItems: "center",
+                    gap: "8px",
+                    fontSize: "0.95rem",
+                  }}
+                >
+                  {optionText}
+                  {feedbackIcon}
+                </span>
+              }
+              sx={{ m: 0 }}
+            />
+          );
+        })}
       </Box>
 
-      {/* Reveal */}
-      <Box display="flex" flexDirection="column" alignItems="flex-start" mt={2}>
+      {/* Reveal Button */}
+      <Box display="flex" justifyContent="Center" mt={2}>
         <Button variant="contained" className="reveal-btn" onClick={handleReveal}>
           Reveal Answer
         </Button>
       </Box>
 
+      {/* Reveal Results */}
       {showAnswer && (
-        <Box sx={{ mt: 4 }} display="flex" flexDirection="column" alignItems="flex-start">
-          <Typography variant="subtitle1" fontWeight={600} mb={1} color="#2E3760">
-            Your Answers:
-          </Typography>
-          <List dense>
-            {selectedOptions.length > 0 ? (
-              selectedOptions.map((opt, idx) => {
-                const isOptionCorrect = answerArray.includes((opt ?? "").trim());
-                return (
-                  <ListItem key={idx} disablePadding>
-                    <ListItemText
-                      primary={opt}
-                      style={{ color: isOptionCorrect ? "green" : "red", fontWeight: 600 }}
-                    />
-                  </ListItem>
-                );
-              })
+        <Box sx={{ mt: 4 }}>
+          
+        
+          {/* Summary */}
+          <Typography
+            variant="subtitle1"
+            fontWeight={600}
+            mt={2}
+            mb={1}
+            color={isCorrect ? colors.correct : colors.incorrect}
+            display="flex"
+            alignItems="center"
+            gap={1}
+          >
+            {isCorrect ? (
+              <>
+                <FaCheckCircle color={colors.correct} size={20} /> Correct!
+              </>
             ) : (
-              <ListItem disablePadding>
-                <ListItemText primary="No options selected" />
-              </ListItem>
+              <>
+                <FaTimesCircle color={colors.incorrect} size={20} /> Incorrect
+              </>
             )}
-          </List>
-
-          <Typography variant="subtitle1" fontWeight={600} mt={2} mb={1} color={isCorrect ? "green" : "red"}>
-            {isCorrect ? "✅ Correct!" : "❌ Incorrect"}
           </Typography>
 
-          <Typography variant="subtitle1" fontWeight={600} mt={2} mb={1} color="#35b564ff">
-            Correct Answers:
-          </Typography>
-          <List>
-            {answerArray.length > 0 ? (
-              answerArray.map((answerItem, index) => (
-                <ListItem key={index}>
-                  <ListItemText primary={answerItem} style={{ fontWeight: 600, color: "green" }} />
-                </ListItem>
-              ))
-            ) : (
-              <ListItem>
-                <ListItemText primary="Answer not available" />
-              </ListItem>
-            )}
-          </List>
+          
 
+          {/* Explanation */}
           {explanation.length > 0 && (
             <RevealAnswerComponent
               questionText={questionText}
@@ -322,6 +350,7 @@ const MCQQuestionComponent = ({ question, onSubmit }) => {
               additionalInfoHeading="Additional Info"
               additionalInfoParagraphs={additionalInfo.map((info) => info.info)}
               additionalInfoImage={buildImageUrl(additionalInfo?.[0]?.image)}
+              isAnswerCorrect={isCorrect}
             />
           )}
         </Box>
