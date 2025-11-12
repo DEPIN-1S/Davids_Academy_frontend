@@ -8,9 +8,6 @@ import {
   Button,
   Tabs,
   Tab,
-  List,
-  ListItem,
-  ListItemText,
   useMediaQuery,
   useTheme,
 } from "@mui/material";
@@ -97,6 +94,7 @@ const DropdownQuestionComponent = ({ question, onSubmit }) => {
       const correctVal = backendAnswer ?? fallbackVal;
       return String(dropdownValues[dropdownId]) === String(correctVal);
     });
+
     const mark = correctStatus ? question?.marks || 5 : 0;
 
     if (typeof onSubmit === "function") {
@@ -158,14 +156,18 @@ const DropdownQuestionComponent = ({ question, onSubmit }) => {
         {questionText}
       </Typography>
 
-      {/* Instructions with left-aligned heading */}
+      {/* Instructions */}
       {!!instructions && (
         <Box sx={{ pb: 2, mb: 2 }}>
           <Typography
             variant="h6"
             component="h2"
             align="left"
-            sx={{ mb: 1, color: "text.primary", fontSize: { xs: "1rem", md: "1.25rem" } }}
+            sx={{
+              mb: 1,
+              color: "text.primary",
+              fontSize: { xs: "1rem", md: "1.25rem" },
+            }}
           >
             Instructions
           </Typography>
@@ -183,7 +185,7 @@ const DropdownQuestionComponent = ({ question, onSubmit }) => {
         </Box>
       )}
 
-      {/* White card with tabs and content */}
+      {/* Tabs Card */}
       <Box
         sx={{
           backgroundColor: "#fff",
@@ -193,7 +195,6 @@ const DropdownQuestionComponent = ({ question, onSubmit }) => {
           boxShadow: "0 6px 18px rgba(15,23,42,0.06)",
         }}
       >
-        {/* Tabs */}
         <Box
           sx={{
             display: "flex",
@@ -237,39 +238,31 @@ const DropdownQuestionComponent = ({ question, onSubmit }) => {
             }}
           >
             {tabsInfo?.map((tab, idx) => (
-              <Tab
-                key={tab.id || idx}
-                label={tab.tabKey}
-                value={idx}
-                disableRipple
-              />
+              <Tab key={tab.id || idx} label={tab.tabKey} value={idx} disableRipple />
             ))}
           </Tabs>
         </Box>
 
-        {/* Tab Content - Left aligned */}
         <Box
           sx={{
             backgroundColor: "#f3f4f6",
             borderRadius: 2,
             p: { xs: 2, md: 2.5 },
-            minHeight: { xs: "auto", md: 56 },
           }}
         >
           <Typography
             sx={{
               color: "#374151",
               textAlign: "left",
-              whiteSpace: "pre-line", // Still useful for inline text
+              whiteSpace: "pre-line",
               fontSize: { xs: "0.9rem", md: "1rem" },
               lineHeight: 1.6,
-              // Fix Quill <p> spacing and inherit line height
-              '& p': { margin: 0, marginBottom: '0.5em' },
-              '& p:last-child': { marginBottom: 0 },
-              '& *': { lineHeight: 'inherit' },
+              "& p": { margin: 0, marginBottom: "0.5em" },
+              "& p:last-child": { marginBottom: 0 },
+              "& *": { lineHeight: "inherit" },
             }}
             dangerouslySetInnerHTML={{
-              __html: tabsInfo[activeTab]?.tabValue || ''
+              __html: tabsInfo[activeTab]?.tabValue || "",
             }}
           />
           {tabsInfo[activeTab]?.tabImage && (
@@ -278,7 +271,7 @@ const DropdownQuestionComponent = ({ question, onSubmit }) => {
                 src={
                   tabsInfo[activeTab].tabImage.startsWith("http")
                     ? tabsInfo[activeTab].tabImage
-                    : `${'https://lunarsenterprises.com:8002/'}${tabsInfo[activeTab].tabImage}`
+                    : `https://lunarsenterprises.com:8002/${tabsInfo[activeTab].tabImage}`
                 }
                 alt="tab"
                 style={{
@@ -292,7 +285,7 @@ const DropdownQuestionComponent = ({ question, onSubmit }) => {
         </Box>
       </Box>
 
-      {/* Dropdown container - Responsive with proper text wrapping */}
+      {/* Dropdowns */}
       <Box sx={{ mb: 4 }}>
         <Box
           sx={{
@@ -301,9 +294,7 @@ const DropdownQuestionComponent = ({ question, onSubmit }) => {
             p: { xs: 2, md: 3 },
             display: "flex",
             flexWrap: "wrap",
-            alignItems: "flex-start",
             gap: { xs: 2, md: 2.5 },
-            minHeight: { xs: "auto", md: 64 },
           }}
         >
           {dropdowns.map((dt, index) => {
@@ -317,11 +308,10 @@ const DropdownQuestionComponent = ({ question, onSubmit }) => {
                 sx={{
                   display: "flex",
                   flexDirection: { xs: "column", sm: "row" },
-                  alignItems: { xs: "flex-start", sm: "flex-start" },
+                  alignItems: "flex-start",
                   gap: { xs: 0.5, sm: 1.5 },
                   width: { xs: "100%", sm: "auto" },
                   flex: { xs: "1 1 100%", sm: "1 1 auto" },
-                  minWidth: 0,
                 }}
               >
                 <Typography
@@ -330,12 +320,7 @@ const DropdownQuestionComponent = ({ question, onSubmit }) => {
                     fontSize: { xs: "0.9rem", md: "1rem" },
                     fontWeight: 500,
                     lineHeight: 1.4,
-                    wordWrap: "break-word",
-                    overflowWrap: "break-word",
-                    hyphens: "auto",
-                    flex: { sm: "0 0 auto" },
                     maxWidth: { xs: "100%", sm: "250px", md: "300px" },
-                    alignSelf: { sm: "center" },
                   }}
                 >
                   {label}
@@ -343,9 +328,7 @@ const DropdownQuestionComponent = ({ question, onSubmit }) => {
                 <FormControl
                   size="small"
                   sx={{
-                    width: { xs: "100%", sm: "auto" },
                     minWidth: { xs: "100%", sm: 160, md: 180 },
-                    flex: { sm: "0 0 auto" },
                   }}
                 >
                   <Select
@@ -356,15 +339,23 @@ const DropdownQuestionComponent = ({ question, onSubmit }) => {
                     sx={{
                       height: 40,
                       borderRadius: "12px",
-                      backgroundColor: "#fff",
+                      backgroundColor: showReveal
+                        ? (() => {
+                          const backendAnswer = dt.dropdownanswer;
+                          const fallbackVal =
+                            dt.dropdownoption?.find((opt) => opt.is_correct)?.dropdownValue ||
+                            dt.dropdownoption?.[0]?.dropdownValue;
+                          const correctVal = backendAnswer ?? fallbackVal;
+                          const isCorrectVal =
+                            String(dropdownValues[id]) === String(correctVal);
+                          return isCorrectVal
+                            ? "rgba(34,197,94,0.15)" // ✅ light green
+                            : "rgba(239,68,68,0.15)"; // ❌ light red
+                        })()
+                        : "#fff",
                       border: "1px solid #e5e7eb",
-                      fontSize: { xs: "0.9rem", md: "1rem" },
-                      transition: "box-shadow 200ms",
                       "&.Mui-focused": {
                         boxShadow: "0 4px 12px rgba(47,59,108,0.08)",
-                      },
-                      "& .MuiSelect-select": {
-                        py: 1,
                       },
                     }}
                   >
@@ -372,21 +363,18 @@ const DropdownQuestionComponent = ({ question, onSubmit }) => {
                       <em>Select</em>
                     </MenuItem>
                     {options.map((opt, oi) => (
-                      <MenuItem
-                        key={opt.id || oi}
-                        value={opt.dropdownValue || `Option ${oi + 1}`}
-                      >
-                        {opt.dropdownValue || `Option ${oi + 1}`}
+                      <MenuItem key={opt.id || oi} value={opt.dropdownValue}>
+                        {opt.dropdownValue}
                       </MenuItem>
                     ))}
                   </Select>
                 </FormControl>
+
               </Box>
             );
           })}
         </Box>
       </Box>
-
 
       {/* Reveal Button */}
       <Box textAlign="center" sx={{ mb: 4 }}>
@@ -400,7 +388,6 @@ const DropdownQuestionComponent = ({ question, onSubmit }) => {
             fontWeight: 600,
             padding: { xs: "0.5rem 2rem", md: "0.6rem 2.5rem" },
             borderRadius: "10px",
-            fontSize: { xs: "0.9rem", md: "1rem" },
             "&:hover": { backgroundColor: "#e0b000" },
             "&:disabled": {
               backgroundColor: "#e0e0e0",
@@ -417,101 +404,127 @@ const DropdownQuestionComponent = ({ question, onSubmit }) => {
         <Box sx={{ mt: 4, mb: 6 }}>
           <Typography
             variant="subtitle1"
-            component="h3"
             fontWeight={600}
-            mb={1.5}
+            mb={2}
             color="#2E3760"
             sx={{ fontSize: { xs: "1rem", md: "1.1rem" } }}
           >
-            Your Answer:
+            Answer Review
           </Typography>
-          <List
-            dense
+
+          <Box
+            component="table"
             sx={{
-              backgroundColor: "#f9fafb",
+              width: "100%",
+              borderCollapse: "collapse",
               borderRadius: 2,
-              p: 2,
+              overflow: "hidden",
               mb: 3,
             }}
           >
-            {dropdowns.map((dt, idx) => {
-              const dropdownId = dt.id;
-              const label = dt.dropdownField || `Option ${idx + 1}`;
-              const userVal = dropdownValues[dropdownId] || "Not selected";
-              const backendAnswer = dt.dropdownanswer;
-              const fallbackVal =
-                dt.dropdownoption?.find((opt) => opt.is_correct)
-                  ?.dropdownValue || dt.dropdownoption?.[0]?.dropdownValue;
-              const correctVal =
-                backendAnswer ?? fallbackVal ?? "Not available";
-              const correct = String(userVal) === String(correctVal);
-              return (
-                <ListItem key={dropdownId ?? idx} disablePadding sx={{ mb: 0.5 }}>
-                  <ListItemText
-                    primary={`${label}: ${userVal}`}
-                    primaryTypographyProps={{
-                      color: correct ? "green" : "red",
-                      fontWeight: 500,
-                      fontSize: { xs: "0.9rem", md: "1rem" },
+            <thead>
+              <tr style={{ backgroundColor: "#f1f5f9", textAlign: "left" }}>
+                <th
+                  style={{
+                    padding: "10px 14px",
+                    fontWeight: 600,
+                    color: "#2E3760",
+                    fontSize: "0.95rem",
+                    width: "45%",
+                  }}
+                >
+                  Your Answer
+                </th>
+                <th
+                  style={{
+                    padding: "10px 14px",
+                    fontWeight: 600,
+                    color: "#2E3760",
+                    fontSize: "0.95rem",
+                    width: "45%",
+                  }}
+                >
+                  Correct Answer
+                </th>
+                <th
+                  style={{
+                    padding: "10px 14px",
+                    fontWeight: 600,
+                    color: "#2E3760",
+                    fontSize: "0.95rem",
+                    textAlign: "center",
+                    width: "10%",
+                  }}
+                >
+                  Result
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              {dropdowns.map((dt, idx) => {
+                const dropdownId = dt.id;
+                const label = dt.dropdownField || `Option ${idx + 1}`;
+                const userVal = dropdownValues[dropdownId] || "Not selected";
+                const backendAnswer = dt.dropdownanswer;
+                const fallbackVal =
+                  dt.dropdownoption?.find((opt) => opt.is_correct)
+                    ?.dropdownValue || dt.dropdownoption?.[0]?.dropdownValue;
+                const correctVal = backendAnswer ?? fallbackVal ?? "Not available";
+                const isCorrectVal = String(userVal) === String(correctVal);
+
+                return (
+                  <tr
+                    key={dropdownId ?? idx}
+                    style={{
+                      backgroundColor: isCorrectVal
+                        ? "rgba(34,197,94,0.08)"
+                        : "rgba(239,68,68,0.08)",
                     }}
-                    sx={{ textAlign: "left" }}
-                  />
-                </ListItem>
-              );
-            })}
-          </List>
+                  >
+                    <td
+                      style={{
+                        padding: "10px 14px",
+                        color: isCorrectVal ? "green" : "red",
+                        fontWeight: 500,
+                        fontSize: "0.95rem",
+                      }}
+                    >
+                     {userVal}
+                    </td>
+                    <td
+                      style={{
+                        padding: "10px 14px",
+                        color: "#16a34a",
+                        fontWeight: 500,
+                        fontSize: "0.95rem",
+                      }}
+                    >
+                     {correctVal}
+                    </td>
+                    <td
+                      style={{
+                        padding: "10px 14px",
+                        textAlign: "center",
+                        fontSize: "1.2rem",
+                      }}
+                    >
+                      {isCorrectVal ? "✅" : "❌"}
+                    </td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </Box>
 
           <Typography
             variant="subtitle1"
-            component="h3"
             fontWeight={600}
-            mb={1.5}
-            color="#24a129"
-            sx={{ fontSize: { xs: "1rem", md: "1.1rem" } }}
-          >
-            Correct Answer:
-          </Typography>
-          <List
-            dense
-            sx={{
-              backgroundColor: "#f0fdf4",
-              borderRadius: 2,
-              p: 2,
-              mb: 3,
-            }}
-          >
-            {dropdowns.map((dt, idx) => {
-              const dropdownId = dt.id;
-              const label = dt.dropdownField || `Option ${idx + 1}`;
-              const backendAnswer = dt.dropdownanswer;
-              const fallbackVal =
-                dt.dropdownoption?.find((opt) => opt.is_correct)
-                  ?.dropdownValue || dt.dropdownoption?.[0]?.dropdownValue;
-              const correctVal =
-                backendAnswer ?? fallbackVal ?? "Not available";
-              return (
-                <ListItem key={dropdownId ?? idx} disablePadding sx={{ mb: 0.5 }}>
-                  <ListItemText
-                    primary={`${label}: ${correctVal}`}
-                    primaryTypographyProps={{
-                      color: "#16a34a",
-                      fontWeight: 500,
-                      fontSize: { xs: "0.9rem", md: "1rem" },
-                    }}
-                    sx={{ textAlign: "left" }}
-                  />
-                </ListItem>
-              );
-            })}
-          </List>
-
-          <Typography
-            variant="subtitle1"
-            component="h3"
-            fontWeight={600}
-            mb={2}
+            mb={3}
             color={isCorrect ? "green" : "red"}
-            sx={{ fontSize: { xs: "1rem", md: "1.1rem" } }}
+            sx={{
+              fontSize: { xs: "1rem", md: "1.1rem" },
+              textAlign: "center",
+            }}
           >
             {isCorrect ? "✅ Correct!" : "❌ Incorrect"}
           </Typography>
@@ -519,9 +532,7 @@ const DropdownQuestionComponent = ({ question, onSubmit }) => {
           <RevealAnswerComponent
             questionText={questionText}
             explanationHeading={explanation[0]?.heading || "Explanation"}
-            explanationParagraphs={
-              explanation.map((exp) => exp.explanation) || []
-            }
+            explanationParagraphs={explanation.map((exp) => exp.explanation) || []}
             additionalInfoHeading="Additional Info"
             additionalInfoParagraphs={
               (question.additionalInfo || []).map((a) => a.info) || []
@@ -531,7 +542,6 @@ const DropdownQuestionComponent = ({ question, onSubmit }) => {
                 ? `https://lunarsenterprises.com:8002/${question.additionalInfo[0].image}`
                 : null
             }
-
           />
         </Box>
       )}
