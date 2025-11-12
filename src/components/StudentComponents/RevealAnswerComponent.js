@@ -76,7 +76,7 @@ const RevealAnswerComponent = ({
 
           < Box
             component="img"
-            src={'https://lunarsenterprises.com:8002' + additionalInfoImage}
+            src={'https://lunarsenterprises.com:6040' + additionalInfoImage}
             alt="Additional Info"
             sx={{ width: '100%', mt: 2, borderRadius: 2 }}
           />
