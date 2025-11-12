@@ -19,7 +19,7 @@ const buildImageUrl = (path) => {
   if (!path) return null;
   if (path.startsWith("http://") || path.startsWith("https://")) return path;
   const clean = String(path).replace(/^\/+/, "");
-  return `https://lunarsenterprises.com:6040/${clean}`;
+  return `https://lunarsenterprises.com:8002/${clean}`;
 };
 
 const MCQQuestionComponent = ({ question, onSubmit }) => {

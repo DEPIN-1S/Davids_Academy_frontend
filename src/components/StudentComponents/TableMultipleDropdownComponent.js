@@ -227,25 +227,25 @@ const TableMultipleDropdownComponent = ({ question, onSubmit }) => {
             }}
           >
             <Typography
-  variant="body1"
-  sx={{
-    color: "#333",
-    // Prevent <p> tags from Quill from having unwanted margins
-    '& p': { margin: 0, marginBottom: '0.5em' },
-    '& p:last-child': { marginBottom: 0 },
-    '& *': { lineHeight: 1.6 },
-  }}
-  dangerouslySetInnerHTML={{
-    __html: tabsInfo.find((tab) => tab.tabKey === activeTab)?.tabValue || ''
-  }}
-/>
+              variant="body1"
+              sx={{
+                color: "#333",
+                // Prevent <p> tags from Quill from having unwanted margins
+                '& p': { margin: 0, marginBottom: '0.5em' },
+                '& p:last-child': { marginBottom: 0 },
+                '& *': { lineHeight: 1.6 },
+              }}
+              dangerouslySetInnerHTML={{
+                __html: tabsInfo.find((tab) => tab.tabKey === activeTab)?.tabValue || ''
+              }}
+            />
             {tabsInfo[activeTab]?.tabImage && (
               <Box sx={{ mt: 2, textAlign: "center" }}>
                 <img
                   src={
                     tabsInfo[activeTab].tabImage.startsWith("http")
                       ? tabsInfo[activeTab].tabImage
-                      : `${'https://lunarsenterprises.com:6040/'}${tabsInfo[activeTab].tabImage}`
+                      : `${'https://lunarsenterprises.com:8002/'}${tabsInfo[activeTab].tabImage}`
                   }
                   alt="tab"
                   style={{
@@ -513,7 +513,7 @@ const TableMultipleDropdownComponent = ({ question, onSubmit }) => {
             }
             additionalInfoImage={
               question.additionalInfo?.[0]?.image
-                ? `https://lunarsenterprises.com:6040/${question.additionalInfo[0].image}`
+                ? `https://lunarsenterprises.com:8002/${question.additionalInfo[0].image}`
                 : null
             }
 
