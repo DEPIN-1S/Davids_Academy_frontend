@@ -406,45 +406,6 @@ const TableHighlightSelectComponent = ({ question, onSubmit }) => {
           <Typography
             variant="subtitle1"
             fontWeight={600}
-            mb={1}
-            color="#2E3760"
-          >
-            Your Selections
-          </Typography>
-
-          <List dense>
-            {Array.from(selectedItems).length > 0 ? (
-              Array.from(selectedItems).map((item, idx) => {
-                const isCorrectSelection = answer.includes(item);
-                return (
-                  <ListItem key={idx} disablePadding sx={{ py: 0.5 }}>
-                    <ListItemText
-                      primary={item}
-                      primaryTypographyProps={{
-                        sx: {
-                          color: isCorrectSelection ? "green" : "red",
-                          fontWeight: 500,
-                        },
-                      }}
-                    />
-                  </ListItem>
-                );
-              })
-            ) : (
-              <ListItem disablePadding sx={{ py: 0.5 }}>
-                <ListItemText
-                  primary="No items selected"
-                  primaryTypographyProps={{
-                    sx: { color: "#6b7280", fontStyle: "italic" },
-                  }}
-                />
-              </ListItem>
-            )}
-          </List>
-
-          <Typography
-            variant="subtitle1"
-            fontWeight={600}
             mt={2}
             mb={1}
             color="#35b564ff"
@@ -503,7 +464,7 @@ const TableHighlightSelectComponent = ({ question, onSubmit }) => {
                 ? `https://lunarsenterprises.com:8002/${question.additionalInfo[0].image}`
                 : null
             }
-
+            isAnswerCorrect={isCorrect}
           />
         </Box>
       )}

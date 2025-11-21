@@ -316,6 +316,7 @@ const MultiRadioQuestionComponent = ({ question, onSubmit }) => {
                 ? `https://lunarsenterprises.com:8002/${question.additionalInfo[0].image}`
                 : null
             }
+            isAnswerCorrect={isCorrect}
           />
         </Box>
       )}

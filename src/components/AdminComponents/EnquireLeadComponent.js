@@ -49,13 +49,13 @@ const EnquireLeadComponent = () => {
                                     <tbody>
                                         {recentEnquiries.map((enquiry, index) => (
                                             <tr key={enquiry.cu_id || index} className={index % 2 === 1 ? "row-even" : "row-odd"}>
-                                                <td className="cell-qid">{enquiry.cu_id || index + 1}</td>
-                                                <td className="cell-preview">{enquiry.cu_name}</td>
+                                                <td className="cell-qid">{enquiry?.cu_id || index + 1}</td>
+                                                <td className="cell-preview">{enquiry?.cu_name}</td>
                                                 <td className="cell-contact">
-                                                    {enquiry.cu_email} <br />{enquiry.cu_mobile}
+                                                    {enquiry.cu_email} <br />{enquiry?.cu_mobile}
                                                 </td>
-                                                <td className="cell-course">{enquiry.cu_course_interested}</td>
-                                                <td className="cell-message">{enquiry.cu_message}</td>
+                                                <td className="cell-course">{enquiry?.cs_name}</td>
+                                                <td className="cell-message">{enquiry?.cu_message}</td>
                                             </tr>
                                         ))}
                                     </tbody>

@@ -12,6 +12,8 @@ import {
   deleteSuccessStoryApi,
   resetQbankApi,
   resetMockTestApi,
+  adminUpdateTest,
+  getQuestionBankResultApi,
 } from "./examAPI";
 import {
   adminGetQBankQuestions,
@@ -323,6 +325,36 @@ export const resetMockTest = createAsyncThunk(
   }
 );
 
+// Update an existing test
+export const adminUpdateTestThunk = createAsyncThunk(
+  "exam/adminUpdateTest",
+  async ({ testId, updatedData }, { rejectWithValue }) => {
+    try {
+      const data = await adminUpdateTest(testId, updatedData);
+      return data; // updated test object
+    } catch (error) {
+      return rejectWithValue(error.message || "Failed to update test");
+    }
+  }
+);
+
+
+// NEW THUNK: Get Question Bank Result
+export const getQuestionBankResult = createAsyncThunk(
+  "exam/getQuestionBankResult",
+  async (token, { rejectWithValue }) => {
+    try {
+      const data = await getQuestionBankResultApi(token);
+      return data;
+    } catch (error) {
+      return rejectWithValue(error.message);
+    }
+  }
+);
+
+
+
+
 const questionSlice = createSlice({
   name: "questions",
   initialState: {
@@ -407,6 +439,10 @@ const questionSlice = createSlice({
 
     //for resetting mock test
     resetMockTestResult: null,
+
+    //for getting question bank result 
+    questionBankResult: null,
+
 
   },
   reducers: {
@@ -745,22 +781,58 @@ const questionSlice = createSlice({
       })
 
       // --- Reset Mock Test ---
-    .addCase(resetMockTest.pending, (state) => {
+      .addCase(resetMockTest.pending, (state) => {
         state.loading = true;
         state.error = null;
         state.success = false;
       })
-    .addCase(resetMockTest.fulfilled, (state, action) => {
-      state.loading = false;
-      state.success = true;
-      state.resetMockTestResult = action.payload;
-    })
-    .addCase(resetMockTest.rejected, (state, action) => {
-      state.loading = false;
-      state.error = action.payload;
-    });
+      .addCase(resetMockTest.fulfilled, (state, action) => {
+        state.loading = false;
+        state.success = true;
+        state.resetMockTestResult = action.payload;
+      })
+      .addCase(resetMockTest.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+      })
 
-},
+
+      .addCase(adminUpdateTestThunk.pending, (state) => {
+        state.adminCreateTestLoading = true; // reuse create test loading
+        state.adminCreateTestError = null;
+      })
+      .addCase(adminUpdateTestThunk.fulfilled, (state, action) => {
+        state.adminCreateTestLoading = false;
+        // Update the test in `tests` array if exists
+        const index = state.tests.findIndex(t => t.id === action.payload.id);
+        if (index !== -1) {
+          state.tests[index] = action.payload;
+        }
+        state.adminCreateTestResult = action.payload; // latest test result
+      })
+      .addCase(adminUpdateTestThunk.rejected, (state, action) => {
+        state.adminCreateTestLoading = false;
+        state.adminCreateTestError = action.payload;
+      })
+
+      // Get Question Bank Result
+      .addCase(getQuestionBankResult.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(getQuestionBankResult.fulfilled, (state, action) => {
+        state.loading = false;
+        state.questionBankResult = action.payload;
+      })
+
+      .addCase(getQuestionBankResult.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+      });
+
+
+
+  },
 });
 
 export const { resetStatus } = questionSlice.actions;

@@ -106,7 +106,7 @@ const TableMultipleDropdownComponent = ({ question, onSubmit }) => {
   }
 
   return (
-    <Box sx={{ width: "100%" }}>
+    <Box sx={{ width: "100%", px: 8 }}>
       {/* Header row */}
       <Box sx={{ width: "100%", px: { xs: 2, md: 6 }, pt: 2, mb: 1 }}>
         <Box
@@ -516,7 +516,7 @@ const TableMultipleDropdownComponent = ({ question, onSubmit }) => {
                 ? `https://lunarsenterprises.com:8002/${question.additionalInfo[0].image}`
                 : null
             }
-
+            isAnswerCorrect={isCorrect}
           />
         </Box>
       )}

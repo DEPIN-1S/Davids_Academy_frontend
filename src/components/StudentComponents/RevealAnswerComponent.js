@@ -5,6 +5,7 @@ import {
   useTheme,
   useMediaQuery,
 } from '@mui/material';
+import ResultModal from './ResultModal';
 
 const RevealAnswerComponent = ({
   questionText = '',
@@ -13,9 +14,12 @@ const RevealAnswerComponent = ({
   additionalInfoHeading = 'Additional Info',
   additionalInfoParagraphs = [],
   additionalInfoImage = null, // URL string or null
+  isAnswerCorrect, // ← Destructure here
 }) => {
+  console.log("inside reveal answer  hhhfff", isAnswerCorrect); // true or false
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('md'));
+  const [openModal, setOpenModal] = React.useState(true);  // or false initially
 
   return (
     <Box
@@ -27,6 +31,9 @@ const RevealAnswerComponent = ({
         backgroundColor: '#fafafa',
       }}
     >
+      <ResultModal open={openModal}
+        handleClose={() => setOpenModal(false)}
+        isAnswerCorrect={isAnswerCorrect} />
       {/* Left - Question & Explanation */}
       <Box
         sx={{
@@ -37,7 +44,6 @@ const RevealAnswerComponent = ({
           boxShadow: '0 2px 6px rgba(0,0,0,0.05)',
         }}
       >
-    
 
         {/* Explanation heading (supports custom HTML) */}
         {explanationHeading && (

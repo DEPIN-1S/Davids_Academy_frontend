@@ -246,7 +246,7 @@
   }
 }
 
-.recorded-class-delete-btn {
+.recorded-class-edit-btn {
   background: #34495e;
   color: white;
   font-size: 16px;
@@ -260,6 +260,23 @@
   position: relative;
   overflow: hidden;
 }
+
+.recorded-class-delete-btn {
+  background: #e74c3c;
+  color: white;
+  font-size: 16px;
+  font-weight: 600;
+  padding: 12px 28px;
+  border: none;
+  border-radius: 12px;
+  cursor: pointer;
+  box-shadow: 0 6px 15px rgba(0, 0, 0, 0.15);
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+
 
 .recorded-class-delete-btn:hover {
   transform: translateY(-3px);

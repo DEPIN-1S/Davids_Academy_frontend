@@ -7,7 +7,7 @@ const navItems = [
   { label: "My Q-Bank", path: "/student/question-bank" },
   { label: "Recorded Classes", path: "/student/recorded-class" },
   // { label: 'Notes', path: '/student/notes' },
-  { label: " MockTests", path: "/student/tests" },
+  { label: " Mock Tests", path: "/student/tests" },
 ];
 const StudentNavbar = () => {
   const theme = useTheme();

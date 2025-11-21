@@ -420,6 +420,7 @@ const SentenceQuestionComponent = ({ question, onSubmit }) => {
             additionalInfoHeading="Additional Info"
             additionalInfoParagraphs={additionalInfo.map((info) => info.info) || []}
             additionalInfoImage={buildImageUrl(additionalInfo?.[0]?.image)}
+            isAnswerCorrect={isCorrect}
           />
         </Box>
       )}

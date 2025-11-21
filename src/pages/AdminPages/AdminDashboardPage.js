@@ -71,7 +71,7 @@ const DashboardPage = () => {
         {stats.map((stat, index) => (
           <div key={index} className="stats-card">
             <div className="stats-header">
-              <h3>{stat.title}</h3>
+              <h3 style={{ fontWeight: "bold" }} >{stat.title}</h3>
               <span className="arrow-icon">↗</span>
             </div>
             <h2>{stat.value.toLocaleString()}</h2>
@@ -85,41 +85,46 @@ const DashboardPage = () => {
       <div className="content-grid">
         {/* Performance */}
         <div className="performance-card">
-          <h2>Student Performance Overview</h2>
+          <h3>Student Performance Overview</h3>
 
-          <h4>Top Performing Batches This Month</h4>
-          {topBatches.map((batch, i) => (
-            <div key={i} className="progress-item">
-              <span>{batch.name}</span>
-              <div className="progress-bar">
-                <div
-                  className="progress-fill"
-                  style={{ width: `${batch.avg}%`, backgroundColor: batch.color }}
-                />
+          <div className="performing-batches">
+            <h2>Top Performing Batches This Month</h2>
+            {topBatches.map((batch, i) => (
+              <div key={i} className="progress-item">
+                <h4>{batch.name}</h4>
+                <div className="progress-bar">
+                  <div
+                    className="progress-fill"
+                    style={{ width: `${batch.avg}%`, backgroundColor: batch.color }}
+                  />
+                </div>
+                <span className="avg-text">Avg {batch.avg}%</span>
               </div>
-              <span className="avg-text">Avg {batch.avg}%</span>
-            </div>
-          ))}
+            ))}
+          </div>
 
-          <h4 style={{ marginTop: "20px" }}>Top Performing Subjects This Month</h4>
-          {topSubjects.map((subj, i) => (
-            <div key={i} className="progress-item">
-              <span>{subj.name}</span>
-              <div className="progress-bar">
-                <div
-                  className="progress-fill"
-                  style={{ width: `${subj.avg}%`, backgroundColor: subj.color }}
-                />
+          <div className="performing-subjects">
+            <h2>Top Performing Subjects This Month</h2>
+            {topSubjects.map((subj, i) => (
+              <div key={i} className="progress-item">
+                <h4>{subj.name}</h4>
+                <div className="progress-bar">
+                  <div
+                    className="progress-fill"
+                    style={{ width: `${subj.avg}%`, backgroundColor: subj.color }}
+                  />
+                </div>
+                <span className="avg-text">Avg {subj.avg}%</span>
               </div>
-              <span className="avg-text">Avg {subj.avg}%</span>
-            </div>
-          ))}
+            ))}
+          </div>
         </div>
+
 
         {/* Recent Enquiries */}
         <div className="enquiries-card">
           <div className="enquiries-header">
-            <h2>Recent Enquiries</h2>
+            <h3 style={{ fontWeight: "bold" }} >Recent Enquiries</h3>
             <Link to="/admin/enquire-lead">
               <button className="view-all-btn">View all</button>
             </Link>
@@ -127,11 +132,11 @@ const DashboardPage = () => {
 
           <div className="enquiry-list">
             {recentEnquiries?.length > 0 ? (
-              recentEnquiries.slice(0, 4).map(({ _id, cu_course_interested, cu_name, cu_status }) => (
+              recentEnquiries.slice(0, 7).map(({ _id, cs_name, cu_name, cu_status }) => (
                 <div className="enquiry-item" key={_id}>
                   <div>
                     <h4>{cu_name}</h4>
-                    <span className="enquiry-course">{cu_course_interested}</span>
+                    <span className="enquiry-course">{cs_name}</span>
                   </div>
                   <span className="status-badge">{cu_status}</span>
                 </div>

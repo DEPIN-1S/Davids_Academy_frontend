@@ -11,14 +11,13 @@ import {
   Alert,
   Modal,
   Box,
-  IconButton
+  IconButton,
+  TextField
 } from '@mui/material';
 import PlayArrowIcon from '@mui/icons-material/PlayArrow';
 import CloseIcon from '@mui/icons-material/Close';
+import SearchIcon from '@mui/icons-material/Search';
 import { fetchStudentRecordedClasses } from '../../features/recorded classes/studentRecordedClassSlice';
-import CalendarTodayIcon from "@mui/icons-material/CalendarToday";
-import AccessTimeIcon from "@mui/icons-material/AccessTime";
-import PersonIcon from "@mui/icons-material/Person";
 
 const modalStyle = {
   position: 'absolute',
@@ -37,15 +36,18 @@ const modalStyle = {
 const formatVideoUrl = (url) => {
   if (!url) return '';
   if (url.includes('youtube')) {
-    const regExp = /^.*(youtu\.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
+    const regExp =
+      /^.*(youtu\.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
     const match = url.match(regExp);
-    if (match && match[2].length === 11) return `https://www.youtube.com/embed/${match[2]}`;
+    if (match && match[2].length === 11)
+      return `https://www.youtube.com/embed/${match[2]}`;
     if (url.includes('embed')) return url;
     return url;
   }
   if (url.includes('drive.google.com')) {
     const fileIdMatch = url.match(/[-\w]{25,}/);
-    if (fileIdMatch) return `https://drive.google.com/file/d/${fileIdMatch[0]}/preview`;
+    if (fileIdMatch)
+      return `https://drive.google.com/file/d/${fileIdMatch[0]}/preview`;
     return url;
   }
   return url;
@@ -53,43 +55,122 @@ const formatVideoUrl = (url) => {
 
 const NewVideoGrid = () => {
   const dispatch = useDispatch();
-  const { list: recordings, loading, error, page, totalPages, limit } = useSelector(
-    (state) => state.studentRecordings
-  );
-
-  console.log("🎥 Recordings Data:", recordings);
+  const {
+    list: recordings,
+    loading,
+    error,
+    page,
+    totalPages,
+    limit
+  } = useSelector((state) => state.studentRecordings);
 
   const [selectedVideo, setSelectedVideo] = useState(null);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [typingTimeout, setTypingTimeout] = useState(null);
 
+  // Initial load
   useEffect(() => {
     const token = sessionStorage.getItem('accessToken');
     if (token) {
-      dispatch(fetchStudentRecordedClasses({ token, page: 1, limit: 12 }));
+      dispatch(fetchStudentRecordedClasses({ token, page: 1, limit: 12, searchQuery: "" }));
     }
   }, [dispatch, limit]);
 
-  const handlePageChange = (event, newPage) => {
-    const token = sessionStorage.getItem('accessToken');
-    dispatch(fetchStudentRecordedClasses({ token, page: newPage, limit }));
+  // Debounced search handler
+  const handleSearch = (value) => {
+    setSearchTerm(value);
+
+    if (typingTimeout) clearTimeout(typingTimeout);
+
+    const timeout = setTimeout(() => {
+      const token = sessionStorage.getItem('accessToken');
+      dispatch(
+        fetchStudentRecordedClasses({
+          token,
+          page: 1,
+          limit: 12,
+          searchQuery: value.trim(),
+        })
+      );
+    }, 300);
+
+    setTypingTimeout(timeout);
   };
 
-  const handlePlay = (videoUrl) => {
-    setSelectedVideo(formatVideoUrl(videoUrl));
+  // Pagination handler
+  const handlePageChange = (event, newPage) => {
+    const token = sessionStorage.getItem('accessToken');
+    dispatch(
+      fetchStudentRecordedClasses({
+        token,
+        page: newPage,
+        limit,
+        searchQuery: searchTerm.trim(),
+      })
+    );
   };
 
   if (loading)
     return <CircularProgress sx={{ display: 'block', margin: '40px auto' }} />;
+
   if (error) return <Alert severity="error">{error}</Alert>;
 
   return (
     <div style={{ padding: '20px' }}>
-      <Typography py={3} variant="h5" fontWeight={600} gutterBottom>
-        Recorded Classes
-      </Typography>
+
+      {/* Search Bar */}
+      <Box sx={{ display: 'flex', justifyContent: 'center', mt: 3, maxWidth: 500, margin: '0 auto' }}>
+        <TextField
+          fullWidth
+          placeholder="Search recorded classes..."
+          variant="outlined"
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+          sx={{
+            flex: 1,
+            "& .MuiOutlinedInput-root": {
+              borderRadius: "12px 0 0 12px",
+              backgroundColor: "#fff",
+              boxShadow: "0 2px 6px rgba(0,0,0,0.08)",
+              "& fieldset": { borderColor: "#b8b8b8" },
+              "&:hover fieldset": { borderColor: "#2c3e50" },
+              "&.Mui-focused fieldset": { borderColor: "#2c3e50", borderWidth: "2px" },
+            },
+            "& input": { padding: "18px 14px", fontSize: "15px" },
+          }}
+        />
+        <IconButton
+          color="primary"
+          onClick={() => {
+            const token = sessionStorage.getItem('accessToken');
+            dispatch(
+              fetchStudentRecordedClasses({
+                token,
+                page: 1,
+                limit: 12,
+                searchQuery: searchTerm.trim(),
+              })
+            );
+          }}
+          sx={{
+            borderRadius: "0 12px 12px 0",
+            backgroundColor: "#2c3e50",
+            color: "#fff",
+            "&:hover": { backgroundColor: "#1b2733" },
+          }}
+        >
+          <SearchIcon />
+        </IconButton>
+      </Box>
 
       {recordings && recordings.length > 0 ? (
         <>
-          <Grid container spacing={3}>
+          <Grid
+            container
+            spacing={3}
+            justifyContent="center"
+            paddingTop="50px"
+          >
             {recordings.map((rec) => (
               <Grid
                 item
@@ -98,21 +179,18 @@ const NewVideoGrid = () => {
                 md={4}
                 lg={3}
                 key={rec.r_id}
-                sx={{
-                  display: 'flex',
-                  justifyContent: 'center',
-                }}
+                sx={{ display: "flex", justifyContent: "center" }}
               >
                 <Card
                   sx={{
                     borderRadius: 3,
-                    overflow: 'hidden',
-                    width: '100%',
-                    maxWidth: 330,
-                    transition: 'transform 0.3s ease, box-shadow 0.3s ease',
+                    overflow: "hidden",
+                    width: "100%",
+                    maxWidth: 300,
+                    transition: "transform 0.3s ease, box-shadow 0.3s ease",
                     boxShadow: 2,
-                    '&:hover': {
-                      transform: 'translateY(-5px)',
+                    "&:hover": {
+                      transform: "translateY(-5px)",
                       boxShadow: 5,
                     },
                   }}
@@ -132,8 +210,9 @@ const NewVideoGrid = () => {
                           'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzAwIiBoZWlnaHQ9IjIwMCIgdmlld0JveD0iMCAwIDMwMCAyMDAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIzMDAiIGhlaWdodD0iMjAwIiBmaWxsPSIjZjVmNWY1Ii8+Cjx0ZXh0IHg9IjE1MCIgeT0iMTAwIiBmb250LWZhbWlseT0iQXJpYWwsIHNhbnMtc2VyaWYiIGZvbnQtc2l6ZT0iMTQiIGZpbGw9IiM5OTk5OTkiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGR5PSIuM2VtIj5ObyBJbWFnZTwvdGV4dD4KPC9zdmc+Cg==';
                       }}
                     />
+
                     <IconButton
-                      onClick={() => handlePlay(rec.r_video_url)}
+                      onClick={() => setSelectedVideo(formatVideoUrl(rec.r_video_url))}
                       sx={{
                         position: 'absolute',
                         top: '50%',
@@ -141,19 +220,22 @@ const NewVideoGrid = () => {
                         transform: 'translate(-50%, -50%)',
                         backgroundColor: 'rgba(0,0,0,0.6)',
                         color: '#fff',
-                        '&:hover': { backgroundColor: 'rgba(0,0,0,0.8)' },
+                        '&:hover': {
+                          backgroundColor: 'rgba(0,0,0,0.8)',
+                        },
                       }}
                     >
                       <PlayArrowIcon fontSize="large" />
                     </IconButton>
                   </Box>
+
                   <CardContent sx={{ px: 1 }}>
                     <Typography variant="subtitle1" noWrap>
                       {rec.r_title}
                     </Typography>
 
                     <Typography variant="body2" color="text.secondary" noWrap>
-                      Tutor Name : {rec.r_tutor_name}
+                      Tutor: {rec.r_tutor_name}
                     </Typography>
 
                     <Typography variant="caption" color="text.secondary" display="block">
@@ -166,7 +248,6 @@ const NewVideoGrid = () => {
                       </Typography>
                     )}
                   </CardContent>
-
                 </Card>
               </Grid>
             ))}
@@ -177,7 +258,11 @@ const NewVideoGrid = () => {
               count={totalPages}
               page={page}
               onChange={handlePageChange}
-              sx={{ mt: 3, display: 'flex', justifyContent: 'center' }}
+              sx={{
+                mt: 3,
+                display: 'flex',
+                justifyContent: 'center',
+              }}
             />
           )}
         </>
@@ -187,7 +272,7 @@ const NewVideoGrid = () => {
           color="text.secondary"
           sx={{ mt: 4, textAlign: 'center' }}
         >
-          No recordings available.
+          No recordings found.
         </Typography>
       )}
 
@@ -200,6 +285,7 @@ const NewVideoGrid = () => {
           >
             <CloseIcon />
           </IconButton>
+
           <iframe
             width="100%"
             height="450"

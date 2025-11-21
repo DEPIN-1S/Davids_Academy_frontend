@@ -1,13 +1,13 @@
 import React, { useEffect, useState } from "react";
 import { FaTrash, FaEdit, FaPlus, FaSearch } from "react-icons/fa";
-import { adminFetchQBankQuestions, adminFetchMockTestQuestions, adminFetchTestQuestions, getTestQuestions, adminDeleteQBankQuestion, adminDeleteTest } from "../../features/exam/examSlice";
+import { adminFetchQBankQuestions, adminFetchMockTestQuestions, adminFetchTestQuestions, getTestQuestions, adminDeleteQBankQuestion, adminDeleteTest, adminUpdateTestThunk } from "../../features/exam/examSlice";
 import "../../styles/AdminStyles/QManagement.css";
 import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import VisibilityIcon from "@mui/icons-material/Visibility";
-import { Button } from "@mui/material";
+import { Button, TextField } from "@mui/material";
 import McqQuestionView from "../../Admin Question View/McqQuestionView";
 import { Modal, Box } from "@mui/material";
 
@@ -15,6 +15,17 @@ import { Modal, Box } from "@mui/material";
 const QManagementPage = () => {
     const dispatch = useDispatch();
     const navigate = useNavigate();
+    const [editModalOpen, setEditModalOpen] = useState(false);
+    const [selectedTest, setSelectedTest] = useState(null);
+    const [testEditData, setTestEditData] = useState({
+        testTitle: "",
+        fromDate: "",
+        toDate: "",
+        courseId: "",
+        questionIds: []
+    })
+
+
     // Redux state
     const {
         adminQBankQuestions,
@@ -73,18 +84,18 @@ const QManagementPage = () => {
             case 'Table Dropdown':
                 navigate(`/admin/TableDropdown-question-view/${questionId}`);
 
-             /*  path="/admin/TableDropdown-question-view/:questionId"  */
+                /*  path="/admin/TableDropdown-question-view/:questionId"  */
                 break;
 
             case 'Table Highlight':
                 navigate(`/admin/TableHighlight-question-view/${questionId}`);
-            /*     path="/admin/TableHighlight-question-view/:questionId" */
+                /*     path="/admin/TableHighlight-question-view/:questionId" */
                 break;
 
-                case 'Multidropdown':
+            case 'Multidropdown':
                 navigate(`/admin/MultiDropdown-question-view/${questionId}`);
-                  /* "/admin/MultiDropdown-question-view/:questionId" */
-                break; 
+                /* "/admin/MultiDropdown-question-view/:questionId" */
+                break;
 
             default:
                 console.warn('Unknown question type:', questionType);
@@ -92,12 +103,54 @@ const QManagementPage = () => {
         }
     };
 
+    const handleEdit = (test) => {
+        console.log("test:::::::i2345678",test);
+        
+        setSelectedTest(test);
+        setTestEditData({
+            testTitle: test.testTitle,
+            fromDate: test.fromDate?.split('T')[0] || "", // format for date input
+            toDate: test.toDate?.split('T')[0] || "",
+            courseId: test.courseId || test.cs_id || "",
+            questionIds: test.questionIds || []
+        });
+        setEditModalOpen(true);
+    };
+
+    const handleSaveTestEdit = () => {
+        if (!selectedTest) return;
+
+        dispatch(
+            adminUpdateTestThunk({
+                testId: selectedTest.id,
+                updatedData: {
+                    testTitle: testEditData.testTitle,
+                    fromDate: testEditData.fromDate,
+                    toDate: testEditData.toDate,
+                    courseId: testEditData.courseId, 
+                    questionIds: testEditData.questionIds
+                }
+            })
+        )
+            .unwrap()
+            .then(() => {
+                toast.success("Test updated successfully");
+                setEditModalOpen(false);
+                // Refresh the test list after update
+                dispatch(adminFetchTestQuestions({ page: testPage, limit }));
+            })
+            .catch((err) => {
+                toast.error("Failed to update test: " + err);
+            });
+    };
+
+
 
     // ✅ Fetch when page changes
     useEffect(() => {
         console.log("Fetching Q-bank page:", qBankPage);
         console.log(" ✅ Fetching Q bank questions :::", adminQBankQuestions);
-
+        console.log("Admin test question✅✅✅✅:", adminTestQuestions,);
         dispatch(adminFetchQBankQuestions({ page: qBankPage, limit }));
     }, [dispatch, qBankPage]);
 
@@ -125,7 +178,7 @@ const QManagementPage = () => {
     // Handlers
     const handleAddQuestionClick = () => navigate("/admin/selectCourse");
     const handleAddTestClick = () => navigate("/admin/add-test");
-    const handleEdit = (id) => console.log("Edit:", id);
+
 
     const handleDelete = (id) => {
         console.log("Deleting:", id);
@@ -211,6 +264,8 @@ const QManagementPage = () => {
         return adminTestQuestionsTotalPages;
     };
 
+
+    
     return (
         <div className="q-management-page">
             <div className="content-area">
@@ -247,19 +302,6 @@ const QManagementPage = () => {
 
                     {/* Search + Add */}
                     <div className="action-bar">
-                        <div className="search-filter-section">
-                            {/*  <div className="search-box">
-                                <FaSearch className="search-icon" />
-                                <input
-                                    type="text"
-                                    placeholder="Search questions..."
-                                    value={searchTerm}
-                                    onChange={(e) => setSearchTerm(e.target.value)}
-                                    className="search-input"
-                                />
-                            </div> */}
-                        </div>
-
 
                         {activeTab === "Test" && (
                             <button className="add-btn primary" onClick={handleAddTestClick}>
@@ -314,18 +356,20 @@ const QManagementPage = () => {
                                             <td>{new Date(t.toDate).toLocaleDateString("en-GB")}</td>
 
                                             <td>
-                                                {/* <button
-                                                    className="btn-icon-action btn-edit"
-                                                    onClick={() => handleEdit(t.id)}
-                                                >
-                                                    <FaEdit />
-                                                </button> */}
-                                                <button
-                                                    className="btn-icon-action btn-delete"
-                                                    onClick={() => handleDeleteTest(t.id)}
-                                                >
-                                                    <FaTrash />
-                                                </button>
+                                                <div className="question-management-action-btn" >
+                                                    <button
+                                                        className="btn-icon-action btn-edit"
+                                                        onClick={() => handleEdit(t)}
+                                                    >
+                                                        <FaEdit />
+                                                    </button>
+                                                    <button
+                                                        className="btn-icon-action btn-delete"
+                                                        onClick={() => handleDeleteTest(t.id)}
+                                                    >
+                                                        <FaTrash />
+                                                    </button>
+                                                </div>
                                             </td>
                                         </tr>
                                     ))}
@@ -362,15 +406,12 @@ const QManagementPage = () => {
                                             <td>{q.questionType}</td>
                                             <td>{q.difficulty}</td>
                                             <td>
-
                                                 <button
                                                     className="btn-icon-action btn-delete"
                                                     onClick={() => handleDelete(q.id)}
                                                 >
                                                     <FaTrash />
                                                 </button>
-
-
                                             </td>
                                             <td>
                                                 <Button
@@ -386,7 +427,6 @@ const QManagementPage = () => {
                                                     }}
                                                     startIcon={<VisibilityIcon />}
                                                     onClick={() => handleViewQuestion(q)}
-
                                                 >
                                                     View
                                                 </Button>
@@ -417,6 +457,92 @@ const QManagementPage = () => {
                     </button>
                 </div>
             </div>
+
+            <Modal
+                open={editModalOpen}
+                onClose={() => setEditModalOpen(false)}
+                aria-labelledby="edit-question-modal"
+                aria-describedby="edit-question-modal-description"
+            >
+                <Box
+                    sx={{
+                        position: 'absolute',
+                        top: '50%',
+                        left: '50%',
+                        transform: 'translate(-50%, -50%)',
+                        width: 500,
+                        maxWidth: '90%',
+                        bgcolor: 'background.paper',
+                        borderRadius: 2,
+                        boxShadow: 24,
+                        p: 4,
+                    }}
+                >
+                    <h4 style={{ display: "flex", alignItems: "center", justifyContent: "center" }} id="edit-question-modal">Edit Test</h4>
+
+                    {selectedTest && (
+                        <div>
+                            <p><strong>Q-ID:</strong> {selectedTest.id}</p>
+                            <p><strong>Test Name:</strong> {selectedTest.testTitle}</p>
+
+                            <TextField
+                                label="Test Title"
+                                fullWidth
+                                sx={{ mt: 1 }}
+                                value={testEditData.testTitle}
+                                onChange={(e) =>
+                                    setTestEditData({ ...testEditData, testTitle: e.target.value })
+                                }
+                            />
+
+                            <TextField
+                                label="Start Date"
+                                type="date"
+                                InputLabelProps={{ shrink: true }}
+                                fullWidth
+                                sx={{ mt: 2 }}
+                                value={testEditData.fromDate}
+                                onChange={(e) =>
+                                    setTestEditData({ ...testEditData, fromDate: e.target.value })
+                                }
+                            />
+
+                            <TextField
+                                label="End Date"
+                                type="date"
+                                InputLabelProps={{ shrink: true }}
+                                fullWidth
+                                sx={{ mt: 2 }}
+                                value={testEditData.toDate}
+                                onChange={(e) =>
+                                    setTestEditData({ ...testEditData, toDate: e.target.value })
+                                }
+                            />
+
+
+                            <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '10px', paddingTop: "20px" }}>
+
+                                <Button
+                                    variant="outlined"
+                                    color="secondary"
+                                    onClick={() => setEditModalOpen(false)}
+                                >
+                                    Cancel
+                                </Button>
+
+                                <Button
+                                    variant="contained"
+                                    sx={{ backgroundColor: "#2c3e50" }}
+
+                                    onClick={handleSaveTestEdit}
+                                >
+                                    Save
+                                </Button>
+                            </div>
+                        </div>
+                    )}
+                </Box>
+            </Modal>
         </div>
     );
 };

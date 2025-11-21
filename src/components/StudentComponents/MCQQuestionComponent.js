@@ -104,14 +104,17 @@ const MCQQuestionComponent = ({ question, onSubmit }) => {
   };
 
   return (
-    <Box className="radio-container" sx={{ textAlign: "left" }}>
+    <Box className="radio-container" sx={{ textAlign: "left" , px: 8 }}>
       {/* Question */}
       <Typography
+      fontWeight={700}
         sx={{
-          color: "black",
-          mb: 2,
-          fontSize: { xs: "0.95rem", md: "17px" },
-          fontWeight: 500,
+          textAlign: "left",
+          color: "#2e3760",
+          pt: 3,
+
+          fontSize: { xs: "1rem", md: "1.25rem" },
+          mb: 1,
         }}
       >
         {questionText}
@@ -122,7 +125,7 @@ const MCQQuestionComponent = ({ question, onSubmit }) => {
         <img
           src={buildImageUrl(exhibit)}
           alt="Exhibit"
-          style={{ maxWidth: "100%", marginBottom: "1rem", borderRadius: 8 }}
+          style={{ maxWidth: "100%", marginBottom: "1rem", borderRadius: 8, alignItems:"center" }}
         />
       )}
 
@@ -212,7 +215,7 @@ const MCQQuestionComponent = ({ question, onSubmit }) => {
       )}
 
       {/* Select All / Clear All */}
-      <Box display="flex" gap={1} alignItems="center" mb={1}>
+      <Box display="flex" gap={1} alignItems="center" mb={1} mt={3}>
         <Button
           variant="outlined"
           size="small"
@@ -221,7 +224,7 @@ const MCQQuestionComponent = ({ question, onSubmit }) => {
         >
           {allSelected ? "Clear All" : "Select All"}
         </Button>
-        <Typography variant="caption" sx={{ color: "#6b7280" }}>
+        <Typography variant="caption" sx={{ color: "#6b7280", fontSize:"15px" }}>
           You can select any number of options.
         </Typography>
       </Box>
@@ -238,8 +241,8 @@ const MCQQuestionComponent = ({ question, onSubmit }) => {
             showFeedback && isCorrectAnswer
               ? colors.correct
               : showFeedback && isSelected && !isCorrectAnswer
-              ? colors.incorrect
-              : "inherit";
+                ? colors.incorrect
+                : "inherit";
 
           const feedbackIcon =
             showFeedback && isCorrectAnswer ? (
@@ -315,8 +318,8 @@ const MCQQuestionComponent = ({ question, onSubmit }) => {
       {/* Reveal Results */}
       {showAnswer && (
         <Box sx={{ mt: 4 }}>
-          
-        
+
+
           {/* Summary */}
           <Typography
             variant="subtitle1"
@@ -339,7 +342,7 @@ const MCQQuestionComponent = ({ question, onSubmit }) => {
             )}
           </Typography>
 
-          
+
 
           {/* Explanation */}
           {explanation.length > 0 && (

@@ -7,36 +7,32 @@ const STUDENT_API_URL = `${API_BASE_URL}/student/recodings/list`;
 
 export const fetchStudentRecordedClasses = createAsyncThunk(
   "studentRecordings/fetchStudentRecordedClasses",
-  async ({ token, page = 1, limit = 10 }, { rejectWithValue }) => {
+  async ({ token, page = 1, limit = 10, searchQuery = "" }, { rejectWithValue }) => {
     try {
-
-
-      // Only send page and limit (no courseId, subjectId, searchQuery)
-      const response = await axios.post(STUDENT_API_URL, {
-        page: page.toString(),  // API expects string
-        limit: limit.toString() // API expects string
-      }, {
-        headers: {
-          "Authorization": `Bearer ${token}`,
-          "Content-Type": "application/json",
+      const response = await axios.post(
+        STUDENT_API_URL,
+        {
+          page: page.toString(),
+          limit: limit.toString(),
+          searchQuery: searchQuery.trim()   // ⭐ Added search here
         },
-        timeout: 10000,
-      });
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+          timeout: 10000,
+        }
+      );
 
-
-
-      // Check if API returned success
       if (response.data.result === true) {
-
         return response.data;
       } else {
-        throw new Error(response.data.message || 'API returned result: false');
+        throw new Error(response.data.message || "API returned result: false");
       }
-
     } catch (error) {
-      console.error('❌ API Error:', error.response?.data || error.message);
-
-      const errorMessage = error.response?.data?.message ||
+      const errorMessage =
+        error.response?.data?.message ||
         error.response?.data?.error ||
         error.message ||
         "Failed to fetch recorded classes";
@@ -49,6 +45,8 @@ export const fetchStudentRecordedClasses = createAsyncThunk(
     }
   }
 );
+
+
 
 const studentRecordingSlice = createSlice({
   name: "studentRecordings",

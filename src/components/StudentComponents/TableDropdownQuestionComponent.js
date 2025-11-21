@@ -105,7 +105,7 @@ const TableDropdownQuestionComponent = ({ question, onSubmit }) => {
   }
 
   return (
-    <Box sx={{ width: "100%" }}>
+    <Box sx={{ width: "100%", px: 8, }}>
       {/* Header row */}
       <Box sx={{ width: "100%", px: { xs: 2, md: 6 }, pt: 2, mb: 1 }}>
         <Box
@@ -134,6 +134,7 @@ const TableDropdownQuestionComponent = ({ question, onSubmit }) => {
           textAlign: "left",
           color: "#2e3760",
           pt: 3,
+
           fontSize: { xs: "1rem", md: "1.25rem" },
           mb: 1,
         }}
@@ -499,7 +500,7 @@ const TableDropdownQuestionComponent = ({ question, onSubmit }) => {
                 ? `https://lunarsenterprises.com:8002/${question.additionalInfo[0].image}`
                 : null
             }
-
+            isAnswerCorrect={isCorrect}
           />
         </Box>
       )}

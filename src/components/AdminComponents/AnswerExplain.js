@@ -140,31 +140,11 @@ const AnswerExplain = () => {
         }
     };
 
-    // Validation
-    const validateForm = () => {
-        const newErrors = {};
-
-        if (!explanationHeading.trim()) {
-            newErrors.explanationHeading = 'Explanation heading is required';
-        }
-
-       if (!explanationText.replace(/<[^>]+>/g, '').trim()) {
-            newErrors.explanationText = 'Explanation text is required';
-        } else if (explanationText.trim().length < 20) {
-            newErrors.explanationText = 'Explanation must be at least 20 characters long';
-        }
-
-        setErrors(newErrors);
-        return Object.keys(newErrors).length === 0;
-    };
+  
 
     // ✅ Navigation handlers - NO files in navigation state
     const handleNext = () => {
-        if (!validateForm()) {
-            return;
-        }
-
-
+     
         // ✅ Create ONLY serializable data
         const mergedQuestionData = {
             // Previous step data
@@ -415,11 +395,7 @@ const AnswerExplain = () => {
         return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
     };
 
-    const isFormValid = () => {
-        return explanationHeading.trim() !== "" &&
-            explanationText.trim() !== "" &&
-            explanationText.trim().length >= 20;
-    };
+ 
 
     // Cleanup on unmount
     useEffect(() => {
@@ -471,7 +447,7 @@ const AnswerExplain = () => {
 
             {/* Explanation Heading */}
             <Typography variant="h6" mb={1} color="primary">
-                Explanation Heading *
+                Explanation Heading 
             </Typography>
             <ReactQuill
                 theme="snow"
@@ -492,7 +468,7 @@ const AnswerExplain = () => {
 
             {/* Explanation Text Area */}
             <Typography variant="h6" mb={1} color="primary">
-                Explanation Text *
+                Explanation Text 
             </Typography>
             <ReactQuill
                 theme="snow"
@@ -629,10 +605,10 @@ const AnswerExplain = () => {
                         • Question File (Context): {hasQuestionFile ? `✅ ${questionFile?.name}` : '➖ None'}
                     </Typography>
                     <Typography variant="body2">
-                        • Explanation Heading: {explanationHeading ? '✅ Complete' : '❌ Required'}
+                        • Explanation Heading: {explanationHeading ? '✅ Complete' : '❌ Missing'}
                     </Typography>
                     <Typography variant="body2">
-                        • Explanation Text: {explanationText && explanationText.length >= 20 ? '✅ Complete' : '❌ Required'}
+                        • Explanation Text: {explanationText && explanationText.length >= 20 ? '✅ Complete' : '❌ Missing'}
                     </Typography>
                     <Typography variant="body2">
                         • Explanation File (Context): {selectedFile ? `✅ ${selectedFile.name}` : '➖ Optional'}
@@ -659,7 +635,6 @@ const AnswerExplain = () => {
                     variant="contained"
                     endIcon={<ArrowForwardIcon />}
                     onClick={handleNext}
-                    disabled={!isFormValid()}
                 >
                     Next: Add Tags & Submit
                 </Button>

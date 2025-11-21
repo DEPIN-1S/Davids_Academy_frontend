@@ -224,6 +224,8 @@ const ExamContainer = ({ user }) => {
     }
   };
 
+
+
   const handleAnswerSubmit = async (
     questionId,
     is_correct,
@@ -231,7 +233,10 @@ const ExamContainer = ({ user }) => {
     _userAnswerStr,
     incomingTestId
   ) => {
-    // if (isTestMode) {
+    if (isSampleMode) {
+      console.log("Sample mode - skipping answer submit.");
+      return;
+    }
     try {
       const currentQuestionId = questionIds[currentIndex];
       const testIdToUse = incomingTestId ?? testId;
@@ -327,6 +332,7 @@ const ExamContainer = ({ user }) => {
         )}
       </div>
 
+
       <QuestionFooterComponent
         onEnd={handleEnd}
         onPause={handlePause}
@@ -338,7 +344,7 @@ const ExamContainer = ({ user }) => {
         disableNext={questionIds && currentIndex === questionIds.length - 1}
         questionNumber={currentIndex + 1}
         totalQuestions={questionIds.length}
-        customButtonText={isTestMode ? "Submit & Exit" : "Back to Home"}
+        customButtonText={isTestMode ? "Submit & Exit" : "Back"}
         customOnClick={handleEnd}
         showPrevious={showPrevious}
       />

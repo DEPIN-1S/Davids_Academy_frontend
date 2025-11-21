@@ -341,14 +341,11 @@ export const adminGetMockTestQuestions = async (page = 1, limit = 10) => {
         Authorization: `Bearer ${token}`,
       },
     });
-
     if (!response.ok) {
       throw new Error("Failed to fetch Mock Test questions");
     }
-
     const result = await response.json();
     console.log("✅ Get Mock Test Questions ::: ", result);
-
     return result;
   } catch (error) {
     console.error("❌ Mock Test API Error:", error);
@@ -376,9 +373,8 @@ export async function adminGetTestQuestions(page = 1, limit = 10) {
     if (!response.ok) {
       throw new Error(`Failed to fetch test questions: ${response.status}`);
     }
-
     const data = await response.json();
-    console.log("Data by pagig of test ::::::::::", data);
+    console.log("Data by pagig of test ✅✅✅✅::::::::::", data);
     return data; // full response
   } catch (error) {
     console.error("admin Test API Error:", error);
@@ -737,3 +733,47 @@ export const resetMockTestApi = async (student_id, test_id) => {
     throw error;
   }
 };
+
+
+// src/features/exam/examAPI.js
+export const adminUpdateTest = async (testId, updatedData) => {
+  try {
+    const token = sessionStorage.getItem("accessToken");
+    const response = await fetch(`${baseUrl}/exam/tests/${testId}`, {
+      method: "PUT", // or PATCH depending on backend
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify(updatedData),
+    });
+
+    if (!response.ok) {
+      const errText = await response.text();
+      throw new Error(`Failed to update test: ${errText}`);
+    }
+
+    return await response.json();
+  } catch (error) {
+    console.error("❌ adminUpdateTest Error:", error);
+    throw error;
+  }
+};
+
+
+// NEW API — Get Question Bank Result
+export const getQuestionBankResultApi = async (token) => {
+  const response = await fetch(`${baseUrl}/student/result/question-bank`, {
+    method: "GET",
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+
+  if (!response.ok) {
+    throw new Error("Failed to fetch question bank result");
+  }
+
+  return await response.json();
+};
+

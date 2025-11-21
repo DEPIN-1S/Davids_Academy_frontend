@@ -285,6 +285,14 @@
   background: #3c5aa6;
 }
 
+.question-management-action-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+}
+
+
 .btn-icon-action {
   background: white;
   border: 1px solid var(--gray-300);

@@ -412,7 +412,7 @@ const ContactForm = ({ open, onClose }) => {
             },
           }}
         >
-          {submitLoading ? "Sending..." : "Send Message"}
+          {submitLoading ? "Starting..." : "Start Exam"}
         </Button>
       </DialogActions>
     </Dialog>

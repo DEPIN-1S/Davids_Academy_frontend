@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { fetchStudentTests } from "../../features/exam/examAPI";
+import "../../styles/TestComponent.css";
 
 const TestComponent = () => {
   const [testData, setTestData] = useState([]);
@@ -8,110 +9,23 @@ const TestComponent = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const navigate = useNavigate();
-  const styles = {
-    wrapper: {
-      padding: "1.5rem",
-      fontFamily: '"Inter", sans-serif',
-      maxWidth: "1200px",
-      margin: "0 auto",
-    },
-    header: {
-      display: "flex",
-      alignItems: "center",
-      justifyContent: "space-between",
-      flexWrap: "wrap",
-      gap: "1rem",
-      marginBottom: "1rem",
-    },
-    title: {
-      fontSize: "22px",
-      fontWeight: 700,
-    },
-    dropdown: {
-      padding: "8px",
-      fontSize: "14px",
-      borderRadius: "4px",
-      border: "1px solid #ccc",
-      minWidth: "150px",
-      backgroundColor: "#fff",
-      cursor: "pointer",
-    },
-    testCount: {
-      backgroundColor: "#f1f1f1",
-      padding: "6px 12px",
-      borderRadius: "20px",
-      fontSize: "14px",
-      fontWeight: 500,
-    },
-    table: {
-      borderRadius: "10px",
-      overflow: "hidden",
-    },
-    tableHeader: {
-      display: "grid",
-      gridTemplateColumns: "1fr 2fr 1fr 1.5fr 1fr 1fr 1fr 1fr 2fr",
-      padding: "0.8rem 1rem",
-      backgroundColor: "#2e3760",
-      color: "white",
-      fontWeight: 600,
-      fontSize: "14px",
-    },
-    tableRow: {
-      display: "grid",
-      gridTemplateColumns: "1fr 2fr 1fr 1.5fr 1fr 1fr 1fr 1fr 2fr",
-      padding: "0.8rem 1rem",
-      backgroundColor: "#f9f9f9",
-      borderBottom: "1px solid #eee",
-      fontSize: "14px",
-    },
-    hiddenOnMobile: {
-      display: "block",
-    },
-    actionButton: {
-      padding: "5px 10px",
-      border: "none",
-      borderRadius: "4px",
-      cursor: "pointer",
-      fontSize: "13px",
-      color: "white",
-    },
-    startButton: {
-      backgroundColor: "#2196F3",
-    },
-    noTests: {
-      padding: "1rem",
-      textAlign: "center",
-      fontSize: "14px",
-    },
-    loading: {
-      padding: "1rem",
-      textAlign: "center",
-      fontSize: "16px",
-    },
-    error: {
-      padding: "1rem",
-      textAlign: "center",
-      color: "#d32f2f",
-      fontSize: "16px",
-    },
-  };
+
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 7;
 
   const fetchTestData = async () => {
     setLoading(true);
     setError(null);
+
     try {
       const rawData = await fetchStudentTests("all");
 
-      // De-duplicate: Group by id, prioritize completed (is_submitted=1), then highest st_score
       const uniqueTests = {};
       rawData.forEach((item) => {
-        console.log("Item:", item);
         const testId = item.id;
-        if (!uniqueTests[testId]) {
-          uniqueTests[testId] = item;
-        } else {
+        if (!uniqueTests[testId]) uniqueTests[testId] = item;
+        else {
           const existing = uniqueTests[testId];
-          // Prioritize: completed > higher score > current
           if (
             item.is_submitted === 1 ||
             (item.st_score > existing.st_score && existing.is_submitted !== 1)
@@ -125,44 +39,34 @@ const TestComponent = () => {
         const fromDate = item.fromDate ? new Date(item.fromDate) : null;
         const toDate = item.toDate ? new Date(item.toDate) : null;
         const currentDate = new Date();
-        let status = "Pending";
 
-        // Prioritize new fields for status
-        if (item.is_submitted === 1 || item.status === "completed") {
+        // Normalize null/undefined values
+        const submittedQuestions = item.submittedQuestions ?? 0;
+        const correctAnswers = item.correctAnswers ?? 0;
+        const wrongAnswers = item.wrongAnswers ?? 0;
+        const totalQuestions = item.totalQuestions ?? 0;
+
+        let status = "Pending";
+        if (
+          item.is_submitted === 1 ||
+          item.status === "completed" ||
+          item.isCompleted === 1
+        ) {
           status = "Completed";
         } else if (toDate && toDate < currentDate) {
           status = "Expired";
-        }
-        // Removed isInProgress check
-
-        let action = "";
-        let buttonText = "";
-
-        if (status === "Completed" || status === "Expired") {
-          action = status;
-        } else {
-          // Removed Resume - always Start Test for Pending
-          buttonText = "Start Test";
         }
 
         return {
           id: item.id,
           name: item.testTitle || "Untitled Test",
-          date: fromDate
-            ? fromDate.toLocaleDateString("en-US", {
-              month: "short",
-              day: "numeric",
-              year: "numeric",
-            })
-            : "N/A",
-          totalQuestions: item.totalQuestions,
-          attemptedQuestions: item.submittedQuestions,
-          correctAnswers: item.correctAnswers,
-          wrongAnswers: item.wrongAnswers,
+          startDateObj: fromDate,
+          endDateObj: toDate,
+          totalQuestions,
+          attemptedQuestions: submittedQuestions,
+          correctAnswers,
+          wrongAnswers,
           status,
-          action,
-          buttonText,
-          is_submitted: item.is_submitted || 0,
         };
       });
 
@@ -178,88 +82,262 @@ const TestComponent = () => {
     fetchTestData();
   }, []);
 
-  const filteredTests =
-    selectedType === "All"
-      ? testData
-      : testData.filter((test) => test.status === selectedType);
+  const getFinalStatus = (start, end, attempted, total) => {
+    const today = new Date();
+
+    let dateStatus = "Active";
+    if (end && end < today) dateStatus = "Expired";
+    else if (start && start > today) dateStatus = "Upcoming";
+
+    let attemptStatus = "";
+    if (attempted === 0) attemptStatus = "Not Started";
+    else if (attempted > 0 && attempted < total) attemptStatus = "In Progress";
+    else if (attempted === total) attemptStatus = "Completed";
+
+    if (dateStatus === "Expired") return "Expired";
+    if (dateStatus === "Upcoming" && attemptStatus === "Not Started")
+      return "Upcoming";
+    return attemptStatus;
+  };
+
+  // FILTER based on finalStatus
+  const filteredTests = testData.filter((test) => {
+    const finalStatus = getFinalStatus(
+      test.startDateObj,
+      test.endDateObj,
+      test.attemptedQuestions,
+      test.totalQuestions
+    );
+
+    if (selectedType === "All") return true;
+    if (selectedType === "Completed") return finalStatus === "Completed";
+    if (selectedType === "Pending")
+      return finalStatus === "Not Started" || finalStatus === "In Progress";
+    if (selectedType === "Expired") return finalStatus === "Expired";
+    return true;
+  });
+
+  // SORT latest first
+  const sortedTests = [...filteredTests].sort((a, b) => {
+    const dateA = a.startDateObj ? a.startDateObj.getTime() : 0;
+    const dateB = b.startDateObj ? b.startDateObj.getTime() : 0;
+    return dateB - dateA;
+  });
+
+  // PAGINATION
+  const indexOfLast = currentPage * itemsPerPage;
+  const indexOfFirst = indexOfLast - itemsPerPage;
+  const currentTests = sortedTests.slice(indexOfFirst, indexOfLast);
+  const totalPages = Math.ceil(sortedTests.length / itemsPerPage);
 
   const handleActionClick = (testId, buttonText) => {
-    if (buttonText === "Start Test") {
+    if (buttonText === "Start Test" || buttonText === "Resume Test") {
       navigate(`/student/exam?testId=${testId}`);
     }
   };
 
-  if (loading) {
-    return <div style={styles.loading}>Loading tests...</div>;
-  }
-
-  if (error) {
-    return <div style={styles.error}>Error: {error}</div>;
-  }
+  if (loading) return <div className="loading">Loading tests...</div>;
+  if (error) return <div className="error">Error: {error}</div>;
 
   return (
-    <div style={styles.wrapper}>
-      <div style={styles.header}>
-        <h2 style={styles.title}>Previous Tests</h2>
+    <div className="wrapper">
+      <div className="header">
+        <h2 className="title">Previous Tests</h2>
+
         <select
-          style={styles.dropdown}
+          className="dropdown"
           value={selectedType}
-          onChange={(e) => setSelectedType(e.target.value)}
+          onChange={(e) => {
+            setSelectedType(e.target.value);
+            setCurrentPage(1);
+          }}
         >
           <option value="All">All</option>
           <option value="Completed">Completed</option>
           <option value="Pending">Pending</option>
           <option value="Expired">Expired</option>
         </select>
-        <div style={styles.testCount}>{filteredTests.length} Tests</div>
+
+        <div className="test-count">{filteredTests.length} Tests</div>
       </div>
 
-      <div style={styles.table}>
-        <div style={styles.tableHeader}>
-          <span>Date</span>
+      {/* TABLE VIEW */}
+      <div className="table-responsive table-view">
+        <div className="test-header">
+          <span>Start Date</span>
+          <span>End Date</span>
           <span>Test ID</span>
           <span>Test Title</span>
-          <span style={styles.hiddenOnMobile}>Total Questions</span>
-          <span style={styles.hiddenOnMobile}> Attempted</span>
-          <span style={styles.hiddenOnMobile}> Correct</span>
-          <span style={styles.hiddenOnMobile}> Wrong</span>
-          <span style={styles.hiddenOnMobile}>Status</span>
-          <span style={styles.hiddenOnMobile}>Action</span>
+          <span>Total Questions</span>
+          <span>Attempted</span>
+          <span>Correct</span>
+          <span>Wrong</span>
+          <span>Status</span>
+          <span>Action</span>
         </div>
 
-        {filteredTests.length === 0 ? (
-          <div style={styles.noTests}>
-            No tests available for the selected status.
-          </div>
+        {currentTests.length === 0 ? (
+          <div className="no-tests">No tests available.</div>
         ) : (
-          filteredTests.map((test) => (
-            <div style={styles.tableRow} key={test.id}>
-              <span>{test.date}</span>
-              <span>{test.id}</span>
-              <span>{test.name}</span>
-              <span style={styles.hiddenOnMobile}>{test.totalQuestions}</span>
-              <span style={styles.hiddenOnMobile}>{test.attemptedQuestions}</span>
-              <span style={styles.hiddenOnMobile}>{test.correctAnswers}</span>
-              <span style={styles.hiddenOnMobile}>{test.wrongAnswers}</span>
-              <span style={styles.hiddenOnMobile}>{test.status}</span>
-              <span style={styles.hiddenOnMobile}>
-                {test.action ? (
-                  <span>{test.action}</span>
-                ) : test.buttonText ? (
+          currentTests.map((test) => {
+            const finalStatus = getFinalStatus(
+              test.startDateObj,
+              test.endDateObj,
+              test.attemptedQuestions,
+              test.totalQuestions
+            );
+
+            let actionLabel = "";
+            if (finalStatus === "Expired") actionLabel = "Expired";
+            else if (finalStatus === "Completed") actionLabel = "Completed";
+            else if (finalStatus === "Upcoming" || test.attemptedQuestions === 0)
+              actionLabel = "Start Test";
+            else if (
+              test.attemptedQuestions > 0 &&
+              test.attemptedQuestions < test.totalQuestions
+            )
+              actionLabel = "Resume Test";
+
+            const actionDisabled =
+              finalStatus === "Expired" || finalStatus === "Completed";
+
+            return (
+              <div className="test-row" key={test.id}>
+                <span>
+                  {test.startDateObj
+                    ? test.startDateObj.toLocaleDateString()
+                    : "N/A"}
+                </span>
+                <span>
+                  {test.endDateObj
+                    ? test.endDateObj.toLocaleDateString()
+                    : "N/A"}
+                </span>
+                <span>{test.id}</span>
+                <span>{test.name}</span>
+                <span>{test.totalQuestions}</span>
+                <span>{test.attemptedQuestions}</span>
+                <span>{test.correctAnswers}</span>
+                <span>{test.wrongAnswers}</span>
+
+                <span className={`status ${finalStatus.toLowerCase().replace(" ", "-")}`}>
+                  {finalStatus}
+                </span>
+
+                <span>
                   <button
-                    style={{
-                      ...styles.actionButton,
-                      ...styles.startButton, // Always start button style
-                    }}
-                    onClick={() => handleActionClick(test.id, test.buttonText)}
+                    className={`start-btn ${actionDisabled ? "disabled" : ""}`}
+                    disabled={actionDisabled}
+                    onClick={() => handleActionClick(test.id, actionLabel)}
                   >
-                    {test.buttonText}
+                    {actionLabel}
                   </button>
-                ) : null}
-              </span>
-            </div>
-          ))
+                </span>
+              </div>
+            );
+          })
         )}
+      </div>
+
+      {/* CARD VIEW */}
+      <div className="card-view">
+        {currentTests.map((test) => {
+          const finalStatus = getFinalStatus(
+            test.startDateObj,
+            test.endDateObj,
+            test.attemptedQuestions,
+            test.totalQuestions
+          );
+
+          let actionLabel = "";
+          if (finalStatus === "Expired") actionLabel = "Expired";
+          else if (finalStatus === "Completed") actionLabel = "Completed";
+          else if (finalStatus === "Upcoming" || test.attemptedQuestions === 0)
+            actionLabel = "Start Test";
+          else if (
+            test.attemptedQuestions > 0 &&
+            test.attemptedQuestions < test.totalQuestions
+          )
+            actionLabel = "Resume Test";
+
+          const actionDisabled =
+            finalStatus === "Expired" || finalStatus === "Completed";
+
+          return (
+            <div className="test-card" key={test.id}>
+              <header className="test-card__header">
+                <h3 className="test-card__title">{test.name}</h3>
+              </header>
+
+              <div className="test-card__body">
+                <div className="test-card__details">
+                  <div className="test-card__row">
+                    <span className="test-card__label">Start Date</span>
+                    <span className="test-card__value">
+                      {test.startDateObj ? test.startDateObj.toLocaleDateString() : "N/A"}
+                    </span>
+                  </div>
+                  <div className="test-card__row">
+                    <span className="test-card__label">End Date</span>
+                    <span className="test-card__value">
+                      {test.endDateObj ? test.endDateObj.toLocaleDateString() : "N/A"}
+                    </span>
+                  </div>
+                  <div className="test-card__row">
+                    <span className="test-card__label">Total Questions</span>
+                    <span className="test-card__value">{test.totalQuestions}</span>
+                  </div>
+                  <div className="test-card__row">
+                    <span className="test-card__label">Correct</span>
+                    <span className="test-card__value text-success">{test.correctAnswers}</span>
+                  </div>
+                  <div className="test-card__row">
+                    <span className="test-card__label">Wrong</span>
+                    <span className="test-card__value text-danger">{test.wrongAnswers}</span>
+                  </div>
+                </div>
+
+                <div className="test-card__status">
+                  <span className={`status-badge status-badge--${finalStatus.toLowerCase().replace(/\s+/g, "-")}`}>
+                    {finalStatus}
+                  </span>
+                </div>
+              </div>
+
+              <footer className="test-card__footer">
+                <button
+                  className={`btn btn--primary ${actionDisabled ? "btn--disabled" : ""}`}
+                  disabled={actionDisabled}
+                  onClick={() => handleActionClick(test.id, actionLabel)}
+                >
+                  {actionLabel}
+                </button>
+              </footer>
+            </div>
+
+          );
+        })}
+      </div>
+
+      {/* PAGINATION */}
+      <div className="pagination">
+        <button
+          disabled={currentPage === 1}
+          onClick={() => setCurrentPage(currentPage - 1)}
+        >
+          Prev
+        </button>
+
+        <span className="page-info">
+          Page {currentPage} / {totalPages}
+        </span>
+
+        <button
+          disabled={currentPage === totalPages}
+          onClick={() => setCurrentPage(currentPage + 1)}
+        >
+          Next
+        </button>
       </div>
     </div>
   );
