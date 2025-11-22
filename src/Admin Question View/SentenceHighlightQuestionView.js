@@ -149,7 +149,7 @@ function SentenceHighlightQuestionView() {
             <>
               {currentTab.tabImage && (
                 <img
-                  src={`https://lunarsenterprises.com:8002/${currentTab.tabImage}`}
+                  src={`https://lunarsenterprises.com:6040/${currentTab.tabImage}`}
 
                   style={{
                     width: 500,
