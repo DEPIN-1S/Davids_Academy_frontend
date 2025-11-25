@@ -104,10 +104,10 @@ const MCQQuestionComponent = ({ question, onSubmit }) => {
   };
 
   return (
-    <Box className="radio-container" sx={{ textAlign: "left" , px: 8 }}>
+    <Box className="radio-container" sx={{ textAlign: "left", px: 8 }}>
       {/* Question */}
       <Typography
-      fontWeight={700}
+        fontWeight={700}
         sx={{
           textAlign: "left",
           color: "#2e3760",
@@ -125,7 +125,7 @@ const MCQQuestionComponent = ({ question, onSubmit }) => {
         <img
           src={buildImageUrl(exhibit)}
           alt="Exhibit"
-          style={{ maxWidth: "100%", marginBottom: "1rem", borderRadius: 8, alignItems:"center" }}
+          style={{ maxWidth: "100%", marginBottom: "1rem", borderRadius: 8, alignItems: "center" }}
         />
       )}
 
@@ -224,7 +224,7 @@ const MCQQuestionComponent = ({ question, onSubmit }) => {
         >
           {allSelected ? "Clear All" : "Select All"}
         </Button>
-        <Typography variant="caption" sx={{ color: "#6b7280", fontSize:"15px" }}>
+        <Typography variant="caption" sx={{ color: "#6b7280", fontSize: "15px" }}>
           You can select any number of options.
         </Typography>
       </Box>

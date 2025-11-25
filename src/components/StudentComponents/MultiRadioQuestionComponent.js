@@ -218,10 +218,10 @@ const MultiRadioQuestionComponent = ({ question, onSubmit }) => {
                   const bgColor = showWrong
                     ? "#ffecec"
                     : showCorrect
-                    ? "#e9f9ee"
-                    : showMissed
-                    ? "#e9f9ee"
-                    : "transparent";
+                      ? "#e9f9ee"
+                      : showMissed
+                        ? "#e9f9ee"
+                        : "transparent";
 
                   return (
                     <TableCell

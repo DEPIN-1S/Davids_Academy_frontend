@@ -489,7 +489,7 @@ const DropdownQuestionComponent = ({ question, onSubmit }) => {
                         fontSize: "0.95rem",
                       }}
                     >
-                     {userVal}
+                      {userVal}
                     </td>
                     <td
                       style={{
@@ -499,7 +499,7 @@ const DropdownQuestionComponent = ({ question, onSubmit }) => {
                         fontSize: "0.95rem",
                       }}
                     >
-                     {correctVal}
+                      {correctVal}
                     </td>
                     <td
                       style={{
