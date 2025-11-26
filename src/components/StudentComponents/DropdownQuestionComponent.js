@@ -23,6 +23,8 @@ const DropdownQuestionComponent = ({ question, onSubmit }) => {
   const [userAnswer, setUserAnswer] = useState("");
   const [correctAnswer, setCorrectAnswer] = useState("");
   const [isCorrect, setIsCorrect] = useState(false);
+  const [showNotAnsweredModal, setShowNotAnsweredModal] = useState(false);
+
 
   const {
     id: questionId,
@@ -34,6 +36,8 @@ const DropdownQuestionComponent = ({ question, onSubmit }) => {
   } = question || {};
 
   useEffect(() => {
+    sessionStorage.setItem("hasAnswered", "false");
+    sessionStorage.setItem("isRevealed", "false");
     if (!dropdowns.length) return;
     const initialValues = {};
     dropdowns.forEach((dt) => {
@@ -43,6 +47,8 @@ const DropdownQuestionComponent = ({ question, onSubmit }) => {
     });
     setDropdownValues(initialValues);
   }, [dropdowns]);
+
+
 
   const handleTabChange = (event, newValue) => {
     setActiveTab(newValue);
@@ -65,6 +71,18 @@ const DropdownQuestionComponent = ({ question, onSubmit }) => {
   };
 
   const handleReveal = () => {
+
+    // Check all dropdowns selected (non-empty)
+    const allFilled = dropdowns.every((dt) => {
+      const val = dropdownValues[dt.id];
+      return val !== "" && val !== undefined && val !== null;
+    });
+
+    if (!allFilled) {
+      setShowNotAnsweredModal(true);
+      return;
+    }
+
     const userAnswerStr = dropdowns
       .map((dt) => {
         const dropdownId = dt.id;
@@ -105,6 +123,10 @@ const DropdownQuestionComponent = ({ question, onSubmit }) => {
     setCorrectAnswer(correctAnswerStr);
     setIsCorrect(correctStatus);
     setShowReveal(true);
+
+
+    sessionStorage.setItem("hasAnswered", "true");
+    sessionStorage.setItem("isRevealed", "true");
   };
 
   if (!question || !dropdowns.length) {
@@ -271,7 +293,7 @@ const DropdownQuestionComponent = ({ question, onSubmit }) => {
                 src={
                   tabsInfo[activeTab].tabImage.startsWith("http")
                     ? tabsInfo[activeTab].tabImage
-                    : `https://lunarsenterprises.com:6040/${tabsInfo[activeTab].tabImage}`
+                    : `https://lunarsenterprises.com:8002/${tabsInfo[activeTab].tabImage}`
                 }
                 alt="tab"
                 style={{
@@ -374,6 +396,35 @@ const DropdownQuestionComponent = ({ question, onSubmit }) => {
             );
           })}
         </Box>
+        {showNotAnsweredModal && (
+          <Box sx={{
+            position: "fixed",
+            top: 0, left: 0,
+            width: "100%", height: "100%",
+            backgroundColor: "rgba(0,0,0,0.5)",
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            zIndex: 9999,
+          }}>
+            <Box sx={{
+              backgroundColor: "#fff",
+              padding: 3,
+              borderRadius: "12px",
+              width: "90%",
+              maxWidth: 400,
+              textAlign: "center",
+            }}>
+              <Typography sx={{ mb: 3, fontWeight: 600, color: "#2e3760" }}>
+                All dropdown fields must be filled before revealing the answer.
+              </Typography>
+              <Button variant="contained" onClick={() => setShowNotAnsweredModal(false)} sx={{ backgroundColor: "#2e3760" }}>
+                OK
+              </Button>
+            </Box>
+          </Box>
+        )}
+
       </Box>
 
       {/* Reveal Button */}
@@ -489,7 +540,7 @@ const DropdownQuestionComponent = ({ question, onSubmit }) => {
                         fontSize: "0.95rem",
                       }}
                     >
-                     {userVal}
+                      {userVal}
                     </td>
                     <td
                       style={{
@@ -499,7 +550,7 @@ const DropdownQuestionComponent = ({ question, onSubmit }) => {
                         fontSize: "0.95rem",
                       }}
                     >
-                     {correctVal}
+                      {correctVal}
                     </td>
                     <td
                       style={{
@@ -539,7 +590,7 @@ const DropdownQuestionComponent = ({ question, onSubmit }) => {
             }
             additionalInfoImage={
               question.additionalInfo?.[0]?.image
-                ? `https://lunarsenterprises.com:6040/${question.additionalInfo[0].image}`
+                ? `https://lunarsenterprises.com:8002/${question.additionalInfo[0].image}`
                 : null
             }
             isAnswerCorrect={isCorrect}

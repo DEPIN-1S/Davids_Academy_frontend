@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import "../../styles/DashboardStyles/QuestionFooterComponent.css";
 import { Box, Button, Typography } from "@mui/material";
 import LogoutIcon from "@mui/icons-material/Logout";
@@ -27,16 +27,30 @@ const QuestionFooterComponent = ({
   const token = sessionStorage.getItem("accessToken");
   const navigate = useNavigate()
   const [showProgressCard, setShowProgressCard] = useState(false);
-
   const handleSubmitAndExit = () => {
     dispatch(getQuestionBankResult(token));
     setShowProgressCard(true);
   };
   const resultData = useSelector((state) => state.exam.questionBankResult);
-
+  const [showCompletedModal, setShowCompletedModal] = useState(false);
   const location = useLocation();
   const searchParams = new URLSearchParams(location.search);
   const isQuestionBankRoute = searchParams.get("mode") === "question-bank";
+  const [isRevealed, setIsRevealed] = useState(false);
+  const [showNotAnsweredModal, setShowNotAnsweredModal] = useState(false);
+  useEffect(() => {
+    const checkRevealStatus = () => {
+      const status = sessionStorage.getItem("isRevealed") === "true";
+      setIsRevealed(status);
+    };
+
+    checkRevealStatus();
+
+    const interval = setInterval(checkRevealStatus, 200);
+    return () => clearInterval(interval);
+  }, []);
+
+
 
 
   return (
@@ -50,7 +64,7 @@ const QuestionFooterComponent = ({
           color="error"
         >
           {/* {customButtonText} */}
-        <span style={{paddingBottom:"4px", fontSize:"25px"}} ><IoIosArrowBack/></span>  Previous 
+          <span style={{ paddingBottom: "4px", fontSize: "25px" }} ><IoIosArrowBack /></span>  Previous
         </Button>
       </div>
 
@@ -83,12 +97,27 @@ const QuestionFooterComponent = ({
 
       <div className="right-buttons">
         <Button
-          
-          onClick={onNext}
+          disabled={false}
+          onClick={() => {
+            const hasAnswered = sessionStorage.getItem("hasAnswered") === "true";
+            const hasRevealed = sessionStorage.getItem("isRevealed") === "true";
+
+            if (!hasAnswered || !hasRevealed) {
+              setShowNotAnsweredModal(true); // Show modal
+              return;
+            }
+
+            if (questionNumber === totalQuestions) {
+              setShowCompletedModal(true);
+            } else {
+              onNext();
+            }
+          }}
+
           className="footer-button"
-          disabled={disableNext}
+
         >
-          Next <span style={{paddingBottom:"3px", fontSize:"25px"}}  ><IoIosArrowForward /></span>
+          Next  <span style={{ paddingBottom: "3px", fontSize: "25px" }}  ><IoIosArrowForward /></span>
         </Button>
       </div>
 
@@ -102,6 +131,74 @@ const QuestionFooterComponent = ({
             navigate("/student/question-bank");
           }}
         />
+      )}
+
+      {showCompletedModal && (
+        <div className="mocktest-modal-overlay">
+          <div className="mocktest-modal simple-modal">
+            <img src="/images/logo.png" width={70} alt="logo" className="card-logo" />
+            <h3 className="mock-modal-title">Mock Test Completed</h3>
+            <p className="modal-text">You have successfully answered all questions.</p>
+
+            <button
+              onClick={() => {
+                setShowCompletedModal(false);
+                navigate("/student/tests");
+              }}
+              className="mock-modal-btn"
+            >
+              View Result
+            </button>
+          </div>
+        </div>
+      )}
+
+      {showNotAnsweredModal && (
+        <Box
+          sx={{
+            position: "fixed",
+            top: 0,
+            left: 0,
+            width: "100%",
+            height: "100%",
+            backgroundColor: "rgba(0,0,0,0.5)",
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            zIndex: 9999,
+          }}
+        >
+          <Box
+            sx={{
+              backgroundColor: "#fff",
+              padding: 3,
+              borderRadius: "12px",
+              width: "90%",
+              maxWidth: 400,
+              textAlign: "center",
+            }}
+          >
+            <Typography
+              sx={{
+                mb: 3,
+                fontSize: "1rem",
+                fontWeight: 600,
+                color: "#2e3760",
+              }}
+            >
+              Please answer the question and reveal the answer before moving to the
+              next question.
+            </Typography>
+
+            <Button
+              variant="contained"
+              onClick={() => setShowNotAnsweredModal(false)}
+              sx={{ backgroundColor: "#2e3760" }}
+            >
+              OK
+            </Button>
+          </Box>
+        </Box>
       )}
 
 

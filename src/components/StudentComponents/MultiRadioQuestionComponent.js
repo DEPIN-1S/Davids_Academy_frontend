@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Box,
   Typography,
@@ -39,7 +39,7 @@ const MultiRadioQuestionComponent = ({ question, onSubmit }) => {
   const [answers, setAnswers] = useState({});
   const [showAnswer, setShowAnswer] = useState(false);
   const [isCorrect, setIsCorrect] = useState(false);
-
+  const [showNotAnsweredModal, setShowNotAnsweredModal] = useState(false);
   const handleTabChange = (event, newValue) => {
     setActiveTab(newValue);
   };
@@ -49,7 +49,18 @@ const MultiRadioQuestionComponent = ({ question, onSubmit }) => {
     setAnswers((prev) => ({ ...prev, [findingIndex]: selectedValue }));
   };
 
+  useEffect(() => {
+    sessionStorage.setItem("hasAnswered", "false");
+    sessionStorage.setItem("isRevealed", "false");
+  }, [questionId])
+
   const handleReveal = () => {
+    if (Object.keys(answers).length === 0) {
+      setShowNotAnsweredModal(true);
+      return;
+    }
+
+    // Existing reveal logic below...
     const correctAnswersMap = questionContent.reduce((acc, finding, idx) => {
       acc[idx] = finding.answer;
       return acc;
@@ -58,12 +69,18 @@ const MultiRadioQuestionComponent = ({ question, onSubmit }) => {
     const correctStatus = questionContent.every(
       (finding, idx) => answers[idx] === correctAnswersMap[idx]
     );
+
     const mark = correctStatus ? question?.marks || 5 : 0;
 
     onSubmit?.(questionId, correctStatus, mark);
+
     setIsCorrect(correctStatus);
     setShowAnswer(true);
+
+    sessionStorage.setItem("hasAnswered", "true");
+    sessionStorage.setItem("isRevealed", "true");
   };
+
 
   if (!question) {
     return (
@@ -218,10 +235,10 @@ const MultiRadioQuestionComponent = ({ question, onSubmit }) => {
                   const bgColor = showWrong
                     ? "#ffecec"
                     : showCorrect
-                    ? "#e9f9ee"
-                    : showMissed
-                    ? "#e9f9ee"
-                    : "transparent";
+                      ? "#e9f9ee"
+                      : showMissed
+                        ? "#e9f9ee"
+                        : "transparent";
 
                   return (
                     <TableCell
@@ -272,6 +289,53 @@ const MultiRadioQuestionComponent = ({ question, onSubmit }) => {
             ))}
           </TableBody>
         </Table>
+
+        {showNotAnsweredModal && (
+          <Box
+            sx={{
+              position: "fixed",
+              top: 0,
+              left: 0,
+              width: "100%",
+              height: "100%",
+              backgroundColor: "rgba(0,0,0,0.5)",
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+              zIndex: 9999,
+            }}
+          >
+            <Box
+              sx={{
+                backgroundColor: "#fff",
+                padding: 3,
+                borderRadius: "12px",
+                width: "90%",
+                maxWidth: 400,
+                textAlign: "center",
+              }}
+            >
+              <Typography
+                sx={{
+                  mb: 3,
+                  fontSize: "1rem",
+                  fontWeight: 600,
+                  color: "#2e3760",
+                }}
+              >
+                Please select any of the options before revealing.
+              </Typography>
+              <Button
+                variant="contained"
+                onClick={() => setShowNotAnsweredModal(false)}
+                sx={{ backgroundColor: "#2e3760" }}
+              >
+                OK
+              </Button>
+            </Box>
+          </Box>
+        )}
+
       </Box>
 
       {/* Reveal Button */}
@@ -313,7 +377,7 @@ const MultiRadioQuestionComponent = ({ question, onSubmit }) => {
             additionalInfoParagraphs={additionalInfo.map((info) => info.info) || []}
             additionalInfoImage={
               question.additionalInfo?.[0]?.image
-                ? `https://lunarsenterprises.com:6040/${question.additionalInfo[0].image}`
+                ? `https://lunarsenterprises.com:8002/${question.additionalInfo[0].image}`
                 : null
             }
             isAnswerCorrect={isCorrect}

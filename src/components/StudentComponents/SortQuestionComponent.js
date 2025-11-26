@@ -3,9 +3,6 @@ import {
   Box,
   Typography,
   Button,
-  List,
-  ListItem,
-  ListItemText,
   Tabs,
   Tab,
 } from "@mui/material";
@@ -52,6 +49,17 @@ const SortQuestionComponent = ({ question, onSubmit }) => {
   const [activeTab, setActiveTab] = useState(
     tabsInfo && tabsInfo.length ? tabsInfo[0].tabKey : ""
   );
+  const [hasSorted, setHasSorted] = useState(false);
+  const [showNotAnsweredModal, setShowNotAnsweredModal] = useState(false);
+
+  useEffect(() => {
+    // Reset sessionStorage on question change
+    sessionStorage.setItem("hasAnswered", "false");
+    sessionStorage.setItem("isRevealed", "false");
+    setHasSorted(false);
+    setShowReveal(false);
+  }, [questionId]);
+
 
   useEffect(() => {
     if (tabsInfo && tabsInfo.length) setActiveTab(tabsInfo[0].tabKey);
@@ -72,10 +80,17 @@ const SortQuestionComponent = ({ question, onSubmit }) => {
       const oldIndex = steps.findIndex((step) => step.id === active.id);
       const newIndex = steps.findIndex((step) => step.id === over.id);
       setSteps((prev) => arrayMove(prev, oldIndex, newIndex));
+      setHasSorted(true);
+      sessionStorage.setItem("hasAnswered", "true");
     }
   };
 
   const handleReveal = () => {
+    if (!hasSorted) {
+      setShowNotAnsweredModal(true);
+      return;
+    }
+
     const correctOrder = sortingoptions
       .map((opt) => ({
         id: String(opt.id),
@@ -96,6 +111,7 @@ const SortQuestionComponent = ({ question, onSubmit }) => {
     setCorrectAnswer(correctOrder.map((s) => s.text));
     setIsCorrect(correctStatus);
     setShowReveal(true);
+    sessionStorage.setItem("isRevealed", "true");
   };
 
   if (!question || !sortingoptions.length) {
@@ -261,6 +277,7 @@ const SortQuestionComponent = ({ question, onSubmit }) => {
         )}
       </Box>
 
+      {/* Reveal Button */}
       <Box textAlign="center">
         <Button
           variant="contained"
@@ -278,6 +295,53 @@ const SortQuestionComponent = ({ question, onSubmit }) => {
         </Button>
       </Box>
 
+      {/* Block reveal modal */}
+      {showNotAnsweredModal && (
+        <Box
+          sx={{
+            position: "fixed",
+            top: 0,
+            left: 0,
+            width: "100%",
+            height: "100%",
+            backgroundColor: "rgba(0,0,0,0.5)",
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            zIndex: 9999,
+          }}
+        >
+          <Box
+            sx={{
+              backgroundColor: "#fff",
+              padding: 3,
+              borderRadius: "12px",
+              width: "90%",
+              maxWidth: 400,
+              textAlign: "center",
+            }}
+          >
+            <Typography
+              sx={{
+                mb: 3,
+                fontSize: "1rem",
+                fontWeight: 600,
+                color: "#2e3760",
+              }}
+            >
+              Please change the order at least once before revealing the answer.
+            </Typography>
+            <Button
+              variant="contained"
+              onClick={() => setShowNotAnsweredModal(false)}
+              sx={{ backgroundColor: "#2e3760" }}
+            >
+              OK
+            </Button>
+          </Box>
+        </Box>
+      )}
+
       {/* Reveal Section */}
       {showReveal && (
         <Box sx={{ mt: 4 }}>
@@ -290,8 +354,6 @@ const SortQuestionComponent = ({ question, onSubmit }) => {
           >
             Correct Order (Properly Sorted):
           </Typography>
-
-          {/* ✅ NEW: Properly sorted correct order display */}
           <Box
             sx={{
               maxWidth: "600px",
@@ -320,7 +382,6 @@ const SortQuestionComponent = ({ question, onSubmit }) => {
               </Box>
             ))}
           </Box>
-
           <Typography
             variant="subtitle1"
             fontWeight={600}
@@ -330,7 +391,6 @@ const SortQuestionComponent = ({ question, onSubmit }) => {
           >
             {isCorrect ? "✅ Correct!" : "❌ Incorrect"}
           </Typography>
-
           <RevealAnswerComponent
             questionText={questionText}
             explanationHeading={explanation[0]?.heading || "Explanation"}
@@ -343,7 +403,7 @@ const SortQuestionComponent = ({ question, onSubmit }) => {
             }
             additionalInfoImage={
               question.additionalInfo?.[0]?.image
-                ? `https://lunarsenterprises.com:6040/${question.additionalInfo[0].image}`
+                ? `https://lunarsenterprises.com:8002/${question.additionalInfo[0].image}`
                 : null
             }
             isAnswerCorrect={isCorrect}

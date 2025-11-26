@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Box,
   Typography,
@@ -34,6 +34,8 @@ const DragDropQuestionComponent = ({ question, onSubmit }) => {
   const [correctAnswer, setCorrectAnswer] = useState("");
   const [isCorrect, setIsCorrect] = useState(false);
   const [activeTab, setActiveTab] = useState(0);
+  const [showNotAnsweredModal, setShowNotAnsweredModal] = useState(false);
+
 
   const handleDropdownChange = (index, value) => {
     if (showReveal) return;
@@ -44,12 +46,31 @@ const DragDropQuestionComponent = ({ question, onSubmit }) => {
     });
   };
 
+
+  useEffect(() => {
+    sessionStorage.setItem("hasAnswered", "false");
+    sessionStorage.setItem("isRevealed", "false");
+  }, [questionId])
+
   const handleTabChange = (event, newValue) => {
     setActiveTab(newValue);
   };
 
   // Reveal logic
   const handleReveal = () => {
+    /* const hasAnswered = dropdownValues.some((val) => val && val !== "");
+    if (!hasAnswered) {
+      setShowNotAnsweredModal(true);
+      return;
+    } */
+
+    // Check all five dropdowns are filled (no empty strings)
+    const allFilled = dropdownValues.length === 5 && dropdownValues.every(val => val !== "");
+    if (!allFilled) {
+      setShowNotAnsweredModal(true);
+      return;
+    }
+
     const userAns = branches
       .map(
         (b, idx) =>
@@ -74,6 +95,9 @@ const DragDropQuestionComponent = ({ question, onSubmit }) => {
     setCorrectAnswer(correctAns);
     setIsCorrect(correctStatus);
     setShowReveal(true);
+
+    sessionStorage.setItem("hasAnswered", "true");
+    sessionStorage.setItem("isRevealed", "true");
   };
 
   if (!question || !branches.length) {
@@ -243,7 +267,7 @@ const DragDropQuestionComponent = ({ question, onSubmit }) => {
                   src={
                     tabsInfo[activeTab].tabImage.startsWith("http")
                       ? tabsInfo[activeTab].tabImage
-                      : `${'https://lunarsenterprises.com:6040/'}${tabsInfo[activeTab].tabImage}`
+                      : `${'https://lunarsenterprises.com:8002/'}${tabsInfo[activeTab].tabImage}`
                   }
                   alt={tabsInfo[activeTab].tabKey}
                   style={{
@@ -460,6 +484,54 @@ const DragDropQuestionComponent = ({ question, onSubmit }) => {
             </Box>
           </Grid>
         </Grid>
+
+        {showNotAnsweredModal && (
+          <Box
+            sx={{
+              position: "fixed",
+              top: 0,
+              left: 0,
+              width: "100%",
+              height: "100%",
+              backgroundColor: "rgba(0,0,0,0.5)",
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+              zIndex: 9999,
+            }}
+          >
+            <Box
+              sx={{
+                backgroundColor: "#fff",
+                padding: 3,
+                borderRadius: "12px",
+                width: "90%",
+                maxWidth: 400,
+                textAlign: "center",
+              }}
+            >
+              <Typography
+                sx={{
+                  mb: 3,
+                  fontSize: "1rem",
+                  fontWeight: 600,
+                  color: "#2e3760",
+                }}
+              >
+                Please fill in all required branches by selecting an option before revealing the answer and moving to the next question.
+              </Typography>
+
+              <Button
+                variant="contained"
+                onClick={() => setShowNotAnsweredModal(false)}
+                sx={{ backgroundColor: "#2e3760" }}
+              >
+                OK
+              </Button>
+            </Box>
+          </Box>
+        )}
+
       </Box>
 
       {/* Reveal Answer Button */}
@@ -631,7 +703,7 @@ const DragDropQuestionComponent = ({ question, onSubmit }) => {
             }
             additionalInfoImage={
               question.additionalInfo?.[0]?.image
-                ? `https://lunarsenterprises.com:6040/${question.additionalInfo[0].image}`
+                ? `https://lunarsenterprises.com:8002/${question.additionalInfo[0].image}`
                 : null
             }
             isAnswerCorrect={isCorrect}

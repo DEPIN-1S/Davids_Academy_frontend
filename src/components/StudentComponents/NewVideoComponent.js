@@ -198,7 +198,7 @@ const NewVideoGrid = () => {
                   <Box sx={{ position: 'relative', height: 200 }}>
                     <CardMedia
                       component="img"
-                      image={`https://lunarsenterprises.com:6040${rec.r_thumbnail}`}
+                      image={`https://lunarsenterprises.com:8002${rec.r_thumbnail}`}
                       alt={rec.r_title}
                       sx={{
                         width: '100%',

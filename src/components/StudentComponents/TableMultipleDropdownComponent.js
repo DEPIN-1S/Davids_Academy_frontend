@@ -39,6 +39,12 @@ const TableMultipleDropdownComponent = ({ question, onSubmit }) => {
   const [dropdownValues, setDropdownValues] = useState({});
   const [showReveal, setShowReveal] = useState(false);
   const [isCorrect, setIsCorrect] = useState(false);
+  const [showNotAnsweredModal, setShowNotAnsweredModal] = useState(false);
+
+  useEffect(() => {
+    sessionStorage.setItem("hasAnswered", "false");
+    sessionStorage.setItem("isRevealed", "false");
+  }, [])
 
   // Tabs state
   const [activeTab, setActiveTab] = useState(() =>
@@ -63,6 +69,18 @@ const TableMultipleDropdownComponent = ({ question, onSubmit }) => {
 
   // Handle reveal (submission and show answers) for multi-dropdown table
   const handleReveal = () => {
+
+    const allFilled = rows.every((row, rIdx) =>
+      row.columns.every((col) => {
+        const key = `${rIdx}-${col.colIndex}`;
+        return dropdownValues[key] && dropdownValues[key] !== "";
+      })
+    );
+
+    if (!allFilled) {
+      setShowNotAnsweredModal(true);
+      return;
+    }
     let allCorrect = true;
     const answersList = [];
 
@@ -94,6 +112,9 @@ const TableMultipleDropdownComponent = ({ question, onSubmit }) => {
 
     setIsCorrect(allCorrect);
     setShowReveal(true);
+
+    sessionStorage.setItem("hasAnswered", "true");
+    sessionStorage.setItem("isRevealed", "true");
   };
 
   // Loading or no data state
@@ -122,7 +143,7 @@ const TableMultipleDropdownComponent = ({ question, onSubmit }) => {
             Difficulty : {difficulty || ""}
           </Typography>
           <Typography sx={{ textAlign: "right" }}>
-            Question Type : Table Dropdown
+            Question Type : Multi Dropdown
           </Typography>
         </Box>
       </Box>
@@ -245,7 +266,7 @@ const TableMultipleDropdownComponent = ({ question, onSubmit }) => {
                   src={
                     tabsInfo[activeTab].tabImage.startsWith("http")
                       ? tabsInfo[activeTab].tabImage
-                      : `${'https://lunarsenterprises.com:6040/'}${tabsInfo[activeTab].tabImage}`
+                      : `${'https://lunarsenterprises.com:8002/'}${tabsInfo[activeTab].tabImage}`
                   }
                   alt="tab"
                   style={{
@@ -380,6 +401,49 @@ const TableMultipleDropdownComponent = ({ question, onSubmit }) => {
             </TableBody>
           </Table>
         </TableContainer>
+
+
+        {showNotAnsweredModal && (
+          <Box
+            sx={{
+              position: "fixed",
+              top: 0,
+              left: 0,
+              width: "100%",
+              height: "100%",
+              backgroundColor: "rgba(0,0,0,0.5)",
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+              zIndex: 9999,
+            }}
+          >
+            <Box
+              sx={{
+                backgroundColor: "#fff",
+                padding: 3,
+                borderRadius: "12px",
+                width: "90%",
+                maxWidth: 400,
+                textAlign: "center",
+              }}
+            >
+              <Typography
+                sx={{ mb: 3, fontSize: "1rem", fontWeight: 600, color: "#2e3760" }}
+              >
+                All dropdown fields must be filled before revealing the answer.
+              </Typography>
+              <Button
+                variant="contained"
+                onClick={() => setShowNotAnsweredModal(false)}
+                sx={{ backgroundColor: "#2e3760" }}
+              >
+                OK
+              </Button>
+            </Box>
+          </Box>
+        )}
+
       </Box>
 
       {/* Submit Button */}
@@ -513,7 +577,7 @@ const TableMultipleDropdownComponent = ({ question, onSubmit }) => {
             }
             additionalInfoImage={
               question.additionalInfo?.[0]?.image
-                ? `https://lunarsenterprises.com:6040/${question.additionalInfo[0].image}`
+                ? `https://lunarsenterprises.com:8002/${question.additionalInfo[0].image}`
                 : null
             }
             isAnswerCorrect={isCorrect}

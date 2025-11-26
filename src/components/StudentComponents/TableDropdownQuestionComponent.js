@@ -43,6 +43,12 @@ const TableDropdownQuestionComponent = ({ question, onSubmit }) => {
   const [activeTab, setActiveTab] = useState(() =>
     tabsInfo && tabsInfo.length ? tabsInfo[0].tabKey : ""
   );
+  const [showNotAnsweredModal, setShowNotAnsweredModal] = useState(false);
+
+  useEffect(() => {
+    sessionStorage.setItem("hasAnswered", "false");
+    sessionStorage.setItem("isRevealed", "false");
+  }, [questionId])
 
   useEffect(() => {
     if (tabsInfo && tabsInfo.length) setActiveTab(tabsInfo[0].tabKey);
@@ -63,6 +69,17 @@ const TableDropdownQuestionComponent = ({ question, onSubmit }) => {
 
   // Handle reveal (submission and show answers) for table dropdown
   const handleReveal = () => {
+
+    const allFilled = tableDropdownFields.length > 0 &&
+      tableDropdownFields.every((field) =>
+        dropdownValues[field.id] && dropdownValues[field.id] !== ""
+      );
+
+    if (!allFilled) {
+      setShowNotAnsweredModal(true);
+      return;
+    }
+
     // Build a map of correct answers keyed by rowLabel
     const answersMap = tableDropdownAnswers.reduce((acc, ans) => {
       acc[ans.rowLabel] = ans.answer;
@@ -93,6 +110,9 @@ const TableDropdownQuestionComponent = ({ question, onSubmit }) => {
 
     setIsCorrect(correctStatus);
     setShowReveal(true);
+
+    sessionStorage.setItem("hasAnswered", "true");
+    sessionStorage.setItem("isRevealed", "true");
   };
 
   // Loading or no data state
@@ -247,7 +267,7 @@ const TableDropdownQuestionComponent = ({ question, onSubmit }) => {
                   src={
                     tabsInfo[activeTab].tabImage.startsWith("http")
                       ? tabsInfo[activeTab].tabImage
-                      : `${'https://lunarsenterprises.com:6040/'}${tabsInfo[activeTab].tabImage}`
+                      : `${'https://lunarsenterprises.com:8002/'}${tabsInfo[activeTab].tabImage}`
                   }
                   alt="tab"
                   style={{
@@ -397,6 +417,43 @@ const TableDropdownQuestionComponent = ({ question, onSubmit }) => {
             </TableBody>
           </Table>
         </TableContainer>
+
+
+        {showNotAnsweredModal && (
+          <Box sx={{
+            position: "fixed",
+            top: 0, left: 0,
+            width: "100%", height: "100%",
+            backgroundColor: "rgba(0,0,0,0.5)",
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            zIndex: 9999,
+          }}>
+            <Box sx={{
+              backgroundColor: "#fff",
+              padding: 3,
+              borderRadius: "12px",
+              width: "90%",
+              maxWidth: 400,
+              textAlign: "center",
+            }}>
+              <Typography sx={{ mb: 3, fontWeight: 600, color: "#2e3760" }}>
+                Dropdown field must be filled before revealing the answer.
+              </Typography>
+              <Button
+                variant="contained"
+                onClick={() => setShowNotAnsweredModal(false)}
+                sx={{ backgroundColor: "#2e3760" }}
+              >
+                OK
+              </Button>
+            </Box>
+          </Box>
+        )}
+
+
+
       </Box>
 
       {/* Submit Button */}
@@ -497,7 +554,7 @@ const TableDropdownQuestionComponent = ({ question, onSubmit }) => {
             }
             additionalInfoImage={
               question.additionalInfo?.[0]?.image
-                ? `https://lunarsenterprises.com:6040/${question.additionalInfo[0].image}`
+                ? `https://lunarsenterprises.com:8002/${question.additionalInfo[0].image}`
                 : null
             }
             isAnswerCorrect={isCorrect}

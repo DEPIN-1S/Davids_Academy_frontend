@@ -16,6 +16,8 @@
   align-items: center;
 }
 
+
+
 .questionNo {
   font-size: 14px !important;
 }
@@ -59,4 +61,50 @@
     padding: 14px !important;
     font-size: 12px !important;
   }
+}
+
+
+.mocktest-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.3);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
+}
+
+.mocktest-modal.simple-modal {
+  background: #ffffff;
+  padding: 24px;
+  border-radius: 10px;
+  width: 90%;
+  max-width: 380px;
+  text-align: center;
+}
+
+.mock-modal-title {
+  font-size: 20px;
+  font-weight: 600;
+  margin-bottom: 8px;
+  color: #1f2a55;
+}
+
+.modal-text {
+  font-size: 15px;
+  color: #555;
+  margin-bottom: 20px;
+}
+
+.mock-modal-btn {
+  width: 100%;
+  font-size: 15px;
+  text-transform: none;
+  padding: 10px 0;
+  border-radius: 8px;
+  background-color: #1f2a55;
+  color: white;
 }

@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import {
   Box,
   Typography,
@@ -17,7 +17,7 @@ const buildImageUrl = (path) => {
   if (!path) return null;
   if (path.startsWith("http://") || path.startsWith("https://")) return path;
   const clean = path.replace(/^\/+/, "");
-  return `https://lunarsenterprises.com:6040/${clean}`;
+  return `https://lunarsenterprises.com:8002/${clean}`;
 };
 
 const escapeRegExp = (s) => s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
@@ -59,6 +59,8 @@ const SentenceQuestionComponent = ({ question, onSubmit }) => {
   const [userAnswer, setUserAnswer] = useState("");
   const [correctAnswer, setCorrectAnswer] = useState("");
   const [isCorrect, setIsCorrect] = useState(false);
+  const [showNotAnsweredModal, setShowNotAnsweredModal] = useState(false);
+
 
   // Prefer passage; else strip HTML from tabsInfo[0].tabValue; else question
   const tabHtml = tabsInfo?.[0]?.tabValue || "";
@@ -95,6 +97,11 @@ const SentenceQuestionComponent = ({ question, onSubmit }) => {
   };
 
   const handleReveal = () => {
+    if (selectedIds.length === 0) {
+      setShowNotAnsweredModal(true);
+      return;
+    }
+
     const selectedTexts = selectedIds
       .map((id) => optionList.find((o) => o.id === id)?.text || id)
       .filter(Boolean);
@@ -116,8 +123,18 @@ const SentenceQuestionComponent = ({ question, onSubmit }) => {
     setUserAnswer(selectedTexts.join(", ") || "Not selected");
     setCorrectAnswer(correctTexts.join(", ") || "Not available");
     setIsCorrect(allMatch);
+
+    sessionStorage.setItem("hasAnswered", "true");
+    sessionStorage.setItem("isRevealed", "true");
+
     setShowAnswer(true);
   };
+
+  useEffect(() => {
+    sessionStorage.setItem("hasAnswered", "false");
+    sessionStorage.setItem("isRevealed", "false");
+  }, [questionId]);
+
 
   if (!question || !optionList.length) {
     return (
@@ -354,6 +371,21 @@ const SentenceQuestionComponent = ({ question, onSubmit }) => {
             });
           })()}
         </Typography>
+
+
+        {showNotAnsweredModal && (
+          <Box sx={{ position: "fixed", top: 0, left: 0, width: "100%", height: "100%", backgroundColor: "rgba(0,0,0,0.5)", display: "flex", justifyContent: "center", alignItems: "center", zIndex: 9999 }}>
+            <Box sx={{ backgroundColor: "#fff", padding: 3, borderRadius: "12px", width: "90%", maxWidth: 400, textAlign: "center" }}>
+              <Typography sx={{ mb: 3, fontSize: "1rem", fontWeight: 600, color: "#2e3760" }}>
+                Please select at least one phrase before revealing the answer.
+              </Typography>
+              <Button variant="contained" onClick={() => setShowNotAnsweredModal(false)} sx={{ backgroundColor: "#2e3760" }}>
+                OK
+              </Button>
+            </Box>
+          </Box>
+        )}
+
       </Box>
 
       {/* Submit */}

@@ -20,7 +20,7 @@ const buildImageUrl = (path) => {
   if (!path) return null;
   if (path.startsWith("http://") || path.startsWith("https://")) return path;
   const clean = String(path).replace(/^\/+/, "");
-  return `https://lunarsenterprises.com:6040/${clean}`;
+  return `https://lunarsenterprises.com:8002/${clean}`;
 };
 
 const MCQQuestionComponent = ({ question, onSubmit }) => {
@@ -40,13 +40,18 @@ const MCQQuestionComponent = ({ question, onSubmit }) => {
   const answerArray = Array.isArray(mcqAnswers)
     ? mcqAnswers.map((ans) => (ans.mcqAnswer ?? "").trim())
     : [];
-
+  const [showNotAnsweredModal, setShowNotAnsweredModal] = useState(false);
   const [selectedOptions, setSelectedOptions] = useState([]);
   const [showAnswer, setShowAnswer] = useState(false);
   const [isCorrect, setIsCorrect] = useState(false);
   const [activeTab, setActiveTab] = useState(
     tabsInfo && tabsInfo.length ? tabsInfo[0].tabKey : ""
   );
+
+  useEffect(() => {
+    sessionStorage.setItem("isRevealed", "false");   
+  }, [questionId]);
+
 
   useEffect(() => {
     if (tabsInfo && tabsInfo.length) setActiveTab(tabsInfo[0].tabKey);
@@ -63,6 +68,9 @@ const MCQQuestionComponent = ({ question, onSubmit }) => {
     );
   };
 
+
+
+
   const allOptionValues = useMemo(() => mcqoptions.map((o) => o.option), [mcqoptions]);
   const allSelected =
     allOptionValues.length > 0 && selectedOptions.length === allOptionValues.length;
@@ -75,6 +83,11 @@ const MCQQuestionComponent = ({ question, onSubmit }) => {
   };
 
   const handleReveal = () => {
+
+    if (selectedOptions.length === 0) {
+      setShowNotAnsweredModal(true);
+      return;
+    }
     const selectedNorm = selectedOptions.map((s) => (s ?? "").trim());
     const correctNorm = answerArray.map((s) => (s ?? "").trim());
 
@@ -104,10 +117,10 @@ const MCQQuestionComponent = ({ question, onSubmit }) => {
   };
 
   return (
-    <Box className="radio-container" sx={{ textAlign: "left" , px: 8 }}>
+    <Box className="radio-container" sx={{ textAlign: "left", px: 8 }}>
       {/* Question */}
       <Typography
-      fontWeight={700}
+        fontWeight={700}
         sx={{
           textAlign: "left",
           color: "#2e3760",
@@ -125,7 +138,7 @@ const MCQQuestionComponent = ({ question, onSubmit }) => {
         <img
           src={buildImageUrl(exhibit)}
           alt="Exhibit"
-          style={{ maxWidth: "100%", marginBottom: "1rem", borderRadius: 8, alignItems:"center" }}
+          style={{ maxWidth: "100%", marginBottom: "1rem", borderRadius: 8, alignItems: "center" }}
         />
       )}
 
@@ -224,7 +237,7 @@ const MCQQuestionComponent = ({ question, onSubmit }) => {
         >
           {allSelected ? "Clear All" : "Select All"}
         </Button>
-        <Typography variant="caption" sx={{ color: "#6b7280", fontSize:"15px" }}>
+        <Typography variant="caption" sx={{ color: "#6b7280", fontSize: "15px" }}>
           You can select any number of options.
         </Typography>
       </Box>
@@ -315,10 +328,58 @@ const MCQQuestionComponent = ({ question, onSubmit }) => {
         </Button>
       </Box>
 
+
+      {showNotAnsweredModal && (
+        <Box
+          sx={{
+            position: "fixed",
+            top: 0,
+            left: 0,
+            width: "100%",
+            height: "100%",
+            backgroundColor: "rgba(0,0,0,0.5)",
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            zIndex: 9999,
+          }}
+        >
+          <Box
+            sx={{
+              backgroundColor: "#fff",
+              padding: 3,
+              borderRadius: "12px",
+              width: "90%",
+              maxWidth: 400,
+              textAlign: "center",
+            }}
+          >
+            <Typography
+              sx={{
+                mb: 3,
+                fontSize: "1rem",
+                fontWeight: 600,
+                color: "#2e3760",
+              }}
+            >
+              Please select at least one option before revealing the answer.
+            </Typography>
+
+            <Button
+              variant="contained"
+              onClick={() => setShowNotAnsweredModal(false)}
+              sx={{ backgroundColor: "#2e3760" }}
+            >
+              OK
+            </Button>
+          </Box>
+        </Box>
+      )}
+
+
       {/* Reveal Results */}
       {showAnswer && (
         <Box sx={{ mt: 4 }}>
-
 
           {/* Summary */}
           <Typography
@@ -341,8 +402,6 @@ const MCQQuestionComponent = ({ question, onSubmit }) => {
               </>
             )}
           </Typography>
-
-
 
           {/* Explanation */}
           {explanation.length > 0 && (

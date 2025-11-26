@@ -212,7 +212,7 @@ export async function fetchTestQuestionsAPI() {
   console.log("Inside fetch test questions :::: ");
 
   /*  const response = await fetch(
-         "https://lunarsenterprises.com:6040/davidsacademy/student/test/list",
+         "https://lunarsenterprises.com:8002/davidsacademy/student/test/list",
          {
              method: "GET",
              headers: {
@@ -433,7 +433,7 @@ export const fetchTestQuestionData = async (test_id, questionId) => {
     const token = sessionStorage.getItem("accessToken");
     console.log("Fetching question data for:", { test_id, questionId });
 
-    const response = await fetch(`${baseUrl}/student/test/question/data`, {
+    const response = await fetch(`${baseUrl}/student/questions/data`, {
       method: "POST",
       headers: {
         Authorization: `Bearer ${token}`,

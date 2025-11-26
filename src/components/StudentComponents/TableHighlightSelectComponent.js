@@ -38,11 +38,18 @@ const TableHighlightSelectComponent = ({ question, onSubmit }) => {
   const [selectedItems, setSelectedItems] = useState(new Set());
   const [showReveal, setShowReveal] = useState(false);
   const [isCorrect, setIsCorrect] = useState(false);
+  const [showNotAnsweredModal, setShowNotAnsweredModal] = useState(false);
+
 
   // Tabs state
   const [activeTab, setActiveTab] = useState(() =>
     tabsInfo && tabsInfo.length ? tabsInfo[0].tabKey : ""
   );
+
+  useEffect(() => {
+    sessionStorage.setItem("hasAnswered", "false");
+    sessionStorage.setItem("isRevealed", "false");
+  }, [questionId])
 
   useEffect(() => {
     if (tabsInfo && tabsInfo.length) setActiveTab(tabsInfo[0].tabKey);
@@ -67,6 +74,12 @@ const TableHighlightSelectComponent = ({ question, onSubmit }) => {
 
   // Handle reveal (submission and show answers)
   const handleReveal = () => {
+
+    if (selectedItems.size === 0) {
+      setShowNotAnsweredModal(true);
+      return;
+    }
+
     const selectedArray = Array.from(selectedItems);
     const correctAnswers = answer || [];
 
@@ -85,6 +98,9 @@ const TableHighlightSelectComponent = ({ question, onSubmit }) => {
 
     setIsCorrect(allCorrect);
     setShowReveal(true);
+
+    sessionStorage.setItem("hasAnswered", "true");
+    sessionStorage.setItem("isRevealed", "true");
   };
 
   // Loading or no data state
@@ -236,7 +252,7 @@ const TableHighlightSelectComponent = ({ question, onSubmit }) => {
                   src={
                     tabsInfo[activeTab].tabImage.startsWith("http")
                       ? tabsInfo[activeTab].tabImage
-                      : `${'https://lunarsenterprises.com:6040/'}${tabsInfo[activeTab].tabImage}`
+                      : `${'https://lunarsenterprises.com:8002/'}${tabsInfo[activeTab].tabImage}`
                   }
                   alt="tab"
                   style={{
@@ -379,6 +395,27 @@ const TableHighlightSelectComponent = ({ question, onSubmit }) => {
             </TableBody>
           </Table>
         </TableContainer>
+
+        {showNotAnsweredModal && (
+          <Box sx={{
+            position: "fixed", top: 0, left: 0, width: "100%", height: "100%",
+            backgroundColor: "rgba(0,0,0,0.5)", display: "flex",
+            justifyContent: "center", alignItems: "center", zIndex: 9999,
+          }}>
+            <Box sx={{
+              backgroundColor: "#fff", padding: 3, borderRadius: "12px",
+              width: "90%", maxWidth: 400, textAlign: "center",
+            }}>
+              <Typography sx={{ mb: 3, fontWeight: 600, color: "#2e3760" }}>
+                Please highlight at least one right column before revealing the answer.
+              </Typography>
+              <Button variant="contained" onClick={() => setShowNotAnsweredModal(false)} sx={{ backgroundColor: "#2e3760" }}>
+                OK
+              </Button>
+            </Box>
+          </Box>
+        )}
+
       </Box>
 
       {/* Submit Button */}
@@ -461,7 +498,7 @@ const TableHighlightSelectComponent = ({ question, onSubmit }) => {
             }
             additionalInfoImage={
               question.additionalInfo?.[0]?.image
-                ? `https://lunarsenterprises.com:6040/${question.additionalInfo[0].image}`
+                ? `https://lunarsenterprises.com:8002/${question.additionalInfo[0].image}`
                 : null
             }
             isAnswerCorrect={isCorrect}

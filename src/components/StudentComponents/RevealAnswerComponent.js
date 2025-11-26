@@ -20,6 +20,8 @@ const RevealAnswerComponent = ({
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('md'));
   const [openModal, setOpenModal] = React.useState(true);  // or false initially
+  sessionStorage.setItem("isRevealed", "true");
+
 
   return (
     <Box
@@ -111,7 +113,7 @@ const RevealAnswerComponent = ({
         {additionalInfoImage && (
           <Box
             component="img"
-            src={'https://lunarsenterprises.com:6040' + additionalInfoImage}
+            src={'https://lunarsenterprises.com:8002' + additionalInfoImage}
             alt="Additional Info"
             sx={{ width: '100%', mt: 2, borderRadius: 2 }}
           />
