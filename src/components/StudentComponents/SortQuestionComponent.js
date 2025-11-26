@@ -403,7 +403,7 @@ const SortQuestionComponent = ({ question, onSubmit }) => {
             }
             additionalInfoImage={
               question.additionalInfo?.[0]?.image
-                ? `https://lunarsenterprises.com:8002/${question.additionalInfo[0].image}`
+                ? `https://lunarsenterprises.com:6040/${question.additionalInfo[0].image}`
                 : null
             }
             isAnswerCorrect={isCorrect}
