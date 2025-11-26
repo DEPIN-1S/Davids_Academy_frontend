@@ -48,9 +48,15 @@ const MCQQuestionComponent = ({ question, onSubmit }) => {
     tabsInfo && tabsInfo.length ? tabsInfo[0].tabKey : ""
   );
 
+
   useEffect(() => {
-    sessionStorage.setItem("isRevealed", "false");   
-  }, [questionId]);
+  sessionStorage.setItem("hasAnswered", "false");
+  sessionStorage.setItem("isRevealed", "false");
+  setShowAnswer(false); // Reset local component state accordingly
+  setIsCorrect(false);
+}, [questionId]);
+
+
 
 
   useEffect(() => {
@@ -104,6 +110,9 @@ const MCQQuestionComponent = ({ question, onSubmit }) => {
 
     setIsCorrect(allCorrect);
     setShowAnswer(true);
+
+    sessionStorage.setItem("hasAnswered", "true");
+    sessionStorage.setItem("isRevealed", "true");
   };
 
   const isCheckboxDisabled = showAnswer;

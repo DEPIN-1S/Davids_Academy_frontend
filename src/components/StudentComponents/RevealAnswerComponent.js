@@ -6,6 +6,10 @@ import {
   useMediaQuery,
 } from '@mui/material';
 import ResultModal from './ResultModal';
+import { useContext, useEffect } from "react";
+import { SampleQuestionnaireResultContext } from '../../context/ResultProvider';
+
+
 
 const RevealAnswerComponent = ({
   questionText = '',
@@ -21,6 +25,24 @@ const RevealAnswerComponent = ({
   const isMobile = useMediaQuery(theme.breakpoints.down('md'));
   const [openModal, setOpenModal] = React.useState(true);  // or false initially
   sessionStorage.setItem("isRevealed", "true");
+
+  // for sample questionare result calculation
+  const { sampleQuestionnaireResult, setSampleQuestionnaireResult } =
+    useContext(SampleQuestionnaireResultContext);
+
+  const hasUpdated = React.useRef(false);
+
+  useEffect(() => {
+    if (hasUpdated.current) return; // prevent second run
+    hasUpdated.current = true;
+
+    setSampleQuestionnaireResult(prev => ({
+      ...prev,
+      attemptedQuestion: prev.attemptedQuestion + 1,
+      corrected: isAnswerCorrect ? prev.corrected + 1 : prev.corrected
+    }));
+  }, []);
+
 
 
   return (

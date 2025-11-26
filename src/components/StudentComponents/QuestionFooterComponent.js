@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import "../../styles/DashboardStyles/QuestionFooterComponent.css";
 import { Box, Button, Typography } from "@mui/material";
 import LogoutIcon from "@mui/icons-material/Logout";
@@ -10,6 +10,8 @@ import QuestionBankProgressCard from "./QuestionBankProgressCard";
 import { useLocation, useNavigate } from "react-router-dom";
 import { IoIosArrowForward } from "react-icons/io";
 import { IoIosArrowBack } from "react-icons/io";
+import SampleQuestionnaireProgressCard from "./SampleQuestionnaireProgressCard";
+import { SampleQuestionnaireResultContext } from "../../context/ResultProvider";
 
 
 
@@ -36,8 +38,11 @@ const QuestionFooterComponent = ({
   const location = useLocation();
   const searchParams = new URLSearchParams(location.search);
   const isQuestionBankRoute = searchParams.get("mode") === "question-bank";
+  const isSampleRoute = searchParams.get("mode") === "sample";
   const [isRevealed, setIsRevealed] = useState(false);
   const [showNotAnsweredModal, setShowNotAnsweredModal] = useState(false);
+  const [showSampleProgressCard, setShowSampleProgressCard] = useState(false);
+
   useEffect(() => {
     const checkRevealStatus = () => {
       const status = sessionStorage.getItem("isRevealed") === "true";
@@ -49,8 +54,9 @@ const QuestionFooterComponent = ({
     const interval = setInterval(checkRevealStatus, 200);
     return () => clearInterval(interval);
   }, []);
-
-
+  const { sampleQuestionnaireResult } = useContext(SampleQuestionnaireResultContext);
+  const { attemptedQuestion, corrected, wrong } = sampleQuestionnaireResult;
+  const [showSampleCompletedModal, setShowSampleCompletedModal] = useState(false);
 
 
   return (
@@ -90,10 +96,25 @@ const QuestionFooterComponent = ({
               </Button>
             )}
 
+            {isSampleRoute && (
+              <Button
+                className="submit-and-exit-button"
+                onClick={() => setShowSampleProgressCard(true)}
+              >
+                Finish & View Progress{" "}
+                <span style={{ paddingLeft: "3px", paddingBottom: "4px" }}>
+                  <PiCheckCircleBold style={{ fontSize: "19px" }} />
+                </span>
+              </Button>
+            )}
+
+
 
           </>
         )}
       </div>
+
+
 
       <div className="right-buttons">
         <Button
@@ -104,6 +125,12 @@ const QuestionFooterComponent = ({
 
             if (!hasAnswered || !hasRevealed) {
               setShowNotAnsweredModal(true); // Show modal
+              return;
+            }
+
+            // SAMPLE QUESTIONNAIRE COMPLETION CHECK
+            if (isSampleRoute && questionNumber === totalQuestions) {
+              setShowSampleCompletedModal(true);
               return;
             }
 
@@ -132,6 +159,17 @@ const QuestionFooterComponent = ({
           }}
         />
       )}
+
+
+      {showSampleProgressCard && (
+        <SampleQuestionnaireProgressCard
+          onClose={() => {
+            setShowSampleProgressCard(false);
+            navigate("/");
+          }}
+        />
+      )}
+
 
       {showCompletedModal && (
         <div className="mocktest-modal-overlay">
@@ -200,6 +238,36 @@ const QuestionFooterComponent = ({
           </Box>
         </Box>
       )}
+
+      {showSampleCompletedModal && (
+        <div className="mocktest-modal-overlay">
+          <div className="mocktest-modal simple-modal">
+            <img
+              src="/images/logo.png"
+              width={70}
+              alt="logo"
+              className="card-logo"
+            />
+
+            <h3 className="mock-modal-title">Sample Test Completed</h3>
+
+            <p className="modal-text">
+              You have successfully completed the sample questionnaire.
+            </p>
+
+            <button
+              onClick={() => {
+                setShowSampleCompletedModal(false);
+                setShowSampleProgressCard(true); // ⬅ open the report card
+              }}
+              className="mock-modal-btn"
+            >
+              Submit & View Progress
+            </button>
+          </div>
+        </div>
+      )}
+
 
 
     </Box>
