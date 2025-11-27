@@ -14,6 +14,7 @@ import {
   resetMockTestApi,
   adminUpdateTest,
   getQuestionBankResultApi,
+  submitMockTestQuestionResponse,
 } from "./examAPI";
 import {
   adminGetQBankQuestions,
@@ -353,6 +354,18 @@ export const getQuestionBankResult = createAsyncThunk(
 );
 
 
+export const submitMockTestQuestionResponseThunk = createAsyncThunk(
+  "mockTest/submitQuestionResponse",
+  async (responseData, { rejectWithValue }) => {
+    try {
+      const result = await submitMockTestQuestionResponse(responseData);
+      return result;
+    } catch (error) {
+      return rejectWithValue(error.message);
+    }
+  }
+);
+
 
 
 const questionSlice = createSlice({
@@ -442,6 +455,11 @@ const questionSlice = createSlice({
 
     //for getting question bank result 
     questionBankResult: null,
+
+    // For submitting mock test question response
+    mockTestSubmitLoading: false,
+    mockTestSubmitError: null,
+    mockTestSubmitResponse: null,
 
 
   },
@@ -828,10 +846,22 @@ const questionSlice = createSlice({
       .addCase(getQuestionBankResult.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
+      })
+
+      //for submitting mock test question response
+      .addCase(submitMockTestQuestionResponseThunk.pending, (state) => {
+        state.mockTestSubmitLoading = true;
+        state.mockTestSubmitError = null;
+        state.mockTestSubmitResponse = null;
+      })
+      .addCase(submitMockTestQuestionResponseThunk.fulfilled, (state, action) => {
+        state.mockTestSubmitLoading = false;
+        state.mockTestSubmitResponse = action.payload;
+      })
+      .addCase(submitMockTestQuestionResponseThunk.rejected, (state, action) => {
+        state.mockTestSubmitLoading = false;
+        state.mockTestSubmitError = action.payload || "Failed to submit mock test response";
       });
-
-
-
   },
 });
 

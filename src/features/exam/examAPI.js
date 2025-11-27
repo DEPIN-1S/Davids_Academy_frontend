@@ -777,3 +777,31 @@ export const getQuestionBankResultApi = async (token) => {
   return await response.json();
 };
 
+
+export const submitMockTestQuestionResponse = async (responseData) => {
+  const token = sessionStorage.getItem("accessToken");
+  try {
+    const response = await fetch(
+      `${baseUrl}/student/questions/mocktest/submit-response`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify(responseData),
+      }
+    );
+
+    if (!response.ok) {
+      throw new Error("Failed to submit mock test question response");
+    }
+
+    const data = await response.json();
+    return data; // return API response
+  } catch (error) {
+    throw error;
+  }
+};
+
+

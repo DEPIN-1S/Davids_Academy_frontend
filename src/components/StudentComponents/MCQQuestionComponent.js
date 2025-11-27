@@ -15,6 +15,9 @@ import CheckIcon from "@mui/icons-material/Check";
 import { FaCheckCircle, FaTimesCircle } from "react-icons/fa";
 import "../../styles/DashboardStyles/RadioButtonQuestionComponent.css";
 import RevealAnswerComponent from "./RevealAnswerComponent";
+import { submitMockTestQuestionResponseThunk } from "../../features/exam/examSlice";
+import { useDispatch } from "react-redux";
+import { useLocation } from "react-router-dom";
 
 const buildImageUrl = (path) => {
   if (!path) return null;
@@ -36,7 +39,7 @@ const MCQQuestionComponent = ({ question, onSubmit }) => {
     marks = 0,
     instructions,
   } = question || {};
-
+  const location = useLocation();
   const answerArray = Array.isArray(mcqAnswers)
     ? mcqAnswers.map((ans) => (ans.mcqAnswer ?? "").trim())
     : [];
@@ -50,13 +53,12 @@ const MCQQuestionComponent = ({ question, onSubmit }) => {
 
 
   useEffect(() => {
-  sessionStorage.setItem("hasAnswered", "false");
-  sessionStorage.setItem("isRevealed", "false");
-  setShowAnswer(false); // Reset local component state accordingly
-  setIsCorrect(false);
-}, [questionId]);
-
-
+    sessionStorage.setItem("hasAnswered", "false");
+    sessionStorage.setItem("isRevealed", "false");
+    setShowAnswer(false); // Reset local component state accordingly
+    setIsCorrect(false);
+  }, [questionId]);
+  const dispatch = useDispatch();
 
 
   useEffect(() => {
@@ -73,8 +75,6 @@ const MCQQuestionComponent = ({ question, onSubmit }) => {
         : [...prev, value]
     );
   };
-
-
 
 
   const allOptionValues = useMemo(() => mcqoptions.map((o) => o.option), [mcqoptions]);
@@ -108,6 +108,25 @@ const MCQQuestionComponent = ({ question, onSubmit }) => {
     const mark = allCorrect ? Math.abs(marks) || 0 : 0;
     onSubmit?.(questionId, allCorrect, mark, userAnswerStr);
 
+    const pathname = location.pathname;
+    const searchParams = new URLSearchParams(location.search);
+    const testId = searchParams.get('testId');
+
+    //api call for submit Mock Test Question Response
+    if (pathname === "/student/exam" && (testId || searchParams.get('mode') === 'question-bank')) {
+
+      console.log("inside mock test response submitting");
+      
+      const payload = {
+        questionId: question.id,
+        questionType: question.question_type,
+        exam_type: question.exam_type ,
+        test_id: testId, // Use the actual testId from URL
+        selectedOptions,
+      };
+      dispatch(submitMockTestQuestionResponseThunk(payload));
+    }
+
     setIsCorrect(allCorrect);
     setShowAnswer(true);
 
@@ -126,7 +145,7 @@ const MCQQuestionComponent = ({ question, onSubmit }) => {
   };
 
   return (
-    <Box className="radio-container" sx={{ textAlign: "left", px: 8 }}>
+    <Box className="radio-container" sx={{ textAlign: "left", px: 5 }}>
       {/* Question */}
       <Typography
         fontWeight={700}

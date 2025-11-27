@@ -17,6 +17,10 @@ import {
   Paper,
 } from "@mui/material";
 import RevealAnswerComponent from "./RevealAnswerComponent";
+import { useDispatch } from "react-redux";
+import { useLocation } from "react-router-dom";
+import { submitMockTestQuestionResponseThunk } from "../../features/exam/examSlice";
+
 
 const TableHighlightSelectComponent = ({ question, onSubmit }) => {
   // Extract data from question prop
@@ -39,6 +43,9 @@ const TableHighlightSelectComponent = ({ question, onSubmit }) => {
   const [showReveal, setShowReveal] = useState(false);
   const [isCorrect, setIsCorrect] = useState(false);
   const [showNotAnsweredModal, setShowNotAnsweredModal] = useState(false);
+  const dispatch = useDispatch();
+  const location = useLocation();
+
 
 
   // Tabs state
@@ -98,6 +105,34 @@ const TableHighlightSelectComponent = ({ question, onSubmit }) => {
 
     setIsCorrect(allCorrect);
     setShowReveal(true);
+
+    // ✅ API CALL - ONLY ON /student/exam?testId=XXX
+    const pathname = location.pathname;
+    const searchParams = new URLSearchParams(location.search);
+    const testId = searchParams.get('testId');
+
+    if (pathname === "/student/exam" && (testId || searchParams.get('mode') === 'question-bank'))  {
+      console.log("inside table highlight mock test response submitting");
+
+      const answers = Array.from(selectedItems).map((rightColumnValue) => {
+        const field = tableFields.find(f => f.rightColumn === rightColumnValue);
+        return {
+          leftColumn: field ? field.leftColumn : "",
+          rightColumn: rightColumnValue
+        };
+      });
+
+      const payload = {
+        questionId: question.id,
+        questionType: question.question_type,
+        exam_type: question.exam_type,
+        test_id: testId,
+        answers,
+      };
+
+      dispatch(submitMockTestQuestionResponseThunk(payload));
+    }
+
 
     sessionStorage.setItem("hasAnswered", "true");
     sessionStorage.setItem("isRevealed", "true");

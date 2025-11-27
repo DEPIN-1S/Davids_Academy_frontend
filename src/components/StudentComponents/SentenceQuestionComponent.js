@@ -12,6 +12,10 @@ import {
   useTheme,
 } from "@mui/material";
 import RevealAnswerComponent from "./RevealAnswerComponent";
+import { useDispatch } from "react-redux";
+import { useLocation } from "react-router-dom";
+import { submitMockTestQuestionResponseThunk } from "../../features/exam/examSlice";
+
 
 const buildImageUrl = (path) => {
   if (!path) return null;
@@ -60,7 +64,8 @@ const SentenceQuestionComponent = ({ question, onSubmit }) => {
   const [correctAnswer, setCorrectAnswer] = useState("");
   const [isCorrect, setIsCorrect] = useState(false);
   const [showNotAnsweredModal, setShowNotAnsweredModal] = useState(false);
-
+  const dispatch = useDispatch();
+  const location = useLocation();
 
   // Prefer passage; else strip HTML from tabsInfo[0].tabValue; else question
   const tabHtml = tabsInfo?.[0]?.tabValue || "";
@@ -116,17 +121,31 @@ const SentenceQuestionComponent = ({ question, onSubmit }) => {
     const sameSize = selectedSet.size === correctSet.size;
     const allMatch =
       sameSize && Array.from(selectedSet).every((id) => correctSet.has(id));
-
     const mark = allMatch ? marks : 0;
     onSubmit?.(questionId, allMatch, mark, selectedTexts.join(", "));
-
     setUserAnswer(selectedTexts.join(", ") || "Not selected");
     setCorrectAnswer(correctTexts.join(", ") || "Not available");
     setIsCorrect(allMatch);
 
+    const pathname = location.pathname;
+    const searchParams = new URLSearchParams(location.search);
+    const testId = searchParams.get('testId');
+
+    if (pathname === "/student/exam" && (testId || searchParams.get('mode') === 'question-bank'))  {
+      console.log("inside sentence highlight mock test response submitting");
+
+      const answers = selectedIds;  // ✅ Exactly: ["sentence_id_1", "sentence_id_3"]
+      const payload = {
+        questionId: question.id,
+        questionType: question.question_type,
+        exam_type: question.exam_type,
+        test_id: testId,
+        answers,  
+      };
+      dispatch(submitMockTestQuestionResponseThunk(payload));
+    }
     sessionStorage.setItem("hasAnswered", "true");
     sessionStorage.setItem("isRevealed", "true");
-
     setShowAnswer(true);
   };
 

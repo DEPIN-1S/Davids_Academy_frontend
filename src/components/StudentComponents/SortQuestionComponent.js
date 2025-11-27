@@ -22,6 +22,9 @@ import {
 } from "@dnd-kit/sortable";
 import SortableItemComponent from "./SortTableItemComponent";
 import RevealAnswerComponent from "./RevealAnswerComponent";
+import { useDispatch } from "react-redux";
+import { useLocation } from "react-router-dom";
+import { submitMockTestQuestionResponseThunk } from "../../features/exam/examSlice";
 
 const SortQuestionComponent = ({ question, onSubmit }) => {
   const {
@@ -41,6 +44,9 @@ const SortQuestionComponent = ({ question, onSubmit }) => {
     }))
     .sort(() => Math.random() - 0.5);
 
+
+  const dispatch = useDispatch();
+  const location = useLocation();
   const [steps, setSteps] = useState(initialUserSteps);
   const [showReveal, setShowReveal] = useState(false);
   const [userAnswer, setUserAnswer] = useState([]);
@@ -111,8 +117,32 @@ const SortQuestionComponent = ({ question, onSubmit }) => {
     setCorrectAnswer(correctOrder.map((s) => s.text));
     setIsCorrect(correctStatus);
     setShowReveal(true);
+
+    // ✅ API CALL - ONLY ON /student/exam?testId=XXX
+    const pathname = location.pathname;
+    const searchParams = new URLSearchParams(location.search);
+    const testId = searchParams.get('testId');
+
+    if (pathname === "/student/exam" && (testId || searchParams.get('mode') === 'question-bank'))  {
+      console.log("inside sorting mock test response submitting");
+
+      const sortItems = steps.map((step, index) => ({
+        sortItem: step.text,
+        order: index + 1  // User's final order position (1, 2, 3...)
+      }));
+
+      const payload = {
+        questionId: question.id,
+        questionType: question.question_type,
+        exam_type: question.exam_type,
+        test_id: testId,
+        sortItems,
+      }
+      dispatch(submitMockTestQuestionResponseThunk(payload));
+    }
     sessionStorage.setItem("isRevealed", "true");
   };
+
 
   if (!question || !sortingoptions.length) {
     return (

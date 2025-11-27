@@ -22,7 +22,6 @@ const DropdownQuestionComponent = () => {
   const { questionData } = useSelector((state) => state.exam);
   const { questionId } = useParams();
   const [activeTab, setActiveTab] = useState("");
-
   const [dropdownValues, setDropdownValues] = useState({});
   const navigate = useNavigate();
 

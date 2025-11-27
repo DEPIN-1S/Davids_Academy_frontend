@@ -19,6 +19,10 @@ import {
   Paper,
 } from "@mui/material";
 import RevealAnswerComponent from "./RevealAnswerComponent";
+import { useDispatch } from "react-redux";
+import { useLocation } from "react-router-dom";
+import { submitMockTestQuestionResponseThunk } from "../../features/exam/examSlice";
+
 
 const TableDropdownQuestionComponent = ({ question, onSubmit }) => {
   // Extract data from question prop
@@ -44,6 +48,9 @@ const TableDropdownQuestionComponent = ({ question, onSubmit }) => {
     tabsInfo && tabsInfo.length ? tabsInfo[0].tabKey : ""
   );
   const [showNotAnsweredModal, setShowNotAnsweredModal] = useState(false);
+  const dispatch = useDispatch();
+  const location = useLocation();
+
 
   useEffect(() => {
     sessionStorage.setItem("hasAnswered", "false");
@@ -110,6 +117,35 @@ const TableDropdownQuestionComponent = ({ question, onSubmit }) => {
 
     setIsCorrect(correctStatus);
     setShowReveal(true);
+
+    const pathname = location.pathname;
+    const searchParams = new URLSearchParams(location.search);
+    const testId = searchParams.get('testId');
+
+    if (pathname === "/student/exam" && (testId || searchParams.get('mode') === 'question-bank'))  {
+      console.log("inside table dropdown mock test response submitting");
+
+      const rowsAnswer = tableDropdownFields.map(field => ({
+        rowLabel: field.fieldLabel,
+        columns: [
+          {
+            colIndex: 0,
+            selected: dropdownValues[field.id] || ""
+          }
+        ]
+      }));
+
+      const payload = {
+        questionId: question.id,
+        questionType: question.question_type,
+        exam_type: question.exam_type,
+        test_id: testId,
+        rowsAnswer,
+      };
+
+      dispatch(submitMockTestQuestionResponseThunk(payload));
+    }
+
 
     sessionStorage.setItem("hasAnswered", "true");
     sessionStorage.setItem("isRevealed", "true");

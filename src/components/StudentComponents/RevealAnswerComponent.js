@@ -51,7 +51,6 @@ const RevealAnswerComponent = ({
         display: 'flex',
         flexDirection: isMobile ? 'column' : 'row',
         gap: 4,
-        padding: 4,
         backgroundColor: '#fafafa',
       }}
     >

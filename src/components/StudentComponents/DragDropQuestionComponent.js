@@ -11,6 +11,11 @@ import {
   Tab,
 } from "@mui/material";
 import RevealAnswerComponent from "./RevealAnswerComponent";
+import { useDispatch } from "react-redux";
+import { useLocation } from "react-router-dom";
+import { submitMockTestQuestionResponseThunk } from "../../features/exam/examSlice";
+
+
 const baseUrl = process.env.BASE_URL;
 const DragDropQuestionComponent = ({ question, onSubmit }) => {
   const {
@@ -35,6 +40,8 @@ const DragDropQuestionComponent = ({ question, onSubmit }) => {
   const [isCorrect, setIsCorrect] = useState(false);
   const [activeTab, setActiveTab] = useState(0);
   const [showNotAnsweredModal, setShowNotAnsweredModal] = useState(false);
+  const dispatch = useDispatch();
+  const location = useLocation();
 
 
   const handleDropdownChange = (index, value) => {
@@ -96,6 +103,32 @@ const DragDropQuestionComponent = ({ question, onSubmit }) => {
     setIsCorrect(correctStatus);
     setShowReveal(true);
 
+
+    // ✅ API CALL - ONLY ON /student/exam?testId=XXX
+    const pathname = location.pathname;
+    const searchParams = new URLSearchParams(location.search);
+    const testId = searchParams.get('testId');
+
+    if (pathname === "/student/exam" && (testId || searchParams.get('mode') === 'question-bank'))  {
+      console.log("inside drag-drop mock test response submitting");
+
+      const drag_and_drop_answer = branches.map((branch, idx) => ({
+        option_heading: branch.headings,
+        droppedValue: dropdownValues[idx] || ""
+      }));
+
+      const payload = {
+         questionId: question.id,
+        questionType: question.question_type,
+        exam_type: question.exam_type,
+        test_id: testId,
+        drag_and_drop_answer,
+      };
+
+      dispatch(submitMockTestQuestionResponseThunk(payload));
+    }
+
+
     sessionStorage.setItem("hasAnswered", "true");
     sessionStorage.setItem("isRevealed", "true");
   };
@@ -114,7 +147,7 @@ const DragDropQuestionComponent = ({ question, onSubmit }) => {
         width: "100%",
         maxWidth: 1100,
         margin: "0 auto",
-        px: { xs: 2, sm: 3, md: 4 },
+        px: 5,
         py: { xs: 2, md: 3 },
       }}
     >

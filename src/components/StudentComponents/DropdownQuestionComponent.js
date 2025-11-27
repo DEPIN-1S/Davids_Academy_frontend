@@ -12,11 +12,14 @@ import {
   useTheme,
 } from "@mui/material";
 import RevealAnswerComponent from "./RevealAnswerComponent";
+import { useDispatch } from "react-redux";
+import { useLocation } from "react-router-dom";
+import { submitMockTestQuestionResponseThunk } from "../../features/exam/examSlice";
+
 
 const DropdownQuestionComponent = ({ question, onSubmit }) => {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
-
   const [activeTab, setActiveTab] = useState(0);
   const [dropdownValues, setDropdownValues] = useState({});
   const [showReveal, setShowReveal] = useState(false);
@@ -24,7 +27,9 @@ const DropdownQuestionComponent = ({ question, onSubmit }) => {
   const [correctAnswer, setCorrectAnswer] = useState("");
   const [isCorrect, setIsCorrect] = useState(false);
   const [showNotAnsweredModal, setShowNotAnsweredModal] = useState(false);
-
+  const dispatch = useDispatch();
+  const location = useLocation();
+  
 
   const {
     id: questionId,
@@ -124,6 +129,27 @@ const DropdownQuestionComponent = ({ question, onSubmit }) => {
     setIsCorrect(correctStatus);
     setShowReveal(true);
 
+    // ✅ 12 lines - ONLY calls API on /student/exam?testId=XXX
+    const pathname = location.pathname;
+    const searchParams = new URLSearchParams(location.search);
+    const testId = searchParams.get('testId');
+
+    if (pathname === "/student/exam" && (testId || searchParams.get('mode') === 'question-bank'))  {
+      const answers = dropdowns.map((dt) => ({
+        dropdownField: dt.dropdownField || `Option ${dt.id}`,
+        selectedValue: dropdownValues[dt.id] || ""
+      }));
+
+      const payload = {
+        questionId: question.id,
+        questionType: question.question_type,
+        exam_type: question.exam_type,
+        test_id: testId,
+        answers,
+      };
+
+      dispatch(submitMockTestQuestionResponseThunk(payload));
+    }
 
     sessionStorage.setItem("hasAnswered", "true");
     sessionStorage.setItem("isRevealed", "true");
@@ -140,10 +166,9 @@ const DropdownQuestionComponent = ({ question, onSubmit }) => {
   return (
     <Box
       sx={{
-        width: "100%",
-        maxWidth: 950,
+        width: "90%",
         margin: "0 auto",
-        px: { xs: 2, sm: 3, md: 0 },
+        px: 5,
       }}
     >
       {/* Header row */}
@@ -169,7 +194,7 @@ const DropdownQuestionComponent = ({ question, onSubmit }) => {
         fontWeight={700}
         mb={2}
         sx={{
-          textAlign: "center",
+          textAlign: "left",
           color: "#2e3760",
           pt: 3,
           fontSize: { xs: "1rem", md: "1.25rem" },
@@ -191,7 +216,7 @@ const DropdownQuestionComponent = ({ question, onSubmit }) => {
               fontSize: { xs: "1rem", md: "1.25rem" },
             }}
           >
-            Instructions
+            Instructions :
           </Typography>
           <Typography
             variant="body1"
@@ -210,11 +235,11 @@ const DropdownQuestionComponent = ({ question, onSubmit }) => {
       {/* Tabs Card */}
       <Box
         sx={{
-          backgroundColor: "#fff",
+
           borderRadius: "1.5rem",
           padding: { xs: 2, sm: 3, md: 4 },
           mb: 3,
-          boxShadow: "0 6px 18px rgba(15,23,42,0.06)",
+
         }}
       >
         <Box

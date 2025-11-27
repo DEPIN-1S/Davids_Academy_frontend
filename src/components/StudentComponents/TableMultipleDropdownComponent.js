@@ -19,6 +19,10 @@ import {
   Paper,
 } from "@mui/material";
 import RevealAnswerComponent from "./RevealAnswerComponent";
+import { useDispatch } from "react-redux";
+import { useLocation } from "react-router-dom";
+import { submitMockTestQuestionResponseThunk } from "../../features/exam/examSlice";
+
 
 const TableMultipleDropdownComponent = ({ question, onSubmit }) => {
   // Extract data from question prop
@@ -40,6 +44,9 @@ const TableMultipleDropdownComponent = ({ question, onSubmit }) => {
   const [showReveal, setShowReveal] = useState(false);
   const [isCorrect, setIsCorrect] = useState(false);
   const [showNotAnsweredModal, setShowNotAnsweredModal] = useState(false);
+  const dispatch = useDispatch();
+  const location = useLocation();
+
 
   useEffect(() => {
     sessionStorage.setItem("hasAnswered", "false");
@@ -112,6 +119,37 @@ const TableMultipleDropdownComponent = ({ question, onSubmit }) => {
 
     setIsCorrect(allCorrect);
     setShowReveal(true);
+
+    // ✅ API CALL - ONLY ON /student/exam?testId=XXX
+    const pathname = location.pathname;
+    const searchParams = new URLSearchParams(location.search);
+    const testId = searchParams.get('testId');
+
+    if (pathname === "/student/exam" && (testId || searchParams.get('mode') === 'question-bank'))  {
+      console.log("inside table multi-dropdown mock test response submitting");
+
+      const rowsAnswer = rows.map((row) => ({
+        rowLabel: row.rowLabel,
+        columns: row.columns.map((col) => {
+          const key = `${rows.indexOf(row)}-${col.colIndex}`;
+          return {
+            colIndex: col.colIndex,
+            selected: dropdownValues[key] || ""
+          };
+        })
+      }));
+
+      const payload = {
+        questionId: question.id,
+        questionType: question.question_type,
+        exam_type: question.exam_type,
+        test_id: testId,
+        rowsAnswer,  
+      };
+
+      dispatch(submitMockTestQuestionResponseThunk(payload));
+    }
+
 
     sessionStorage.setItem("hasAnswered", "true");
     sessionStorage.setItem("isRevealed", "true");

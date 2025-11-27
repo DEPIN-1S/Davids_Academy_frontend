@@ -17,6 +17,11 @@ import {
 import { FaCheckCircle, FaTimesCircle } from "react-icons/fa";
 import "../../styles/DashboardStyles/MultiRadioQuestionComponent.css";
 import RevealAnswerComponent from "./RevealAnswerComponent";
+import { useDispatch } from "react-redux";
+import { useLocation } from "react-router-dom";
+import { submitMockTestQuestionResponseThunk } from "../../features/exam/examSlice";
+
+
 
 const MultiRadioQuestionComponent = ({ question, onSubmit }) => {
   const theme = useTheme();
@@ -43,7 +48,8 @@ const MultiRadioQuestionComponent = ({ question, onSubmit }) => {
   const handleTabChange = (event, newValue) => {
     setActiveTab(newValue);
   };
-
+  const dispatch = useDispatch();
+  const location = useLocation();
   const handleSelect = (findingIndex, selectedValue) => () => {
     if (showAnswer) return;
     setAnswers((prev) => ({ ...prev, [findingIndex]: selectedValue }));
@@ -77,6 +83,28 @@ const MultiRadioQuestionComponent = ({ question, onSubmit }) => {
     setIsCorrect(correctStatus);
     setShowAnswer(true);
 
+    const pathname = location.pathname;
+    const searchParams = new URLSearchParams(location.search);
+    const testId = searchParams.get('testId');
+
+    if (pathname === "/student/exam" && (testId || searchParams.get('mode') === 'question-bank'))  {
+      console.log("inside question content mock test response submitting");
+
+      const question_content_answers = questionContent.map((item, idx) => ({
+        question_text: item.client_findings || `Question ${idx + 1}`,
+        selected: answers[idx] || ""
+      }));
+
+      const payload = {
+        questionId: question.id,
+        questionType: question.question_type,
+        exam_type: question.exam_type,
+        test_id: testId,
+        question_content_answers,
+      };
+
+      dispatch(submitMockTestQuestionResponseThunk(payload));
+    }
     sessionStorage.setItem("hasAnswered", "true");
     sessionStorage.setItem("isRevealed", "true");
   };
