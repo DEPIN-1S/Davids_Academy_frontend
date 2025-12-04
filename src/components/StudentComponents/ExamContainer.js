@@ -18,6 +18,7 @@ import {
   getQBankQuestions,
   getQBankQuestionData,
   getQBankSubmittedResult,
+  getMockTestSubmittedResult
 } from "../../features/exam/examSlice";
 import {
   fetchTestQuestions,
@@ -173,67 +174,107 @@ const ExamContainer = ({ user }) => {
 
   const [currentQuestionId, setCurrentQuestionId] = useState(null);
 
-
   const handlePrevious = useCallback(() => {
     if (currentIndex > 0) {
       const previousQuestionId = questionIds[currentIndex - 1];
-      if (!isTestMode && !isSampleMode) {
-        dispatch(getQBankSubmittedResult(previousQuestionId))
+
+      if (isTestMode) {
+        // 🔹 mock test
+        dispatch(
+          getMockTestSubmittedResult({ questionId: previousQuestionId, test_id: testId })
+        )
           .unwrap()
-          .then((resultData) => {  // ✅ resultData = API response
-            console.log("✅ Previous API success:", resultData);
+          .then((res) => {
+            console.log("✅ Mock previous API success:", res);
             setCurrentQuestionId(previousQuestionId);
-            setCurrentIndex(currentIndex - 1);
+            setCurrentIndex((idx) => idx - 1);
           })
           .catch((error) => {
-            console.error("❌ Previous API failed:", error);
-            setCurrentIndex(currentIndex - 1); // Fallback
+            console.error("❌ Mock previous API failed:", error);
+            setCurrentIndex((idx) => idx - 1);
+            setCurrentQuestionId(previousQuestionId);
+          });
+      } else if (!isSampleMode) {
+        // 🔹 QBank
+        dispatch(getQBankSubmittedResult(previousQuestionId))
+          .unwrap()
+          .then((res) => {
+            console.log("✅ QBank previous API success:", res);
+            setCurrentQuestionId(previousQuestionId);
+            setCurrentIndex((idx) => idx - 1);
+          })
+          .catch((error) => {
+            console.error("❌ QBank previous API failed:", error);
+            setCurrentIndex((idx) => idx - 1);
+            setCurrentQuestionId(previousQuestionId);
           });
       } else {
-        setCurrentIndex(currentIndex - 1);
-        setCurrentQuestionId(questionIds[currentIndex - 1]);
+        // 🔹 sample
+        setCurrentIndex((idx) => idx - 1);
+        setCurrentQuestionId(previousQuestionId);
       }
     }
-  }, [currentIndex, questionIds, isTestMode, isSampleMode, dispatch]);
+  }, [currentIndex, questionIds, isTestMode, isSampleMode, dispatch, testId]);
+
+
 
   // Same fix for handleNext
-
   const handleNext = useCallback(() => {
     if (questionIds && currentIndex < questionIds.length - 1) {
       const nextQuestionId = questionIds[currentIndex + 1];
 
-      if (!isTestMode && !isSampleMode) {
-        // QBank mode: API call for next question
-        dispatch(getQBankSubmittedResult(nextQuestionId))
-          .unwrap()  // ✅ Proper thunk chaining
-          .then((resultData) => {
-            console.log("✅ Next API success:", resultData);
+      if (isTestMode) {
+        dispatch(
+          getMockTestSubmittedResult({ questionId: nextQuestionId, test_id: testId })
+        )
+          .unwrap()
+          .then((res) => {
+            console.log("✅ Mock next API success:", res);
             setCurrentQuestionId(nextQuestionId);
-            setCurrentIndex(currentIndex + 1);
+            setCurrentIndex((idx) => idx + 1);
           })
           .catch((error) => {
-            console.error("❌ Next API failed:", error);
-            // Fallback to normal navigation
-            setCurrentIndex(currentIndex + 1);
+            console.error("❌ Mock next API failed:", error);
+            setCurrentIndex((idx) => idx + 1);
+            setCurrentQuestionId(nextQuestionId);
+          });
+      } else if (!isSampleMode) {
+        dispatch(getQBankSubmittedResult(nextQuestionId))
+          .unwrap()
+          .then((res) => {
+            console.log("✅ QBank next API success:", res);
+            setCurrentQuestionId(nextQuestionId);
+            setCurrentIndex((idx) => idx + 1);
+          })
+          .catch((error) => {
+            console.error("❌ QBank next API failed:", error);
+            setCurrentIndex((idx) => idx + 1);
             setCurrentQuestionId(nextQuestionId);
           });
       } else {
-        // Test/Sample mode: Normal navigation
-        setCurrentIndex(currentIndex + 1);
-        setCurrentQuestionId(questionIds[currentIndex + 1]);
+        setCurrentIndex((idx) => idx + 1);
+        setCurrentQuestionId(nextQuestionId);
       }
     }
-  }, [currentIndex, questionIds, isTestMode, isSampleMode, dispatch]);
+  }, [currentIndex, questionIds, isTestMode, isSampleMode, dispatch, testId]);
+
 
 
   // Sync Redux result to currentQuestion
-  const { qbankSubmittedResult } = useSelector((state) => state.exam);
+  const {
+    qbankSubmittedResult,
+    mockTestSubmittedResult,
+  } = useSelector((state) => state.exam);
+
 
   useEffect(() => {
     if (!isTestMode && !isSampleMode && qbankSubmittedResult) {
-      setCurrentQuestion(qbankSubmittedResult);
+      setCurrentQuestion(qbankSubmittedResult.data || qbankSubmittedResult);
+    } else if (isTestMode && mockTestSubmittedResult) {
+      setCurrentQuestion(mockTestSubmittedResult.data || mockTestSubmittedResult);
     }
-  }, [qbankSubmittedResult, isTestMode, isSampleMode]);
+  }, [qbankSubmittedResult, mockTestSubmittedResult, isTestMode, isSampleMode]);
+
 
   const handlePause = () => {
     // Placeholder
@@ -352,6 +393,9 @@ const ExamContainer = ({ user }) => {
   }
 
   const showPrevious = isSampleMode || (!isTestMode && !isSampleMode);
+  const submittedResultForCurrent = isTestMode
+    ? mockTestSubmittedResult
+    : qbankSubmittedResult;
 
   return (
     <>
@@ -371,7 +415,7 @@ const ExamContainer = ({ user }) => {
         ) : QuestionComponent ? (
           <QuestionComponent
             question={currentQuestion}
-            submittedResult={qbankSubmittedResult}
+            submittedResult={submittedResultForCurrent}
             onSubmit={handleAnswerSubmit}
             testId={testId}
           />

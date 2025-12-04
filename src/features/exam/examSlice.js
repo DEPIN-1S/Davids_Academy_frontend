@@ -16,6 +16,7 @@ import {
   getQuestionBankResultApi,
   submitMockTestQuestionResponse,
   fetchQBankSubmittedResult,
+  fetchMockTestSubmittedResult,
 } from "./examAPI";
 import {
   adminGetQBankQuestions,
@@ -390,6 +391,18 @@ export const getQBankSubmittedResult = createAsyncThunk(
   }
 )
 
+export const getMockTestSubmittedResult = createAsyncThunk(
+  "questions/getMockTestSubmittedResult",
+  async ({ questionId, test_id }, { rejectWithValue }) => {
+    try {
+      const data = await fetchMockTestSubmittedResult(questionId, test_id);
+      return data;            // backend shape: { result, message, answers, ... }
+    } catch (error) {
+      return rejectWithValue(error.message);
+    }
+  }
+);
+
 
 
 const questionSlice = createSlice({
@@ -487,7 +500,11 @@ const questionSlice = createSlice({
 
     qbankSubmittedResult: null,
     qbankSubmittedResultLoading: false,
-    qbankSubmittedResultError: null
+    qbankSubmittedResultError: null,
+
+    mockTestSubmittedResult: null,
+    mockTestSubmittedResultLoading: false,
+    mockTestSubmittedResultError: null,
 
   },
   reducers: {
@@ -901,6 +918,19 @@ const questionSlice = createSlice({
       .addCase(getQBankSubmittedResult.rejected, (state, action) => {
         state.qbankSubmittedResultError = action.payload;
         state.qbankSubmittedResultLoading = false;
+      })
+
+      .addCase(getMockTestSubmittedResult.pending, (state) => {
+        state.mockTestSubmittedResultLoading = true;
+        state.mockTestSubmittedResultError = null;
+      })
+      .addCase(getMockTestSubmittedResult.fulfilled, (state, action) => {
+        state.mockTestSubmittedResultLoading = false;
+        state.mockTestSubmittedResult = action.payload;
+      })
+      .addCase(getMockTestSubmittedResult.rejected, (state, action) => {
+        state.mockTestSubmittedResultLoading = false;
+        state.mockTestSubmittedResultError = action.payload;
       })
   },
 });

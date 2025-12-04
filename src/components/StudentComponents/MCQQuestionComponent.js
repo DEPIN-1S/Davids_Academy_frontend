@@ -63,12 +63,25 @@ const MCQQuestionComponent = ({ question, onSubmit, submittedResult }) => {
     if (tabsInfo && tabsInfo.length) setActiveTab(tabsInfo[0].tabKey);
   }, [tabsInfo]);
 
-
   useEffect(() => {
-    if (submittedResult?.result && submittedResult.data?.answer) {
-      try {
-        // Parse previous answer
-        const previousAnswer = submittedResult.data.answer;
+    console.log("🔍 submittedResult:", submittedResult);
+    if (!submittedResult?.result) return;
+    try {
+      // Handle actual backend shape: { result: true, answers: [{ answer: "..." }] }
+      let previousAnswer = null;
+
+      if (submittedResult.answers && submittedResult.answers[0]?.answer) {
+        previousAnswer = submittedResult.answers[0].answer;
+      } else if (submittedResult.selectedOptions) {
+        // Fallback for other question types
+        previousAnswer = submittedResult.selectedOptions.join(", ");
+      } else if (submittedResult.data?.answer) {
+        previousAnswer = submittedResult.data.answer;
+      }
+
+      if (previousAnswer) {
+        console.log("🔍 Restoring previous answer:", previousAnswer);
+
         const previousSelected = previousAnswer
           .split(/[,;]/)
           .map(ans => ans.trim())
@@ -76,7 +89,7 @@ const MCQQuestionComponent = ({ question, onSubmit, submittedResult }) => {
 
         setSelectedOptions(previousSelected);
 
-        // ✅ CALCULATE CORRECTNESS
+        // Calculate correctness
         const selectedNorm = previousSelected.map(s => s.trim());
         const correctNorm = answerArray.map(s => s.trim());
         const allCorrect = selectedNorm.length === correctNorm.length &&
@@ -88,11 +101,11 @@ const MCQQuestionComponent = ({ question, onSubmit, submittedResult }) => {
 
         sessionStorage.setItem("hasAnswered", "true");
         sessionStorage.setItem("isRevealed", "true");
-      } catch (error) {
-        console.log("Could not parse previous answer:", error);
       }
+    } catch (error) {
+      console.error("❌ Could not restore previous answer:", error);
     }
-  }, [submittedResult, answerArray]); // ✅ Add answerArray dependency
+  }, [submittedResult, answerArray, questionId]);
 
 
   const handleTabChange = (_event, newValue) => setActiveTab(newValue);
@@ -128,7 +141,7 @@ const MCQQuestionComponent = ({ question, onSubmit, submittedResult }) => {
     if (submittedResult?.result) {
       return; // Already revealed, no action needed
     }
-console.log("helooooo88oo!!✅")
+    console.log("helooooo88oo!!✅")
     if (selectedOptions.length === 0) {
       setShowNotAnsweredModal(true);
       return;
@@ -159,7 +172,7 @@ console.log("helooooo88oo!!✅")
 
       const payload = {
         questionId: question.id,
-        questionType: question.question_type,
+        questionType: question.question_type.toLowerCase(),
         exam_type: question.exam_type,
         test_id: testId, // Use the actual testId from URL
         selectedOptions,
@@ -479,7 +492,6 @@ console.log("helooooo88oo!!✅")
               additionalInfoParagraphs={additionalInfo.map((info) => info.info)}
               additionalInfoImage={buildImageUrl(additionalInfo?.[0]?.image)}
               isAnswerCorrect={isCorrect}
-
               //for preventing result modal to display again if answered
               submittedResult={submittedResult}
             />

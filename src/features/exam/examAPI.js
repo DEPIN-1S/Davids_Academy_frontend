@@ -820,14 +820,43 @@ export const fetchQBankSubmittedResult = async (questionId) => {
         body: JSON.stringify({ questionId })
       }
     );
-    
+
     if (!response.ok) {
       throw new Error(`HTTP ${response.status}: Failed to fetch QBank submitted result`);
     }
-    
+
     return await response.json();
   } catch (error) {
     console.error("QBank submitted result API error:", error);
+    throw error;
+  }
+};
+
+
+export const fetchMockTestSubmittedResult = async (questionId, test_id) => {
+  try {
+    const token = sessionStorage.getItem("accessToken");
+    const response = await fetch(
+      `${baseUrl}/student/result/mocktest/submitted`,
+      {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ questionId, test_id }),
+      }
+    );
+
+    if (!response.ok) {
+      throw new Error(
+        `HTTP ${response.status}: Failed to fetch mocktest submitted result`
+      );
+    }
+
+    return await response.json();
+  } catch (error) {
+    console.error("mocktest submitted result API error:", error);
     throw error;
   }
 };
