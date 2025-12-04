@@ -26,7 +26,7 @@ import { useDispatch } from "react-redux";
 import { useLocation } from "react-router-dom";
 import { submitMockTestQuestionResponseThunk } from "../../features/exam/examSlice";
 
-const SortQuestionComponent = ({ question, onSubmit }) => {
+const SortQuestionComponent = ({ question, onSubmit, submittedResult }) => {
   const {
     id: questionId,
     question: questionText,
@@ -66,6 +66,61 @@ const SortQuestionComponent = ({ question, onSubmit }) => {
     setShowReveal(false);
   }, [questionId]);
 
+  useEffect(() => {
+    if (submittedResult?.result && submittedResult.answers?.length > 0) {
+      try {
+        console.log("Previous sorting answers:", submittedResult.answers);
+
+        // Map backend answers by sortOrder → sortItem text
+        const orderMap = {};
+        submittedResult.answers.forEach(ans => {
+          if (ans.sortItem && ans.sortOrder) {
+            orderMap[ans.sortOrder] = ans.sortItem;
+          }
+        });
+
+        // Rebuild steps array in user's saved order
+        const restoredSteps = sortingoptions.map(opt => ({
+          id: String(opt.id),
+          text: opt.sortItem,
+          order: opt.itemOrder ?? null,
+        })).sort((a, b) => {
+          // Match by text content to find user's saved position
+          const userOrderA = Object.values(orderMap).indexOf(a.text);
+          const userOrderB = Object.values(orderMap).indexOf(b.text);
+          return (userOrderA || 999) - (userOrderB || 999);
+        });
+
+        console.log("Restored steps order:", restoredSteps);
+
+        setSteps(restoredSteps);
+        setHasSorted(true);
+
+        // Calculate correctness
+        const correctOrder = sortingoptions
+          .map(opt => ({
+            id: String(opt.id),
+            text: opt.sortItem,
+            order: opt.itemOrder ?? 9999,
+          }))
+          .sort((a, b) => a.order - b.order);
+
+        const correctStatus = restoredSteps.every((step, idx) =>
+          step.id === correctOrder[idx].id
+        );
+
+        setUserAnswer(restoredSteps.map(s => s.text));
+        setCorrectAnswer(correctOrder.map(s => s.text));
+        setIsCorrect(correctStatus);
+        setShowReveal(true);
+
+        sessionStorage.setItem("hasAnswered", "true");
+        setShowNotAnsweredModal(false);
+      } catch (error) {
+        console.error("Could not restore previous sorting:", error);
+      }
+    }
+  }, [submittedResult, sortingoptions]);
 
   useEffect(() => {
     if (tabsInfo && tabsInfo.length) setActiveTab(tabsInfo[0].tabKey);
@@ -92,6 +147,7 @@ const SortQuestionComponent = ({ question, onSubmit }) => {
   };
 
   const handleReveal = () => {
+    if (submittedResult?.result) return;
     if (!hasSorted) {
       setShowNotAnsweredModal(true);
       return;
@@ -123,7 +179,7 @@ const SortQuestionComponent = ({ question, onSubmit }) => {
     const searchParams = new URLSearchParams(location.search);
     const testId = searchParams.get('testId');
 
-    if (pathname === "/student/exam" && (testId || searchParams.get('mode') === 'question-bank'))  {
+    if (pathname === "/student/exam" && (testId || searchParams.get('mode') === 'question-bank')) {
       console.log("inside sorting mock test response submitting");
 
       const sortItems = steps.map((step, index) => ({
@@ -326,7 +382,7 @@ const SortQuestionComponent = ({ question, onSubmit }) => {
       </Box>
 
       {/* Block reveal modal */}
-      {showNotAnsweredModal && (
+      {showNotAnsweredModal && !submittedResult?.result && (
         <Box
           sx={{
             position: "fixed",
@@ -437,6 +493,7 @@ const SortQuestionComponent = ({ question, onSubmit }) => {
                 : null
             }
             isAnswerCorrect={isCorrect}
+            submittedResult={submittedResult}
           />
         </Box>
       )}

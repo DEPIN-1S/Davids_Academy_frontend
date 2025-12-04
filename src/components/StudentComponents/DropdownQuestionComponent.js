@@ -17,7 +17,7 @@ import { useLocation } from "react-router-dom";
 import { submitMockTestQuestionResponseThunk } from "../../features/exam/examSlice";
 
 
-const DropdownQuestionComponent = ({ question, onSubmit }) => {
+const DropdownQuestionComponent = ({ question, onSubmit, submittedResult }) => {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
   const [activeTab, setActiveTab] = useState(0);
@@ -29,7 +29,7 @@ const DropdownQuestionComponent = ({ question, onSubmit }) => {
   const [showNotAnsweredModal, setShowNotAnsweredModal] = useState(false);
   const dispatch = useDispatch();
   const location = useLocation();
-  
+
 
   const {
     id: questionId,
@@ -54,6 +54,54 @@ const DropdownQuestionComponent = ({ question, onSubmit }) => {
   }, [dropdowns]);
 
 
+  useEffect(() => {
+    if (submittedResult?.result && submittedResult.answers?.length > 0) {
+      try {
+        console.log("Previous answers received:", submittedResult.answers);
+
+        // Parse answers array: [{dropdownField: "Field Name", answer: "Value"}, ...]
+        const parsedAnswers = {};
+
+        submittedResult.answers.forEach(answerObj => {
+          if (answerObj.dropdownField && answerObj.answer) {
+            // Find matching dropdown by dropdownField
+            const matchingDropdown = dropdowns.find(dt =>
+              dt.dropdownField === answerObj.dropdownField ||
+              (dt.dropdownField || `Option ${dt.id}`).includes(answerObj.dropdownField)
+            );
+
+            if (matchingDropdown && matchingDropdown.id) {
+              parsedAnswers[matchingDropdown.id] = answerObj.answer;
+            }
+          }
+        });
+
+        console.log("Parsed dropdown values:", parsedAnswers);
+
+        // Populate dropdowns with previous selections
+        setDropdownValues(prev => ({ ...prev, ...parsedAnswers }));
+
+        // Calculate correctness
+        const correctStatus = dropdowns.every((dt) => {
+          const dropdownId = dt.id;
+          const backendAnswer = dt.dropdownanswer;
+          const fallbackVal = dt.dropdownoption?.find((opt) => opt.is_correct)?.dropdownValue || dt.dropdownoption?.[0]?.dropdownValue;
+          const correctVal = backendAnswer ?? fallbackVal;
+          const userVal = parsedAnswers[dropdownId];
+          return String(userVal) === String(correctVal);
+        });
+
+        setIsCorrect(correctStatus);
+        setShowReveal(true);
+
+        sessionStorage.setItem("hasAnswered", "true");
+        sessionStorage.setItem("isRevealed", "true");
+      } catch (error) {
+        console.log("Could not parse previous dropdown answers:", error);
+      }
+    }
+  }, [submittedResult, dropdowns]);
+
 
   const handleTabChange = (event, newValue) => {
     setActiveTab(newValue);
@@ -76,6 +124,11 @@ const DropdownQuestionComponent = ({ question, onSubmit }) => {
   };
 
   const handleReveal = () => {
+
+    if (submittedResult?.result) {
+      return; // Already revealed, no action needed
+    }
+
 
     // Check all dropdowns selected (non-empty)
     const allFilled = dropdowns.every((dt) => {
@@ -134,7 +187,7 @@ const DropdownQuestionComponent = ({ question, onSubmit }) => {
     const searchParams = new URLSearchParams(location.search);
     const testId = searchParams.get('testId');
 
-    if (pathname === "/student/exam" && (testId || searchParams.get('mode') === 'question-bank'))  {
+    if (pathname === "/student/exam" && (testId || searchParams.get('mode') === 'question-bank')) {
       const answers = dropdowns.map((dt) => ({
         dropdownField: dt.dropdownField || `Option ${dt.id}`,
         selectedValue: dropdownValues[dt.id] || ""
@@ -421,7 +474,7 @@ const DropdownQuestionComponent = ({ question, onSubmit }) => {
             );
           })}
         </Box>
-        {showNotAnsweredModal && (
+        {showNotAnsweredModal && !submittedResult?.result && (
           <Box sx={{
             position: "fixed",
             top: 0, left: 0,
@@ -619,6 +672,9 @@ const DropdownQuestionComponent = ({ question, onSubmit }) => {
                 : null
             }
             isAnswerCorrect={isCorrect}
+
+            //for preventing result modal to display again if answered
+            submittedResult={submittedResult}
           />
         </Box>
       )}

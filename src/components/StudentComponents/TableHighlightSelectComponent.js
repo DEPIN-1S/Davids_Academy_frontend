@@ -22,7 +22,7 @@ import { useLocation } from "react-router-dom";
 import { submitMockTestQuestionResponseThunk } from "../../features/exam/examSlice";
 
 
-const TableHighlightSelectComponent = ({ question, onSubmit }) => {
+const TableHighlightSelectComponent = ({ question, onSubmit, submittedResult }) => {
   // Extract data from question prop
   const {
     id: questionId,
@@ -61,6 +61,41 @@ const TableHighlightSelectComponent = ({ question, onSubmit }) => {
   useEffect(() => {
     if (tabsInfo && tabsInfo.length) setActiveTab(tabsInfo[0].tabKey);
   }, [tabsInfo]);
+
+  useEffect(() => {
+    if (!submittedResult?.result || !Array.isArray(submittedResult.answers)) return;
+    try {
+      const restored = new Set();
+
+      // submittedResult.answers format: [{ leftColumn, rightColumn }]
+      submittedResult.answers.forEach((ans) => {
+        if (ans.rightColumn) {
+          restored.add(ans.rightColumn);
+        }
+      });
+
+      if (restored.size > 0) {
+        setSelectedItems(restored);
+
+        const selectedArray = Array.from(restored);
+        const correctAnswers = answer || [];
+
+        const allCorrect =
+          selectedArray.length === correctAnswers.length &&
+          selectedArray.every((item) => correctAnswers.includes(item)) &&
+          correctAnswers.every((item) => selectedArray.includes(item));
+
+        setIsCorrect(allCorrect);
+        setShowReveal(true);
+        sessionStorage.setItem("hasAnswered", "true");
+        sessionStorage.setItem("isRevealed", "true");
+        setShowNotAnsweredModal(false);
+      }
+    } catch (e) {
+      console.error("Could not restore table highlight answers:", e);
+    }
+  }, [submittedResult, answer]);
+
 
   const handleTabChange = (_e, newVal) => setActiveTab(newVal);
 
@@ -111,7 +146,7 @@ const TableHighlightSelectComponent = ({ question, onSubmit }) => {
     const searchParams = new URLSearchParams(location.search);
     const testId = searchParams.get('testId');
 
-    if (pathname === "/student/exam" && (testId || searchParams.get('mode') === 'question-bank'))  {
+    if (pathname === "/student/exam" && (testId || searchParams.get('mode') === 'question-bank')) {
       console.log("inside table highlight mock test response submitting");
 
       const answers = Array.from(selectedItems).map((rightColumnValue) => {
@@ -125,7 +160,7 @@ const TableHighlightSelectComponent = ({ question, onSubmit }) => {
       const payload = {
         questionId: question.id,
         questionType: question.question_type,
-        exam_type: question.exam_type,
+        exam_type: question.exam_type.toLowerCase(),
         test_id: testId,
         answers,
       };
@@ -537,6 +572,7 @@ const TableHighlightSelectComponent = ({ question, onSubmit }) => {
                 : null
             }
             isAnswerCorrect={isCorrect}
+            submittedResult={submittedResult}
           />
         </Box>
       )}

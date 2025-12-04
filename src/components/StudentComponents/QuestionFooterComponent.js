@@ -18,7 +18,8 @@ import { SampleQuestionnaireResultContext } from "../../context/ResultProvider";
 const QuestionFooterComponent = ({
   onEnd,
   onNext,
-  disableNext = false,
+  disablePrevious = false,
+  onPrevious,
   questionNumber,
   totalQuestions,
   customButtonText = "Submit & Exit",
@@ -65,9 +66,10 @@ const QuestionFooterComponent = ({
       <div className="left-buttons">
         <Button
           /* startIcon={<ArrowBackwardIosIco />} */
-          /* onClick={customOnClick} */
+          onClick={onPrevious}
           className="footer-button"
           color="error"
+          disabled={disablePrevious}
         >
           {/* {customButtonText} */}
           <span style={{ paddingBottom: "4px", fontSize: "25px" }} ><IoIosArrowBack /></span>  Previous

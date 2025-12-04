@@ -361,12 +361,12 @@ const MultiradioQuestionContent = () => {
 
     const isFormValid = () => {
         const hasValidQuestion = question.trim() !== "";
-        const hasValidTabs = tabs.some(tab => tab.tabKey.trim() && tab.tabValue.trim());
+        
         const hasValidQuestions = questionContent.some(q => q.question_text.trim() && q.question_answer.trim());
         const hasValidRadioOptions = radioOptions.filter(option => option.option_value.trim()).length >= 2;
-        const hasValidInstruction = instruction.trim() !== "";
+        
         const hasValidHeading = multiradioHeading.trim() !== ""; // ✅ added
-        return hasValidQuestion && hasValidTabs && hasValidQuestions && hasValidRadioOptions && hasValidInstruction && hasValidHeading;
+        return hasValidQuestion && hasValidQuestions && hasValidRadioOptions  && hasValidHeading;
     };
 
 
@@ -485,7 +485,7 @@ const MultiradioQuestionContent = () => {
             <Accordion defaultExpanded sx={{ mb: 3 }}>
                 <AccordionSummary expandIcon={<ExpandMore />}>
                     <Typography variant="h6" color="primary">
-                        Question Tabs * ({tabs.length})
+                        Question Tabs ({tabs.length})
                     </Typography>
                 </AccordionSummary>
                 <AccordionDetails>
@@ -607,7 +607,7 @@ const MultiradioQuestionContent = () => {
             </Accordion>
 
             <Typography variant="h6" mb={1} color="primary">
-                Instruction*
+                Instruction
             </Typography>
             <TextField
                 fullWidth

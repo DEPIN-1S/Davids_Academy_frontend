@@ -26,7 +26,7 @@ const buildImageUrl = (path) => {
   return `https://lunarsenterprises.com:6040/${clean}`;
 };
 
-const MCQQuestionComponent = ({ question, onSubmit }) => {
+const MCQQuestionComponent = ({ question, onSubmit, submittedResult }) => {
   const {
     id: questionId,
     question: questionText,
@@ -51,7 +51,6 @@ const MCQQuestionComponent = ({ question, onSubmit }) => {
     tabsInfo && tabsInfo.length ? tabsInfo[0].tabKey : ""
   );
 
-
   useEffect(() => {
     sessionStorage.setItem("hasAnswered", "false");
     sessionStorage.setItem("isRevealed", "false");
@@ -60,13 +59,43 @@ const MCQQuestionComponent = ({ question, onSubmit }) => {
   }, [questionId]);
   const dispatch = useDispatch();
 
-
   useEffect(() => {
     if (tabsInfo && tabsInfo.length) setActiveTab(tabsInfo[0].tabKey);
   }, [tabsInfo]);
 
-  const handleTabChange = (_event, newValue) => setActiveTab(newValue);
 
+  useEffect(() => {
+    if (submittedResult?.result && submittedResult.data?.answer) {
+      try {
+        // Parse previous answer
+        const previousAnswer = submittedResult.data.answer;
+        const previousSelected = previousAnswer
+          .split(/[,;]/)
+          .map(ans => ans.trim())
+          .filter(ans => ans.length > 0);
+
+        setSelectedOptions(previousSelected);
+
+        // ✅ CALCULATE CORRECTNESS
+        const selectedNorm = previousSelected.map(s => s.trim());
+        const correctNorm = answerArray.map(s => s.trim());
+        const allCorrect = selectedNorm.length === correctNorm.length &&
+          selectedNorm.every(item => correctNorm.includes(item)) &&
+          correctNorm.every(item => selectedNorm.includes(item));
+
+        setIsCorrect(allCorrect);
+        setShowAnswer(true);
+
+        sessionStorage.setItem("hasAnswered", "true");
+        sessionStorage.setItem("isRevealed", "true");
+      } catch (error) {
+        console.log("Could not parse previous answer:", error);
+      }
+    }
+  }, [submittedResult, answerArray]); // ✅ Add answerArray dependency
+
+
+  const handleTabChange = (_event, newValue) => setActiveTab(newValue);
   const handleChange = (event) => {
     const value = event.target.value;
     setSelectedOptions((prev) =>
@@ -89,11 +118,22 @@ const MCQQuestionComponent = ({ question, onSubmit }) => {
   };
 
   const handleReveal = () => {
+    console.log("helooooooo!!✅")
+    /* if (selectedOptions.length === 0) {
+      setShowNotAnsweredModal(true);
+      return;
+    } */
 
+    // ✅ BLOCK if already submitted
+    if (submittedResult?.result) {
+      return; // Already revealed, no action needed
+    }
+console.log("helooooo88oo!!✅")
     if (selectedOptions.length === 0) {
       setShowNotAnsweredModal(true);
       return;
     }
+
     const selectedNorm = selectedOptions.map((s) => (s ?? "").trim());
     const correctNorm = answerArray.map((s) => (s ?? "").trim());
 
@@ -116,11 +156,11 @@ const MCQQuestionComponent = ({ question, onSubmit }) => {
     if (pathname === "/student/exam" && (testId || searchParams.get('mode') === 'question-bank')) {
 
       console.log("inside mock test response submitting");
-      
+
       const payload = {
         questionId: question.id,
         questionType: question.question_type,
-        exam_type: question.exam_type ,
+        exam_type: question.exam_type,
         test_id: testId, // Use the actual testId from URL
         selectedOptions,
       };
@@ -152,8 +192,6 @@ const MCQQuestionComponent = ({ question, onSubmit }) => {
         sx={{
           textAlign: "left",
           color: "#2e3760",
-          pt: 3,
-
           fontSize: { xs: "1rem", md: "1.25rem" },
           mb: 1,
         }}
@@ -166,7 +204,7 @@ const MCQQuestionComponent = ({ question, onSubmit }) => {
         <img
           src={buildImageUrl(exhibit)}
           alt="Exhibit"
-          style={{ maxWidth: "100%", marginBottom: "1rem", borderRadius: 8, alignItems: "center" }}
+          style={{ maxWidth: "90%", marginBottom: "1rem", borderRadius: 8, alignItems: "center" }}
         />
       )}
 
@@ -441,6 +479,9 @@ const MCQQuestionComponent = ({ question, onSubmit }) => {
               additionalInfoParagraphs={additionalInfo.map((info) => info.info)}
               additionalInfoImage={buildImageUrl(additionalInfo?.[0]?.image)}
               isAnswerCorrect={isCorrect}
+
+              //for preventing result modal to display again if answered
+              submittedResult={submittedResult}
             />
           )}
         </Box>

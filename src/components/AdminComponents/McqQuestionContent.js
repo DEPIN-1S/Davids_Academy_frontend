@@ -129,15 +129,11 @@ const McqQuestionContent = () => {
 
     const validateForm = () => {
         const newErrors = {};
-
         if (!question.trim()) {
             newErrors.question = 'Question is required';
         } else if (question.trim().length < 10) {
             newErrors.question = 'Question must be at least 10 characters long';
         }
-
-     
-
         const validOptions = options.filter(opt => opt.trim() !== "");
         if (validOptions.length < 2) {
             newErrors.options = 'At least 2 options are required';
@@ -233,10 +229,8 @@ const McqQuestionContent = () => {
             // Extract only filename
             const fileName = tab.tabImage.split("/").pop();
             console.log("Sending filename to delete API:", fileName);
-
             // Call delete API
             await dispatch(deleteTabImage(fileName)).unwrap();
-
             const newTabs = [...tabs];
             newTabs[index].previewUrl = null;
             newTabs[index].tabImage = null; // ✅ Clear tabImage
@@ -282,7 +276,6 @@ const McqQuestionContent = () => {
             question: question.trim(),
             options: options.filter(opt => opt.trim() !== "").map(opt => opt.trim()),
             correctAnswer: correctAnswer,
-         
             instruction: instruction.trim(),
             createdAt: existingQuestionData?.createdAt || new Date().toISOString(),
             updatedAt: new Date().toISOString(),
@@ -527,9 +520,6 @@ const McqQuestionContent = () => {
                     </CardContent>
                 </Card>
             )}
-
-            
-
 
             <Accordion defaultExpanded sx={{ mb: 3 }}>
                 <AccordionSummary expandIcon={<ExpandMore />}>

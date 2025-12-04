@@ -114,7 +114,8 @@ function ResultModal({ open, handleClose, isAnswerCorrect }) {
               {/* Status Indicator */}
               <div className="status-container">
                 <div className="status-label">
-                {isAnswerCorrect ? "SUCCESS" : "ATTEMPT COMPLETED"}
+                {/* {isAnswerCorrect ? "SUCCESS" : "ATTEMPT COMPLETED"} */}
+                ATTEMPT COMPLETED
                 </div>
                 <div className="status-meter">
                   <div className="meter-track"></div>

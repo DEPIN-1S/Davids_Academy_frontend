@@ -24,7 +24,7 @@ import { useLocation } from "react-router-dom";
 import { submitMockTestQuestionResponseThunk } from "../../features/exam/examSlice";
 
 
-const TableMultipleDropdownComponent = ({ question, onSubmit }) => {
+const TableMultipleDropdownComponent = ({ question, onSubmit, submittedResult }) => {
   // Extract data from question prop
   const {
     id: questionId,
@@ -74,9 +74,69 @@ const TableMultipleDropdownComponent = ({ question, onSubmit }) => {
     }));
   };
 
+  useEffect(() => {
+    // Handle both submission format AND previous navigation format
+    const previousAnswers = submittedResult?.answers || submittedResult?.data?.rowsAnswer;
+
+    if (submittedResult?.result && previousAnswers?.length > 0) {
+      try {
+        console.log("Previous multi-dropdown answers:", previousAnswers);
+
+        const newDropdownValues = {};
+
+        // Format 1: Previous navigation - answers[{rowId, colIndex, answer}]
+        if (previousAnswers[0]?.rowId !== undefined) {
+          previousAnswers.forEach(ans => {
+            const key = `${ans.rowId}-${ans.colIndex}`;
+            if (ans.answer) {
+              newDropdownValues[key] = ans.answer;
+            }
+          });
+        }
+
+        // Format 2: Submission format - rowsAnswer[{rowLabel, columns[{colIndex, selected}]}]
+        else if (previousAnswers[0]?.columns) {
+          previousAnswers.forEach((row, rIdx) => {
+            row.columns.forEach(col => {
+              const key = `${rIdx}-${col.colIndex}`;
+              if (col.selected !== undefined) {
+                newDropdownValues[key] = col.selected;
+              }
+            });
+          });
+        }
+
+        console.log("Restored dropdown values:", newDropdownValues);
+        setDropdownValues(newDropdownValues);
+
+        // Calculate correctness
+        let allCorrect = true;
+        rows.forEach((row, rIdx) => {
+          row.columns.forEach(col => {
+            const key = `${rIdx}-${col.colIndex}`;
+            const userVal = newDropdownValues[key];
+            if (col.answer && userVal !== col.answer) {
+              allCorrect = false;
+            }
+          });
+        });
+
+        setIsCorrect(allCorrect);
+        setShowReveal(true);
+
+        sessionStorage.setItem("hasAnswered", "true");
+        sessionStorage.setItem("isRevealed", "true");
+        setShowNotAnsweredModal(false);
+      } catch (error) {
+        console.error("Could not parse previous multi-dropdown answers:", error);
+      }
+    }
+  }, [submittedResult, rows]);
+
+
   // Handle reveal (submission and show answers) for multi-dropdown table
   const handleReveal = () => {
-
+    if (submittedResult?.result) return;
     const allFilled = rows.every((row, rIdx) =>
       row.columns.every((col) => {
         const key = `${rIdx}-${col.colIndex}`;
@@ -125,26 +185,27 @@ const TableMultipleDropdownComponent = ({ question, onSubmit }) => {
     const searchParams = new URLSearchParams(location.search);
     const testId = searchParams.get('testId');
 
-    if (pathname === "/student/exam" && (testId || searchParams.get('mode') === 'question-bank'))  {
+    if (pathname === "/student/exam" && (testId || searchParams.get('mode') === 'question-bank')) {
       console.log("inside table multi-dropdown mock test response submitting");
 
-      const rowsAnswer = rows.map((row) => ({
-        rowLabel: row.rowLabel,
+      const rowsAnswer = rows.map((row, rIdx) => ({
+        rowLabel: rIdx,  
         columns: row.columns.map((col) => {
-          const key = `${rows.indexOf(row)}-${col.colIndex}`;
+          const key = `${rIdx}-${col.colIndex}`;
           return {
             colIndex: col.colIndex,
             selected: dropdownValues[key] || ""
           };
-        })
+        }),
       }));
+
 
       const payload = {
         questionId: question.id,
         questionType: question.question_type,
-        exam_type: question.exam_type,
+        exam_type: question.exam_type.toLowerCase(),
         test_id: testId,
-        rowsAnswer,  
+        rowsAnswer,
       };
 
       dispatch(submitMockTestQuestionResponseThunk(payload));
@@ -441,7 +502,7 @@ const TableMultipleDropdownComponent = ({ question, onSubmit }) => {
         </TableContainer>
 
 
-        {showNotAnsweredModal && (
+        {showNotAnsweredModal && !submittedResult?.result && (
           <Box
             sx={{
               position: "fixed",
@@ -619,6 +680,7 @@ const TableMultipleDropdownComponent = ({ question, onSubmit }) => {
                 : null
             }
             isAnswerCorrect={isCorrect}
+            submittedResult={submittedResult}
           />
         </Box>
       )}

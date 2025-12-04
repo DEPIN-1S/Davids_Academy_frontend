@@ -805,3 +805,32 @@ export const submitMockTestQuestionResponse = async (responseData) => {
 };
 
 
+// Add to your examAPI.js
+export const fetchQBankSubmittedResult = async (questionId) => {
+  try {
+    const token = sessionStorage.getItem("accessToken");
+    const response = await fetch(
+      `${baseUrl}/student/result/qbank/submitted`,
+      {
+        method: 'Post',
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ questionId })
+      }
+    );
+    
+    if (!response.ok) {
+      throw new Error(`HTTP ${response.status}: Failed to fetch QBank submitted result`);
+    }
+    
+    return await response.json();
+  } catch (error) {
+    console.error("QBank submitted result API error:", error);
+    throw error;
+  }
+};
+
+
+

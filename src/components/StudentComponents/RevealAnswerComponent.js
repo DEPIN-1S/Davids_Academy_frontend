@@ -19,8 +19,9 @@ const RevealAnswerComponent = ({
   additionalInfoParagraphs = [],
   additionalInfoImage = null, // URL string or null
   isAnswerCorrect, // ← Destructure here
+  submittedResult
 }) => {
-  console.log("inside reveal answer  hhhfff", isAnswerCorrect); // true or false
+  // true or false
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('md'));
   const [openModal, setOpenModal] = React.useState(true);  // or false initially
@@ -33,6 +34,9 @@ const RevealAnswerComponent = ({
   const hasUpdated = React.useRef(false);
 
   useEffect(() => {
+    
+    if (submittedResult?.result || hasUpdated.current) return;
+
     if (hasUpdated.current) return; // prevent second run
     hasUpdated.current = true;
 
@@ -54,9 +58,17 @@ const RevealAnswerComponent = ({
         backgroundColor: '#fafafa',
       }}
     >
-      <ResultModal open={openModal}
-        handleClose={() => setOpenModal(false)}
-        isAnswerCorrect={isAnswerCorrect} />
+
+      {/* ✅ Only show modal for NEW answers, not previous submissions */}
+      {openModal && !submittedResult?.result && (
+        <ResultModal
+          open={openModal}
+          handleClose={() => setOpenModal(false)}
+          isAnswerCorrect={isAnswerCorrect}
+        />
+      )}
+
+
       {/* Left - Question & Explanation */}
       <Box
         sx={{
@@ -78,6 +90,7 @@ const RevealAnswerComponent = ({
             sx={{
               '& p': { margin: 0, marginBottom: '0.5em' },
               '& p:last-child': { marginBottom: 0 },
+              textAlign: "center"
             }}
             dangerouslySetInnerHTML={{ __html: explanationHeading }}
           />

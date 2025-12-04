@@ -17,7 +17,7 @@ import { submitMockTestQuestionResponseThunk } from "../../features/exam/examSli
 
 
 const baseUrl = process.env.BASE_URL;
-const DragDropQuestionComponent = ({ question, onSubmit }) => {
+const DragDropQuestionComponent = ({ question, onSubmit, submittedResult }) => {
   const {
     id: questionId,
     question: questionText = "",
@@ -42,6 +42,7 @@ const DragDropQuestionComponent = ({ question, onSubmit }) => {
   const [showNotAnsweredModal, setShowNotAnsweredModal] = useState(false);
   const dispatch = useDispatch();
   const location = useLocation();
+console.log("submitted result aan mone",submittedResult);
 
 
   const handleDropdownChange = (index, value) => {
@@ -59,6 +60,45 @@ const DragDropQuestionComponent = ({ question, onSubmit }) => {
     sessionStorage.setItem("isRevealed", "false");
   }, [questionId])
 
+  
+  useEffect(() => {
+  if (submittedResult?.result && submittedResult.answers?.length > 0) {
+    try {
+      const answers = submittedResult.answers;
+
+      // Map backend answers to dropdownValues by matching headings
+      const parsedValues = {};
+
+      answers.forEach(({ heading, answer }) => {
+        // Match heading to branch heading (trim, case-insensitive)
+        const idx = branches.findIndex(branch => 
+          String(branch.headings).trim().toLowerCase() === String(heading).trim().toLowerCase()
+        );
+        if (idx !== -1) {
+          parsedValues[idx] = answer;
+        }
+      });
+
+      setDropdownValues(parsedValues);
+
+      // Compute correctness
+      const correctStatus = branches.every((branch, idx) =>
+        String(parsedValues[idx]) === String(branch.drag_drop_answer)
+      );
+
+      setIsCorrect(correctStatus);
+      setShowReveal(true);
+
+      sessionStorage.setItem("hasAnswered", "true");
+      sessionStorage.setItem("isRevealed", "true");
+    } catch (e) {
+      console.error("Error parsing previous drag-drop answers:", e);
+    }
+  }
+}, [submittedResult, branches]);
+
+
+
   const handleTabChange = (event, newValue) => {
     setActiveTab(newValue);
   };
@@ -70,6 +110,11 @@ const DragDropQuestionComponent = ({ question, onSubmit }) => {
       setShowNotAnsweredModal(true);
       return;
     } */
+
+    if (submittedResult?.result) {
+      return; // Already revealed, no action needed
+    }
+
 
     // Check all five dropdowns are filled (no empty strings)
     const allFilled = dropdownValues.length === 5 && dropdownValues.every(val => val !== "");
@@ -109,7 +154,7 @@ const DragDropQuestionComponent = ({ question, onSubmit }) => {
     const searchParams = new URLSearchParams(location.search);
     const testId = searchParams.get('testId');
 
-    if (pathname === "/student/exam" && (testId || searchParams.get('mode') === 'question-bank'))  {
+    if (pathname === "/student/exam" && (testId || searchParams.get('mode') === 'question-bank')) {
       console.log("inside drag-drop mock test response submitting");
 
       const drag_and_drop_answer = branches.map((branch, idx) => ({
@@ -118,9 +163,9 @@ const DragDropQuestionComponent = ({ question, onSubmit }) => {
       }));
 
       const payload = {
-         questionId: question.id,
+        questionId: question.id,
         questionType: question.question_type,
-        exam_type: question.exam_type,
+        exam_type: question.exam_type.toLowerCase(),
         test_id: testId,
         drag_and_drop_answer,
       };
@@ -306,7 +351,7 @@ const DragDropQuestionComponent = ({ question, onSubmit }) => {
                   style={{
                     maxWidth: "100%",
                     height: "auto",
-                    borderRadius: 8,
+                  
                   }}
                 />
               </Box>
@@ -371,8 +416,15 @@ const DragDropQuestionComponent = ({ question, onSubmit }) => {
                           disabled={showReveal}
                           sx={{
                             borderRadius: "12px",
-                            backgroundColor: "#fff",
-                            border: "1px solid #e5e7eb",
+                            backgroundColor: showReveal
+                              ? String(dropdownValues[actualIndex]) === String(b.drag_drop_answer)
+                                ? "#dcfce7"  // ✅ GREEN
+                                : "#fee2e2"  // ❌ RED
+                              : "#fff",
+                            border: showReveal
+                              ? String(dropdownValues[actualIndex]) === String(b.drag_drop_answer)
+                              
+                              : "1px solid #e5e7eb",
                             fontSize: { xs: "0.9rem", md: "1rem" },
                             minHeight: 40,
                           }}
@@ -429,8 +481,15 @@ const DragDropQuestionComponent = ({ question, onSubmit }) => {
                       disabled={showReveal}
                       sx={{
                         borderRadius: "12px",
-                        backgroundColor: "#fff",
-                        border: "1px solid #e5e7eb",
+                        backgroundColor: showReveal
+                          ? String(dropdownValues[0]) === String(branches[0]?.drag_drop_answer)
+                            ? "#dcfce7"  // ✅ GREEN
+                            : "#fee2e2"  // ❌ RED
+                          : "#fff",
+                        border: showReveal
+                          ? String(dropdownValues[0]) === String(branches[0]?.drag_drop_answer)
+                      
+                          : "1px solid #e5e7eb",
                         fontSize: { xs: "0.9rem", md: "1rem" },
                         minHeight: 40,
                       }}
@@ -494,8 +553,15 @@ const DragDropQuestionComponent = ({ question, onSubmit }) => {
                           disabled={showReveal}
                           sx={{
                             borderRadius: "12px",
-                            backgroundColor: "#fff",
-                            border: "1px solid #e5e7eb",
+                            backgroundColor: showReveal
+                              ? String(dropdownValues[actualIndex]) === String(b.drag_drop_answer)
+                                ? "#dcfce7"  // ✅ GREEN
+                                : "#fee2e2"  // ❌ RED
+                              : "#fff",
+                            border: showReveal
+                              ? String(dropdownValues[actualIndex]) === String(b.drag_drop_answer)
+      
+                              : "1px solid #e5e7eb",
                             fontSize: { xs: "0.9rem", md: "1rem" },
                             minHeight: 40,
                           }}
@@ -518,7 +584,8 @@ const DragDropQuestionComponent = ({ question, onSubmit }) => {
           </Grid>
         </Grid>
 
-        {showNotAnsweredModal && (
+
+        {showNotAnsweredModal && !submittedResult?.result && (
           <Box
             sx={{
               position: "fixed",
@@ -572,7 +639,6 @@ const DragDropQuestionComponent = ({ question, onSubmit }) => {
         <Button
           variant="contained"
           onClick={handleReveal}
-          disabled={showReveal}
           sx={{
             backgroundColor: "#f4c300",
             color: "#000",
@@ -740,7 +806,8 @@ const DragDropQuestionComponent = ({ question, onSubmit }) => {
                 : null
             }
             isAnswerCorrect={isCorrect}
-
+            //for preventing result modal to display again if answered
+            submittedResult={submittedResult}
           />
         </Box>
       )}
