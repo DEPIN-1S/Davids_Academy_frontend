@@ -62,7 +62,7 @@ export async function fetchStudentTestProgress(studentId) {
 
 export async function editStudent(studentData, token) {
   const response = await fetch(
-    `${baseUrl} /admin/student/edit`,
+    `${baseUrl}/admin/student/edit`,
     {
       method: "POST",
       headers: {

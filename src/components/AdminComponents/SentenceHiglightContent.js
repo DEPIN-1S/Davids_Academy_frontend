@@ -104,7 +104,6 @@ const SentenceHighlightContent = () => {
             ['bold', 'italic', 'underline'], // Basic formatting
             [{ 'list': 'bullet' }], // Bullet points
             [{ 'color': [] },],
-
         ],
         clipboard: {
             matchVisual: false, // Important!
@@ -206,12 +205,7 @@ const SentenceHighlightContent = () => {
 
         if (!question.trim()) {
             newErrors.question = 'Question is required';
-        }
-
-        const validTabs = tabs.filter(tab => tab.tabKey.trim() && tab.tabValue.trim());
-        if (validTabs.length === 0) {
-            newErrors.tabs = 'At least one tab with key and value is required';
-        }
+        }  
 
         if (!passage.trim()) {
             newErrors.passage = 'Passage text is required';
@@ -235,7 +229,6 @@ const SentenceHighlightContent = () => {
         if (!validateForm()) {
             return;
         }
-
         const questionData = {
             cs_id: cs_id,
             exam_type: exam_type,
@@ -256,7 +249,6 @@ const SentenceHighlightContent = () => {
         };
 
         console.log('Sending sentence highlight question data:', questionData);
-
         navigate('/admin/answer-explain', {
             state: {
                 questionData: questionData,
@@ -270,7 +262,6 @@ const SentenceHighlightContent = () => {
             question: question.trim(),
             tabs: tabs,
             passage: passage.trim(),
-
             correctHighlights: correctHighlights,
             exhibit: selectedFile
         };

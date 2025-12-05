@@ -524,7 +524,7 @@ const McqQuestionContent = () => {
             <Accordion defaultExpanded sx={{ mb: 3 }}>
                 <AccordionSummary expandIcon={<ExpandMore />}>
                     <Typography variant="h6" color="primary">
-                        Question Tabs * ({tabs.length})
+                        Question Tabs  ({tabs.length})
                     </Typography>
                 </AccordionSummary>
                 <AccordionDetails>
@@ -659,7 +659,7 @@ const McqQuestionContent = () => {
             </Accordion>
 
             <Typography variant="h6" mb={1} color="primary">
-                Instruction *
+                Instruction 
             </Typography>
             <TextField
                 fullWidth

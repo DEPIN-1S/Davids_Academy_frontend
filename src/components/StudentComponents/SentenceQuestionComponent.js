@@ -201,29 +201,32 @@ const SentenceQuestionComponent = ({ question, onSubmit, submittedResult }) => {
   return (
     <Box
       sx={{
-        backgroundColor: "#fff",
-        borderRadius: "1.5rem",
-        padding: "2rem",
-        margin: "2rem auto",
-        maxWidth: "950px",
-        boxShadow: "0 4px 12px rgba(0,0,0,0.06)",
+        px: { xs: 3, md: 5 },
+        py: { xs: 3, md: 5 }
       }}
     >
       {/* Title */}
-      <Typography variant="h6" fontWeight={700} textAlign="center" mb={2}>
+      <Typography variant="h6"
+        sx={{
+          color: "#2e3760",
+          fontSize: { xs: "1rem", md: "1.25rem" },
+          textAlign: "left",
+          alignItems: "center",
+        }} component="h1" fontWeight={700} mb={5}>
         {questionText}
       </Typography>
 
       {/* Instructions */}
       {!!instructions && (
         <Box sx={{ pb: 2, mb: 2 }}>
+
           <Typography
             variant="h6"
             component="h2"
             align="left"
-            sx={{ mb: 1, color: "text.primary" }}
+            sx={{ mb: 1, color: "text.primary", fontWeight: 600,fontSize: { xs: "0.9rem", md: "1rem" }, }}
           >
-            Instructions
+            Instructions :
           </Typography>
           <Typography
             variant="body1"
@@ -274,7 +277,7 @@ const SentenceQuestionComponent = ({ question, onSubmit, submittedResult }) => {
 
           <Box
             sx={{
-              backgroundColor: "#f8f9ff",
+              backgroundColor: "#eff1ffff",
               borderRadius: "10px",
               p: 2,
               mb: 4,
@@ -316,7 +319,7 @@ const SentenceQuestionComponent = ({ question, onSubmit, submittedResult }) => {
 
       <Box
         sx={{
-          maxWidth: "800px",
+          maxWidth: "950px",
           margin: "0 auto",
           mb: 4,
           border: "1px solid #e0e0e0",

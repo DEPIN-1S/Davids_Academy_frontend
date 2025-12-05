@@ -219,13 +219,12 @@ const DropdownQuestionComponent = ({ question, onSubmit, submittedResult }) => {
   return (
     <Box
       sx={{
-        width: "90%",
-        margin: "0 auto",
-        px: 5,
+        px: { xs: 3, md: 5 },
+        py: { xs: 3, md: 5 }
       }}
     >
       {/* Header row */}
-      <Box sx={{ width: "100%", pt: 2, mb: 1 }}>
+      {/* <Box sx={{ width: "100%", pt: 2, mb: 1 }}>
         <Box
           sx={{
             display: "flex",
@@ -234,24 +233,19 @@ const DropdownQuestionComponent = ({ question, onSubmit, submittedResult }) => {
             color: "#6b7280",
           }}
         >
-          <Typography sx={{ fontSize: { xs: "0.875rem", md: "1rem" } }}>
-            Difficulty: {question?.difficulty || ""}
-          </Typography>
         </Box>
-      </Box>
+      </Box> */}
 
       {/* Title */}
       <Typography
         variant="h6"
         component="h1"
-        fontWeight={700}
-        mb={2}
         sx={{
-          textAlign: "left",
           color: "#2e3760",
-          pt: 3,
           fontSize: { xs: "1rem", md: "1.25rem" },
-        }}
+          textAlign: "left",
+          alignItems: "center",
+        }} fontWeight={700} mb={5}
       >
         {questionText}
       </Typography>
@@ -263,11 +257,7 @@ const DropdownQuestionComponent = ({ question, onSubmit, submittedResult }) => {
             variant="h6"
             component="h2"
             align="left"
-            sx={{
-              mb: 1,
-              color: "text.primary",
-              fontSize: { xs: "1rem", md: "1.25rem" },
-            }}
+            sx={{ mb: 1, color: "text.primary", fontWeight: 600,fontSize: { xs: "0.9rem", md: "1rem" }, }}
           >
             Instructions :
           </Typography>
@@ -290,7 +280,7 @@ const DropdownQuestionComponent = ({ question, onSubmit, submittedResult }) => {
         sx={{
 
           borderRadius: "1.5rem",
-          padding: { xs: 2, sm: 3, md: 4 },
+
           mb: 3,
 
         }}
@@ -345,7 +335,7 @@ const DropdownQuestionComponent = ({ question, onSubmit, submittedResult }) => {
 
         <Box
           sx={{
-            backgroundColor: "#f3f4f6",
+            backgroundColor: "#eff1ffff",
             borderRadius: 2,
             p: { xs: 2, md: 2.5 },
           }}

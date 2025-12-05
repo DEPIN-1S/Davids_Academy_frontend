@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { createStudent } from "../../features/students/studentSlice";
 import {
-    Box, Typography, Button, TextField, Card, CardContent, Container, useTheme, useMediaQuery, Grid, FormControl, InputLabel, Select, MenuItem,
-    Switch, FormControlLabel, InputAdornment, Alert
+    Box, Typography, Button, TextField, Card, CardContent, useTheme, useMediaQuery, Grid, FormControl, Select, MenuItem,
+    InputAdornment
 } from '@mui/material';
 import {
     Save as SaveIcon,
@@ -11,40 +11,31 @@ import {
     Email as EmailIcon,
     Person as PersonIcon,
     School as SchoolIcon,
-    Class as ClassIcon
 } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { fetchCourses } from '../../features/courses/courseSlice';
 import { updateStudent } from '../../features/students/studentSlice';
-/* import { fetchStudents } from '../../features/students/studentSlice'; */
 
 const EditStudentForm = ({ studentId, onClose }) => {
     const theme = useTheme();
     const navigate = useNavigate();
     const dispatch = useDispatch();
     const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
-    const isTablet = useMediaQuery(theme.breakpoints.down('md'));
     const { list: courses } = useSelector((state) => state.course);
     const { list: students } = useSelector((state) => state.students);
 
-
-    // Form state
     const [formData, setFormData] = useState({
         fullName: '',
         emailAddress: '',
         phoneNumber: '',
         targetExam: '',
-
     });
 
     useEffect(() => {
         dispatch(fetchCourses());
-        // fetch student by id from redux or API
         if (studentId) {
             const student = students.find(s => s.id === studentId);
-            console.log("student in edit student page :::::", student);
-
             if (student) {
                 setFormData({
                     fullName: student.firstname,
@@ -61,31 +52,17 @@ const EditStudentForm = ({ studentId, onClose }) => {
     }, [dispatch, studentId, students]);
 
 
-
     const [errors, setErrors] = useState({});
-    const generatePasswordValue = (name) => {
-        if (!name) return '';
-        const cleanName = name.toLowerCase().replace(/\s+/g, '');
-        const randomNum = Math.floor(100 + Math.random() * 900); // always 3 digits
-        return `${cleanName}${randomNum}`;
-    };
 
     const handleInputChange = (field) => (event) => {
         const value = event.target.value;
-        setFormData((prev) => {
-            const updated = { ...prev, [field]: value };
-            if (field === 'fullName' && prev.autoGeneratePassword) {
-                updated.password = generatePasswordValue(value);
-            }
-            return updated;
-        });
+        setFormData(prev => ({ ...prev, [field]: value }));
     };
 
-
-    // Form validation
     const validateForm = () => {
         const newErrors = {};
         if (!formData.fullName.trim()) newErrors.fullName = 'Full name is required';
+
         if (!formData.emailAddress.trim()) {
             newErrors.emailAddress = 'Email address is required';
         } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.emailAddress)) {
@@ -99,314 +76,183 @@ const EditStudentForm = ({ studentId, onClose }) => {
             newErrors.phoneNumber = 'Please enter a valid phone number';
         }
 
-
         setErrors(newErrors);
         return Object.keys(newErrors).length === 0;
     };
-    console.log("inside function:::", formData);
-
-
 
     const handleSave = (e) => {
         e.preventDefault();
-
         if (!validateForm()) return;
 
         const payload = {
-            student_id: studentId, // important!
+            student_id: studentId,
             fullname: formData.fullName,
             email: formData.emailAddress,
             phone: formData.phoneNumber,
             target_exam: formData.targetExam,
         };
 
-        console.log("Updating student with payload:", payload);
-
         dispatch(updateStudent(payload))
             .unwrap()
             .then(() => {
-
-                dispatch(updateStudent(payload))
-                    .unwrap()
-                    .then(() => {
-                        alert("✅ Student updated successfully!");
-                        onClose?.(); // <-- trigger parent refresh here
-                    });
+                alert("✅ Student updated successfully!");
+                onClose?.();
             })
             .catch((error) => {
-                console.error("Error updating student:", error);
                 alert(`❌ Error updating student: ${error.message || error}`);
             });
     };
 
-
-
     const handleCancel = () => {
-        onClose()
+        onClose();
     };
 
     return (
-        <Container maxWidth="md" sx={{ py: { xs: 2, sm: 3, md: 4 } }}>
-            {/* Form Card */}
-            <Card
-                sx={{
-                    borderRadius: { xs: 2, sm: 3 },
-                    boxShadow: '0 4px 20px rgba(0,0,0,0.08)',
-                    border: '1px solid',
-                    borderColor: 'grey.200'
-                }}
-            >
-                <CardContent sx={{ p: { xs: 3, sm: 4 } }}>
-
-                    <Box sx={{ mb: { xs: 3, sm: 4 } }}>
-                        <Typography
-                            variant="h4"
-                            component="h1"
-                            sx={{
-                                fontWeight: 600,
-                                fontSize: { xs: '1.75rem', sm: '2rem', md: '1.8rem' },
-                                color: 'text.primary',
-                                mb: 1,
-                                textAlign: { xs: 'center', sm: 'left' }
-                            }}
-                        >
-                            Edit Student
-                        </Typography>
-                        <Typography
-                            variant="body1"
-                            sx={{
-                                color: 'text.secondary',
-                                fontSize: { xs: '0.9rem', sm: '.9rem' },
-                                textAlign: { xs: 'center', sm: 'left' }
-                            }}
-                        >
-                            Fill in the student's details to create their account and assign courses.
-                        </Typography>
-                    </Box>
-                    <Grid container spacing={{ xs: 3, sm: 4 }}>
-                        {/* Full Name */}
-                        <Grid item xs={12} md={6}>
-                            <Typography
-                                variant="h6"
-                                sx={{
-                                    fontWeight: 600,
-                                    mb: 1.5,
-                                    fontSize: { xs: '1rem', sm: '1.1rem' },
-                                    color: 'text.primary'
-                                }}
-                            >
-                                Full Name*
-                            </Typography>
-                            <TextField
-                                fullWidth
-                                placeholder="Enter student full name"
-                                value={formData.fullName}
-                                onChange={handleInputChange('fullName')}
-                                error={!!errors.fullName}
-                                helperText={errors.fullName}
-                                InputProps={{
-                                    startAdornment: (
-                                        <InputAdornment position="start">
-                                            <PersonIcon sx={{ color: 'text.secondary' }} />
-                                        </InputAdornment>
-                                    ),
-                                }}
-                                sx={{
-                                    '& .MuiOutlinedInput-root': {
-                                        borderRadius: 2,
-                                        fontSize: { xs: '0.9rem', sm: '1rem' }
-                                    }
-                                }}
-                            />
-                        </Grid>
-
-                        {/* Email Address */}
-                        <Grid item xs={12} md={6}>
-                            <Typography
-                                variant="h6"
-                                sx={{
-                                    fontWeight: 600,
-                                    mb: 1.5,
-                                    fontSize: { xs: '1rem', sm: '1.1rem' },
-                                    color: 'text.primary'
-                                }}
-                            >
-                                Email Address*
-                            </Typography>
-                            <TextField
-                                fullWidth
-                                type="email"
-                                placeholder="Enter student email address"
-                                value={formData.emailAddress}
-                                onChange={handleInputChange('emailAddress')}
-                                error={!!errors.emailAddress}
-                                helperText={errors.emailAddress}
-                                InputProps={{
-                                    startAdornment: (
-                                        <InputAdornment position="start">
-                                            <EmailIcon sx={{ color: 'text.secondary' }} />
-                                        </InputAdornment>
-                                    ),
-                                }}
-                                sx={{
-                                    '& .MuiOutlinedInput-root': {
-                                        borderRadius: 2,
-                                        fontSize: { xs: '0.9rem', sm: '1rem' }
-                                    }
-                                }}
-                            />
-                        </Grid>
-
-                        {/* Phone Number */}
-                        <Grid item xs={12} md={6}>
-                            <Typography
-                                variant="h6"
-                                sx={{
-                                    fontWeight: 600,
-                                    mb: 1.5,
-                                    fontSize: { xs: '1rem', sm: '1.1rem' },
-                                    color: 'text.primary'
-                                }}
-                            >
-                                Phone Number*
-                            </Typography>
-                            <TextField
-                                fullWidth
-                                placeholder="Enter student phone number"
-                                value={formData.phoneNumber}
-                                onChange={handleInputChange('phoneNumber')}
-                                error={!!errors.phoneNumber}
-                                helperText={errors.phoneNumber}
-                                InputProps={{
-                                    startAdornment: (
-                                        <InputAdornment position="start">
-                                            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                                                <img
-                                                    src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAiIGhlaWdodD0iMTQiIHZpZXdCb3g9IjAgMCAyMCAxNCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHJlY3Qgd2lkdGg9IjIwIiBoZWlnaHQ9IjE0IiByeD0iMiIgZmlsbD0iI0ZGNjYwMCIvPgo8cGF0aCBkPSJNMCA0SDIwVjEwSDBWNFoiIGZpbGw9IndoaXRlIi8+CjxwYXRoIGQ9Ik0wIDEwSDIwVjE0SDBWMTBaIiBmaWxsPSIjMDA4MDAwIi8+Cjwvc3ZnPg=="
-                                                    alt="India flag"
-                                                    style={{ width: 20, height: 14 }}
-                                                />
-                                                <Typography variant="body2" sx={{ color: 'text.secondary' }}>
-                                                    +91
-                                                </Typography>
-                                            </Box>
-                                        </InputAdornment>
-                                    ),
-                                }}
-                                sx={{
-                                    '& .MuiOutlinedInput-root': {
-                                        borderRadius: 2,
-                                        fontSize: { xs: '0.9rem', sm: '1rem' }
-                                    }
-                                }}
-                            />
-                        </Grid>
-
-
-                        {/* Target Exam */}
-                        <Grid item xs={12} md={6}>
-                            <Typography
-                                variant="h6"
-                                sx={{
-                                    fontWeight: 600,
-                                    mb: 1.5,
-                                    fontSize: { xs: '1rem', sm: '1.1rem' },
-                                    color: 'text.primary'
-                                }}
-                            >
-                                Target Exam*
-                            </Typography>
-                            <FormControl fullWidth>
-                                <Select
-                                    value={formData.targetExam}
-                                    onChange={handleInputChange('targetExam')}
-                                    displayEmpty
-                                    fullWidth
-                                    sx={{
-                                        borderRadius: 2,
-                                        fontSize: { xs: '0.9rem', sm: '1rem' }
-                                    }}
-                                    startAdornment={
-                                        <InputAdornment position="start">
-                                            <SchoolIcon sx={{ color: 'text.secondary', ml: 1 }} />
-                                        </InputAdornment>
-                                    }
-                                >
-                                    <MenuItem value="" disabled>
-                                        Select Course
-                                    </MenuItem>
-                                    {courses.map((course, index) => (
-                                        <MenuItem key={index} value={course.cs_id}>
-                                            {course.cs_name}
-                                        </MenuItem>
-                                    ))}
-                                </Select>
-
-
-
-                            </FormControl>
-                        </Grid>
-
-                    </Grid>
-                </CardContent>
-            </Card>
-
-            {/* Action Buttons */}
+        <Box
+            sx={{
+                position: "fixed",
+                top: 0,
+                left: 0,
+                width: "100%",
+                height: "100%",
+                bgcolor: "rgba(0,0,0,0.5)",
+                zIndex: 9999,
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+                p: 2
+            }}
+        >
             <Box
                 sx={{
-                    mt: { xs: 3, sm: 4 },
-                    display: 'flex',
-                    flexDirection: { xs: 'column', sm: 'row' },
-                    justifyContent: { xs: 'stretch', sm: 'space-between' },
-                    gap: { xs: 2, sm: 2 }
+                    width: { xs: "95%", sm: "450px", md: "500px" },
+                    maxHeight: "90vh",
+                    overflowY: "auto",
+                    bgcolor: "white",
+                    borderRadius: 3,
+                    boxShadow: "0 10px 40px rgba(0,0,0,0.2)",
+                    p: 3
                 }}
             >
-                <Button
-                    variant="outlined"
-                    startIcon={<CancelIcon />}
-                    onClick={handleCancel}
-                    sx={{
-                        textTransform: 'none',
-                        fontWeight: 500,
-                        borderRadius: 2,
-                        px: { xs: 3, sm: 4 },
-                        py: { xs: 1.2, sm: 1.5 },
-                        fontSize: { xs: '0.9rem', sm: '1rem' },
-                        order: { xs: 2, sm: 1 },
-                        borderWidth: 2,
-                        '&:hover': {
-                            borderWidth: 2
-                        }
-                    }}
-                >
-                    Cancel
-                </Button>
+                <Card sx={{ borderRadius: 3, boxShadow: "none" }}>
+                    <CardContent>
 
-                <Button
-                    variant="contained"
-                    endIcon={<SaveIcon />}
-                    onClick={handleSave}
-                    sx={{
-                        bgcolor: '#F5C842',
-                        color: 'black',
-                        fontWeight: 600,
-                        textTransform: 'none',
-                        borderRadius: 2,
-                        px: { xs: 3, sm: 4 },
-                        py: { xs: 1.2, sm: 1.5 },
-                        fontSize: { xs: '0.9rem', sm: '1rem' },
-                        order: { xs: 1, sm: 2 },
-                        '&:hover': {
-                            bgcolor: '#E6B53C',
-                            transform: 'translateY(-2px)',
-                            boxShadow: '0 6px 20px rgba(245, 200, 66, 0.4)'
-                        }
-                    }}
-                >
-                    Save
-                </Button>
+                        <Box sx={{ mb: 3 }}>
+                            <Typography variant="h5" fontWeight={600}>
+                                Edit Student
+                            </Typography>
+                            <Typography variant="body2" color="text.secondary">
+                                Fill in the student's details to update their account.
+                            </Typography>
+                        </Box>
+
+                        <Grid container spacing={3}>
+                            <Grid item xs={12}>
+                                <Typography fontWeight={600}>Full Name*</Typography>
+                                <TextField
+                                    fullWidth
+                                    placeholder="Enter full name"
+                                    value={formData.fullName}
+                                    onChange={handleInputChange('fullName')}
+                                    error={!!errors.fullName}
+                                    helperText={errors.fullName}
+                                    InputProps={{
+                                        startAdornment: (
+                                            <InputAdornment position="start">
+                                                <PersonIcon />
+                                            </InputAdornment>
+                                        )
+                                    }}
+                                />
+                            </Grid>
+
+                            <Grid item xs={12}>
+                                <Typography fontWeight={600}>Email Address*</Typography>
+                                <TextField
+                                    fullWidth
+                                    type="email"
+                                    placeholder="Enter email"
+                                    value={formData.emailAddress}
+                                    onChange={handleInputChange('emailAddress')}
+                                    error={!!errors.emailAddress}
+                                    helperText={errors.emailAddress}
+                                    InputProps={{
+                                        startAdornment: (
+                                            <InputAdornment position="start">
+                                                <EmailIcon />
+                                            </InputAdornment>
+                                        )
+                                    }}
+                                />
+                            </Grid>
+
+                            <Grid item xs={12}>
+                                <Typography fontWeight={600}>Phone Number*</Typography>
+                                <TextField
+                                    fullWidth
+                                    placeholder="Enter phone number"
+                                    value={formData.phoneNumber}
+                                    onChange={handleInputChange('phoneNumber')}
+                                    error={!!errors.phoneNumber}
+                                    helperText={errors.phoneNumber}
+                                    InputProps={{
+                                        startAdornment: (
+                                            <InputAdornment position="start">
+                                                +91
+                                            </InputAdornment>
+                                        )
+                                    }}
+                                />
+                            </Grid>
+
+                            <Grid item xs={12}>
+                                <Typography fontWeight={600}>Target Exam*</Typography>
+                                <FormControl fullWidth>
+                                    <Select
+                                        value={formData.targetExam}
+                                        onChange={handleInputChange('targetExam')}
+                                        displayEmpty
+                                        startAdornment={
+                                            <InputAdornment position="start">
+                                                <SchoolIcon />
+                                            </InputAdornment>
+                                        }
+                                    >
+                                        <MenuItem value="" disabled>Select Course</MenuItem>
+
+                                        {courses.map((course, i) => (
+                                            <MenuItem key={i} value={course.cs_id}>
+                                                {course.cs_name}
+                                            </MenuItem>
+                                        ))}
+                                    </Select>
+                                </FormControl>
+                            </Grid>
+                        </Grid>
+                    </CardContent>
+                </Card>
+
+                <Box mt={3} display="flex" justifyContent="space-between">
+                    <Button
+                        variant="outlined"
+                        startIcon={<CancelIcon />}
+                        onClick={handleCancel}
+                        sx={{ borderRadius: 2 }}
+                    >
+                        Cancel
+                    </Button>
+
+                    <Button
+                        variant="contained"
+                        endIcon={<SaveIcon />}
+                        onClick={handleSave}
+                        sx={{ bgcolor: "#F5C842", color: "black", borderRadius: 2 }}
+                    >
+                        Save
+                    </Button>
+                </Box>
             </Box>
-        </Container>
+        </Box>
     );
 };
 

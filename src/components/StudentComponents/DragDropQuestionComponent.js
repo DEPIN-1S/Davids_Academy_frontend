@@ -42,7 +42,7 @@ const DragDropQuestionComponent = ({ question, onSubmit, submittedResult }) => {
   const [showNotAnsweredModal, setShowNotAnsweredModal] = useState(false);
   const dispatch = useDispatch();
   const location = useLocation();
-console.log("submitted result aan mone",submittedResult);
+  console.log("submitted result aan mone", submittedResult);
 
 
   const handleDropdownChange = (index, value) => {
@@ -60,42 +60,42 @@ console.log("submitted result aan mone",submittedResult);
     sessionStorage.setItem("isRevealed", "false");
   }, [questionId])
 
-  
+
   useEffect(() => {
-  if (submittedResult?.result && submittedResult.answers?.length > 0) {
-    try {
-      const answers = submittedResult.answers;
+    if (submittedResult?.result && submittedResult.answers?.length > 0) {
+      try {
+        const answers = submittedResult.answers;
 
-      // Map backend answers to dropdownValues by matching headings
-      const parsedValues = {};
+        // Map backend answers to dropdownValues by matching headings
+        const parsedValues = {};
 
-      answers.forEach(({ heading, answer }) => {
-        // Match heading to branch heading (trim, case-insensitive)
-        const idx = branches.findIndex(branch => 
-          String(branch.headings).trim().toLowerCase() === String(heading).trim().toLowerCase()
+        answers.forEach(({ heading, answer }) => {
+          // Match heading to branch heading (trim, case-insensitive)
+          const idx = branches.findIndex(branch =>
+            String(branch.headings).trim().toLowerCase() === String(heading).trim().toLowerCase()
+          );
+          if (idx !== -1) {
+            parsedValues[idx] = answer;
+          }
+        });
+
+        setDropdownValues(parsedValues);
+
+        // Compute correctness
+        const correctStatus = branches.every((branch, idx) =>
+          String(parsedValues[idx]) === String(branch.drag_drop_answer)
         );
-        if (idx !== -1) {
-          parsedValues[idx] = answer;
-        }
-      });
 
-      setDropdownValues(parsedValues);
+        setIsCorrect(correctStatus);
+        setShowReveal(true);
 
-      // Compute correctness
-      const correctStatus = branches.every((branch, idx) =>
-        String(parsedValues[idx]) === String(branch.drag_drop_answer)
-      );
-
-      setIsCorrect(correctStatus);
-      setShowReveal(true);
-
-      sessionStorage.setItem("hasAnswered", "true");
-      sessionStorage.setItem("isRevealed", "true");
-    } catch (e) {
-      console.error("Error parsing previous drag-drop answers:", e);
+        sessionStorage.setItem("hasAnswered", "true");
+        sessionStorage.setItem("isRevealed", "true");
+      } catch (e) {
+        console.error("Error parsing previous drag-drop answers:", e);
+      }
     }
-  }
-}, [submittedResult, branches]);
+  }, [submittedResult, branches]);
 
 
 
@@ -189,30 +189,10 @@ console.log("submitted result aan mone",submittedResult);
   return (
     <Box
       sx={{
-        width: "100%",
-        maxWidth: 1100,
-        margin: "0 auto",
-        px: 5,
-        py: { xs: 2, md: 3 },
+        px: { xs: 3, md: 5 },
+        py: { xs: 3, md: 5 }
       }}
     >
-      {/* Question Header Info */}
-      <Box
-        sx={{
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: "center",
-          mb: 3,
-          flexWrap: "wrap",
-          gap: 1,
-        }}
-      >
-        <Typography sx={{ color: "#666", fontSize: { xs: "0.875rem", md: "1rem" } }}>
-          Difficulty: {difficulty}
-        </Typography>
-
-      </Box>
-
       {/* Question Title */}
       <Typography
         variant="h6"
@@ -221,7 +201,8 @@ console.log("submitted result aan mone",submittedResult);
           color: "#2F3B6C",
           fontWeight: 600,
           mb: 3,
-          textAlign: "center",
+           textAlign: "left",
+          alignItems:"center",
           fontSize: { xs: "1rem", md: "1.25rem" },
         }}
       >
@@ -229,19 +210,15 @@ console.log("submitted result aan mone",submittedResult);
       </Typography>
 
       {/* Instructions */}
-      {!!instructions && (
-        <Box sx={{ mb: 3 }}>
+      {instructions && (
+        <Box sx={{ pb: 2, mb: 2 }}>
           <Typography
             variant="h6"
             component="h2"
             align="left"
-            sx={{
-              mb: 1,
-              color: "text.primary",
-              fontSize: { xs: "1rem", md: "1.25rem" },
-            }}
+            sx={{ mb: 1, color: "text.primary", fontWeight: 600,fontSize: { xs: "0.9rem", md: "1rem" } }}
           >
-            Instructions
+            Instructions :
           </Typography>
           <Typography
             variant="body1"
@@ -260,13 +237,7 @@ console.log("submitted result aan mone",submittedResult);
       {/* Tabs from tabsInfo */}
       {tabsInfo && tabsInfo.length > 0 && (
         <Box
-          sx={{
-            backgroundColor: "#fff",
-            borderRadius: "1.5rem",
-            padding: { xs: 2, sm: 3, md: 4 },
-            mb: 4,
-            boxShadow: "0 6px 18px rgba(15,23,42,0.06)",
-          }}
+          sx={{ mb: 6 }}
         >
           <Box sx={{ display: "flex", justifyContent: "center", mb: 2 }}>
             <Tabs
@@ -317,7 +288,7 @@ console.log("submitted result aan mone",submittedResult);
           {/* Tab Content */}
           <Box
             sx={{
-              backgroundColor: "#f3f4f6",
+              backgroundColor: "#eff1ffff",
               borderRadius: 2,
               p: { xs: 2, md: 2.5 },
               minHeight: { xs: "auto", md: 56 },
@@ -351,7 +322,7 @@ console.log("submitted result aan mone",submittedResult);
                   style={{
                     maxWidth: "100%",
                     height: "auto",
-                  
+
                   }}
                 />
               </Box>
@@ -423,7 +394,7 @@ console.log("submitted result aan mone",submittedResult);
                               : "#fff",
                             border: showReveal
                               ? String(dropdownValues[actualIndex]) === String(b.drag_drop_answer)
-                              
+
                               : "1px solid #e5e7eb",
                             fontSize: { xs: "0.9rem", md: "1rem" },
                             minHeight: 40,
@@ -488,7 +459,7 @@ console.log("submitted result aan mone",submittedResult);
                           : "#fff",
                         border: showReveal
                           ? String(dropdownValues[0]) === String(branches[0]?.drag_drop_answer)
-                      
+
                           : "1px solid #e5e7eb",
                         fontSize: { xs: "0.9rem", md: "1rem" },
                         minHeight: 40,
@@ -560,7 +531,7 @@ console.log("submitted result aan mone",submittedResult);
                               : "#fff",
                             border: showReveal
                               ? String(dropdownValues[actualIndex]) === String(b.drag_drop_answer)
-      
+
                               : "1px solid #e5e7eb",
                             fontSize: { xs: "0.9rem", md: "1rem" },
                             minHeight: 40,

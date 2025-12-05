@@ -409,7 +409,7 @@ const ExamContainer = ({ user }) => {
         user={user?.name || "Guest"}
         time={formatTime(elapsedSeconds)}
       />
-      <div style={{ marginTop: "2rem" }}>
+      <div >
         {(isTestMode ? loading : qBankQuestionDataLoading) ? (
           <p>Loading question...</p>
         ) : QuestionComponent ? (
