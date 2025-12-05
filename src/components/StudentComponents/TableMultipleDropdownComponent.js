@@ -19,8 +19,12 @@ import {
   Paper,
 } from "@mui/material";
 import RevealAnswerComponent from "./RevealAnswerComponent";
+import { useDispatch } from "react-redux";
+import { useLocation } from "react-router-dom";
+import { submitMockTestQuestionResponseThunk } from "../../features/exam/examSlice";
 
-const TableMultipleDropdownComponent = ({ question, onSubmit }) => {
+
+const TableMultipleDropdownComponent = ({ question, onSubmit, submittedResult }) => {
   // Extract data from question prop
   const {
     id: questionId,
@@ -39,6 +43,15 @@ const TableMultipleDropdownComponent = ({ question, onSubmit }) => {
   const [dropdownValues, setDropdownValues] = useState({});
   const [showReveal, setShowReveal] = useState(false);
   const [isCorrect, setIsCorrect] = useState(false);
+  const [showNotAnsweredModal, setShowNotAnsweredModal] = useState(false);
+  const dispatch = useDispatch();
+  const location = useLocation();
+
+
+  useEffect(() => {
+    sessionStorage.setItem("hasAnswered", "false");
+    sessionStorage.setItem("isRevealed", "false");
+  }, [])
 
   // Tabs state
   const [activeTab, setActiveTab] = useState(() =>
@@ -61,8 +74,80 @@ const TableMultipleDropdownComponent = ({ question, onSubmit }) => {
     }));
   };
 
+  useEffect(() => {
+    // Handle both submission format AND previous navigation format
+    const previousAnswers = submittedResult?.answers || submittedResult?.data?.rowsAnswer;
+
+    if (submittedResult?.result && previousAnswers?.length > 0) {
+      try {
+        console.log("Previous multi-dropdown answers:", previousAnswers);
+
+        const newDropdownValues = {};
+
+        // Format 1: Previous navigation - answers[{rowId, colIndex, answer}]
+        if (previousAnswers[0]?.rowId !== undefined) {
+          previousAnswers.forEach(ans => {
+            const key = `${ans.rowId}-${ans.colIndex}`;
+            if (ans.answer) {
+              newDropdownValues[key] = ans.answer;
+            }
+          });
+        }
+
+        // Format 2: Submission format - rowsAnswer[{rowLabel, columns[{colIndex, selected}]}]
+        else if (previousAnswers[0]?.columns) {
+          previousAnswers.forEach((row, rIdx) => {
+            row.columns.forEach(col => {
+              const key = `${rIdx}-${col.colIndex}`;
+              if (col.selected !== undefined) {
+                newDropdownValues[key] = col.selected;
+              }
+            });
+          });
+        }
+
+        console.log("Restored dropdown values:", newDropdownValues);
+        setDropdownValues(newDropdownValues);
+
+        // Calculate correctness
+        let allCorrect = true;
+        rows.forEach((row, rIdx) => {
+          row.columns.forEach(col => {
+            const key = `${rIdx}-${col.colIndex}`;
+            const userVal = newDropdownValues[key];
+            if (col.answer && userVal !== col.answer) {
+              allCorrect = false;
+            }
+          });
+        });
+
+        setIsCorrect(allCorrect);
+        setShowReveal(true);
+
+        sessionStorage.setItem("hasAnswered", "true");
+        sessionStorage.setItem("isRevealed", "true");
+        setShowNotAnsweredModal(false);
+      } catch (error) {
+        console.error("Could not parse previous multi-dropdown answers:", error);
+      }
+    }
+  }, [submittedResult, rows]);
+
+
   // Handle reveal (submission and show answers) for multi-dropdown table
   const handleReveal = () => {
+    if (submittedResult?.result) return;
+    const allFilled = rows.every((row, rIdx) =>
+      row.columns.every((col) => {
+        const key = `${rIdx}-${col.colIndex}`;
+        return dropdownValues[key] && dropdownValues[key] !== "";
+      })
+    );
+
+    if (!allFilled) {
+      setShowNotAnsweredModal(true);
+      return;
+    }
     let allCorrect = true;
     const answersList = [];
 
@@ -94,6 +179,41 @@ const TableMultipleDropdownComponent = ({ question, onSubmit }) => {
 
     setIsCorrect(allCorrect);
     setShowReveal(true);
+
+    // ✅ API CALL - ONLY ON /student/exam?testId=XXX
+    const pathname = location.pathname;
+    const searchParams = new URLSearchParams(location.search);
+    const testId = searchParams.get('testId');
+
+    if (pathname === "/student/exam" && (testId || searchParams.get('mode') === 'question-bank')) {
+      console.log("inside table multi-dropdown mock test response submitting");
+
+      const rowsAnswer = rows.map((row, rIdx) => ({
+        rowLabel: rIdx,  
+        columns: row.columns.map((col) => {
+          const key = `${rIdx}-${col.colIndex}`;
+          return {
+            colIndex: col.colIndex,
+            selected: dropdownValues[key] || ""
+          };
+        }),
+      }));
+
+
+      const payload = {
+        questionId: question.id,
+        questionType: question.question_type,
+        exam_type: question.exam_type.toLowerCase(),
+        test_id: testId,
+        rowsAnswer,
+      };
+
+      dispatch(submitMockTestQuestionResponseThunk(payload));
+    }
+
+
+    sessionStorage.setItem("hasAnswered", "true");
+    sessionStorage.setItem("isRevealed", "true");
   };
 
   // Loading or no data state
@@ -122,7 +242,7 @@ const TableMultipleDropdownComponent = ({ question, onSubmit }) => {
             Difficulty : {difficulty || ""}
           </Typography>
           <Typography sx={{ textAlign: "right" }}>
-            Question Type : Table Dropdown
+            Question Type : Multi Dropdown
           </Typography>
         </Box>
       </Box>
@@ -380,6 +500,49 @@ const TableMultipleDropdownComponent = ({ question, onSubmit }) => {
             </TableBody>
           </Table>
         </TableContainer>
+
+
+        {showNotAnsweredModal && !submittedResult?.result && (
+          <Box
+            sx={{
+              position: "fixed",
+              top: 0,
+              left: 0,
+              width: "100%",
+              height: "100%",
+              backgroundColor: "rgba(0,0,0,0.5)",
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+              zIndex: 9999,
+            }}
+          >
+            <Box
+              sx={{
+                backgroundColor: "#fff",
+                padding: 3,
+                borderRadius: "12px",
+                width: "90%",
+                maxWidth: 400,
+                textAlign: "center",
+              }}
+            >
+              <Typography
+                sx={{ mb: 3, fontSize: "1rem", fontWeight: 600, color: "#2e3760" }}
+              >
+                All dropdown fields must be filled before revealing the answer.
+              </Typography>
+              <Button
+                variant="contained"
+                onClick={() => setShowNotAnsweredModal(false)}
+                sx={{ backgroundColor: "#2e3760" }}
+              >
+                OK
+              </Button>
+            </Box>
+          </Box>
+        )}
+
       </Box>
 
       {/* Submit Button */}
@@ -517,6 +680,7 @@ const TableMultipleDropdownComponent = ({ question, onSubmit }) => {
                 : null
             }
             isAnswerCorrect={isCorrect}
+            submittedResult={submittedResult}
           />
         </Box>
       )}

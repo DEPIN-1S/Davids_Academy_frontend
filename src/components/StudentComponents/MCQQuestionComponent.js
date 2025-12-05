@@ -15,6 +15,9 @@ import CheckIcon from "@mui/icons-material/Check";
 import { FaCheckCircle, FaTimesCircle } from "react-icons/fa";
 import "../../styles/DashboardStyles/RadioButtonQuestionComponent.css";
 import RevealAnswerComponent from "./RevealAnswerComponent";
+import { submitMockTestQuestionResponseThunk } from "../../features/exam/examSlice";
+import { useDispatch } from "react-redux";
+import { useLocation } from "react-router-dom";
 
 const buildImageUrl = (path) => {
   if (!path) return null;
@@ -23,7 +26,7 @@ const buildImageUrl = (path) => {
   return `https://lunarsenterprises.com:6040/${clean}`;
 };
 
-const MCQQuestionComponent = ({ question, onSubmit }) => {
+const MCQQuestionComponent = ({ question, onSubmit, submittedResult }) => {
   const {
     id: questionId,
     question: questionText,
@@ -36,11 +39,11 @@ const MCQQuestionComponent = ({ question, onSubmit }) => {
     marks = 0,
     instructions,
   } = question || {};
-
+  const location = useLocation();
   const answerArray = Array.isArray(mcqAnswers)
     ? mcqAnswers.map((ans) => (ans.mcqAnswer ?? "").trim())
     : [];
-
+  const [showNotAnsweredModal, setShowNotAnsweredModal] = useState(false);
   const [selectedOptions, setSelectedOptions] = useState([]);
   const [showAnswer, setShowAnswer] = useState(false);
   const [isCorrect, setIsCorrect] = useState(false);
@@ -49,11 +52,63 @@ const MCQQuestionComponent = ({ question, onSubmit }) => {
   );
 
   useEffect(() => {
+    sessionStorage.setItem("hasAnswered", "false");
+    sessionStorage.setItem("isRevealed", "false");
+    setShowAnswer(false); // Reset local component state accordingly
+    setIsCorrect(false);
+  }, [questionId]);
+  const dispatch = useDispatch();
+
+  useEffect(() => {
     if (tabsInfo && tabsInfo.length) setActiveTab(tabsInfo[0].tabKey);
   }, [tabsInfo]);
 
-  const handleTabChange = (_event, newValue) => setActiveTab(newValue);
+  useEffect(() => {
+    console.log("🔍 submittedResult:", submittedResult);
+    if (!submittedResult?.result) return;
+    try {
+      // Handle actual backend shape: { result: true, answers: [{ answer: "..." }] }
+      let previousAnswer = null;
 
+      if (submittedResult.answers && submittedResult.answers[0]?.answer) {
+        previousAnswer = submittedResult.answers[0].answer;
+      } else if (submittedResult.selectedOptions) {
+        // Fallback for other question types
+        previousAnswer = submittedResult.selectedOptions.join(", ");
+      } else if (submittedResult.data?.answer) {
+        previousAnswer = submittedResult.data.answer;
+      }
+
+      if (previousAnswer) {
+        console.log("🔍 Restoring previous answer:", previousAnswer);
+
+        const previousSelected = previousAnswer
+          .split(/[,;]/)
+          .map(ans => ans.trim())
+          .filter(ans => ans.length > 0);
+
+        setSelectedOptions(previousSelected);
+
+        // Calculate correctness
+        const selectedNorm = previousSelected.map(s => s.trim());
+        const correctNorm = answerArray.map(s => s.trim());
+        const allCorrect = selectedNorm.length === correctNorm.length &&
+          selectedNorm.every(item => correctNorm.includes(item)) &&
+          correctNorm.every(item => selectedNorm.includes(item));
+
+        setIsCorrect(allCorrect);
+        setShowAnswer(true);
+
+        sessionStorage.setItem("hasAnswered", "true");
+        sessionStorage.setItem("isRevealed", "true");
+      }
+    } catch (error) {
+      console.error("❌ Could not restore previous answer:", error);
+    }
+  }, [submittedResult, answerArray, questionId]);
+
+
+  const handleTabChange = (_event, newValue) => setActiveTab(newValue);
   const handleChange = (event) => {
     const value = event.target.value;
     setSelectedOptions((prev) =>
@@ -62,6 +117,7 @@ const MCQQuestionComponent = ({ question, onSubmit }) => {
         : [...prev, value]
     );
   };
+
 
   const allOptionValues = useMemo(() => mcqoptions.map((o) => o.option), [mcqoptions]);
   const allSelected =
@@ -75,6 +131,22 @@ const MCQQuestionComponent = ({ question, onSubmit }) => {
   };
 
   const handleReveal = () => {
+    console.log("helooooooo!!✅")
+    /* if (selectedOptions.length === 0) {
+      setShowNotAnsweredModal(true);
+      return;
+    } */
+
+    // ✅ BLOCK if already submitted
+    if (submittedResult?.result) {
+      return; // Already revealed, no action needed
+    }
+    console.log("helooooo88oo!!✅")
+    if (selectedOptions.length === 0) {
+      setShowNotAnsweredModal(true);
+      return;
+    }
+
     const selectedNorm = selectedOptions.map((s) => (s ?? "").trim());
     const correctNorm = answerArray.map((s) => (s ?? "").trim());
 
@@ -89,8 +161,30 @@ const MCQQuestionComponent = ({ question, onSubmit }) => {
     const mark = allCorrect ? Math.abs(marks) || 0 : 0;
     onSubmit?.(questionId, allCorrect, mark, userAnswerStr);
 
+    const pathname = location.pathname;
+    const searchParams = new URLSearchParams(location.search);
+    const testId = searchParams.get('testId');
+
+    //api call for submit Mock Test Question Response
+    if (pathname === "/student/exam" && (testId || searchParams.get('mode') === 'question-bank')) {
+
+      console.log("inside mock test response submitting");
+
+      const payload = {
+        questionId: question.id,
+        questionType: question.question_type.toLowerCase(),
+        exam_type: question.exam_type,
+        test_id: testId, // Use the actual testId from URL
+        selectedOptions,
+      };
+      dispatch(submitMockTestQuestionResponseThunk(payload));
+    }
+
     setIsCorrect(allCorrect);
     setShowAnswer(true);
+
+    sessionStorage.setItem("hasAnswered", "true");
+    sessionStorage.setItem("isRevealed", "true");
   };
 
   const isCheckboxDisabled = showAnswer;
@@ -104,15 +198,13 @@ const MCQQuestionComponent = ({ question, onSubmit }) => {
   };
 
   return (
-    <Box className="radio-container" sx={{ textAlign: "left", px: 8 }}>
+    <Box className="radio-container" sx={{ textAlign: "left", px: 5 }}>
       {/* Question */}
       <Typography
         fontWeight={700}
         sx={{
           textAlign: "left",
           color: "#2e3760",
-          pt: 3,
-
           fontSize: { xs: "1rem", md: "1.25rem" },
           mb: 1,
         }}
@@ -125,7 +217,7 @@ const MCQQuestionComponent = ({ question, onSubmit }) => {
         <img
           src={buildImageUrl(exhibit)}
           alt="Exhibit"
-          style={{ maxWidth: "100%", marginBottom: "1rem", borderRadius: 8, alignItems: "center" }}
+          style={{ maxWidth: "90%", marginBottom: "1rem", borderRadius: 8, alignItems: "center" }}
         />
       )}
 
@@ -315,10 +407,58 @@ const MCQQuestionComponent = ({ question, onSubmit }) => {
         </Button>
       </Box>
 
+
+      {showNotAnsweredModal && (
+        <Box
+          sx={{
+            position: "fixed",
+            top: 0,
+            left: 0,
+            width: "100%",
+            height: "100%",
+            backgroundColor: "rgba(0,0,0,0.5)",
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            zIndex: 9999,
+          }}
+        >
+          <Box
+            sx={{
+              backgroundColor: "#fff",
+              padding: 3,
+              borderRadius: "12px",
+              width: "90%",
+              maxWidth: 400,
+              textAlign: "center",
+            }}
+          >
+            <Typography
+              sx={{
+                mb: 3,
+                fontSize: "1rem",
+                fontWeight: 600,
+                color: "#2e3760",
+              }}
+            >
+              Please select at least one option before revealing the answer.
+            </Typography>
+
+            <Button
+              variant="contained"
+              onClick={() => setShowNotAnsweredModal(false)}
+              sx={{ backgroundColor: "#2e3760" }}
+            >
+              OK
+            </Button>
+          </Box>
+        </Box>
+      )}
+
+
       {/* Reveal Results */}
       {showAnswer && (
         <Box sx={{ mt: 4 }}>
-
 
           {/* Summary */}
           <Typography
@@ -342,8 +482,6 @@ const MCQQuestionComponent = ({ question, onSubmit }) => {
             )}
           </Typography>
 
-
-
           {/* Explanation */}
           {explanation.length > 0 && (
             <RevealAnswerComponent
@@ -354,6 +492,8 @@ const MCQQuestionComponent = ({ question, onSubmit }) => {
               additionalInfoParagraphs={additionalInfo.map((info) => info.info)}
               additionalInfoImage={buildImageUrl(additionalInfo?.[0]?.image)}
               isAnswerCorrect={isCorrect}
+              //for preventing result modal to display again if answered
+              submittedResult={submittedResult}
             />
           )}
         </Box>

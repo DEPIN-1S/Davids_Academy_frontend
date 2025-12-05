@@ -23,7 +23,6 @@ const QuestionBank = () => {
     }
   };
 
-
   const dispatch = useDispatch();
   const token = sessionStorage.getItem("accessToken");
   const [showProgressCard, setShowProgressCard] = useState(false);
@@ -32,6 +31,7 @@ const QuestionBank = () => {
     dispatch(getQuestionBankResult(token));
     setShowProgressCard(true);
   };
+  
   const resultData = useSelector((state) => state.exam.questionBankResult);
   console.log("Result data:::", resultData);
 

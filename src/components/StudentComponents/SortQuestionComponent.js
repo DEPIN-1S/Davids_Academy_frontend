@@ -3,9 +3,6 @@ import {
   Box,
   Typography,
   Button,
-  List,
-  ListItem,
-  ListItemText,
   Tabs,
   Tab,
 } from "@mui/material";
@@ -25,8 +22,11 @@ import {
 } from "@dnd-kit/sortable";
 import SortableItemComponent from "./SortTableItemComponent";
 import RevealAnswerComponent from "./RevealAnswerComponent";
+import { useDispatch } from "react-redux";
+import { useLocation } from "react-router-dom";
+import { submitMockTestQuestionResponseThunk } from "../../features/exam/examSlice";
 
-const SortQuestionComponent = ({ question, onSubmit }) => {
+const SortQuestionComponent = ({ question, onSubmit, submittedResult }) => {
   const {
     id: questionId,
     question: questionText,
@@ -44,6 +44,9 @@ const SortQuestionComponent = ({ question, onSubmit }) => {
     }))
     .sort(() => Math.random() - 0.5);
 
+
+  const dispatch = useDispatch();
+  const location = useLocation();
   const [steps, setSteps] = useState(initialUserSteps);
   const [showReveal, setShowReveal] = useState(false);
   const [userAnswer, setUserAnswer] = useState([]);
@@ -52,6 +55,72 @@ const SortQuestionComponent = ({ question, onSubmit }) => {
   const [activeTab, setActiveTab] = useState(
     tabsInfo && tabsInfo.length ? tabsInfo[0].tabKey : ""
   );
+  const [hasSorted, setHasSorted] = useState(false);
+  const [showNotAnsweredModal, setShowNotAnsweredModal] = useState(false);
+
+  useEffect(() => {
+    // Reset sessionStorage on question change
+    sessionStorage.setItem("hasAnswered", "false");
+    sessionStorage.setItem("isRevealed", "false");
+    setHasSorted(false);
+    setShowReveal(false);
+  }, [questionId]);
+
+  useEffect(() => {
+    if (submittedResult?.result && submittedResult.answers?.length > 0) {
+      try {
+        console.log("Previous sorting answers:", submittedResult.answers);
+
+        // Map backend answers by sortOrder → sortItem text
+        const orderMap = {};
+        submittedResult.answers.forEach(ans => {
+          if (ans.sortItem && ans.sortOrder) {
+            orderMap[ans.sortOrder] = ans.sortItem;
+          }
+        });
+
+        // Rebuild steps array in user's saved order
+        const restoredSteps = sortingoptions.map(opt => ({
+          id: String(opt.id),
+          text: opt.sortItem,
+          order: opt.itemOrder ?? null,
+        })).sort((a, b) => {
+          // Match by text content to find user's saved position
+          const userOrderA = Object.values(orderMap).indexOf(a.text);
+          const userOrderB = Object.values(orderMap).indexOf(b.text);
+          return (userOrderA || 999) - (userOrderB || 999);
+        });
+
+        console.log("Restored steps order:", restoredSteps);
+
+        setSteps(restoredSteps);
+        setHasSorted(true);
+
+        // Calculate correctness
+        const correctOrder = sortingoptions
+          .map(opt => ({
+            id: String(opt.id),
+            text: opt.sortItem,
+            order: opt.itemOrder ?? 9999,
+          }))
+          .sort((a, b) => a.order - b.order);
+
+        const correctStatus = restoredSteps.every((step, idx) =>
+          step.id === correctOrder[idx].id
+        );
+
+        setUserAnswer(restoredSteps.map(s => s.text));
+        setCorrectAnswer(correctOrder.map(s => s.text));
+        setIsCorrect(correctStatus);
+        setShowReveal(true);
+
+        sessionStorage.setItem("hasAnswered", "true");
+        setShowNotAnsweredModal(false);
+      } catch (error) {
+        console.error("Could not restore previous sorting:", error);
+      }
+    }
+  }, [submittedResult, sortingoptions]);
 
   useEffect(() => {
     if (tabsInfo && tabsInfo.length) setActiveTab(tabsInfo[0].tabKey);
@@ -72,10 +141,18 @@ const SortQuestionComponent = ({ question, onSubmit }) => {
       const oldIndex = steps.findIndex((step) => step.id === active.id);
       const newIndex = steps.findIndex((step) => step.id === over.id);
       setSteps((prev) => arrayMove(prev, oldIndex, newIndex));
+      setHasSorted(true);
+      sessionStorage.setItem("hasAnswered", "true");
     }
   };
 
   const handleReveal = () => {
+    if (submittedResult?.result) return;
+    if (!hasSorted) {
+      setShowNotAnsweredModal(true);
+      return;
+    }
+
     const correctOrder = sortingoptions
       .map((opt) => ({
         id: String(opt.id),
@@ -96,7 +173,32 @@ const SortQuestionComponent = ({ question, onSubmit }) => {
     setCorrectAnswer(correctOrder.map((s) => s.text));
     setIsCorrect(correctStatus);
     setShowReveal(true);
+
+    // ✅ API CALL - ONLY ON /student/exam?testId=XXX
+    const pathname = location.pathname;
+    const searchParams = new URLSearchParams(location.search);
+    const testId = searchParams.get('testId');
+
+    if (pathname === "/student/exam" && (testId || searchParams.get('mode') === 'question-bank')) {
+      console.log("inside sorting mock test response submitting");
+
+      const sortItems = steps.map((step, index) => ({
+        sortItem: step.text,
+        order: index + 1  // User's final order position (1, 2, 3...)
+      }));
+
+      const payload = {
+        questionId: question.id,
+        questionType: question.question_type,
+        exam_type: question.exam_type,
+        test_id: testId,
+        sortItems,
+      }
+      dispatch(submitMockTestQuestionResponseThunk(payload));
+    }
+    sessionStorage.setItem("isRevealed", "true");
   };
+
 
   if (!question || !sortingoptions.length) {
     return (
@@ -261,6 +363,7 @@ const SortQuestionComponent = ({ question, onSubmit }) => {
         )}
       </Box>
 
+      {/* Reveal Button */}
       <Box textAlign="center">
         <Button
           variant="contained"
@@ -278,6 +381,53 @@ const SortQuestionComponent = ({ question, onSubmit }) => {
         </Button>
       </Box>
 
+      {/* Block reveal modal */}
+      {showNotAnsweredModal && !submittedResult?.result && (
+        <Box
+          sx={{
+            position: "fixed",
+            top: 0,
+            left: 0,
+            width: "100%",
+            height: "100%",
+            backgroundColor: "rgba(0,0,0,0.5)",
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            zIndex: 9999,
+          }}
+        >
+          <Box
+            sx={{
+              backgroundColor: "#fff",
+              padding: 3,
+              borderRadius: "12px",
+              width: "90%",
+              maxWidth: 400,
+              textAlign: "center",
+            }}
+          >
+            <Typography
+              sx={{
+                mb: 3,
+                fontSize: "1rem",
+                fontWeight: 600,
+                color: "#2e3760",
+              }}
+            >
+              Please change the order at least once before revealing the answer.
+            </Typography>
+            <Button
+              variant="contained"
+              onClick={() => setShowNotAnsweredModal(false)}
+              sx={{ backgroundColor: "#2e3760" }}
+            >
+              OK
+            </Button>
+          </Box>
+        </Box>
+      )}
+
       {/* Reveal Section */}
       {showReveal && (
         <Box sx={{ mt: 4 }}>
@@ -290,8 +440,6 @@ const SortQuestionComponent = ({ question, onSubmit }) => {
           >
             Correct Order (Properly Sorted):
           </Typography>
-
-          {/* ✅ NEW: Properly sorted correct order display */}
           <Box
             sx={{
               maxWidth: "600px",
@@ -320,7 +468,6 @@ const SortQuestionComponent = ({ question, onSubmit }) => {
               </Box>
             ))}
           </Box>
-
           <Typography
             variant="subtitle1"
             fontWeight={600}
@@ -330,7 +477,6 @@ const SortQuestionComponent = ({ question, onSubmit }) => {
           >
             {isCorrect ? "✅ Correct!" : "❌ Incorrect"}
           </Typography>
-
           <RevealAnswerComponent
             questionText={questionText}
             explanationHeading={explanation[0]?.heading || "Explanation"}
@@ -347,6 +493,7 @@ const SortQuestionComponent = ({ question, onSubmit }) => {
                 : null
             }
             isAnswerCorrect={isCorrect}
+            submittedResult={submittedResult}
           />
         </Box>
       )}

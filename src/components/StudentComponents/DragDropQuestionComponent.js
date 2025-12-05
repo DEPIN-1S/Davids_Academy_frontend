@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Box,
   Typography,
@@ -11,8 +11,13 @@ import {
   Tab,
 } from "@mui/material";
 import RevealAnswerComponent from "./RevealAnswerComponent";
+import { useDispatch } from "react-redux";
+import { useLocation } from "react-router-dom";
+import { submitMockTestQuestionResponseThunk } from "../../features/exam/examSlice";
+
+
 const baseUrl = process.env.BASE_URL;
-const DragDropQuestionComponent = ({ question, onSubmit }) => {
+const DragDropQuestionComponent = ({ question, onSubmit, submittedResult }) => {
   const {
     id: questionId,
     question: questionText = "",
@@ -34,6 +39,11 @@ const DragDropQuestionComponent = ({ question, onSubmit }) => {
   const [correctAnswer, setCorrectAnswer] = useState("");
   const [isCorrect, setIsCorrect] = useState(false);
   const [activeTab, setActiveTab] = useState(0);
+  const [showNotAnsweredModal, setShowNotAnsweredModal] = useState(false);
+  const dispatch = useDispatch();
+  const location = useLocation();
+console.log("submitted result aan mone",submittedResult);
+
 
   const handleDropdownChange = (index, value) => {
     if (showReveal) return;
@@ -44,12 +54,75 @@ const DragDropQuestionComponent = ({ question, onSubmit }) => {
     });
   };
 
+
+  useEffect(() => {
+    sessionStorage.setItem("hasAnswered", "false");
+    sessionStorage.setItem("isRevealed", "false");
+  }, [questionId])
+
+  
+  useEffect(() => {
+  if (submittedResult?.result && submittedResult.answers?.length > 0) {
+    try {
+      const answers = submittedResult.answers;
+
+      // Map backend answers to dropdownValues by matching headings
+      const parsedValues = {};
+
+      answers.forEach(({ heading, answer }) => {
+        // Match heading to branch heading (trim, case-insensitive)
+        const idx = branches.findIndex(branch => 
+          String(branch.headings).trim().toLowerCase() === String(heading).trim().toLowerCase()
+        );
+        if (idx !== -1) {
+          parsedValues[idx] = answer;
+        }
+      });
+
+      setDropdownValues(parsedValues);
+
+      // Compute correctness
+      const correctStatus = branches.every((branch, idx) =>
+        String(parsedValues[idx]) === String(branch.drag_drop_answer)
+      );
+
+      setIsCorrect(correctStatus);
+      setShowReveal(true);
+
+      sessionStorage.setItem("hasAnswered", "true");
+      sessionStorage.setItem("isRevealed", "true");
+    } catch (e) {
+      console.error("Error parsing previous drag-drop answers:", e);
+    }
+  }
+}, [submittedResult, branches]);
+
+
+
   const handleTabChange = (event, newValue) => {
     setActiveTab(newValue);
   };
 
   // Reveal logic
   const handleReveal = () => {
+    /* const hasAnswered = dropdownValues.some((val) => val && val !== "");
+    if (!hasAnswered) {
+      setShowNotAnsweredModal(true);
+      return;
+    } */
+
+    if (submittedResult?.result) {
+      return; // Already revealed, no action needed
+    }
+
+
+    // Check all five dropdowns are filled (no empty strings)
+    const allFilled = dropdownValues.length === 5 && dropdownValues.every(val => val !== "");
+    if (!allFilled) {
+      setShowNotAnsweredModal(true);
+      return;
+    }
+
     const userAns = branches
       .map(
         (b, idx) =>
@@ -74,6 +147,35 @@ const DragDropQuestionComponent = ({ question, onSubmit }) => {
     setCorrectAnswer(correctAns);
     setIsCorrect(correctStatus);
     setShowReveal(true);
+
+
+    // ✅ API CALL - ONLY ON /student/exam?testId=XXX
+    const pathname = location.pathname;
+    const searchParams = new URLSearchParams(location.search);
+    const testId = searchParams.get('testId');
+
+    if (pathname === "/student/exam" && (testId || searchParams.get('mode') === 'question-bank')) {
+      console.log("inside drag-drop mock test response submitting");
+
+      const drag_and_drop_answer = branches.map((branch, idx) => ({
+        option_heading: branch.headings,
+        droppedValue: dropdownValues[idx] || ""
+      }));
+
+      const payload = {
+        questionId: question.id,
+        questionType: question.question_type,
+        exam_type: question.exam_type.toLowerCase(),
+        test_id: testId,
+        drag_and_drop_answer,
+      };
+
+      dispatch(submitMockTestQuestionResponseThunk(payload));
+    }
+
+
+    sessionStorage.setItem("hasAnswered", "true");
+    sessionStorage.setItem("isRevealed", "true");
   };
 
   if (!question || !branches.length) {
@@ -90,7 +192,7 @@ const DragDropQuestionComponent = ({ question, onSubmit }) => {
         width: "100%",
         maxWidth: 1100,
         margin: "0 auto",
-        px: { xs: 2, sm: 3, md: 4 },
+        px: 5,
         py: { xs: 2, md: 3 },
       }}
     >
@@ -249,7 +351,7 @@ const DragDropQuestionComponent = ({ question, onSubmit }) => {
                   style={{
                     maxWidth: "100%",
                     height: "auto",
-                    borderRadius: 8,
+                  
                   }}
                 />
               </Box>
@@ -314,8 +416,15 @@ const DragDropQuestionComponent = ({ question, onSubmit }) => {
                           disabled={showReveal}
                           sx={{
                             borderRadius: "12px",
-                            backgroundColor: "#fff",
-                            border: "1px solid #e5e7eb",
+                            backgroundColor: showReveal
+                              ? String(dropdownValues[actualIndex]) === String(b.drag_drop_answer)
+                                ? "#dcfce7"  // ✅ GREEN
+                                : "#fee2e2"  // ❌ RED
+                              : "#fff",
+                            border: showReveal
+                              ? String(dropdownValues[actualIndex]) === String(b.drag_drop_answer)
+                              
+                              : "1px solid #e5e7eb",
                             fontSize: { xs: "0.9rem", md: "1rem" },
                             minHeight: 40,
                           }}
@@ -372,8 +481,15 @@ const DragDropQuestionComponent = ({ question, onSubmit }) => {
                       disabled={showReveal}
                       sx={{
                         borderRadius: "12px",
-                        backgroundColor: "#fff",
-                        border: "1px solid #e5e7eb",
+                        backgroundColor: showReveal
+                          ? String(dropdownValues[0]) === String(branches[0]?.drag_drop_answer)
+                            ? "#dcfce7"  // ✅ GREEN
+                            : "#fee2e2"  // ❌ RED
+                          : "#fff",
+                        border: showReveal
+                          ? String(dropdownValues[0]) === String(branches[0]?.drag_drop_answer)
+                      
+                          : "1px solid #e5e7eb",
                         fontSize: { xs: "0.9rem", md: "1rem" },
                         minHeight: 40,
                       }}
@@ -437,8 +553,15 @@ const DragDropQuestionComponent = ({ question, onSubmit }) => {
                           disabled={showReveal}
                           sx={{
                             borderRadius: "12px",
-                            backgroundColor: "#fff",
-                            border: "1px solid #e5e7eb",
+                            backgroundColor: showReveal
+                              ? String(dropdownValues[actualIndex]) === String(b.drag_drop_answer)
+                                ? "#dcfce7"  // ✅ GREEN
+                                : "#fee2e2"  // ❌ RED
+                              : "#fff",
+                            border: showReveal
+                              ? String(dropdownValues[actualIndex]) === String(b.drag_drop_answer)
+      
+                              : "1px solid #e5e7eb",
                             fontSize: { xs: "0.9rem", md: "1rem" },
                             minHeight: 40,
                           }}
@@ -460,6 +583,55 @@ const DragDropQuestionComponent = ({ question, onSubmit }) => {
             </Box>
           </Grid>
         </Grid>
+
+
+        {showNotAnsweredModal && !submittedResult?.result && (
+          <Box
+            sx={{
+              position: "fixed",
+              top: 0,
+              left: 0,
+              width: "100%",
+              height: "100%",
+              backgroundColor: "rgba(0,0,0,0.5)",
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+              zIndex: 9999,
+            }}
+          >
+            <Box
+              sx={{
+                backgroundColor: "#fff",
+                padding: 3,
+                borderRadius: "12px",
+                width: "90%",
+                maxWidth: 400,
+                textAlign: "center",
+              }}
+            >
+              <Typography
+                sx={{
+                  mb: 3,
+                  fontSize: "1rem",
+                  fontWeight: 600,
+                  color: "#2e3760",
+                }}
+              >
+                Please fill in all required branches by selecting an option before revealing the answer and moving to the next question.
+              </Typography>
+
+              <Button
+                variant="contained"
+                onClick={() => setShowNotAnsweredModal(false)}
+                sx={{ backgroundColor: "#2e3760" }}
+              >
+                OK
+              </Button>
+            </Box>
+          </Box>
+        )}
+
       </Box>
 
       {/* Reveal Answer Button */}
@@ -467,7 +639,6 @@ const DragDropQuestionComponent = ({ question, onSubmit }) => {
         <Button
           variant="contained"
           onClick={handleReveal}
-          disabled={showReveal}
           sx={{
             backgroundColor: "#f4c300",
             color: "#000",
@@ -635,7 +806,8 @@ const DragDropQuestionComponent = ({ question, onSubmit }) => {
                 : null
             }
             isAnswerCorrect={isCorrect}
-
+            //for preventing result modal to display again if answered
+            submittedResult={submittedResult}
           />
         </Box>
       )}

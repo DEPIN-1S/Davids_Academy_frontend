@@ -14,6 +14,9 @@ import {
   resetMockTestApi,
   adminUpdateTest,
   getQuestionBankResultApi,
+  submitMockTestQuestionResponse,
+  fetchQBankSubmittedResult,
+  fetchMockTestSubmittedResult,
 } from "./examAPI";
 import {
   adminGetQBankQuestions,
@@ -218,13 +221,22 @@ export const getQBankQuestions = createAsyncThunk(
   "questions/fetchQBankQuestions",
   async (_, { rejectWithValue }) => {
     try {
-      const data = await fetchQBankQuestions(); // returns array
-      return data;
+      const data = await fetchQBankQuestions(); // { submittedQuestions, questions }
+      const submitted = data.submittedQuestions || [];
+      const questions = data.questions || [];
+      // Keep only questions that are NOT already in submittedQuestions
+      const filteredQuestions = questions.filter(
+        (id) => !submitted.includes(id)
+      );
+
+      return filteredQuestions; // e.g. [353, 354, 355, ...] without submitted ones
     } catch (error) {
       return rejectWithValue(error.message);
     }
   }
 );
+
+
 // Async Thunk for question bank data
 export const getQBankQuestionData = createAsyncThunk(
   "questions/fetchQBankQuestionData",
@@ -353,6 +365,44 @@ export const getQuestionBankResult = createAsyncThunk(
 );
 
 
+export const submitMockTestQuestionResponseThunk = createAsyncThunk(
+  "mockTest/submitQuestionResponse",
+  async (responseData, { rejectWithValue }) => {
+    try {
+      const result = await submitMockTestQuestionResponse(responseData);
+      return result;
+    } catch (error) {
+      return rejectWithValue(error.message);
+    }
+  }
+);
+
+
+// Add to your examSlice.js
+export const getQBankSubmittedResult = createAsyncThunk(
+  "questions/getQBankSubmittedResult",
+  async (questionId, { rejectWithValue }) => {
+    try {
+      const data = await fetchQBankSubmittedResult(questionId);
+      return data;
+    } catch (error) {
+      return rejectWithValue(error.message);
+    }
+  }
+)
+
+export const getMockTestSubmittedResult = createAsyncThunk(
+  "questions/getMockTestSubmittedResult",
+  async ({ questionId, test_id }, { rejectWithValue }) => {
+    try {
+      const data = await fetchMockTestSubmittedResult(questionId, test_id);
+      return data;            // backend shape: { result, message, answers, ... }
+    } catch (error) {
+      return rejectWithValue(error.message);
+    }
+  }
+);
+
 
 
 const questionSlice = createSlice({
@@ -443,6 +493,18 @@ const questionSlice = createSlice({
     //for getting question bank result 
     questionBankResult: null,
 
+    // For submitting mock test question response
+    mockTestSubmitLoading: false,
+    mockTestSubmitError: null,
+    mockTestSubmitResponse: null,
+
+    qbankSubmittedResult: null,
+    qbankSubmittedResultLoading: false,
+    qbankSubmittedResultError: null,
+
+    mockTestSubmittedResult: null,
+    mockTestSubmittedResultLoading: false,
+    mockTestSubmittedResultError: null,
 
   },
   reducers: {
@@ -828,10 +890,48 @@ const questionSlice = createSlice({
       .addCase(getQuestionBankResult.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
-      });
+      })
 
+      //for submitting mock test question response
+      .addCase(submitMockTestQuestionResponseThunk.pending, (state) => {
+        state.mockTestSubmitLoading = true;
+        state.mockTestSubmitError = null;
+        state.mockTestSubmitResponse = null;
+      })
+      .addCase(submitMockTestQuestionResponseThunk.fulfilled, (state, action) => {
+        state.mockTestSubmitLoading = false;
+        state.mockTestSubmitResponse = action.payload;
+      })
+      .addCase(submitMockTestQuestionResponseThunk.rejected, (state, action) => {
+        state.mockTestSubmitLoading = false;
+        state.mockTestSubmitError = action.payload || "Failed to submit mock test response";
+      })
 
+      .addCase(getQBankSubmittedResult.pending, (state) => {
+        state.qbankSubmittedResultLoading = true;
+        state.qbankSubmittedResultError = null;
+      })
+      .addCase(getQBankSubmittedResult.fulfilled, (state, action) => {
+        state.qbankSubmittedResult = action.payload;
+        state.qbankSubmittedResultLoading = false;
+      })
+      .addCase(getQBankSubmittedResult.rejected, (state, action) => {
+        state.qbankSubmittedResultError = action.payload;
+        state.qbankSubmittedResultLoading = false;
+      })
 
+      .addCase(getMockTestSubmittedResult.pending, (state) => {
+        state.mockTestSubmittedResultLoading = true;
+        state.mockTestSubmittedResultError = null;
+      })
+      .addCase(getMockTestSubmittedResult.fulfilled, (state, action) => {
+        state.mockTestSubmittedResultLoading = false;
+        state.mockTestSubmittedResult = action.payload;
+      })
+      .addCase(getMockTestSubmittedResult.rejected, (state, action) => {
+        state.mockTestSubmittedResultLoading = false;
+        state.mockTestSubmittedResultError = action.payload;
+      })
   },
 });
 

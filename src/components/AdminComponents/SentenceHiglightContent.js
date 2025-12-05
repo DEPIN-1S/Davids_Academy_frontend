@@ -301,12 +301,12 @@ const SentenceHighlightContent = () => {
 
     const isFormValid = () => {
         const hasValidQuestion = question.trim() !== "";
-        const hasValidTabs = tabs.some(tab => tab.tabKey.trim() && tab.tabValue.trim());
+        
         const hasValidPassage = passage.trim() !== "";
 
         const hasValidHighlights = correctHighlights.some(highlight => highlight.trim());
-        const hasValidInstruction = instruction.trim() !== ""
-        return hasValidQuestion && hasValidTabs && hasValidPassage && hasValidHighlights && hasValidInstruction;
+      
+        return hasValidQuestion && hasValidPassage && hasValidHighlights ;
     };
 
     // Helper function to create highlighted preview
@@ -408,7 +408,7 @@ const SentenceHighlightContent = () => {
             <Accordion defaultExpanded sx={{ mb: 3 }}>
                 <AccordionSummary expandIcon={<ExpandMore />}>
                     <Typography variant="h6" color="primary">
-                        Question Tabs * ({tabs.length})
+                        Question Tabs ({tabs.length})
                     </Typography>
                 </AccordionSummary>
                 <AccordionDetails>
@@ -529,7 +529,7 @@ const SentenceHighlightContent = () => {
             </Accordion>
 
             <Typography variant="h6" mb={1} color="primary">
-                Instruction*
+                Instruction
             </Typography>
             <TextField
                 fullWidth

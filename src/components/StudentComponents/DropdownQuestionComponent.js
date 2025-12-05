@@ -12,17 +12,24 @@ import {
   useTheme,
 } from "@mui/material";
 import RevealAnswerComponent from "./RevealAnswerComponent";
+import { useDispatch } from "react-redux";
+import { useLocation } from "react-router-dom";
+import { submitMockTestQuestionResponseThunk } from "../../features/exam/examSlice";
 
-const DropdownQuestionComponent = ({ question, onSubmit }) => {
+
+const DropdownQuestionComponent = ({ question, onSubmit, submittedResult }) => {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
-
   const [activeTab, setActiveTab] = useState(0);
   const [dropdownValues, setDropdownValues] = useState({});
   const [showReveal, setShowReveal] = useState(false);
   const [userAnswer, setUserAnswer] = useState("");
   const [correctAnswer, setCorrectAnswer] = useState("");
   const [isCorrect, setIsCorrect] = useState(false);
+  const [showNotAnsweredModal, setShowNotAnsweredModal] = useState(false);
+  const dispatch = useDispatch();
+  const location = useLocation();
+
 
   const {
     id: questionId,
@@ -34,6 +41,8 @@ const DropdownQuestionComponent = ({ question, onSubmit }) => {
   } = question || {};
 
   useEffect(() => {
+    sessionStorage.setItem("hasAnswered", "false");
+    sessionStorage.setItem("isRevealed", "false");
     if (!dropdowns.length) return;
     const initialValues = {};
     dropdowns.forEach((dt) => {
@@ -43,6 +52,56 @@ const DropdownQuestionComponent = ({ question, onSubmit }) => {
     });
     setDropdownValues(initialValues);
   }, [dropdowns]);
+
+
+  useEffect(() => {
+    if (submittedResult?.result && submittedResult.answers?.length > 0) {
+      try {
+        console.log("Previous answers received:", submittedResult.answers);
+
+        // Parse answers array: [{dropdownField: "Field Name", answer: "Value"}, ...]
+        const parsedAnswers = {};
+
+        submittedResult.answers.forEach(answerObj => {
+          if (answerObj.dropdownField && answerObj.answer) {
+            // Find matching dropdown by dropdownField
+            const matchingDropdown = dropdowns.find(dt =>
+              dt.dropdownField === answerObj.dropdownField ||
+              (dt.dropdownField || `Option ${dt.id}`).includes(answerObj.dropdownField)
+            );
+
+            if (matchingDropdown && matchingDropdown.id) {
+              parsedAnswers[matchingDropdown.id] = answerObj.answer;
+            }
+          }
+        });
+
+        console.log("Parsed dropdown values:", parsedAnswers);
+
+        // Populate dropdowns with previous selections
+        setDropdownValues(prev => ({ ...prev, ...parsedAnswers }));
+
+        // Calculate correctness
+        const correctStatus = dropdowns.every((dt) => {
+          const dropdownId = dt.id;
+          const backendAnswer = dt.dropdownanswer;
+          const fallbackVal = dt.dropdownoption?.find((opt) => opt.is_correct)?.dropdownValue || dt.dropdownoption?.[0]?.dropdownValue;
+          const correctVal = backendAnswer ?? fallbackVal;
+          const userVal = parsedAnswers[dropdownId];
+          return String(userVal) === String(correctVal);
+        });
+
+        setIsCorrect(correctStatus);
+        setShowReveal(true);
+
+        sessionStorage.setItem("hasAnswered", "true");
+        sessionStorage.setItem("isRevealed", "true");
+      } catch (error) {
+        console.log("Could not parse previous dropdown answers:", error);
+      }
+    }
+  }, [submittedResult, dropdowns]);
+
 
   const handleTabChange = (event, newValue) => {
     setActiveTab(newValue);
@@ -65,6 +124,23 @@ const DropdownQuestionComponent = ({ question, onSubmit }) => {
   };
 
   const handleReveal = () => {
+
+    if (submittedResult?.result) {
+      return; // Already revealed, no action needed
+    }
+
+
+    // Check all dropdowns selected (non-empty)
+    const allFilled = dropdowns.every((dt) => {
+      const val = dropdownValues[dt.id];
+      return val !== "" && val !== undefined && val !== null;
+    });
+
+    if (!allFilled) {
+      setShowNotAnsweredModal(true);
+      return;
+    }
+
     const userAnswerStr = dropdowns
       .map((dt) => {
         const dropdownId = dt.id;
@@ -105,6 +181,31 @@ const DropdownQuestionComponent = ({ question, onSubmit }) => {
     setCorrectAnswer(correctAnswerStr);
     setIsCorrect(correctStatus);
     setShowReveal(true);
+
+    // ✅ 12 lines - ONLY calls API on /student/exam?testId=XXX
+    const pathname = location.pathname;
+    const searchParams = new URLSearchParams(location.search);
+    const testId = searchParams.get('testId');
+
+    if (pathname === "/student/exam" && (testId || searchParams.get('mode') === 'question-bank')) {
+      const answers = dropdowns.map((dt) => ({
+        dropdownField: dt.dropdownField || `Option ${dt.id}`,
+        selectedValue: dropdownValues[dt.id] || ""
+      }));
+
+      const payload = {
+        questionId: question.id,
+        questionType: question.question_type,
+        exam_type: question.exam_type,
+        test_id: testId,
+        answers,
+      };
+
+      dispatch(submitMockTestQuestionResponseThunk(payload));
+    }
+
+    sessionStorage.setItem("hasAnswered", "true");
+    sessionStorage.setItem("isRevealed", "true");
   };
 
   if (!question || !dropdowns.length) {
@@ -118,10 +219,9 @@ const DropdownQuestionComponent = ({ question, onSubmit }) => {
   return (
     <Box
       sx={{
-        width: "100%",
-        maxWidth: 950,
+        width: "90%",
         margin: "0 auto",
-        px: { xs: 2, sm: 3, md: 0 },
+        px: 5,
       }}
     >
       {/* Header row */}
@@ -147,7 +247,7 @@ const DropdownQuestionComponent = ({ question, onSubmit }) => {
         fontWeight={700}
         mb={2}
         sx={{
-          textAlign: "center",
+          textAlign: "left",
           color: "#2e3760",
           pt: 3,
           fontSize: { xs: "1rem", md: "1.25rem" },
@@ -169,7 +269,7 @@ const DropdownQuestionComponent = ({ question, onSubmit }) => {
               fontSize: { xs: "1rem", md: "1.25rem" },
             }}
           >
-            Instructions
+            Instructions :
           </Typography>
           <Typography
             variant="body1"
@@ -188,11 +288,11 @@ const DropdownQuestionComponent = ({ question, onSubmit }) => {
       {/* Tabs Card */}
       <Box
         sx={{
-          backgroundColor: "#fff",
+
           borderRadius: "1.5rem",
           padding: { xs: 2, sm: 3, md: 4 },
           mb: 3,
-          boxShadow: "0 6px 18px rgba(15,23,42,0.06)",
+
         }}
       >
         <Box
@@ -374,6 +474,35 @@ const DropdownQuestionComponent = ({ question, onSubmit }) => {
             );
           })}
         </Box>
+        {showNotAnsweredModal && !submittedResult?.result && (
+          <Box sx={{
+            position: "fixed",
+            top: 0, left: 0,
+            width: "100%", height: "100%",
+            backgroundColor: "rgba(0,0,0,0.5)",
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            zIndex: 9999,
+          }}>
+            <Box sx={{
+              backgroundColor: "#fff",
+              padding: 3,
+              borderRadius: "12px",
+              width: "90%",
+              maxWidth: 400,
+              textAlign: "center",
+            }}>
+              <Typography sx={{ mb: 3, fontWeight: 600, color: "#2e3760" }}>
+                All dropdown fields must be filled before revealing the answer.
+              </Typography>
+              <Button variant="contained" onClick={() => setShowNotAnsweredModal(false)} sx={{ backgroundColor: "#2e3760" }}>
+                OK
+              </Button>
+            </Box>
+          </Box>
+        )}
+
       </Box>
 
       {/* Reveal Button */}
@@ -543,6 +672,9 @@ const DropdownQuestionComponent = ({ question, onSubmit }) => {
                 : null
             }
             isAnswerCorrect={isCorrect}
+
+            //for preventing result modal to display again if answered
+            submittedResult={submittedResult}
           />
         </Box>
       )}

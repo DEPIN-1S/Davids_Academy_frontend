@@ -433,7 +433,7 @@ export const fetchTestQuestionData = async (test_id, questionId) => {
     const token = sessionStorage.getItem("accessToken");
     console.log("Fetching question data for:", { test_id, questionId });
 
-    const response = await fetch(`${baseUrl}/student/test/question/data`, {
+    const response = await fetch(`${baseUrl}/student/questions/data`, {
       method: "POST",
       headers: {
         Authorization: `Bearer ${token}`,
@@ -776,4 +776,90 @@ export const getQuestionBankResultApi = async (token) => {
 
   return await response.json();
 };
+
+
+export const submitMockTestQuestionResponse = async (responseData) => {
+  const token = sessionStorage.getItem("accessToken");
+  try {
+    const response = await fetch(
+      `${baseUrl}/student/questions/mocktest/submit-response`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify(responseData),
+      }
+    );
+
+    if (!response.ok) {
+      throw new Error("Failed to submit mock test question response");
+    }
+
+    const data = await response.json();
+    return data; // return API response
+  } catch (error) {
+    throw error;
+  }
+};
+
+
+// Add to your examAPI.js
+export const fetchQBankSubmittedResult = async (questionId) => {
+  try {
+    const token = sessionStorage.getItem("accessToken");
+    const response = await fetch(
+      `${baseUrl}/student/result/qbank/submitted`,
+      {
+        method: 'Post',
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ questionId })
+      }
+    );
+
+    if (!response.ok) {
+      throw new Error(`HTTP ${response.status}: Failed to fetch QBank submitted result`);
+    }
+
+    return await response.json();
+  } catch (error) {
+    console.error("QBank submitted result API error:", error);
+    throw error;
+  }
+};
+
+
+export const fetchMockTestSubmittedResult = async (questionId, test_id) => {
+  try {
+    const token = sessionStorage.getItem("accessToken");
+    const response = await fetch(
+      `${baseUrl}/student/result/mocktest/submitted`,
+      {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ questionId, test_id }),
+      }
+    );
+
+    if (!response.ok) {
+      throw new Error(
+        `HTTP ${response.status}: Failed to fetch mocktest submitted result`
+      );
+    }
+
+    return await response.json();
+  } catch (error) {
+    console.error("mocktest submitted result API error:", error);
+    throw error;
+  }
+};
+
+
 

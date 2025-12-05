@@ -7,16 +7,19 @@ import { BrowserRouter } from 'react-router-dom';
 import { Provider } from 'react-redux';
 import { store } from './app/store';
 import { FileProvider } from '../src/context/FileContext';
+import ResultProvider from './context/ResultProvider';
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   <React.StrictMode>
-    <Provider store={store}> {/* ✅ Wrap Redux Provider */}
-      <FileProvider> 
-      <BrowserRouter>
-        <App />
-      </BrowserRouter>
-      </FileProvider> 
-    </Provider>
+    <ResultProvider>
+      <Provider store={store}> {/* ✅ Wrap Redux Provider */}
+        <FileProvider>
+          <BrowserRouter>
+            <App />
+          </BrowserRouter>
+        </FileProvider>
+      </Provider>
+    </ResultProvider>
   </React.StrictMode>
 );
 reportWebVitals();

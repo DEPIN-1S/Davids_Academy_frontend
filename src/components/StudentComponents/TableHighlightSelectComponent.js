@@ -17,8 +17,12 @@ import {
   Paper,
 } from "@mui/material";
 import RevealAnswerComponent from "./RevealAnswerComponent";
+import { useDispatch } from "react-redux";
+import { useLocation } from "react-router-dom";
+import { submitMockTestQuestionResponseThunk } from "../../features/exam/examSlice";
 
-const TableHighlightSelectComponent = ({ question, onSubmit }) => {
+
+const TableHighlightSelectComponent = ({ question, onSubmit, submittedResult }) => {
   // Extract data from question prop
   const {
     id: questionId,
@@ -38,6 +42,11 @@ const TableHighlightSelectComponent = ({ question, onSubmit }) => {
   const [selectedItems, setSelectedItems] = useState(new Set());
   const [showReveal, setShowReveal] = useState(false);
   const [isCorrect, setIsCorrect] = useState(false);
+  const [showNotAnsweredModal, setShowNotAnsweredModal] = useState(false);
+  const dispatch = useDispatch();
+  const location = useLocation();
+
+
 
   // Tabs state
   const [activeTab, setActiveTab] = useState(() =>
@@ -45,8 +54,48 @@ const TableHighlightSelectComponent = ({ question, onSubmit }) => {
   );
 
   useEffect(() => {
+    sessionStorage.setItem("hasAnswered", "false");
+    sessionStorage.setItem("isRevealed", "false");
+  }, [questionId])
+
+  useEffect(() => {
     if (tabsInfo && tabsInfo.length) setActiveTab(tabsInfo[0].tabKey);
   }, [tabsInfo]);
+
+  useEffect(() => {
+    if (!submittedResult?.result || !Array.isArray(submittedResult.answers)) return;
+    try {
+      const restored = new Set();
+
+      // submittedResult.answers format: [{ leftColumn, rightColumn }]
+      submittedResult.answers.forEach((ans) => {
+        if (ans.rightColumn) {
+          restored.add(ans.rightColumn);
+        }
+      });
+
+      if (restored.size > 0) {
+        setSelectedItems(restored);
+
+        const selectedArray = Array.from(restored);
+        const correctAnswers = answer || [];
+
+        const allCorrect =
+          selectedArray.length === correctAnswers.length &&
+          selectedArray.every((item) => correctAnswers.includes(item)) &&
+          correctAnswers.every((item) => selectedArray.includes(item));
+
+        setIsCorrect(allCorrect);
+        setShowReveal(true);
+        sessionStorage.setItem("hasAnswered", "true");
+        sessionStorage.setItem("isRevealed", "true");
+        setShowNotAnsweredModal(false);
+      }
+    } catch (e) {
+      console.error("Could not restore table highlight answers:", e);
+    }
+  }, [submittedResult, answer]);
+
 
   const handleTabChange = (_e, newVal) => setActiveTab(newVal);
 
@@ -67,6 +116,12 @@ const TableHighlightSelectComponent = ({ question, onSubmit }) => {
 
   // Handle reveal (submission and show answers)
   const handleReveal = () => {
+
+    if (selectedItems.size === 0) {
+      setShowNotAnsweredModal(true);
+      return;
+    }
+
     const selectedArray = Array.from(selectedItems);
     const correctAnswers = answer || [];
 
@@ -85,6 +140,37 @@ const TableHighlightSelectComponent = ({ question, onSubmit }) => {
 
     setIsCorrect(allCorrect);
     setShowReveal(true);
+
+    // ✅ API CALL - ONLY ON /student/exam?testId=XXX
+    const pathname = location.pathname;
+    const searchParams = new URLSearchParams(location.search);
+    const testId = searchParams.get('testId');
+
+    if (pathname === "/student/exam" && (testId || searchParams.get('mode') === 'question-bank')) {
+      console.log("inside table highlight mock test response submitting");
+
+      const answers = Array.from(selectedItems).map((rightColumnValue) => {
+        const field = tableFields.find(f => f.rightColumn === rightColumnValue);
+        return {
+          leftColumn: field ? field.leftColumn : "",
+          rightColumn: rightColumnValue
+        };
+      });
+
+      const payload = {
+        questionId: question.id,
+        questionType: question.question_type,
+        exam_type: question.exam_type.toLowerCase(),
+        test_id: testId,
+        answers,
+      };
+
+      dispatch(submitMockTestQuestionResponseThunk(payload));
+    }
+
+
+    sessionStorage.setItem("hasAnswered", "true");
+    sessionStorage.setItem("isRevealed", "true");
   };
 
   // Loading or no data state
@@ -379,6 +465,27 @@ const TableHighlightSelectComponent = ({ question, onSubmit }) => {
             </TableBody>
           </Table>
         </TableContainer>
+
+        {showNotAnsweredModal && (
+          <Box sx={{
+            position: "fixed", top: 0, left: 0, width: "100%", height: "100%",
+            backgroundColor: "rgba(0,0,0,0.5)", display: "flex",
+            justifyContent: "center", alignItems: "center", zIndex: 9999,
+          }}>
+            <Box sx={{
+              backgroundColor: "#fff", padding: 3, borderRadius: "12px",
+              width: "90%", maxWidth: 400, textAlign: "center",
+            }}>
+              <Typography sx={{ mb: 3, fontWeight: 600, color: "#2e3760" }}>
+                Please highlight at least one right column before revealing the answer.
+              </Typography>
+              <Button variant="contained" onClick={() => setShowNotAnsweredModal(false)} sx={{ backgroundColor: "#2e3760" }}>
+                OK
+              </Button>
+            </Box>
+          </Box>
+        )}
+
       </Box>
 
       {/* Submit Button */}
@@ -465,6 +572,7 @@ const TableHighlightSelectComponent = ({ question, onSubmit }) => {
                 : null
             }
             isAnswerCorrect={isCorrect}
+            submittedResult={submittedResult}
           />
         </Box>
       )}

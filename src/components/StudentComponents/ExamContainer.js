@@ -17,6 +17,8 @@ import TableHighlightSelectComponent from "./TableHighlightSelectComponent";
 import {
   getQBankQuestions,
   getQBankQuestionData,
+  getQBankSubmittedResult,
+  getMockTestSubmittedResult
 } from "../../features/exam/examSlice";
 import {
   fetchTestQuestions,
@@ -70,6 +72,7 @@ const ExamContainer = ({ user }) => {
   const [answeredIndices, setAnsweredIndices] = useState(new Set());
   const [correctCount, setCorrectCount] = useState(0);
   const [incorrectCount, setIncorrectCount] = useState(0);
+
 
   // Load question IDs based on mode
   useEffect(() => {
@@ -167,21 +170,111 @@ const ExamContainer = ({ user }) => {
   }, []);
 
   // Navigation handlers
-  const handleNext = useCallback(() => {
-    if (questionIds && currentIndex < questionIds.length - 1) {
-      // if (isTestMode && !answeredIndices.has(currentIndex)) {
-      console.error("Answer the current question before proceeding");
-      setCurrentIndex((idx) => idx + 1);
-      return;
-      // }
-    }
-  }, [questionIds, currentIndex, isTestMode, answeredIndices]);
+
+
+  const [currentQuestionId, setCurrentQuestionId] = useState(null);
 
   const handlePrevious = useCallback(() => {
-    if (currentIndex > 0 && !answeredIndices.has(currentIndex - 1)) {
-      setCurrentIndex((idx) => idx - 1);
+    if (currentIndex > 0) {
+      const previousQuestionId = questionIds[currentIndex - 1];
+
+      if (isTestMode) {
+        // 🔹 mock test
+        dispatch(
+          getMockTestSubmittedResult({ questionId: previousQuestionId, test_id: testId })
+        )
+          .unwrap()
+          .then((res) => {
+            console.log("✅ Mock previous API success:", res);
+            setCurrentQuestionId(previousQuestionId);
+            setCurrentIndex((idx) => idx - 1);
+          })
+          .catch((error) => {
+            console.error("❌ Mock previous API failed:", error);
+            setCurrentIndex((idx) => idx - 1);
+            setCurrentQuestionId(previousQuestionId);
+          });
+      } else if (!isSampleMode) {
+        // 🔹 QBank
+        dispatch(getQBankSubmittedResult(previousQuestionId))
+          .unwrap()
+          .then((res) => {
+            console.log("✅ QBank previous API success:", res);
+            setCurrentQuestionId(previousQuestionId);
+            setCurrentIndex((idx) => idx - 1);
+          })
+          .catch((error) => {
+            console.error("❌ QBank previous API failed:", error);
+            setCurrentIndex((idx) => idx - 1);
+            setCurrentQuestionId(previousQuestionId);
+          });
+      } else {
+        // 🔹 sample
+        setCurrentIndex((idx) => idx - 1);
+        setCurrentQuestionId(previousQuestionId);
+      }
     }
-  }, [currentIndex, answeredIndices]);
+  }, [currentIndex, questionIds, isTestMode, isSampleMode, dispatch, testId]);
+
+
+
+  // Same fix for handleNext
+  const handleNext = useCallback(() => {
+    if (questionIds && currentIndex < questionIds.length - 1) {
+      const nextQuestionId = questionIds[currentIndex + 1];
+
+      if (isTestMode) {
+        dispatch(
+          getMockTestSubmittedResult({ questionId: nextQuestionId, test_id: testId })
+        )
+          .unwrap()
+          .then((res) => {
+            console.log("✅ Mock next API success:", res);
+            setCurrentQuestionId(nextQuestionId);
+            setCurrentIndex((idx) => idx + 1);
+          })
+          .catch((error) => {
+            console.error("❌ Mock next API failed:", error);
+            setCurrentIndex((idx) => idx + 1);
+            setCurrentQuestionId(nextQuestionId);
+          });
+      } else if (!isSampleMode) {
+        dispatch(getQBankSubmittedResult(nextQuestionId))
+          .unwrap()
+          .then((res) => {
+            console.log("✅ QBank next API success:", res);
+            setCurrentQuestionId(nextQuestionId);
+            setCurrentIndex((idx) => idx + 1);
+          })
+          .catch((error) => {
+            console.error("❌ QBank next API failed:", error);
+            setCurrentIndex((idx) => idx + 1);
+            setCurrentQuestionId(nextQuestionId);
+          });
+      } else {
+        setCurrentIndex((idx) => idx + 1);
+        setCurrentQuestionId(nextQuestionId);
+      }
+    }
+  }, [currentIndex, questionIds, isTestMode, isSampleMode, dispatch, testId]);
+
+
+
+  // Sync Redux result to currentQuestion
+  const {
+    qbankSubmittedResult,
+    mockTestSubmittedResult,
+  } = useSelector((state) => state.exam);
+
+
+  useEffect(() => {
+    if (!isTestMode && !isSampleMode && qbankSubmittedResult) {
+      setCurrentQuestion(qbankSubmittedResult.data || qbankSubmittedResult);
+    } else if (isTestMode && mockTestSubmittedResult) {
+      setCurrentQuestion(mockTestSubmittedResult.data || mockTestSubmittedResult);
+    }
+  }, [qbankSubmittedResult, mockTestSubmittedResult, isTestMode, isSampleMode]);
+
 
   const handlePause = () => {
     // Placeholder
@@ -300,6 +393,9 @@ const ExamContainer = ({ user }) => {
   }
 
   const showPrevious = isSampleMode || (!isTestMode && !isSampleMode);
+  const submittedResultForCurrent = isTestMode
+    ? mockTestSubmittedResult
+    : qbankSubmittedResult;
 
   return (
     <>
@@ -319,6 +415,7 @@ const ExamContainer = ({ user }) => {
         ) : QuestionComponent ? (
           <QuestionComponent
             question={currentQuestion}
+            submittedResult={submittedResultForCurrent}
             onSubmit={handleAnswerSubmit}
             testId={testId}
           />
@@ -338,9 +435,7 @@ const ExamContainer = ({ user }) => {
         onPause={handlePause}
         onNext={handleNext}
         onPrevious={handlePrevious}
-        disablePrevious={
-          currentIndex === 0 || answeredIndices.has(currentIndex - 1)
-        }
+        disablePrevious={currentIndex === 0}
         disableNext={questionIds && currentIndex === questionIds.length - 1}
         questionNumber={currentIndex + 1}
         totalQuestions={questionIds.length}

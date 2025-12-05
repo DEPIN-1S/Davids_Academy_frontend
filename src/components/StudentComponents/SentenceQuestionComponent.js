@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import {
   Box,
   Typography,
@@ -12,6 +12,9 @@ import {
   useTheme,
 } from "@mui/material";
 import RevealAnswerComponent from "./RevealAnswerComponent";
+import { useDispatch } from "react-redux";
+import { useLocation } from "react-router-dom";
+import { submitMockTestQuestionResponseThunk } from "../../features/exam/examSlice";
 
 const buildImageUrl = (path) => {
   if (!path) return null;
@@ -22,7 +25,6 @@ const buildImageUrl = (path) => {
 
 const escapeRegExp = (s) => s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 const optionToRegex = (txt) => {
-  // collapse any whitespace in option into \s+ to tolerate newlines/multiple spaces
   const escaped = escapeRegExp(txt || "").replace(/\s+/g, "\\s+");
   return new RegExp(escaped, "gi");
 };
@@ -36,7 +38,7 @@ const normalize = (str) =>
     .replace(/\s+/g, " ")
     .trim();
 
-const SentenceQuestionComponent = ({ question, onSubmit }) => {
+const SentenceQuestionComponent = ({ question, onSubmit, submittedResult }) => {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
 
@@ -59,8 +61,10 @@ const SentenceQuestionComponent = ({ question, onSubmit }) => {
   const [userAnswer, setUserAnswer] = useState("");
   const [correctAnswer, setCorrectAnswer] = useState("");
   const [isCorrect, setIsCorrect] = useState(false);
+  const [showNotAnsweredModal, setShowNotAnsweredModal] = useState(false);
+  const dispatch = useDispatch();
+  const location = useLocation();
 
-  // Prefer passage; else strip HTML from tabsInfo[0].tabValue; else question
   const tabHtml = tabsInfo?.[0]?.tabValue || "";
   const sentenceText =
     passage ||
@@ -76,7 +80,6 @@ const SentenceQuestionComponent = ({ question, onSubmit }) => {
     [highlightOptions]
   );
 
-  // Map correct answers by text -> ids
   const correctIdSet = useMemo(() => {
     const answerTexts = new Set(
       (highlightAnswers || []).map((a) => normalize(a.answer))
@@ -95,6 +98,12 @@ const SentenceQuestionComponent = ({ question, onSubmit }) => {
   };
 
   const handleReveal = () => {
+    if (submittedResult?.result) return;
+    if (selectedIds.length === 0) {
+      setShowNotAnsweredModal(true);
+      return;
+    }
+
     const selectedTexts = selectedIds
       .map((id) => optionList.find((o) => o.id === id)?.text || id)
       .filter(Boolean);
@@ -109,15 +118,77 @@ const SentenceQuestionComponent = ({ question, onSubmit }) => {
     const sameSize = selectedSet.size === correctSet.size;
     const allMatch =
       sameSize && Array.from(selectedSet).every((id) => correctSet.has(id));
-
     const mark = allMatch ? marks : 0;
     onSubmit?.(questionId, allMatch, mark, selectedTexts.join(", "));
-
     setUserAnswer(selectedTexts.join(", ") || "Not selected");
     setCorrectAnswer(correctTexts.join(", ") || "Not available");
     setIsCorrect(allMatch);
+
+    const pathname = location.pathname;
+    const searchParams = new URLSearchParams(location.search);
+    const testId = searchParams.get("testId");
+
+    if (
+      pathname === "/student/exam" &&
+      (testId || searchParams.get("mode") === "question-bank")
+    ) {
+      console.log("inside sentence highlight mock test response submitting");
+
+      const answers = selectedIds;
+      const payload = {
+        questionId: question.id,
+        questionType: question.question_type,
+        exam_type: question.exam_type,
+        test_id: testId,
+        answers,
+      };
+      dispatch(submitMockTestQuestionResponseThunk(payload));
+    }
+    sessionStorage.setItem("hasAnswered", "true");
+    sessionStorage.setItem("isRevealed", "true");
     setShowAnswer(true);
   };
+
+  useEffect(() => {
+    if (submittedResult?.result && submittedResult.answers?.length > 0) {
+      try {
+        const previousIds = submittedResult.answers
+          .map((ans) => ans.answer)
+          .filter(Boolean);
+
+        // Debug log for previous IDs loaded
+        console.log("Loaded previous sentence highlight IDs:", previousIds);
+
+        setSelectedIds(previousIds);
+
+        const correctIds = Array.from(correctIdSet);
+        const selectedSet = new Set(previousIds);
+        const correctSet = new Set(correctIds);
+        const sameSize = selectedSet.size === correctSet.size;
+        const allMatch =
+          sameSize && Array.from(selectedSet).every((id) => correctSet.has(id));
+
+        setIsCorrect(allMatch);
+        setShowAnswer(true);
+
+        // Set user answer text for display
+        const selectedTexts = previousIds
+          .map((id) => optionList.find((o) => o.id == id)?.text)
+          .filter(Boolean);
+        setUserAnswer(selectedTexts.join(", "));
+
+        sessionStorage.setItem("hasAnswered", "true");
+        sessionStorage.setItem("isRevealed", "true");
+      } catch (error) {
+        console.error("Could not parse previous sentence highlight answers:", error);
+      }
+    }
+  }, [submittedResult, optionList, correctIdSet]);
+
+  useEffect(() => {
+    sessionStorage.setItem("hasAnswered", "false");
+    sessionStorage.setItem("isRevealed", "false");
+  }, [questionId]);
 
   if (!question || !optionList.length) {
     return (
@@ -258,7 +329,6 @@ const SentenceQuestionComponent = ({ question, onSubmit }) => {
             const s = sentenceText || "";
             if (!optionList.length) return s;
 
-            // Build ranges using whitespace-tolerant regex on original sentence
             const taken = Array(s.length).fill(false);
             const ranges = [];
             const sortedOpts = optionList
@@ -299,10 +369,14 @@ const SentenceQuestionComponent = ({ question, onSubmit }) => {
 
             return parts.map((item, i) => {
               if (item.type === "match") {
-                const isSelected = selectedIds.includes(item.id);
-                const isCorrect = correctIdSet.has(item.id);
-                let bg = isSelected ? "#e0f7fa" : "transparent";
-                let color = isSelected ? "#007b7f" : "inherit";
+                // Flexible type matching for correct selected highlights
+                const isSelected = selectedIds.some((id) => id.toString() === item.id.toString());
+                const isCorrect = Array.from(correctIdSet).some(
+                  (id) => id.toString() === item.id.toString()
+                );
+                let bg = "transparent";
+                let color = "inherit";
+
                 if (showAnswer) {
                   if (isCorrect) {
                     bg = "#e6f4ea";
@@ -310,11 +384,12 @@ const SentenceQuestionComponent = ({ question, onSubmit }) => {
                   } else if (isSelected) {
                     bg = "#ffecec";
                     color = "#c0392b";
-                  } else {
-                    bg = "transparent";
-                    color = "inherit";
                   }
+                } else if (isSelected) {
+                  bg = "#e0f7fa";
+                  color = "#007b7f";
                 }
+
                 return (
                   <Box
                     component="span"
@@ -356,7 +431,48 @@ const SentenceQuestionComponent = ({ question, onSubmit }) => {
         </Typography>
       </Box>
 
-      {/* Submit */}
+      {showNotAnsweredModal && !submittedResult?.result && (
+        <Box
+          sx={{
+            position: "fixed",
+            top: 0,
+            left: 0,
+            width: "100%",
+            height: "100%",
+            backgroundColor: "rgba(0,0,0,0.5)",
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            zIndex: 9999,
+          }}
+        >
+          <Box
+            sx={{
+              backgroundColor: "#fff",
+              padding: 3,
+              borderRadius: "12px",
+              width: "90%",
+              maxWidth: 400,
+              textAlign: "center",
+            }}
+          >
+            <Typography
+              sx={{ mb: 3, fontSize: "1rem", fontWeight: 600, color: "#2e3760" }}
+            >
+              Please select at least one phrase before revealing the answer.
+            </Typography>
+            <Button
+              variant="contained"
+              onClick={() => setShowNotAnsweredModal(false)}
+              sx={{ backgroundColor: "#2e3760" }}
+            >
+              OK
+            </Button>
+          </Box>
+        </Box>
+      )}
+
+      {/* Submit Button */}
       <Box textAlign="center">
         <Button
           variant="contained"
@@ -421,6 +537,7 @@ const SentenceQuestionComponent = ({ question, onSubmit }) => {
             additionalInfoParagraphs={additionalInfo.map((info) => info.info) || []}
             additionalInfoImage={buildImageUrl(additionalInfo?.[0]?.image)}
             isAnswerCorrect={isCorrect}
+            submittedResult={submittedResult}
           />
         </Box>
       )}

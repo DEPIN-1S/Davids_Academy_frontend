@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Box,
   Typography,
@@ -17,8 +17,13 @@ import {
 import { FaCheckCircle, FaTimesCircle } from "react-icons/fa";
 import "../../styles/DashboardStyles/MultiRadioQuestionComponent.css";
 import RevealAnswerComponent from "./RevealAnswerComponent";
+import { useDispatch } from "react-redux";
+import { useLocation } from "react-router-dom";
+import { submitMockTestQuestionResponseThunk } from "../../features/exam/examSlice";
 
-const MultiRadioQuestionComponent = ({ question, onSubmit }) => {
+
+
+const MultiRadioQuestionComponent = ({ question, onSubmit, submittedResult }) => {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
 
@@ -39,17 +44,73 @@ const MultiRadioQuestionComponent = ({ question, onSubmit }) => {
   const [answers, setAnswers] = useState({});
   const [showAnswer, setShowAnswer] = useState(false);
   const [isCorrect, setIsCorrect] = useState(false);
-
+  const [showNotAnsweredModal, setShowNotAnsweredModal] = useState(false);
   const handleTabChange = (event, newValue) => {
     setActiveTab(newValue);
   };
-
+  const dispatch = useDispatch();
+  const location = useLocation();
   const handleSelect = (findingIndex, selectedValue) => () => {
     if (showAnswer) return;
     setAnswers((prev) => ({ ...prev, [findingIndex]: selectedValue }));
   };
+  const [alreadyShownModal, setAlreadyShownModal] = useState(false);
+  useEffect(() => {
+    sessionStorage.setItem("hasAnswered", "false");
+    sessionStorage.setItem("isRevealed", "false");
+  }, [questionId])
+
+
+
+  useEffect(() => {
+    if (submittedResult?.result && submittedResult.answers?.length > 0) {
+      try {
+        console.log("Previous multi-radio answers:", submittedResult.answers);
+
+        const parsedAnswers = {};
+
+        submittedResult.answers.forEach((ans) => {
+          // Match backend "clientfindings" to frontend "client_findings"
+          const matchedIndex = questionContent.findIndex(qc =>
+            String(qc.client_findings).trim() === String(ans.clientfindings).trim()
+          );
+
+          if (matchedIndex !== -1 && ans.answer) {
+            parsedAnswers[matchedIndex] = ans.answer;
+          }
+        });
+
+        console.log("Parsed answers:", parsedAnswers);
+
+        setAnswers(parsedAnswers);
+
+        // Calculate overall correctness
+        const correctStatus = questionContent.every((finding, idx) =>
+          parsedAnswers[idx] === finding.answer
+        );
+
+        setIsCorrect(correctStatus);
+        setShowAnswer(true);
+
+        sessionStorage.setItem("hasAnswered", "true");
+        sessionStorage.setItem("isRevealed", "true");
+      } catch (error) {
+        console.error("Could not parse previous multi-radio answers:", error);
+      }
+    }
+  }, [submittedResult, questionContent]);
+
+
 
   const handleReveal = () => {
+
+    if (submittedResult?.result) return; // Already answered, block reveal/modal
+    if (Object.keys(answers).length === 0) {
+      setShowNotAnsweredModal(true);
+      return;
+    }
+
+    // Existing reveal logic below...
     const correctAnswersMap = questionContent.reduce((acc, finding, idx) => {
       acc[idx] = finding.answer;
       return acc;
@@ -58,12 +119,40 @@ const MultiRadioQuestionComponent = ({ question, onSubmit }) => {
     const correctStatus = questionContent.every(
       (finding, idx) => answers[idx] === correctAnswersMap[idx]
     );
+
     const mark = correctStatus ? question?.marks || 5 : 0;
 
     onSubmit?.(questionId, correctStatus, mark);
+
     setIsCorrect(correctStatus);
     setShowAnswer(true);
+
+    const pathname = location.pathname;
+    const searchParams = new URLSearchParams(location.search);
+    const testId = searchParams.get('testId');
+
+    if (pathname === "/student/exam" && (testId || searchParams.get('mode') === 'question-bank')) {
+      console.log("inside question content mock test response submitting");
+
+      const question_content_answers = questionContent.map((item, idx) => ({
+        question_text: item.client_findings || `Question ${idx + 1}`,
+        selected: answers[idx] || ""
+      }));
+
+      const payload = {
+        questionId: question.id,
+        questionType: question.question_type,
+        exam_type: question.exam_type.toLowerCase(),
+        test_id: testId,
+        question_content_answers,
+      };
+
+      dispatch(submitMockTestQuestionResponseThunk(payload));
+    }
+    sessionStorage.setItem("hasAnswered", "true");
+    sessionStorage.setItem("isRevealed", "true");
   };
+
 
   if (!question) {
     return (
@@ -272,6 +361,53 @@ const MultiRadioQuestionComponent = ({ question, onSubmit }) => {
             ))}
           </TableBody>
         </Table>
+
+        {showNotAnsweredModal && !submittedResult?.result && (
+          <Box
+            sx={{
+              position: "fixed",
+              top: 0,
+              left: 0,
+              width: "100%",
+              height: "100%",
+              backgroundColor: "rgba(0,0,0,0.5)",
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+              zIndex: 9999,
+            }}
+          >
+            <Box
+              sx={{
+                backgroundColor: "#fff",
+                padding: 3,
+                borderRadius: "12px",
+                width: "90%",
+                maxWidth: 400,
+                textAlign: "center",
+              }}
+            >
+              <Typography
+                sx={{
+                  mb: 3,
+                  fontSize: "1rem",
+                  fontWeight: 600,
+                  color: "#2e3760",
+                }}
+              >
+                Please select any of the options before revealing.
+              </Typography>
+              <Button
+                variant="contained"
+                onClick={() => setShowNotAnsweredModal(false)}
+                sx={{ backgroundColor: "#2e3760" }}
+              >
+                OK
+              </Button>
+            </Box>
+          </Box>
+        )}
+
       </Box>
 
       {/* Reveal Button */}
@@ -317,6 +453,8 @@ const MultiRadioQuestionComponent = ({ question, onSubmit }) => {
                 : null
             }
             isAnswerCorrect={isCorrect}
+            //for preventing result modal to display again if answered
+            submittedResult={submittedResult}
           />
         </Box>
       )}

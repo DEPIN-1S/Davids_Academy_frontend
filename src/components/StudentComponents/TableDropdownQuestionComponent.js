@@ -19,8 +19,12 @@ import {
   Paper,
 } from "@mui/material";
 import RevealAnswerComponent from "./RevealAnswerComponent";
+import { useDispatch } from "react-redux";
+import { useLocation } from "react-router-dom";
+import { submitMockTestQuestionResponseThunk } from "../../features/exam/examSlice";
 
-const TableDropdownQuestionComponent = ({ question, onSubmit }) => {
+
+const TableDropdownQuestionComponent = ({ question, onSubmit, submittedResult }) => {
   // Extract data from question prop
   const {
     id: questionId,
@@ -43,10 +47,56 @@ const TableDropdownQuestionComponent = ({ question, onSubmit }) => {
   const [activeTab, setActiveTab] = useState(() =>
     tabsInfo && tabsInfo.length ? tabsInfo[0].tabKey : ""
   );
+  const [showNotAnsweredModal, setShowNotAnsweredModal] = useState(false);
+  const dispatch = useDispatch();
+  const location = useLocation();
+
+
+  useEffect(() => {
+    sessionStorage.setItem("hasAnswered", "false");
+    sessionStorage.setItem("isRevealed", "false");
+  }, [questionId])
 
   useEffect(() => {
     if (tabsInfo && tabsInfo.length) setActiveTab(tabsInfo[0].tabKey);
   }, [tabsInfo]);
+
+
+  useEffect(() => {
+    if (!submittedResult?.result || !Array.isArray(submittedResult.answers)) return;
+    const prev = submittedResult.answers; // [{rowlabel, answer}]
+    const newDropdownValues = {};
+
+    // For each field, find its saved answer by matching rowlabel ↔ fieldLabel
+    tableDropdownFields.forEach((field) => {
+      const match = prev.find(a => a.rowlabel === field.fieldLabel);
+      if (match?.answer) {
+        newDropdownValues[field.id] = match.answer;
+      }
+    });
+
+    if (Object.keys(newDropdownValues).length > 0) {
+      setDropdownValues(newDropdownValues);
+      setShowReveal(true);
+
+      // recompute correctness with same logic you already use
+      const answersMap = tableDropdownAnswers.reduce((acc, ans) => {
+        acc[ans.rowLabel] = ans.answer;
+        return acc;
+      }, {});
+      const correctStatus = tableDropdownFields.every((field) => {
+        const userValue = newDropdownValues[field.id];
+        const correctValue = answersMap[field.fieldLabel];
+        return userValue === correctValue;
+      });
+      setIsCorrect(correctStatus);
+
+      sessionStorage.setItem("hasAnswered", "true");
+      sessionStorage.setItem("isRevealed", "true");
+      setShowNotAnsweredModal(false);
+    }
+  }, [submittedResult, tableDropdownFields, tableDropdownAnswers]);
+
 
   const handleTabChange = (_event, newValue) => {
     setActiveTab(newValue);
@@ -63,20 +113,28 @@ const TableDropdownQuestionComponent = ({ question, onSubmit }) => {
 
   // Handle reveal (submission and show answers) for table dropdown
   const handleReveal = () => {
-    // Build a map of correct answers keyed by rowLabel
+    const allFilled =
+      tableDropdownFields.length > 0 &&
+      tableDropdownFields.every(
+        (field) => dropdownValues[field.id] && dropdownValues[field.id] !== ""
+      );
+
+    if (!allFilled) {
+      setShowNotAnsweredModal(true);
+      return;
+    }
+
     const answersMap = tableDropdownAnswers.reduce((acc, ans) => {
       acc[ans.rowLabel] = ans.answer;
       return acc;
     }, {});
 
-    // Determine correctness: every field's selected value must match the correct answer
     const correctStatus = tableDropdownFields.every((field) => {
       const userValue = dropdownValues[field.id];
       const correctValue = answersMap[field.fieldLabel];
       return userValue === correctValue;
     });
 
-    // Build a human-readable user answer string for submission/logging
     const userAnswerStr = tableDropdownFields
       .map(
         (field) =>
@@ -86,14 +144,44 @@ const TableDropdownQuestionComponent = ({ question, onSubmit }) => {
 
     const mark = correctStatus ? marks || 5 : 0;
 
-    // Call onSubmit from parent
     if (typeof onSubmit === "function") {
       onSubmit(questionId, correctStatus, mark, userAnswerStr);
     }
 
     setIsCorrect(correctStatus);
     setShowReveal(true);
+
+    const pathname = location.pathname;
+    const searchParams = new URLSearchParams(location.search);
+    const testId = searchParams.get("testId");
+
+    if (
+      pathname === "/student/exam" &&
+      (testId || searchParams.get("mode") === "question-bank")
+    ) {
+      console.log("inside table dropdown mock test response submitting");
+
+      // ✅ send in desired format: [{rowLabel, answer}]
+      const tableDropdownAnswersPayload = tableDropdownFields.map((field) => ({
+        rowLabel: field.fieldLabel,
+        answer: dropdownValues[field.id] || "",
+      }));
+
+      const payload = {
+        questionId: question.id,
+        questionType: question.question_type,
+        exam_type: question.exam_type.toLowerCase(),
+        test_id: testId,
+        tableDropdownAnswers: tableDropdownAnswersPayload,
+      };
+
+      dispatch(submitMockTestQuestionResponseThunk(payload));
+    }
+
+    sessionStorage.setItem("hasAnswered", "true");
+    sessionStorage.setItem("isRevealed", "true");
   };
+
 
   // Loading or no data state
   if (!question || !tableDropdownFields.length) {
@@ -397,6 +485,43 @@ const TableDropdownQuestionComponent = ({ question, onSubmit }) => {
             </TableBody>
           </Table>
         </TableContainer>
+
+
+        {showNotAnsweredModal && (
+          <Box sx={{
+            position: "fixed",
+            top: 0, left: 0,
+            width: "100%", height: "100%",
+            backgroundColor: "rgba(0,0,0,0.5)",
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            zIndex: 9999,
+          }}>
+            <Box sx={{
+              backgroundColor: "#fff",
+              padding: 3,
+              borderRadius: "12px",
+              width: "90%",
+              maxWidth: 400,
+              textAlign: "center",
+            }}>
+              <Typography sx={{ mb: 3, fontWeight: 600, color: "#2e3760" }}>
+                Dropdown field must be filled before revealing the answer.
+              </Typography>
+              <Button
+                variant="contained"
+                onClick={() => setShowNotAnsweredModal(false)}
+                sx={{ backgroundColor: "#2e3760" }}
+              >
+                OK
+              </Button>
+            </Box>
+          </Box>
+        )}
+
+
+
       </Box>
 
       {/* Submit Button */}
@@ -501,6 +626,7 @@ const TableDropdownQuestionComponent = ({ question, onSubmit }) => {
                 : null
             }
             isAnswerCorrect={isCorrect}
+            submittedResult={submittedResult}
           />
         </Box>
       )}
