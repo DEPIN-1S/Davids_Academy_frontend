@@ -198,12 +198,16 @@ const MCQQuestionComponent = ({ question, onSubmit, submittedResult }) => {
   };
 
   return (
-    <Box className="radio-container" sx={{ textAlign: "left", px: 5 }}>
+    <Box className="radio-container" sx={{
+      px: { xs: 3, md: 5 },
+      py: { xs: 3, md: 5 }
+    }} >
       {/* Question */}
       <Typography
         fontWeight={700}
         sx={{
           textAlign: "left",
+          alignItems: "center",
           color: "#2e3760",
           fontSize: { xs: "1rem", md: "1.25rem" },
           mb: 1,
@@ -217,7 +221,7 @@ const MCQQuestionComponent = ({ question, onSubmit, submittedResult }) => {
         <img
           src={buildImageUrl(exhibit)}
           alt="Exhibit"
-          style={{ maxWidth: "90%", marginBottom: "1rem", borderRadius: 8, alignItems: "center" }}
+          style={{ maxWidth: "100%", marginBottom: "1rem", marginTop:"20px", borderRadius: 8, alignItems: "center" }}
         />
       )}
 
@@ -226,9 +230,10 @@ const MCQQuestionComponent = ({ question, onSubmit, submittedResult }) => {
         <>
           <Typography
             variant="h6"
-            sx={{ mb: 1, color: colors.heading, fontSize: "1rem" }}
+            align="left"
+            sx={{ mb: 1,mt:3, color: "text.primary", fontWeight: 600, fontSize: { xs: "0.9rem", md: "1rem" }, }}
           >
-            Instructions
+            Instructions :
           </Typography>
           <Typography
             sx={{
@@ -236,6 +241,7 @@ const MCQQuestionComponent = ({ question, onSubmit, submittedResult }) => {
               mb: 2,
               fontSize: { xs: "0.9rem", md: "1rem" },
               lineHeight: 1.6,
+              textAlign: "left"
             }}
           >
             {instructions}
@@ -281,11 +287,11 @@ const MCQQuestionComponent = ({ question, onSubmit, submittedResult }) => {
             return (
               <Box
                 sx={{
-                  backgroundColor: "#f8f9ff",
+                  backgroundColor: "#eff1ffff",
                   borderRadius: "10px",
                   py: 2,
                   px: 3,
-                  m: 2,
+                  textAlign: "left"
                 }}
               >
                 <Typography sx={{ color: "#333", fontSize: "0.95rem" }}>
@@ -386,6 +392,7 @@ const MCQQuestionComponent = ({ question, onSubmit, submittedResult }) => {
                     fontWeight: showFeedback && isCorrectAnswer ? 600 : "normal",
                     display: "flex",
                     alignItems: "center",
+                    textAlign: "left",
                     gap: "8px",
                     fontSize: "0.95rem",
                   }}
@@ -401,7 +408,7 @@ const MCQQuestionComponent = ({ question, onSubmit, submittedResult }) => {
       </Box>
 
       {/* Reveal Button */}
-      <Box display="flex" justifyContent="Center" mt={2}>
+      <Box display="flex" justifyContent="Center" mt={5}>
         <Button variant="contained" className="reveal-btn" onClick={handleReveal}>
           Reveal Answer
         </Button>

@@ -263,13 +263,7 @@ const DropdownQuestionContent = () => {
       newErrors.question = "Question is required";
     }
 
-    const validTabs = tabs.filter(
-      (tab) => tab.tabKey.trim() && tab.tabValue.trim()
-    );
-    if (validTabs.length === 0) {
-      newErrors.tabs = "At least one tab with key and value is required";
-    }
-
+  
     const validDropdowns = dropdowns.filter(
       (dropdown) =>
         dropdown.dropdownField.trim() &&
@@ -367,10 +361,7 @@ const DropdownQuestionContent = () => {
 
   const isFormValid = () => {
     const hasValidQuestion = question.trim() !== "";
-    const hasValidInstruction = instruction.trim() !== "";
-    const hasValidTabs = tabs.some(
-      (tab) => tab.tabKey.trim() && tab.tabValue.trim()
-    );
+   
     const hasValidDropdowns = dropdowns.some(
       (dropdown) =>
         dropdown.dropdownField.trim() &&
@@ -381,9 +372,7 @@ const DropdownQuestionContent = () => {
 
     return (
       hasValidQuestion &&
-      hasValidTabs &&
-      hasValidDropdowns &&
-      hasValidInstruction
+      hasValidDropdowns 
     );
   };
 
@@ -463,7 +452,7 @@ const DropdownQuestionContent = () => {
       <Accordion defaultExpanded sx={{ mb: 3 }}>
         <AccordionSummary expandIcon={<ExpandMore />}>
           <Typography variant="h6" color="primary">
-            Question Tabs * ({tabs.length})
+            Question Tabs  ({tabs.length})
           </Typography>
         </AccordionSummary>
         <AccordionDetails>
@@ -615,7 +604,7 @@ const DropdownQuestionContent = () => {
       </Accordion>
 
       <Typography variant="h6" mb={1} color="primary">
-        Instruction*
+        Instruction
       </Typography>
       <TextField
         fullWidth

@@ -34,7 +34,7 @@ const RevealAnswerComponent = ({
   const hasUpdated = React.useRef(false);
 
   useEffect(() => {
-    
+
     if (submittedResult?.result || hasUpdated.current) return;
 
     if (hasUpdated.current) return; // prevent second run
@@ -55,7 +55,7 @@ const RevealAnswerComponent = ({
         display: 'flex',
         flexDirection: isMobile ? 'column' : 'row',
         gap: 4,
-        backgroundColor: '#fafafa',
+        pt:3
       }}
     >
 
@@ -73,25 +73,21 @@ const RevealAnswerComponent = ({
       <Box
         sx={{
           flex: 2,
-          backgroundColor: '#fff',
-          borderRadius: 3,
-          padding: 3,
-          boxShadow: '0 2px 6px rgba(0,0,0,0.05)',
+          
         }}
       >
 
         {/* Explanation heading (supports custom HTML) */}
         {explanationHeading && (
           <Typography
-            variant="h6"
-            fontWeight={600}
-            mb={1}
-            color="#2E3760"
             sx={{
               '& p': { margin: 0, marginBottom: '0.5em' },
               '& p:last-child': { marginBottom: 0 },
-              textAlign: "center"
+              textAlign: "center", fontSize: "20px"
             }}
+            fontWeight={600}
+            mb={1}
+            color="#2E3760"
             dangerouslySetInnerHTML={{ __html: explanationHeading }}
           />
         )}
@@ -112,18 +108,18 @@ const RevealAnswerComponent = ({
           />
         ))}
 
-        {/* Additional Info heading (supports custom HTML) */}
-        {additionalInfoHeading && additionalInfoParagraphs.length > 0 && (
+
+        {/* Show heading only if there is real additional info */}
+        {(additionalInfoParagraphs?.some(p => p.trim() !== "") || additionalInfoImage) && (
           <Typography
-            variant="h6"
+            sx={{
+              fontSize: "17px",
+              textAlign:"center"
+            }}
             fontWeight={600}
             mt={3}
             mb={1}
             color="#2E3760"
-            sx={{
-              '& p': { margin: 0, marginBottom: '0.5em' },
-              '& p:last-child': { marginBottom: 0 },
-            }}
             dangerouslySetInnerHTML={{ __html: additionalInfoHeading }}
           />
         )}

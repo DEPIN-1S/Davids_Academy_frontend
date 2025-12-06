@@ -167,40 +167,70 @@ const MultiRadioQuestionComponent = ({ question, onSubmit, submittedResult }) =>
   return (
     <Box
       sx={{
-        backgroundColor: "#fff",
-        borderRadius: "1.5rem",
-        padding: "2rem",
-        margin: "2rem auto",
-        maxWidth: "950px",
-        boxShadow: "0 4px 12px rgba(0,0,0,0.06)",
+        px: { xs: 3, md: 5 },
+        py: 5
       }}
     >
-      {/* Question Text */}
-      <Typography variant="h6" component="h1" fontWeight={700} textAlign="center" mb={2}>
+
+      <Typography
+        fontWeight={700}
+        sx={{
+          textAlign: "left",
+          alignItems: "center",
+          color: "#2e3760",
+          fontSize: { xs: "1rem", md: "1.25rem" },
+          mb: 5,
+        }}
+      >
         {questionText}
       </Typography>
 
-      {/* Tabs */}
+      {/* Tabs for Contextual Information */}
       {tabsInfo.length > 0 && (
         <>
-          <Box sx={{ display: "flex", justifyContent: "center", mb: 2 }}>
+          <Box
+            sx={{
+              display: "flex",
+              justifyContent: "center",
+              mb: 2,
+              textAlign: "left",
+              position: "relative",
+            }}
+          >
             <Tabs
-              value={activeTab || tabsInfo[0]?.tabKey || false}
+              value={activeTab}
               onChange={handleTabChange}
               variant="scrollable"
               scrollButtons="auto"
-              TabIndicatorProps={{ sx: { display: "none" } }}
+              TabIndicatorProps={{
+                sx: { display: "none" },
+              }}
               sx={{
+                minHeight: 42,
+                "& .MuiTabs-flexContainer": {
+                  gap: 1,
+                },
                 "& .MuiTab-root": {
+                  minHeight: 42,
+                  minWidth: 110,
                   borderRadius: "999px",
                   textTransform: "none",
                   fontSize: { xs: "0.9rem", md: "1rem" },
                   fontWeight: 500,
                   color: "#475569",
                   border: "1px solid #e6eaef",
+                  padding: { xs: "7px 18px", md: "8px 24px" },
+                  transition: "all 200ms cubic-bezier(0.4, 0, 0.2, 1)",
+                  "&:hover": {
+                    backgroundColor: "#f8fafc",
+                    borderColor: "#e6eaef",
+                  },
                   "&.Mui-selected": {
                     color: "#fff",
+                    fontWeight: 600,
                     backgroundColor: "#2e3760",
+                    border: "1px solid #2e3760",
+                    boxShadow: "0 6px 18px rgba(15,23,42,0.12)",
                   },
                 },
               }}
@@ -215,30 +245,48 @@ const MultiRadioQuestionComponent = ({ question, onSubmit, submittedResult }) =>
               ))}
             </Tabs>
           </Box>
-
           <Box
             sx={{
-              backgroundColor: "#f8f9ff",
+              backgroundColor: "#eff1ffff",
               borderRadius: "10px",
-              padding: "1rem",
-              mb: 4,
+              py: { xs: 2 },
+              px: { xs: 3 },
+
+              minHeight: "100px",
             }}
           >
             <Typography
               variant="body1"
               sx={{
                 color: "#333",
-                textAlign: "left",
-                "& p": { margin: 0, marginBottom: "0.5em" },
-                "& p:last-child": { marginBottom: 0 },
-                "& *": { lineHeight: 1.6 },
+                // Clean spacing for Quill-generated <p> tags
+                '& p': { margin: 0, marginBottom: '0.5em' },
+                '& p:last-child': { marginBottom: 0 },
+                '& *': { lineHeight: 1.6 },
               }}
               dangerouslySetInnerHTML={{
                 __html:
                   tabsInfo.find((tab) => tab.tabKey === activeTab)?.tabValue ||
-                  "No content available",
+                  "No content available"
               }}
             />
+            {tabsInfo[activeTab]?.tabImage && (
+              <Box sx={{ mt: 2, textAlign: "center" }}>
+                <img
+                  src={
+                    tabsInfo[activeTab].tabImage.startsWith("http")
+                      ? tabsInfo[activeTab].tabImage
+                      : `${'https://lunarsenterprises.com:6040/'}${tabsInfo[activeTab].tabImage}`
+                  }
+                  alt="tab"
+                  style={{
+                    maxWidth: "100%",
+                    borderRadius: 8,
+                    height: "auto",
+                  }}
+                />
+              </Box>
+            )}
           </Box>
         </>
       )}
@@ -246,8 +294,8 @@ const MultiRadioQuestionComponent = ({ question, onSubmit, submittedResult }) =>
       {/* Instructions */}
       {!!instructions && (
         <Box sx={{ pb: 2, py: 3 }}>
-          <Typography variant="h6" component="h2" align="left" sx={{ mb: 1, color: "text.primary" }}>
-            Instructions
+          <Typography variant="h6" component="h2" align="left" sx={{ mb: 1, color: "text.primary", fontWeight: 600 }}>
+            Instructions :
           </Typography>
           <Typography variant="body1" sx={{ textAlign: "left", color: "black" }}>
             {instructions}
@@ -256,7 +304,7 @@ const MultiRadioQuestionComponent = ({ question, onSubmit, submittedResult }) =>
       )}
 
       {/* Radio Table */}
-      <Box sx={{ maxWidth: "1000px", margin: "0 auto", mb: 4, overflowX: "auto" }}>
+      <Box sx={{ maxWidth: "950px", margin: "0 auto", mb: 4, mt: 3, overflowX: "auto" }}>
         <Table>
           <TableHead>
             <TableRow>

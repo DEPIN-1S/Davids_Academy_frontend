@@ -209,14 +209,26 @@ const SortQuestionComponent = ({ question, onSubmit, submittedResult }) => {
   }
 
   return (
-    <Box sx={{ padding: "2rem", maxWidth: "950px", margin: "2rem auto" }}>
-      <Typography variant="h6" fontWeight={700} textAlign="center" mb={2}>
+    <Box sx={{
+      px: { xs: 3, md: 5 },
+      py: { xs: 3, md: 5 }
+    }} >
+      <Typography sx={{
+        color: "#2e3760",
+        fontSize: { xs: "1rem", md: "1.25rem" },
+        textAlign: "left",
+        alignItems: "center",
+      }} variant="h6" fontWeight={700} mb={3}>
         {questionText}
       </Typography>
+
+
       <Typography variant="body1" textAlign="center" mb={4}>
         Place the following actions in the order in which they should be
         performed, starting from first to last.
       </Typography>
+
+
 
       {/* Tabs */}
       {tabsInfo.length > 0 && (
@@ -226,7 +238,7 @@ const SortQuestionComponent = ({ question, onSubmit, submittedResult }) => {
               display: "flex",
               justifyContent: "center",
               mb: 2,
-              px: 1,
+
             }}
           >
             <Tabs
@@ -268,7 +280,7 @@ const SortQuestionComponent = ({ question, onSubmit, submittedResult }) => {
           </Box>
           <Box
             sx={{
-              backgroundColor: "#f8f9ff",
+              backgroundColor: "#eff1ffff",
               borderRadius: "10px",
               padding: "1rem",
               mb: 4,
@@ -437,6 +449,9 @@ const SortQuestionComponent = ({ question, onSubmit, submittedResult }) => {
             mt={2}
             mb={2}
             color="#35b564ff"
+            sx={{
+              textAlign:"center"
+            }}
           >
             Correct Order (Properly Sorted):
           </Typography>

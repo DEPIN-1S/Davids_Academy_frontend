@@ -183,9 +183,13 @@ const TableHighlightSelectComponent = ({ question, onSubmit, submittedResult }) 
   }
 
   return (
-    <Box sx={{ width: "100%" }}>
+    <Box sx={{
+      px: { xs: 3, md: 5 },
+      py: { xs: 3, md: 5 }
+    }} >
+
       {/* Header row */}
-      <Box sx={{ width: "100%", px: { xs: 2, md: 6 }, pt: 2, mb: 1 }}>
+      {/* <Box sx={{ width: "100%", px: { xs: 2, md: 6 }, pt: 2, mb: 1 }}>
         <Box
           sx={{
             display: "flex",
@@ -202,14 +206,15 @@ const TableHighlightSelectComponent = ({ question, onSubmit, submittedResult }) 
             Question Type : Table Highlight
           </Typography>
         </Box>
-      </Box>
+      </Box> */}
 
       {/* Question Text */}
       <Typography
         variant="h6"
         fontWeight={700}
         sx={{
-          textAlign: "center",
+          textAlign: "left",
+          alignItems: "center",
           color: "#2e3760",
           pt: 3,
           fontSize: { xs: "1rem", md: "1.25rem" },
@@ -221,16 +226,27 @@ const TableHighlightSelectComponent = ({ question, onSubmit, submittedResult }) 
 
       {/* Instructions */}
       {instructions && (
-        <Typography
-          sx={{
-            textAlign: "center",
-            color: "#4b5563",
-            mb: 4,
-            fontSize: { xs: "0.9rem", md: "1rem" },
-          }}
-        >
-          {instructions}
-        </Typography>
+        <Box sx={{ pb: 2, mb: 2, mt: 3 }}>
+          <Typography
+            variant="h6"
+            component="h2"
+            align="left"
+            sx={{ mb: 1, color: "text.primary", fontWeight: 600,fontSize: { xs: "0.9rem", md: "1rem" }, }}
+          >
+            Instructions :
+          </Typography>
+          <Typography
+            variant="body1"
+            sx={{
+              textAlign: "left",
+              color: "black",
+              fontSize: { xs: "0.9rem", md: "1rem" },
+              lineHeight: 1.6,
+            }}
+          >
+            {instructions}
+          </Typography>
+        </Box>
       )}
 
       {/* Tabs for Contextual Information */}
@@ -295,11 +311,11 @@ const TableHighlightSelectComponent = ({ question, onSubmit, submittedResult }) 
           </Box>
           <Box
             sx={{
-              backgroundColor: "#f8f9ff",
+              backgroundColor: "#eff1ffff",
               borderRadius: "10px",
               py: { xs: 2 },
               px: { xs: 3 },
-              m: 2,
+
               minHeight: "100px",
             }}
           >
@@ -338,7 +354,7 @@ const TableHighlightSelectComponent = ({ question, onSubmit, submittedResult }) 
       )}
 
       {/* Table Container */}
-      <Box sx={{ px: { xs: 2, md: 6 }, mb: 4 }}>
+      <Box sx={{ mt: 4, mb: 4 }}>
         <TableContainer
           component={Paper}
           sx={{

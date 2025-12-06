@@ -51,7 +51,6 @@ const QuestionFooterComponent = ({
     };
 
     checkRevealStatus();
-
     const interval = setInterval(checkRevealStatus, 200);
     return () => clearInterval(interval);
   }, []);
@@ -63,18 +62,22 @@ const QuestionFooterComponent = ({
   return (
     <Box className="question-footer">
 
-      <div className="left-buttons">
-        <Button
-          /* startIcon={<ArrowBackwardIosIco />} */
-          onClick={onPrevious}
-          className="footer-button"
-          color="error"
-          disabled={disablePrevious}
-        >
-          {/* {customButtonText} */}
-          <span style={{ paddingBottom: "4px", fontSize: "25px" }} ><IoIosArrowBack /></span>  Previous
-        </Button>
-      </div>
+      {!isSampleRoute && (
+        <div className="left-buttons">
+          <Button
+            onClick={onPrevious}
+            className="footer-button"
+            color="error"
+            disabled={disablePrevious || questionNumber === 1}
+          >
+            <span style={{ paddingBottom: "4px", fontSize: "25px" }} >
+              <IoIosArrowBack />
+            </span>
+            Previous
+          </Button>
+        </div>
+      )}
+
 
       <div className="center-info">
         {questionNumber && totalQuestions && (
@@ -85,7 +88,6 @@ const QuestionFooterComponent = ({
 
 
             {/* display only on Q-Bank question */}
-
             {isQuestionBankRoute && customButtonText !== "Submit & Exit" && (
               <Button
                 className="submit-and-exit-button"
@@ -109,9 +111,6 @@ const QuestionFooterComponent = ({
                 </span>
               </Button>
             )}
-
-
-
           </>
         )}
       </div>
@@ -269,8 +268,6 @@ const QuestionFooterComponent = ({
           </div>
         </div>
       )}
-
-
 
     </Box>
   );
