@@ -1,7 +1,8 @@
 import React, { useEffect, useRef } from "react";
 import "../../styles/QuestionBankProgressCard.css";
+import { useNavigate } from "react-router-dom";
 
-function QuestionBankProgressCard({ data, onClose,  }) {
+function QuestionBankProgressCard({ data }) {
 
     const logged = useRef(false);
     useEffect(() => {
@@ -11,7 +12,13 @@ function QuestionBankProgressCard({ data, onClose,  }) {
         }
     }, [data]);
 
-    
+    const navigate = useNavigate();
+
+    const onClose = () => {
+        console.log(":on close");
+        window.location.href = "/student/question-bank";  // ✅ Hard redirect
+    };
+
 
     return (
         <div className="progress-card-main">
@@ -43,7 +50,7 @@ function QuestionBankProgressCard({ data, onClose,  }) {
                 </div>
 
                 {/* BOTTOM BUTTON */}
-                <button className="bottom-close-btn" onClick={onClose}>
+                <button className="bottom-close-btn" onClick={onClose}  >
                     Close
                 </button>
 

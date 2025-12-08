@@ -150,7 +150,7 @@ const QuestionFooterComponent = ({
       </div>
 
       {/* Render card only when needed */}
-      {showProgressCard && (
+      {/*  {showProgressCard && (
         <QuestionBankProgressCard
           data={resultData}
 
@@ -159,8 +159,11 @@ const QuestionFooterComponent = ({
             navigate("/student/question-bank");
           }}
         />
-      )}
+      )} */}
 
+      {showProgressCard && (
+        <QuestionBankProgressCard data={resultData} />
+      )}
 
       {showSampleProgressCard && (
         <SampleQuestionnaireProgressCard
