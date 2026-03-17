@@ -162,9 +162,7 @@ function TableDropDownQuestionView({ onSubmit }) {
           mb: 2,
           fontSize: { xs: "1rem", md: "1.45rem" },
         }}
-      >
-        {questionText}
-      </Typography>
+       dangerouslySetInnerHTML={{ __html: questionText || "" }} />
 
 
       {/* Tabs */}
@@ -222,7 +220,7 @@ function TableDropDownQuestionView({ onSubmit }) {
                 <>
                   {activeTabData?.tabImage && (
                     <img
-                      src={`https://lunarsenterprises.com:6040/${activeTabData.tabImage}`}
+                      src={`${process.env.REACT_APP_API_URL.replace('/davidsacademy', '')}/${activeTabData.tabImage}`}
                       alt="tabImage"
                       style={{
                         display: "block", // ✅ center image
@@ -258,9 +256,7 @@ function TableDropDownQuestionView({ onSubmit }) {
       {questionData?.data?.instructions &&
         <Box sx={{ py: 4, alignItems: "center", justifyContent: "center", textAlign: "center" }} >
           <Typography sx={{ fontWeight: 200 }} ><h4>Question Instruction</h4></Typography>
-          <Typography variant="h3" sx={{ fontWeight: 200, fontSize: 15, pt: 2, pb: 4 }}>
-            {questionData?.data?.instructions}
-          </Typography>
+          <Typography variant="h3" sx={{ fontWeight: 200, fontSize: 15, pt: 2, pb: 4 }} dangerouslySetInnerHTML={{ __html: questionData?.data?.instructions || "" }} />
         </Box>
       }
 

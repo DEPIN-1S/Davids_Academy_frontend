@@ -98,9 +98,7 @@ function FillinTheBlanksQuestionView() {
       }}
     >
       {/* Question Text */}
-      <Typography variant="h6" fontWeight={700} textAlign="center" mb={2}>
-        {questionText}
-      </Typography>
+      <Typography variant="h6" fontWeight={700} textAlign="center" mb={2} dangerouslySetInnerHTML={{ __html: questionText || "" }} />
 
       {/* Tabs */}
       {tabsInfo.length > 0 && (

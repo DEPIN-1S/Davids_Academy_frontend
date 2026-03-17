@@ -116,9 +116,7 @@ function MultiDropdownQuestionView({ onSubmit }) {
                 variant="h6"
                 fontWeight={700}
                 sx={{ textAlign: "center", mb: 2, pt: 4, fontSize: { xs: "1rem", md: "1.45rem" } }}
-            >
-                {questionText}
-            </Typography>
+             dangerouslySetInnerHTML={{ __html: questionText || "" }} />
 
 
             {instructions && (
@@ -127,9 +125,7 @@ function MultiDropdownQuestionView({ onSubmit }) {
                         textAlign: "center", color: "#4b5563", mb: 4, pt: 4,
                         fontSize: { xs: "0.9rem", md: "1.25rem" },
                     }}
-                >
-                    {instructions}
-                </Typography>
+                 dangerouslySetInnerHTML={{ __html: instructions || "" }} />
             )}
 
             {/* ✅ Modern Tabs Design  */}
@@ -189,7 +185,7 @@ function MultiDropdownQuestionView({ onSubmit }) {
                                 <>
                                     {activeTabData?.tabImage && (
                                         <img
-                                            src={`https://lunarsenterprises.com:6040/${activeTabData.tabImage}`}
+                                            src={`${process.env.REACT_APP_API_URL.replace('/davidsacademy', '')}/${activeTabData.tabImage}`}
                                             alt="Exhibit"
                                             style={{
                                                 display: "block", // center image
@@ -225,9 +221,7 @@ function MultiDropdownQuestionView({ onSubmit }) {
             {questionData?.data?.instructions &&
                 <Box sx={{ py: 4, alignItems: "center", justifyContent: "center", textAlign: "center" }} >
                     <Typography sx={{ fontWeight: 200 }} ><h4>Question Instruction</h4></Typography>
-                    <Typography variant="h3" sx={{ fontWeight: 200, fontSize: 15, pt: 2, }}>
-                        {questionData?.data?.instructions}
-                    </Typography>
+                    <Typography variant="h3" sx={{ fontWeight: 200, fontSize: 15, pt: 2, }} dangerouslySetInnerHTML={{ __html: questionData?.data?.instructions || "" }} />
                 </Box>
             }
 

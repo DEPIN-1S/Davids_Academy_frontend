@@ -159,7 +159,7 @@ const TableDropdownQuestionComponent = ({ question, onSubmit, submittedResult })
       pathname === "/student/exam" &&
       (testId || searchParams.get("mode") === "question-bank")
     ) {
-      console.log("inside table dropdown mock test response submitting");
+
 
       // ✅ send in desired format: [{rowLabel, answer}]
       const tableDropdownAnswersPayload = tableDropdownFields.map((field) => ({
@@ -226,9 +226,7 @@ const TableDropdownQuestionComponent = ({ question, onSubmit, submittedResult })
           textAlign: "left",
           alignItems: "center",
         }} fontWeight={700} mb={5}
-      >
-        {questionText}
-      </Typography>
+       dangerouslySetInnerHTML={{ __html: questionText || "" }} />
 
       {/* Instructions */}
       {instructions && (
@@ -249,9 +247,7 @@ const TableDropdownQuestionComponent = ({ question, onSubmit, submittedResult })
               fontSize: { xs: "0.9rem", md: "1rem" },
               lineHeight: 1.6,
             }}
-          >
-            {instructions}
-          </Typography>
+           dangerouslySetInnerHTML={{ __html: instructions || "" }} />
         </Box>
       )}
 
@@ -332,7 +328,7 @@ const TableDropdownQuestionComponent = ({ question, onSubmit, submittedResult })
                 // Clean spacing for Quill-generated <p> tags
                 '& p': { margin: 0, marginBottom: '0.5em' },
                 '& p:last-child': { marginBottom: 0 },
-                '& *': { lineHeight: 1.6 },
+                '& *': { lineHeight: 1.6 , wordBreak: "break-word", overflowWrap: "anywhere" , wordBreak: "break-word", overflowWrap: "anywhere" },
               }}
               dangerouslySetInnerHTML={{
                 __html:
@@ -346,7 +342,7 @@ const TableDropdownQuestionComponent = ({ question, onSubmit, submittedResult })
                   src={
                     tabsInfo[activeTab].tabImage.startsWith("http")
                       ? tabsInfo[activeTab].tabImage
-                      : `${'https://lunarsenterprises.com:6040/'}${tabsInfo[activeTab].tabImage}`
+                      : `${process.env.REACT_APP_API_URL.replace('/davidsacademy', '')}/${tabsInfo[activeTab].tabImage}`
                   }
                   alt="tab"
                   style={{
@@ -368,13 +364,13 @@ const TableDropdownQuestionComponent = ({ question, onSubmit, submittedResult })
           sx={{
             boxShadow: "0 4px 6px -1px rgb(0 0 0 / 0.1)",
             borderRadius: "0.75rem",
-            overflow: "hidden",
+            overflowX: "auto", overflowY: "hidden",
             maxWidth: { xs: "100%", md: 720 },
             margin: "0 auto",
             width: "100%",
           }}
         >
-          <Table sx={{ width: "100%", tableLayout: "fixed" }}>
+          <Table sx={{ width: "100%", tableLayout: { xs: "auto", md: "fixed" } }}>
             <TableHead>
               <TableRow
                 sx={{
@@ -387,8 +383,10 @@ const TableDropdownQuestionComponent = ({ question, onSubmit, submittedResult })
                     color: "#475569",
                     fontSize: { xs: "0.9rem", md: "1rem" },
                     borderBottom: "1px solid #e2e8f0",
+                    width: { xs: "auto", md: "60%" },
+                    wordBreak: "break-word",
+                      minWidth: { xs: "140px", sm: "auto" },
                   }}
-                  width="60%"
                 >
                   {tableHeaders.leftHeader || "Category"}
                 </TableCell>
@@ -398,8 +396,10 @@ const TableDropdownQuestionComponent = ({ question, onSubmit, submittedResult })
                     color: "#475569",
                     fontSize: { xs: "0.9rem", md: "1rem" },
                     borderBottom: "1px solid #e2e8f0",
+                    width: { xs: "auto", md: "40%" },
+                    wordBreak: "break-word",
+                      minWidth: { xs: "140px", sm: "auto" },
                   }}
-                  width="40%"
                 >
                   {tableHeaders.rightHeader || "Anticipated Order"}
                 </TableCell>
@@ -429,16 +429,17 @@ const TableDropdownQuestionComponent = ({ question, onSubmit, submittedResult })
                         color: "#1f2937",
                         fontSize: { xs: "0.9rem", md: "1rem" },
                         borderBottom: "1px solid #e2e8f0",
-                      }}
-                      width="60%"
+                        wordBreak: "break-word",
+                       minWidth: { xs: "140px", sm: "auto" }
+                    }}
                     >
                       {field.fieldLabel}
                     </TableCell>
                     <TableCell
                       sx={{
                         borderBottom: "1px solid #e2e8f0",
-                      }}
-                      width="40%"
+                       minWidth: { xs: "140px", sm: "auto" }
+                    }}
                     >
                       <Select
                         value={dropdownValues[field.id] || ""}
@@ -466,6 +467,8 @@ const TableDropdownQuestionComponent = ({ question, onSubmit, submittedResult })
                                   ? "#c0392b"
                                   : "#475569"
                               : "#475569",
+                            whiteSpace: "normal",
+                            wordBreak: "break-word",
                           },
                           "&.Mui-focused": {
                             borderColor: "#3b82f6",
@@ -473,7 +476,7 @@ const TableDropdownQuestionComponent = ({ question, onSubmit, submittedResult })
                           },
                         }}
                       >
-                        <MenuItem value="">
+                        <MenuItem value="" sx={{ whiteSpace: "normal", wordBreak: "break-word" }}>
                           <em>Select</em>
                         </MenuItem>
                         {field.dropdownOptions.map((option, optIndex) => (
@@ -483,6 +486,8 @@ const TableDropdownQuestionComponent = ({ question, onSubmit, submittedResult })
                             sx={{
                               fontSize: { xs: "0.9rem", md: "1rem" },
                               color: "#475569",
+                              whiteSpace: "normal",
+                              wordBreak: "break-word",
                             }}
                           >
                             {option}
@@ -633,7 +638,7 @@ const TableDropdownQuestionComponent = ({ question, onSubmit, submittedResult })
             }
             additionalInfoImage={
               question.additionalInfo?.[0]?.image
-                ? `https://lunarsenterprises.com:6040/${question.additionalInfo[0].image}`
+                ? `${process.env.REACT_APP_API_URL.replace('/davidsacademy', '')}/${question.additionalInfo[0].image}`
                 : null
             }
             isAnswerCorrect={isCorrect}

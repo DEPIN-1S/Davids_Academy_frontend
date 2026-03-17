@@ -38,6 +38,7 @@ function MultiDropDownQuestionContent() {
     location.state?.questionType || existingData.questionType || "Dropdown";
   const cs_id = location.state?.cs_id || "";
   const exam_type = location.state?.exam_type || "";
+  const topic_id = location.state?.topic_id || "";
   const question_type_id = location.state?.question_type_id || "";
 
   const [question, setQuestion] = useState(existingData.question || "");
@@ -218,6 +219,7 @@ function MultiDropDownQuestionContent() {
 
     const questionData = {
       cs_id,
+      topic_id,
       exam_type,
       question_type_id,
       questionType,
@@ -249,7 +251,7 @@ function MultiDropDownQuestionContent() {
   const handleBack = () => {
     const currentData = { question: question.trim(), headers, tabs, rows, instruction };
     navigate("/admin/question-type", {
-      state: { questionData: currentData, fromStep: "content", cs_id, exam_type, question_type_id }
+      state: { questionData: currentData, fromStep: "content", cs_id, topic_id, exam_type, question_type_id }
     });
   };
 
@@ -270,26 +272,28 @@ function MultiDropDownQuestionContent() {
       </Typography>
 
       {/* Question Input */}
-      <Typography variant="h6" mb={1} color="primary">
-        Question Text *
-      </Typography>
-      <TextField
-        fullWidth
-        label="Enter your question"
-        multiline
-        minRows={3}
-        maxRows={6}
-        value={question}
-        onChange={(e) => {
-          setQuestion(e.target.value);
-          setErrors((prev) => ({ ...prev, question: null }));
-        }}
-        variant="outlined"
-        placeholder="Type your question here..."
-        error={!!errors.question}
-        helperText={errors.question}
-        sx={{ mb: 3 }}
-      />
+      <Box sx={{ minHeight: '170px', mb: 3 }}>
+        <Typography variant="h6" mb={1} color="primary">
+          Question Text *
+        </Typography>
+        <ReactQuill
+          theme="snow"
+          value={question}
+          onChange={(content) => {
+            setQuestion(content);
+            setErrors((prev) => ({ ...prev, question: null }));
+          }}
+          modules={tabModules}
+          formats={tabFormats}
+          placeholder="Type your question here..."
+          style={{ height: '120px', borderBottomLeftRadius: 4, borderBottomRightRadius: 4 }}
+        />
+        {errors.question && (
+          <Typography color="error" variant="caption" sx={{ display: 'block', mt: 5 }}>
+            {errors.question}
+          </Typography>
+        )}
+      </Box>
 
       {/* Tabs Section */}
       <Accordion defaultExpanded sx={{ mb: 3 }}>
@@ -509,11 +513,11 @@ function MultiDropDownQuestionContent() {
                         onChange={(e) => handleColumnAnswerChange(rowIndex, colIndex, e.target.value)}
                         label="Correct Answer"
                       >
-                        <MenuItem value="">
+                        <MenuItem value="" sx={{ whiteSpace: "normal", wordBreak: "break-word" }}>
                           <em>-- Select Answer --</em>
                         </MenuItem>
                         {row.options[colIndex].map((opt, i) => (
-                          <MenuItem key={i} value={opt}>
+                          <MenuItem key={i} value={opt} sx={{ whiteSpace: "normal", wordBreak: "break-word" }}>
                             {opt}
                           </MenuItem>
                         ))}
@@ -540,26 +544,28 @@ function MultiDropDownQuestionContent() {
       </Accordion>
 
       {/* Instruction */}
-      <Typography variant="h6" mb={1} color="primary">
-        Instruction *
-      </Typography>
-      <TextField
-        fullWidth
-        label="Enter Question Instruction"
-        multiline
-        minRows={3}
-        maxRows={6}
-        value={instruction}
-        onChange={(e) => {
-          setInstruction(e.target.value);
-          setErrors((prev) => ({ ...prev, instruction: null }));
-        }}
-        variant="outlined"
-        placeholder="Type your question instruction here..."
-        error={!!errors.instruction}
-        helperText={errors.instruction}
-        sx={{ mb: 3 }}
-      />
+      <Box sx={{ minHeight: '170px', mb: 3 }}>
+        <Typography variant="h6" mb={1} color="primary">
+          Instruction *
+        </Typography>
+        <ReactQuill
+          theme="snow"
+          value={instruction}
+          onChange={(content) => {
+            setInstruction(content);
+            setErrors((prev) => ({ ...prev, instruction: null }));
+          }}
+          modules={tabModules}
+          formats={tabFormats}
+          placeholder="Type your question instruction here..."
+          style={{ height: '120px', borderBottomLeftRadius: 4, borderBottomRightRadius: 4 }}
+        />
+        {errors.instruction && (
+          <Typography color="error" variant="caption" sx={{ display: 'block', mt: 5 }}>
+            {errors.instruction}
+          </Typography>
+        )}
+      </Box>
 
       {/* Navigation */}
       <Box mt={4} display="flex" justifyContent="space-between">

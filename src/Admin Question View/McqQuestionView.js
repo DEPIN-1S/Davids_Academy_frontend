@@ -91,9 +91,7 @@ function McqQuestionView() {
           fontWeight={700}
           mb={2}
           sx={{ textAlign: "center", color: "#2e3760", pt: 4 }}
-        >
-          {questionText}
-        </Typography>
+         dangerouslySetInnerHTML={{ __html: questionText || "" }} />
 
         <Box>
 
@@ -101,7 +99,7 @@ function McqQuestionView() {
             {questionData?.data?.exhibit && (
               <img
                 width={400}
-                src={`https://lunarsenterprises.com:6040/${exhibit}`}
+                src={`${process.env.REACT_APP_API_URL.replace('/davidsacademy', '')}/${exhibit}`}
 
                 alt="Exhibit"
                 style={{ maxWidth: '100%', marginBottom: '1rem', borderRadius: 8 }}
@@ -165,7 +163,7 @@ function McqQuestionView() {
                     <>
                       {activeTabData?.tabImage && (
                         <img
-                          src={`https://lunarsenterprises.com:6040/${activeTabData.tabImage}`}
+                          src={`${process.env.REACT_APP_API_URL.replace('/davidsacademy', '')}/${activeTabData.tabImage}`}
                           alt="tabImage"
                           style={{
                             display: "block", // ✅ center image
@@ -176,9 +174,7 @@ function McqQuestionView() {
                           }}
                         />
                       )}
-                      <Typography variant="body1" sx={{ color: "#333", textAlign: 'left' }}>
-                        {activeTabData?.tabValue || ""}
-                      </Typography>
+                      <Typography variant="body1" sx={{ color: "#333", textAlign: 'left' }} dangerouslySetInnerHTML={{ __html: activeTabData?.tabValue || "" }} />
                     </>
                   );
                 })()}
@@ -189,9 +185,7 @@ function McqQuestionView() {
           {questionData?.data?.instructions &&
             <Box sx={{ pb: "10px", py: 4, alignItems: "center", justifyContent: "center", textAlign: "center" }} >
               <Typography sx={{ fontWeight: 200 }} ><h4>Question Instruction</h4></Typography>
-              <Typography variant="h3" sx={{ fontWeight: 200, fontSize: 15, pt: 2 }}>
-                {questionData?.data?.instructions}
-              </Typography>
+              <Typography variant="h3" sx={{ fontWeight: 200, fontSize: 15, pt: 2 }} dangerouslySetInnerHTML={{ __html: questionData?.data?.instructions || "" }} />
             </Box>
           }
 

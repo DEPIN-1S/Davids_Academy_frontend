@@ -88,7 +88,7 @@ const RevealAnswerComponent = ({
             fontWeight={600}
             mb={1}
             color="#2E3760"
-            dangerouslySetInnerHTML={{ __html: explanationHeading }}
+            style={{ wordBreak: "break-word", overflowWrap: "anywhere" }} dangerouslySetInnerHTML={{ __html: explanationHeading }}
           />
         )}
 
@@ -104,7 +104,7 @@ const RevealAnswerComponent = ({
               '& p': { margin: 0, marginBottom: '0.5em' },
               '& p:last-child': { marginBottom: 0 },
             }}
-            dangerouslySetInnerHTML={{ __html: para }}
+            style={{ wordBreak: "break-word", overflowWrap: "anywhere" }} dangerouslySetInnerHTML={{ __html: para }}
           />
         ))}
 
@@ -120,7 +120,7 @@ const RevealAnswerComponent = ({
             mt={3}
             mb={1}
             color="#2E3760"
-            dangerouslySetInnerHTML={{ __html: additionalInfoHeading }}
+            style={{ wordBreak: "break-word", overflowWrap: "anywhere" }} dangerouslySetInnerHTML={{ __html: additionalInfoHeading }}
           />
         )}
 
@@ -135,7 +135,7 @@ const RevealAnswerComponent = ({
               '& p': { margin: 0, marginBottom: '0.5em' },
               '& p:last-child': { marginBottom: 0 },
             }}
-            dangerouslySetInnerHTML={{ __html: para }}
+            style={{ wordBreak: "break-word", overflowWrap: "anywhere" }} dangerouslySetInnerHTML={{ __html: para }}
           />
         ))}
 

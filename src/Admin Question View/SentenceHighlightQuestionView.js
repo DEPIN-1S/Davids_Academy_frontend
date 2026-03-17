@@ -121,9 +121,7 @@ function SentenceHighlightQuestionView() {
         variant="h6"
         fontWeight={700}
         sx={{ textAlign: "center", mb: 2, pt: 4, fontSize: { xs: "1rem", md: "1.45rem", color: "#2e3760" } }}
-      >
-        {questionData?.data?.question}
-      </Typography>
+       dangerouslySetInnerHTML={{ __html: questionData?.data?.question || "" }} />
 
 
       {/* Tabs */}
@@ -149,7 +147,7 @@ function SentenceHighlightQuestionView() {
             <>
               {currentTab.tabImage && (
                 <img
-                  src={`https://lunarsenterprises.com:6040/${currentTab.tabImage}`}
+                  src={`${process.env.REACT_APP_API_URL.replace('/davidsacademy', '')}/${currentTab.tabImage}`}
 
                   style={{
                     width: 500,
@@ -179,9 +177,7 @@ function SentenceHighlightQuestionView() {
       {questionData?.data?.instructions &&
         <Box sx={{ pb: "10px", py: 4, alignItems: "center", justifyContent: "center", textAlign: "center" }} >
           <Typography sx={{ fontWeight: 200 }} ><h4>Question Instruction</h4></Typography>
-          <Typography variant="h3" sx={{ fontWeight: 200, fontSize: 18, pt: 2 }}>
-            {questionData?.data?.instructions}
-          </Typography>
+          <Typography variant="h3" sx={{ fontWeight: 200, fontSize: 18, pt: 2 }} dangerouslySetInnerHTML={{ __html: questionData?.data?.instructions || "" }} />
         </Box>
       }
 

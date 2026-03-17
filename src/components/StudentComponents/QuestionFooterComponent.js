@@ -30,18 +30,21 @@ const QuestionFooterComponent = ({
   const token = sessionStorage.getItem("accessToken");
   const navigate = useNavigate()
   const [showProgressCard, setShowProgressCard] = useState(false);
-  const handleSubmitAndExit = () => {
-    dispatch(getQuestionBankResult(token));
-    setShowProgressCard(true);
-  };
-  const resultData = useSelector((state) => state.exam.questionBankResult);
-  const [showCompletedModal, setShowCompletedModal] = useState(false);
   const location = useLocation();
   const searchParams = new URLSearchParams(location.search);
   const isQuestionBankRoute = searchParams.get("mode") === "question-bank";
+  const topicsQuery = searchParams.get("topics") || "";
   const isSampleRoute = searchParams.get("mode") === "sample";
   const [isRevealed, setIsRevealed] = useState(false);
   const [showNotAnsweredModal, setShowNotAnsweredModal] = useState(false);
+
+  const handleSubmitAndExit = () => {
+    dispatch(getQuestionBankResult({ token, topicsQuery }));
+    setShowProgressCard(true);
+  };
+  
+  const resultData = useSelector((state) => state.exam.questionBankResult);
+  const [showCompletedModal, setShowCompletedModal] = useState(false);
   const [showSampleProgressCard, setShowSampleProgressCard] = useState(false);
 
   useEffect(() => {

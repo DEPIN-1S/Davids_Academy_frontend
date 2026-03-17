@@ -18,20 +18,23 @@ const StudentNavbar = () => {
     <Box
       sx={{
         backgroundColor: "#2E3760",
-        borderRadius: "0 0 20px 20px",
-        padding: "0.75rem 1rem",
+        borderRadius: { xs: "0 0 10px 10px", sm: "0 0 20px 20px" },
+        padding: { xs: "0.5rem", sm: "0.75rem 1rem" },
         display: "flex",
-        justifyContent: isMobile ? "center" : "space-between",
+        justifyContent: "space-between",
         alignItems: "center",
-        flexDirection: isMobile ? "column" : "row",
-        gap: isMobile ? 2 : 0,
+        flexDirection: "row",
+        overflowX: "auto",
+        "&::-webkit-scrollbar": { display: "none" },
+        gap: 2,
       }}
     >
       <Stack
-        direction={isMobile ? "column" : "row"}
+        direction="row"
         spacing={isMobile ? 1 : 3}
-        alignItems={isMobile ? "stretch" : "center"}
-        width={isMobile ? "100%" : "auto"}
+        alignItems="center"
+        width="100%"
+        sx={{ minWidth: "max-content" }}
       >
         {navItems.map(({ label, path }) => {
           const isActive = location.pathname === path;
@@ -48,8 +51,10 @@ const StudentNavbar = () => {
                 color: isActive ? "#2E3760" : "#fff",
                 borderRadius: "12px",
                 fontWeight: isActive ? 600 : 400,
-                padding: "8px 16px",
-                justifyContent: isMobile ? "center" : "initial",
+                padding: { xs: "6px 10px", sm: "8px 16px" },
+                fontSize: { xs: "0.75rem", sm: "0.875rem" },
+                justifyContent: "center",
+                whiteSpace: "nowrap",
                 "&:hover": {
                   backgroundColor: isActive ? "#ffffff" : "#3b4470",
                 },

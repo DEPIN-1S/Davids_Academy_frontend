@@ -23,7 +23,7 @@ const buildImageUrl = (path) => {
   if (!path) return null;
   if (path.startsWith("http://") || path.startsWith("https://")) return path;
   const clean = String(path).replace(/^\/+/, "");
-  return `https://lunarsenterprises.com:6040/${clean}`;
+  return `${process.env.REACT_APP_API_URL.replace('/davidsacademy', '')}/${clean}`;
 };
 
 const MCQQuestionComponent = ({ question, onSubmit, submittedResult }) => {
@@ -208,13 +208,12 @@ const MCQQuestionComponent = ({ question, onSubmit, submittedResult }) => {
         sx={{
           textAlign: "left",
           alignItems: "center",
+          wordBreak: "break-word",
           color: "#2e3760",
           fontSize: { xs: "1rem", md: "1.25rem" },
           mb: 1,
         }}
-      >
-        {questionText}
-      </Typography>
+       dangerouslySetInnerHTML={{ __html: questionText || "" }} />
 
       {/* Exhibit */}
       {exhibit && (
@@ -241,11 +240,10 @@ const MCQQuestionComponent = ({ question, onSubmit, submittedResult }) => {
               mb: 2,
               fontSize: { xs: "0.9rem", md: "1rem" },
               lineHeight: 1.6,
+              wordBreak: "break-word",
               textAlign: "left"
             }}
-          >
-            {instructions}
-          </Typography>
+           dangerouslySetInnerHTML={{ __html: instructions || "" }} />
         </>
       )}
 
@@ -294,9 +292,7 @@ const MCQQuestionComponent = ({ question, onSubmit, submittedResult }) => {
                   textAlign: "left"
                 }}
               >
-                <Typography sx={{ color: "#333", fontSize: "0.95rem" }}>
-                  {active?.tabValue || "No content available"}
-                </Typography>
+                <Typography sx={{ color: "#333", fontSize: "0.95rem" , wordBreak: "break-word", overflowWrap: "anywhere"}} dangerouslySetInnerHTML={{ __html: active?.tabValue || "No content available" }} />
                 {active?.tabImage && (
                   <Box sx={{ mt: 2, textAlign: "center" }}>
                     <img
@@ -314,14 +310,14 @@ const MCQQuestionComponent = ({ question, onSubmit, submittedResult }) => {
 
       {/* Select All / Clear All */}
       <Box display="flex" gap={1} alignItems="center" mb={1} mt={3}>
-        <Button
+        {/* <Button
           variant="outlined"
           size="small"
           onClick={handleSelectAllToggle}
           disabled={showAnswer || mcqoptions.length === 0}
         >
           {allSelected ? "Clear All" : "Select All"}
-        </Button>
+        </Button> */}
         <Typography variant="caption" sx={{ color: "#6b7280", fontSize: "15px" }}>
           You can select any number of options.
         </Typography>
@@ -427,6 +423,7 @@ const MCQQuestionComponent = ({ question, onSubmit, submittedResult }) => {
             display: "flex",
             justifyContent: "center",
             alignItems: "center",
+          wordBreak: "break-word",
             zIndex: 9999,
           }}
         >

@@ -28,7 +28,7 @@ const SelectCourseComponent = () => {
 
     const handleNextClick = () => {
         if (!selectedCourseType) return;
-        navigate("/admin/exam-type", {
+        navigate("/admin/select-topic", {
             state: { cs_id: selectedCourseType }
         });
 

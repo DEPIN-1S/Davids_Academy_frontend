@@ -56,6 +56,7 @@ function TableDropdownQuestionContent() {
     const questionType =
         location.state?.questionType || existingData.questionType || "Dropdown";
     const cs_id = location.state?.cs_id || "";
+    const topic_id = location.state?.topic_id || "";
     const exam_type = location.state?.exam_type || "";
     const question_type_id = location.state?.question_type_id || "";
 
@@ -258,6 +259,7 @@ function TableDropdownQuestionContent() {
 
         const questionData = {
             cs_id,
+            topic_id,
             exam_type,
             question_type_id,
             questionType,
@@ -304,6 +306,7 @@ function TableDropdownQuestionContent() {
                 questionData: currentData,
                 fromStep: "content",
                 cs_id,
+                topic_id,
                 exam_type,
                 question_type_id,
             },
@@ -558,11 +561,11 @@ function TableDropdownQuestionContent() {
                                     }}
                                     label="Select Answer"
                                 >
-                                    <MenuItem value="">
+                                    <MenuItem value="" sx={{ whiteSpace: "normal", wordBreak: "break-word" }}>
                                         <em>-- Select Answer --</em>
                                     </MenuItem>
                                     {row.dropdownOptions.map((opt, i) => (
-                                        <MenuItem key={i} value={opt}>
+                                        <MenuItem key={i} value={opt} sx={{ whiteSpace: "normal", wordBreak: "break-word" }}>
                                             {opt}
                                         </MenuItem>
                                     ))}

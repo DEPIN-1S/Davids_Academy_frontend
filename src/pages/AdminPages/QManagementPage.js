@@ -10,6 +10,7 @@ import VisibilityIcon from "@mui/icons-material/Visibility";
 import { Button, TextField } from "@mui/material";
 import McqQuestionView from "../../Admin Question View/McqQuestionView";
 import { Modal, Box } from "@mui/material";
+import { stripHtml } from "../../utils/htmlHelper";
 
 
 const QManagementPage = () => {
@@ -230,7 +231,10 @@ const QManagementPage = () => {
             (q.questionId?.toLowerCase() || "").includes(
                 searchTerm.toLowerCase()
             ) ||
-            (q.questionPreview?.toLowerCase() || "").includes(
+            (stripHtml(q.question)?.toLowerCase() || "").includes(
+                searchTerm.toLowerCase()
+            ) ||
+             (stripHtml(q.questionPreview)?.toLowerCase() || "").includes(
                 searchTerm.toLowerCase()
             ) ||
             (q.subject?.toLowerCase() || "").includes(searchTerm.toLowerCase())
@@ -382,6 +386,7 @@ const QManagementPage = () => {
                                     <tr>
                                         <th>Q-ID</th>
                                         <th>Course</th>
+                                        <th>Topic</th>
                                         <th>Preview</th>
                                         <th>Type</th>
                                         <th>Difficulty</th>
@@ -398,10 +403,11 @@ const QManagementPage = () => {
                                         >
                                             <td>{q.id}</td>
                                             <td>{q.cs_name}</td>
+                                            <td>{q.topic_name || "-"}</td>
                                             <td>
-                                                {q.question?.length > 150
-                                                    ? q.question.substring(0, 150) + "..."
-                                                    : q.question}
+                                                {stripHtml(q.question)?.length > 150
+                                                    ? stripHtml(q.question).substring(0, 150) + "..."
+                                                    : stripHtml(q.question)}
                                             </td>
                                             <td>{q.questionType}</td>
                                             <td>{q.difficulty}</td>

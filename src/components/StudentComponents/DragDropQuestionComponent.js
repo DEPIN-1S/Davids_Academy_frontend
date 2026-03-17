@@ -202,12 +202,11 @@ const DragDropQuestionComponent = ({ question, onSubmit, submittedResult }) => {
           fontWeight: 600,
           mb: 3,
            textAlign: "left",
-          alignItems:"center",
+          alignItems: "center",
+          wordBreak: "break-word",
           fontSize: { xs: "1rem", md: "1.25rem" },
         }}
-      >
-        {questionText}
-      </Typography>
+       dangerouslySetInnerHTML={{ __html: questionText || "" }} />
 
       {/* Instructions */}
       {instructions && (
@@ -227,10 +226,9 @@ const DragDropQuestionComponent = ({ question, onSubmit, submittedResult }) => {
               color: "black",
               fontSize: { xs: "0.9rem", md: "1rem" },
               lineHeight: 1.6,
+              wordBreak: "break-word",
             }}
-          >
-            {instructions}
-          </Typography>
+           dangerouslySetInnerHTML={{ __html: instructions || "" }} />
         </Box>
       )}
 
@@ -304,7 +302,7 @@ const DragDropQuestionComponent = ({ question, onSubmit, submittedResult }) => {
                 // Fix Quill <p> spacing
                 '& p': { margin: 0, marginBottom: '0.5em' },
                 '& p:last-child': { marginBottom: 0 },
-                '& *': { lineHeight: 'inherit' },
+                '& *': { lineHeight: 'inherit' , wordBreak: "break-word", overflowWrap: "anywhere" , wordBreak: "break-word", overflowWrap: "anywhere" },
               }}
               dangerouslySetInnerHTML={{
                 __html: tabsInfo[activeTab]?.tabValue || ''
@@ -316,7 +314,7 @@ const DragDropQuestionComponent = ({ question, onSubmit, submittedResult }) => {
                   src={
                     tabsInfo[activeTab].tabImage.startsWith("http")
                       ? tabsInfo[activeTab].tabImage
-                      : `${'https://lunarsenterprises.com:6040/'}${tabsInfo[activeTab].tabImage}`
+                      : `${process.env.REACT_APP_API_URL.replace('/davidsacademy', '')}/${tabsInfo[activeTab].tabImage}`
                   }
                   alt={tabsInfo[activeTab].tabKey}
                   style={{
@@ -398,13 +396,14 @@ const DragDropQuestionComponent = ({ question, onSubmit, submittedResult }) => {
                               : "1px solid #e5e7eb",
                             fontSize: { xs: "0.9rem", md: "1rem" },
                             minHeight: 40,
+                          ".MuiSelect-select": { whiteSpace: "normal", wordBreak: "break-word" },
                           }}
                         >
-                          <MenuItem value="" disabled>
+                          <MenuItem value="" disabled sx={{ whiteSpace: "normal", wordBreak: "break-word" }}>
                             <em>Select</em>
                           </MenuItem>
                           {b.dragdropoption?.map((opt) => (
-                            <MenuItem key={opt.id} value={opt.options_value}>
+                            <MenuItem key={opt.id} value={opt.options_value} sx={{ whiteSpace: "normal", wordBreak: "break-word" }}>
                               {opt.options_value}
                             </MenuItem>
                           ))}
@@ -463,13 +462,14 @@ const DragDropQuestionComponent = ({ question, onSubmit, submittedResult }) => {
                           : "1px solid #e5e7eb",
                         fontSize: { xs: "0.9rem", md: "1rem" },
                         minHeight: 40,
+                          ".MuiSelect-select": { whiteSpace: "normal", wordBreak: "break-word" },
                       }}
                     >
-                      <MenuItem value="" disabled>
+                      <MenuItem value="" disabled sx={{ whiteSpace: "normal", wordBreak: "break-word" }}>
                         <em>Select</em>
                       </MenuItem>
                       {branches[0].dragdropoption?.map((opt) => (
-                        <MenuItem key={opt.id} value={opt.options_value}>
+                        <MenuItem key={opt.id} value={opt.options_value} sx={{ whiteSpace: "normal", wordBreak: "break-word" }}>
                           {opt.options_value}
                         </MenuItem>
                       ))}
@@ -535,13 +535,14 @@ const DragDropQuestionComponent = ({ question, onSubmit, submittedResult }) => {
                               : "1px solid #e5e7eb",
                             fontSize: { xs: "0.9rem", md: "1rem" },
                             minHeight: 40,
+                          ".MuiSelect-select": { whiteSpace: "normal", wordBreak: "break-word" },
                           }}
                         >
-                          <MenuItem value="" disabled>
+                          <MenuItem value="" disabled sx={{ whiteSpace: "normal", wordBreak: "break-word" }}>
                             <em>Select</em>
                           </MenuItem>
                           {b.dragdropoption?.map((opt) => (
-                            <MenuItem key={opt.id} value={opt.options_value}>
+                            <MenuItem key={opt.id} value={opt.options_value} sx={{ whiteSpace: "normal", wordBreak: "break-word" }}>
                               {opt.options_value}
                             </MenuItem>
                           ))}
@@ -568,6 +569,7 @@ const DragDropQuestionComponent = ({ question, onSubmit, submittedResult }) => {
               display: "flex",
               justifyContent: "center",
               alignItems: "center",
+          wordBreak: "break-word",
               zIndex: 9999,
             }}
           >
@@ -672,6 +674,7 @@ const DragDropQuestionComponent = ({ question, onSubmit, submittedResult }) => {
                     sx={{
                       color: "#333",
                       fontWeight: 500,
+                      wordBreak: "break-word",
                       flex: "0 0 auto",
                       minWidth: { xs: "120px", sm: "150px" },
                       fontSize: { xs: "0.9rem", md: "1rem" },
@@ -729,6 +732,7 @@ const DragDropQuestionComponent = ({ question, onSubmit, submittedResult }) => {
                   sx={{
                     color: "#333",
                     fontWeight: 500,
+                      wordBreak: "break-word",
                     flex: "0 0 auto",
                     minWidth: { xs: "120px", sm: "150px" },
                     fontSize: { xs: "0.9rem", md: "1rem" },
@@ -773,7 +777,7 @@ const DragDropQuestionComponent = ({ question, onSubmit, submittedResult }) => {
             }
             additionalInfoImage={
               question.additionalInfo?.[0]?.image
-                ? `https://lunarsenterprises.com:6040/${question.additionalInfo[0].image}`
+                ? `${process.env.REACT_APP_API_URL.replace('/davidsacademy', '')}/${question.additionalInfo[0].image}`
                 : null
             }
             isAnswerCorrect={isCorrect}

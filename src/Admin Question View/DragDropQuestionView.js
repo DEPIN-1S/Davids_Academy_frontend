@@ -44,9 +44,7 @@ const DragDropQuestionView = () => {
         fontWeight={700}
         mb={2}
         sx={{ textAlign: "center", color: "#2e3760", py: 4 }}
-      >
-        {questionData?.data?.question}
-      </Typography>
+       dangerouslySetInnerHTML={{ __html: questionData?.data?.question || "" }} />
 
       {/* Tabs */}
       {tabsInfo.length > 0 && (
@@ -80,7 +78,7 @@ const DragDropQuestionView = () => {
           <>
             {tabsInfo.find((t) => t.tabKey === activeTab)?.tabImage && (
               <img
-                src={`https://lunarsenterprises.com:6040/${tabsInfo.find((t) => t.tabKey === activeTab)?.tabImage}`}
+                src={`${process.env.REACT_APP_API_URL.replace('/davidsacademy', '')}/${tabsInfo.find((t) => t.tabKey === activeTab)?.tabImage}`}
                 alt="Exhibit"
                 style={{ width: 500, borderRadius: "8px", marginBottom: "1rem" }}
               />
@@ -101,9 +99,7 @@ const DragDropQuestionView = () => {
       {questionData?.data?.instructions &&
         <Box sx={{ pb: "10px", py: 4, alignItems: "center", justifyContent: "center", textAlign: "center" }} >
           <Typography sx={{ fontWeight: 200 }} ><h4>Question Instruction</h4></Typography>
-          <Typography variant="h3" sx={{ fontWeight: 200, fontSize: 15, pt: 2 }}>
-            {questionData?.data?.instructions}
-          </Typography>
+          <Typography variant="h3" sx={{ fontWeight: 200, fontSize: 15, pt: 2 }} dangerouslySetInnerHTML={{ __html: questionData?.data?.instructions || "" }} />
         </Box>
       }
 

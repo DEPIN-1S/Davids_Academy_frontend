@@ -129,9 +129,7 @@ function TableHighlightQuestionView({ onSubmit }) {
                     fontSize: { xs: "1rem", md: "1.45rem" },
                     mb: 3,
                 }}
-            >
-                {questionText}
-            </Typography>
+             dangerouslySetInnerHTML={{ __html: questionText || "" }} />
 
 
 
@@ -185,7 +183,7 @@ function TableHighlightQuestionView({ onSubmit }) {
                                 <>
                                     {activeTabData?.tabImage && (
                                         <img
-                                            src={`https://lunarsenterprises.com:6040/${activeTabData.tabImage}`}
+                                            src={`${process.env.REACT_APP_API_URL.replace('/davidsacademy', '')}/${activeTabData.tabImage}`}
                                             alt="tabImage"
                                             style={{
                                                 display: "block", // ✅ center image
@@ -220,9 +218,7 @@ function TableHighlightQuestionView({ onSubmit }) {
             {questionData?.data?.instructions &&
                 <Box sx={{ py: 4, alignItems: "center", justifyContent: "center", textAlign: "center" }} >
                     <Typography sx={{ fontWeight: 200 }} ><h4>Question Instruction</h4></Typography>
-                    <Typography variant="h3" sx={{ fontWeight: 200, fontSize: 15, pt: 2, pb: 4 }}>
-                        {questionData?.data?.instructions}
-                    </Typography>
+                    <Typography variant="h3" sx={{ fontWeight: 200, fontSize: 15, pt: 2, pb: 4 }} dangerouslySetInnerHTML={{ __html: questionData?.data?.instructions || "" }} />
                 </Box>
             }
 

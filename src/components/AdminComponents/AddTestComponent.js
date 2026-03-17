@@ -37,6 +37,8 @@ function AddTest() {
   // ⬇️ Local states
   const [selected, setSelected] = useState([]);
   const [selectedCourse, setSelectedCourse] = useState("");
+  const [topics, setTopics] = useState([]);
+  const [selectedTopic, setSelectedTopic] = useState("");
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
   const [testTitle, setTestTitle] = useState(""); // ⬅️ Added for title input
@@ -53,12 +55,36 @@ function AddTest() {
     dispatch(fetchCourses());
   }, [dispatch]);
 
-  // ⬇️ Fetch questions when course changes
+  // ⬇️ Fetch topics when course changes
   useEffect(() => {
     if (selectedCourse) {
-      dispatch(adminFetchMockTestQuestionsByCourseId(selectedCourse));
+      const fetchTopics = async () => {
+        try {
+          const token = sessionStorage.getItem("accessToken");
+          const response = await fetch(`${process.env.REACT_APP_API_URL}/topic/list?course_id=${selectedCourse}`, {
+            headers: { Authorization: `Bearer ${token}` }
+          });
+          const result = await response.json();
+          if (result.success) {
+            setTopics(result.topics || []);
+          }
+        } catch (error) {
+          console.error("Error fetching topics:", error);
+        }
+      };
+      fetchTopics();
+    } else {
+      setTopics([]);
+      setSelectedTopic("");
     }
-  }, [dispatch, selectedCourse]);
+  }, [selectedCourse]);
+
+  // ⬇️ Fetch questions when course or topic changes
+  useEffect(() => {
+    if (selectedCourse) {
+      dispatch(adminFetchMockTestQuestionsByCourseId({ courseId: selectedCourse, topics: selectedTopic }));
+    }
+  }, [dispatch, selectedCourse, selectedTopic]);
 
   // Handlers
   const handleBackClick = () => {
@@ -106,9 +132,9 @@ function AddTest() {
 
       {submitError && <Alert severity="error">{submitError}</Alert>}
 
-      {/* Course Dropdown + Title + Dates */}
-      <Box sx={{ display: "flex", gap: 2 }}>
-        <FormControl fullWidth>
+      {/* Course & Topic Dropdowns + Title + Dates */}
+      <Box sx={{ display: "flex", gap: 2, flexWrap: "wrap" }}>
+        <FormControl fullWidth sx={{ flex: 1, minWidth: 200 }}>
           <Select
             value={selectedCourse}
             onChange={(e) => setSelectedCourse(e.target.value)}
@@ -122,6 +148,25 @@ function AddTest() {
             {courses.map((c) => (
               <MenuItem key={c.cs_id} value={c.cs_id}>
                 {c.cs_name}
+              </MenuItem>
+            ))}
+          </Select>
+        </FormControl>
+
+        <FormControl fullWidth sx={{ flex: 1, minWidth: 200 }}>
+          <Select
+            value={selectedTopic}
+            onChange={(e) => setSelectedTopic(e.target.value)}
+            displayEmpty
+            disabled={!selectedCourse}
+            sx={{ borderRadius: 2, fontWeight: 500, bgcolor: "#f9f9f9", "& .MuiSelect-select": { padding: 2 } }}
+          >
+            <MenuItem value="">
+              All Topics
+            </MenuItem>
+            {topics.map((t) => (
+              <MenuItem key={t.topic_id} value={t.topic_id}>
+                {t.topic_name}
               </MenuItem>
             ))}
           </Select>

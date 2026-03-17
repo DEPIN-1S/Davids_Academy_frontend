@@ -172,7 +172,7 @@ const FillInQuestionComponent = ({ question, onSubmit }) => {
             additionalInfoParagraphs={additionalInfo.map((info) => info.info) || []}
             additionalInfoImage={
               question.additionalInfo?.[0]?.image
-                ? `https://lunarsenterprises.com:6040/${question.additionalInfo[0].image}`
+                ? `${process.env.REACT_APP_API_URL.replace('/davidsacademy', '')}/${question.additionalInfo[0].image}`
                 : null
             }
 

@@ -147,7 +147,7 @@ const TableHighlightSelectComponent = ({ question, onSubmit, submittedResult }) 
     const testId = searchParams.get('testId');
 
     if (pathname === "/student/exam" && (testId || searchParams.get('mode') === 'question-bank')) {
-      console.log("inside table highlight mock test response submitting");
+
 
       const answers = Array.from(selectedItems).map((rightColumnValue) => {
         const field = tableFields.find(f => f.rightColumn === rightColumnValue);
@@ -220,9 +220,7 @@ const TableHighlightSelectComponent = ({ question, onSubmit, submittedResult }) 
           fontSize: { xs: "1rem", md: "1.25rem" },
           mb: 1,
         }}
-      >
-        {questionText}
-      </Typography>
+       dangerouslySetInnerHTML={{ __html: questionText || "" }} />
 
       {/* Instructions */}
       {instructions && (
@@ -243,9 +241,7 @@ const TableHighlightSelectComponent = ({ question, onSubmit, submittedResult }) 
               fontSize: { xs: "0.9rem", md: "1rem" },
               lineHeight: 1.6,
             }}
-          >
-            {instructions}
-          </Typography>
+           dangerouslySetInnerHTML={{ __html: instructions || "" }} />
         </Box>
       )}
 
@@ -326,7 +322,7 @@ const TableHighlightSelectComponent = ({ question, onSubmit, submittedResult }) 
                 // Fix spacing for <p> tags from Quill
                 '& p': { margin: 0, marginBottom: '0.5em' },
                 '& p:last-child': { marginBottom: 0 },
-                '& *': { lineHeight: 1.6 },
+                '& *': { lineHeight: 1.6 , wordBreak: "break-word", overflowWrap: "anywhere" , wordBreak: "break-word", overflowWrap: "anywhere" },
               }}
               dangerouslySetInnerHTML={{
                 __html: tabsInfo.find((tab) => tab.tabKey === activeTab)?.tabValue || ''
@@ -338,7 +334,7 @@ const TableHighlightSelectComponent = ({ question, onSubmit, submittedResult }) 
                   src={
                     tabsInfo[activeTab].tabImage.startsWith("http")
                       ? tabsInfo[activeTab].tabImage
-                      : `${'https://lunarsenterprises.com:6040/'}${tabsInfo[activeTab].tabImage}`
+                      : `${process.env.REACT_APP_API_URL.replace('/davidsacademy', '')}/${tabsInfo[activeTab].tabImage}`
                   }
                   alt="tab"
                   style={{
@@ -366,7 +362,7 @@ const TableHighlightSelectComponent = ({ question, onSubmit, submittedResult }) 
             width: "100%",
           }}
         >
-          <Table sx={{ width: "100%", tableLayout: "fixed" }}>
+          <Table sx={{ width: "100%", tableLayout: { xs: "auto", md: "fixed" } }}>
             <TableHead>
               <TableRow
                 sx={{
@@ -378,7 +374,7 @@ const TableHighlightSelectComponent = ({ question, onSubmit, submittedResult }) 
                     fontWeight: 600,
                     color: "#475569",
                     borderBottom: "1px solid #e2e8f0",
-                    width: "50%",
+                    width: { xs: "auto", md: "50%" },
                   }}
                 >
                   {tableHeaders.leftHeader || "Category"}
@@ -388,7 +384,7 @@ const TableHighlightSelectComponent = ({ question, onSubmit, submittedResult }) 
                     fontWeight: 600,
                     color: "#475569",
                     borderBottom: "1px solid #e2e8f0",
-                    width: "50%",
+                    width: { xs: "auto", md: "50%" },
                   }}
                 >
                   {tableHeaders.rightHeader || "Options"}
@@ -414,7 +410,8 @@ const TableHighlightSelectComponent = ({ question, onSubmit, submittedResult }) 
                       sx={{
                         color: "#1f2937",
                         borderBottom: "1px solid #e2e8f0",
-                        padding: "16px",
+                        padding: { xs: "12px", md: "16px" },
+                        wordBreak: "break-word",
                       }}
                     >
                       {field.leftColumn}
@@ -423,7 +420,7 @@ const TableHighlightSelectComponent = ({ question, onSubmit, submittedResult }) 
                       onClick={() => handleRightColumnClick(field.rightColumn)}
                       sx={{
                         borderBottom: "1px solid #e2e8f0",
-                        padding: "16px",
+                        padding: { xs: "12px", md: "16px" },
                         cursor: showReveal ? "default" : "pointer",
                         backgroundColor: showReveal
                           ? isCorrectAnswer
@@ -584,7 +581,7 @@ const TableHighlightSelectComponent = ({ question, onSubmit, submittedResult }) 
             }
             additionalInfoImage={
               question.additionalInfo?.[0]?.image
-                ? `https://lunarsenterprises.com:6040/${question.additionalInfo[0].image}`
+                ? `${process.env.REACT_APP_API_URL.replace('/davidsacademy', '')}/${question.additionalInfo[0].image}`
                 : null
             }
             isAnswerCorrect={isCorrect}

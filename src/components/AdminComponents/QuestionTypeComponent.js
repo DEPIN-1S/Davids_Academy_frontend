@@ -26,7 +26,7 @@ const QuestionTypeComponent = () => {
     const [selectedQuestionType, setSelectedQuestionType] = useState(null);
 
     // ✅ Receive exam_type from previous component
-    const { exam_type, cs_id } = location.state || {};
+    const { exam_type, cs_id, topic_id } = location.state || {};
 
     // ✅ Access the correct state key - your store has 'exam' not 'questions'
     const {
@@ -60,7 +60,8 @@ const QuestionTypeComponent = () => {
                     exam_type,
                     question_type_id: selectedQuestionType.id,
                     questionType: selectedQuestionType.type,
-                    cs_id
+                    cs_id,
+                    topic_id
                 },
             });
         } else {
@@ -74,7 +75,8 @@ const QuestionTypeComponent = () => {
             {
                 state: {
                     exam_type,
-                    cs_id
+                    cs_id,
+                    topic_id
                 }
             }
         );

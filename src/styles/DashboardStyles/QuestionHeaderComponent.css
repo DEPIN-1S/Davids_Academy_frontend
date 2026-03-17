@@ -72,18 +72,34 @@ margin-left: 20px;
 }
 
 @media (max-width: 600px) {
+  .question-header-container {
+    padding: 0.5rem 1rem;
+    border-radius: 0 0 12px 12px;
+  }
+
   .header-top {
-    flex-direction: column;
-    text-align: center;
-    gap: 8px;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .logo {
+    height: 35px;
+  }
+
+  .question-info {
+    text-align: right;
   }
 
   .header-progress {
-    flex-direction: column;
-    align-items: stretch;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    margin-top: 8px;
   }
 
   .progress-bar {
-    margin: 8px 0;
+    margin: 0 0 0 12px;
+    height: 5px;
   }
 }

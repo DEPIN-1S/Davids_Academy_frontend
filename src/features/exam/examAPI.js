@@ -150,18 +150,19 @@ export const apiDeleteTest = async (id) => {
 };
 
 //for fetching mock test questing to create test
-export const fetchMockTestQuestionsByCourseId = async (courseId) => {
+export const fetchMockTestQuestionsByCourseId = async (courseId, topics) => {
   try {
     const token = sessionStorage.getItem("accessToken");
-    const response = await fetch(
-      `${baseUrl}/exam/list/mock-test-questions?courseId=${courseId}`,
-      {
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-      }
-    );
+    let url = `${baseUrl}/exam/list/mock-test-questions?courseId=${courseId}`;
+    if (topics) {
+      url += `&topics=${topics}`;
+    }
+    const response = await fetch(url, {
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+    });
 
     if (!response.ok) {
       throw new Error("Failed to fetch mock test questions");
@@ -212,7 +213,7 @@ export async function fetchTestQuestionsAPI() {
   console.log("Inside fetch test questions :::: ");
 
   /*  const response = await fetch(
-         "https://lunarsenterprises.com:6040/davidsacademy/student/test/list",
+         `${process.env.REACT_APP_API_URL}/student/test/list`,
          {
              method: "GET",
              headers: {
@@ -250,10 +251,22 @@ export const adminCreateTest = async (testData) => {
   }
 };
 
-export const fetchQBankQuestions = async () => {
+export const fetchQBankQuestions = async ({ topics, count } = {}) => {
   try {
+    let url = process.env.REACT_APP_API_URL + "/student/questions/list";
+    const params = new URLSearchParams();
+    if (topics) {
+      params.append("topics", topics.toString());
+    }
+    if (count) {
+      params.append("count", count.toString());
+    }
+    if (params.toString()) {
+        url += `?${params.toString()}`;
+    }
+
     const response = await fetch(
-      process.env.REACT_APP_API_URL + "/student/questions/list",
+      url,
       {
         method: "GET",
         headers: {
@@ -385,7 +398,29 @@ export async function adminGetTestQuestions(page = 1, limit = 10) {
 export const fetchStudentTests = async (type = "all") => {
   try {
     const token = sessionStorage.getItem("accessToken");
-    const response = await fetch(`${baseUrl}/student/test/list?type=${type}`, {
+    const response = await fetch(`${baseUrl}/student/test/list`, {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ type, search: "" })
+    });
+    if (!response.ok) {
+      throw new Error("Failed to fetch student tests");
+    }
+    const data = await response.json();
+    // Assuming response structure: { data: [...] } based on TestComponent transformation
+    return data.data || [];
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const fetchStudentTopics = async () => {
+  try {
+    const token = sessionStorage.getItem("accessToken");
+    const response = await fetch(`${baseUrl}/student/topic/list`, {
       method: "GET",
       headers: {
         Authorization: `Bearer ${token}`,
@@ -393,10 +428,9 @@ export const fetchStudentTests = async (type = "all") => {
       },
     });
     if (!response.ok) {
-      throw new Error("Failed to fetch student tests");
+      throw new Error("Failed to fetch student topics");
     }
     const data = await response.json();
-    // Assuming response structure: { data: [...] } based on TestComponent transformation
     return data.data || [];
   } catch (error) {
     throw error;
@@ -670,8 +704,8 @@ export const deleteSuccessStoryApi = async (id) => {
 
 
 // ✅ Reset Q-Bank API (Admin side)
-export const resetQbankApi = async (student_id) => {
-  console.log("➡️ Resetting QBank for student:", student_id);
+export const resetQbankApi = async (student_id, topic_id = null) => {
+  console.log("➡️ Resetting QBank for student:", student_id, " topic:", topic_id);
   const token = sessionStorage.getItem("accessToken");
 
   try {
@@ -683,7 +717,7 @@ export const resetQbankApi = async (student_id) => {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
         },
-        body: JSON.stringify({ student_id }),
+        body: JSON.stringify({ student_id, topic_id }),
       }
     );
 
@@ -762,8 +796,12 @@ export const adminUpdateTest = async (testId, updatedData) => {
 
 
 // NEW API — Get Question Bank Result
-export const getQuestionBankResultApi = async (token) => {
-  const response = await fetch(`${baseUrl}/student/result/question-bank`, {
+export const getQuestionBankResultApi = async (token, topicsQuery = "") => {
+  let url = `${baseUrl}/student/result/question-bank`;
+  if (topicsQuery) {
+    url += `?topics=${topicsQuery}`;
+  }
+  const response = await fetch(url, {
     method: "GET",
     headers: {
       Authorization: `Bearer ${token}`,

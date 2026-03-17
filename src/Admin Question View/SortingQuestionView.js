@@ -203,7 +203,7 @@ function SortingQuestionView() {
                 <>
                   {activeTabData?.tabImage && (
                     <img
-                      src={`https://lunarsenterprises.com:6040/${activeTabData.tabImage}`}
+                      src={`${process.env.REACT_APP_API_URL.replace('/davidsacademy', '')}/${activeTabData.tabImage}`}
                       alt="tabImage"
                       style={{
                         display: "block", // ✅ center image
@@ -243,9 +243,7 @@ function SortingQuestionView() {
         {questionData?.data?.instructions &&
           <Box sx={{ pb: 5, alignItems: "center", justifyContent: "center", textAlign: "center" }} >
             <Typography sx={{ fontWeight: 200 }} ><h4>Question Instruction</h4></Typography>
-            <Typography variant="h3" sx={{ fontWeight: 200, fontSize: 18, pt: 2 }}>
-              {questionData?.data?.instructions}
-            </Typography>
+            <Typography variant="h3" sx={{ fontWeight: 200, fontSize: 18, pt: 2 }} dangerouslySetInnerHTML={{ __html: questionData?.data?.instructions || "" }} />
           </Box>
         }
 

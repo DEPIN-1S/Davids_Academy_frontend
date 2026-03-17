@@ -65,7 +65,7 @@ const MultiRadioQuestionComponent = ({ question, onSubmit, submittedResult }) =>
   useEffect(() => {
     if (submittedResult?.result && submittedResult.answers?.length > 0) {
       try {
-        console.log("Previous multi-radio answers:", submittedResult.answers);
+
 
         const parsedAnswers = {};
 
@@ -80,7 +80,7 @@ const MultiRadioQuestionComponent = ({ question, onSubmit, submittedResult }) =>
           }
         });
 
-        console.log("Parsed answers:", parsedAnswers);
+
 
         setAnswers(parsedAnswers);
 
@@ -105,7 +105,9 @@ const MultiRadioQuestionComponent = ({ question, onSubmit, submittedResult }) =>
   const handleReveal = () => {
 
     if (submittedResult?.result) return; // Already answered, block reveal/modal
-    if (Object.keys(answers).length === 0) {
+    
+    // Check that every question content row has an answer selected
+    if (Object.keys(answers).length !== questionContent.length) {
       setShowNotAnsweredModal(true);
       return;
     }
@@ -132,7 +134,7 @@ const MultiRadioQuestionComponent = ({ question, onSubmit, submittedResult }) =>
     const testId = searchParams.get('testId');
 
     if (pathname === "/student/exam" && (testId || searchParams.get('mode') === 'question-bank')) {
-      console.log("inside question content mock test response submitting");
+
 
       const question_content_answers = questionContent.map((item, idx) => ({
         question_text: item.client_findings || `Question ${idx + 1}`,
@@ -181,9 +183,8 @@ const MultiRadioQuestionComponent = ({ question, onSubmit, submittedResult }) =>
           fontSize: { xs: "1rem", md: "1.25rem" },
           mb: 5,
         }}
-      >
-        {questionText}
-      </Typography>
+        dangerouslySetInnerHTML={{ __html: questionText || "" }}
+      />
 
       {/* Tabs for Contextual Information */}
       {tabsInfo.length > 0 && (
@@ -276,7 +277,7 @@ const MultiRadioQuestionComponent = ({ question, onSubmit, submittedResult }) =>
                   src={
                     tabsInfo[activeTab].tabImage.startsWith("http")
                       ? tabsInfo[activeTab].tabImage
-                      : `${'https://lunarsenterprises.com:6040/'}${tabsInfo[activeTab].tabImage}`
+                      : `${process.env.REACT_APP_API_URL.replace('/davidsacademy', '')}/${tabsInfo[activeTab].tabImage}`
                   }
                   alt="tab"
                   style={{
@@ -297,9 +298,7 @@ const MultiRadioQuestionComponent = ({ question, onSubmit, submittedResult }) =>
           <Typography variant="h6" component="h2" align="left" sx={{ mb: 1, color: "text.primary", fontWeight: 600 }}>
             Instructions :
           </Typography>
-          <Typography variant="body1" sx={{ textAlign: "left", color: "black" }}>
-            {instructions}
-          </Typography>
+          <Typography variant="body1" sx={{ textAlign: "left", color: "black" }} dangerouslySetInnerHTML={{ __html: instructions || "" }} />
         </Box>
       )}
 
@@ -380,6 +379,7 @@ const MultiRadioQuestionComponent = ({ question, onSubmit, submittedResult }) =>
                         }}
                       >
                         <Radio
+                          name={`row-${rowIdx}`}
                           checked={answers[rowIdx] === answer}
                           onChange={handleSelect(rowIdx, answer)}
                           disabled={showAnswer}
@@ -497,7 +497,7 @@ const MultiRadioQuestionComponent = ({ question, onSubmit, submittedResult }) =>
             additionalInfoParagraphs={additionalInfo.map((info) => info.info) || []}
             additionalInfoImage={
               question.additionalInfo?.[0]?.image
-                ? `https://lunarsenterprises.com:6040/${question.additionalInfo[0].image}`
+                ? `${process.env.REACT_APP_API_URL.replace('/davidsacademy', '')}/${question.additionalInfo[0].image}`
                 : null
             }
             isAnswerCorrect={isCorrect}

@@ -39,6 +39,7 @@ const DragdropQuestionContent = () => {
     const cs_id = location.state?.cs_id || "";
     const exam_type = location.state?.exam_type || "";
     const question_type_id = location.state?.question_type_id || "";
+    const topic_id = location.state?.topic_id || "";
     const [instruction, setInstruction] = useState(existingData.instruction || "")
     // Form state
     const [question, setQuestion] = useState(existingData.question || "");
@@ -275,7 +276,7 @@ const DragdropQuestionContent = () => {
         }
         // ✅ Prepare ONLY serializable question data
         const questionData = {
-            cs_id: cs_id,
+            cs_id: cs_id, topic_id: topic_id,
             exam_type: exam_type,
             questionType: questionType,
             question_type_id: question_type_id,
@@ -333,7 +334,7 @@ const DragdropQuestionContent = () => {
             state: {
                 questionData: currentData,
                 fromStep: 'content',
-                cs_id
+                cs_id, topic_id, exam_type, question_type_id
             }
         });
     };
@@ -730,13 +731,13 @@ const DragdropQuestionContent = () => {
                                         onChange={(e) => handleDragDropAnswerChange(sectionIndex, e.target.value)}
                                         displayEmpty
                                     >
-                                        <MenuItem value="">
+                                        <MenuItem value="" sx={{ whiteSpace: "normal", wordBreak: "break-word" }}>
                                             <em>Select Correct Answer</em>
                                         </MenuItem>
                                         {section.option_value
                                             .filter(option => option.trim() !== "") // only that section's options
                                             .map((option, optionIndex) => (
-                                                <MenuItem key={optionIndex} value={option}>
+                                                <MenuItem key={optionIndex} value={option} sx={{ whiteSpace: "normal", wordBreak: "break-word" }}>
                                                     {option}
                                                 </MenuItem>
                                             ))}

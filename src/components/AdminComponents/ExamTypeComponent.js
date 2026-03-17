@@ -19,6 +19,7 @@ const ExamTypeComponent = () => {
     const isMobile = useMediaQuery("(max-width:600px)");
     const location = useLocation();
     const cs_id = location.state?.cs_id || "";
+    const topic_id = location.state?.topic_id || "";
     // Hardcoded exam types - no state needed for this array
     const examTypes = ['Mock Test', 'Q-Bank'];
 
@@ -32,13 +33,14 @@ const ExamTypeComponent = () => {
         navigate("/admin/question-type", {
             state: {
                 exam_type: selectedExamType,
-                cs_id
+                cs_id,
+                topic_id
             }
         });
     };
 
     const handleBackClick = () => {
-        navigate("/admin/question-management",{
+        navigate("/admin/select-topic",{
              state: {     
                 cs_id
             }

@@ -20,7 +20,7 @@ const buildImageUrl = (path) => {
   if (!path) return null;
   if (path.startsWith("http://") || path.startsWith("https://")) return path;
   const clean = path.replace(/^\/+/, "");
-  return `https://lunarsenterprises.com:6040/${clean}`;
+  return `${process.env.REACT_APP_API_URL.replace('/davidsacademy', '')}/${clean}`;
 };
 
 const escapeRegExp = (s) => s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
@@ -212,9 +212,8 @@ const SentenceQuestionComponent = ({ question, onSubmit, submittedResult }) => {
           fontSize: { xs: "1rem", md: "1.25rem" },
           textAlign: "left",
           alignItems: "center",
-        }} component="h1" fontWeight={700} mb={5}>
-        {questionText}
-      </Typography>
+          wordBreak: "break-word",
+        }} component="h1" fontWeight={700} mb={5} dangerouslySetInnerHTML={{ __html: questionText || "" }} />
 
       {/* Instructions */}
       {!!instructions && (
@@ -231,9 +230,7 @@ const SentenceQuestionComponent = ({ question, onSubmit, submittedResult }) => {
           <Typography
             variant="body1"
             sx={{ textAlign: "left", color: "#111827", lineHeight: 1.6 }}
-          >
-            {instructions}
-          </Typography>
+           dangerouslySetInnerHTML={{ __html: instructions || "" }} />
         </Box>
       )}
 
@@ -291,7 +288,7 @@ const SentenceQuestionComponent = ({ question, onSubmit, submittedResult }) => {
                 textAlign: "left",
                 "& p": { margin: 0, mb: "0.5em" },
                 "& p:last-child": { mb: 0 },
-                "& *": { lineHeight: 1.6 },
+                "& *": { lineHeight: 1.6 , wordBreak: "break-word", overflowWrap: "anywhere" },
               }}
               dangerouslySetInnerHTML={{
                 __html:
@@ -446,6 +443,7 @@ const SentenceQuestionComponent = ({ question, onSubmit, submittedResult }) => {
             display: "flex",
             justifyContent: "center",
             alignItems: "center",
+          wordBreak: "break-word",
             zIndex: 9999,
           }}
         >

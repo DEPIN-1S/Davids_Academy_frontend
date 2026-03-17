@@ -33,6 +33,7 @@ function TableHighlightsQuestionContent() {
     const existingData = location.state?.questionData || {};
     const questionType = location.state?.questionType || existingData.questionType || "Dropdown";
     const cs_id = location.state?.cs_id || "";
+    const topic_id = location.state?.topic_id || "";
     const exam_type = location.state?.exam_type || "";
     const question_type_id = location.state?.question_type_id || "";
 
@@ -177,6 +178,7 @@ function TableHighlightsQuestionContent() {
 
         const questionData = {
             cs_id,
+            topic_id,
             exam_type,
             question_type_id,
             questionType,
@@ -211,7 +213,7 @@ function TableHighlightsQuestionContent() {
     const handleBack = () => {
         const currentData = { question: question.trim(), headers, tabs, rows, instruction, answers };
         navigate("/admin/question-type", {
-            state: { questionData: currentData, fromStep: "content", cs_id, exam_type, question_type_id }
+            state: { questionData: currentData, fromStep: "content", cs_id, topic_id, exam_type, question_type_id }
         });
     };
 
@@ -226,23 +228,28 @@ function TableHighlightsQuestionContent() {
             </Typography>
 
             {/* Question Input */}
-            <Typography variant="h6" mb={1} color="primary">
-                Question Text *
-            </Typography>
-            <TextField
-                fullWidth
-                label="Enter your question"
-                multiline
-                minRows={3}
-                maxRows={6}
-                value={question}
-                onChange={(e) => setQuestion(e.target.value)}
-                variant="outlined"
-                placeholder="Type your question here..."
-                error={!!errors.question}
-                helperText={errors.question}
-                sx={{ mb: 3 }}
-            />
+            <Box sx={{ minHeight: '170px', mb: 3 }}>
+                <Typography variant="h6" mb={1} color="primary">
+                    Question Text *
+                </Typography>
+                <ReactQuill
+                    theme="snow"
+                    value={question}
+                    onChange={(content) => {
+                        setQuestion(content);
+                        setErrors(prev => ({ ...prev, question: null }));
+                    }}
+                    modules={tabModules}
+                    formats={tabFormats}
+                    placeholder="Type your question here..."
+                    style={{ height: '120px', borderBottomLeftRadius: 4, borderBottomRightRadius: 4 }}
+                />
+                {errors.question && (
+                    <Typography color="error" variant="caption" sx={{ display: 'block', mt: 5 }}>
+                        {errors.question}
+                    </Typography>
+                )}
+            </Box>
 
             {/* Tabs Section */}
             <Accordion defaultExpanded sx={{ mb: 3 }}>
@@ -430,23 +437,28 @@ function TableHighlightsQuestionContent() {
             </Box>
 
             {/* Instruction Section */}
-            <Typography variant="h6" mb={1} color="primary">
-                Instruction *
-            </Typography>
-            <TextField
-                fullWidth
-                label="Enter Question Instruction"
-                multiline
-                minRows={3}
-                maxRows={6}
-                value={instruction}
-                onChange={(e) => setInstruction(e.target.value)}
-                variant="outlined"
-                placeholder="Type your question instruction here..."
-                error={!!errors.instruction}
-                helperText={errors.instruction}
-                sx={{ mb: 3 }}
-            />
+            <Box sx={{ minHeight: '170px', mb: 3 }}>
+                <Typography variant="h6" mb={1} color="primary">
+                    Instruction *
+                </Typography>
+                <ReactQuill
+                    theme="snow"
+                    value={instruction}
+                    onChange={(content) => {
+                        setInstruction(content);
+                        setErrors(prev => ({ ...prev, instruction: null }));
+                    }}
+                    modules={tabModules}
+                    formats={tabFormats}
+                    placeholder="Type your question instruction here..."
+                    style={{ height: '120px', borderBottomLeftRadius: 4, borderBottomRightRadius: 4 }}
+                />
+                {errors.instruction && (
+                    <Typography color="error" variant="caption" sx={{ display: 'block', mt: 5 }}>
+                        {errors.instruction}
+                    </Typography>
+                )}
+            </Box>
 
             {/* Navigation Buttons */}
             <Box mt={4} display="flex" justifyContent="space-between">

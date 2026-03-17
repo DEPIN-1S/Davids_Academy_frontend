@@ -1,6 +1,7 @@
-import React, { useState, useEffect, useCallback, useMemo } from "react";
+import React, { useState, useEffect, useCallback, useMemo, useRef } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useLocation, useNavigate } from "react-router-dom";
+import { Box, Typography, Button } from "@mui/material";
 import DashboardNavbar from "../../components/StudentComponents/StudentNavbar";
 import QuestionHeaderComponent from "./QuestionHeaderComponent";
 import QuestionFooterComponent from "./QuestionFooterComponent";
@@ -49,6 +50,8 @@ const ExamContainer = ({ user }) => {
   const queryParams = new URLSearchParams(location.search);
   const testId = queryParams.get("testId");
   const mode = queryParams.get("mode");
+  const topicsParam = queryParams.get("topics");
+  const countParam = queryParams.get("count");
   const isTestMode = !!testId;
   const isSampleMode = mode === "sample";
   const { qBankQuestion: qBankQuestionIds, qBankQuestionLoading } = useSelector(
@@ -72,6 +75,7 @@ const ExamContainer = ({ user }) => {
   const [answeredIndices, setAnsweredIndices] = useState(new Set());
   const [correctCount, setCorrectCount] = useState(0);
   const [incorrectCount, setIncorrectCount] = useState(0);
+  const hasFetchedQBank = useRef(false);
 
 
   // Load question IDs based on mode
@@ -87,6 +91,7 @@ const ExamContainer = ({ user }) => {
           }
           setQuestionIds(questionIds);
           setCurrentIndex(0);
+          setLoading(false);
         } else if (isSampleMode) {
           const sampleQuestionIdsResponse = await fetchSampleQuestionnaireIds();
           if (
@@ -98,10 +103,13 @@ const ExamContainer = ({ user }) => {
           const ids = sampleQuestionIdsResponse.map((item) => item.id);
           setQuestionIds(ids);
           setCurrentIndex(0);
+          setLoading(false);
         } else {
-          dispatch(getQBankQuestions());
+          // For Q-Bank mode, dispatch to Redux.
+          // The local loading state will be synced with qBankQuestionLoading below.
+          hasFetchedQBank.current = true;
+          dispatch(getQBankQuestions({ topics: topicsParam, count: countParam }));
         }
-        setLoading(false);
       } catch (err) {
         setError(err.message || "Failed to load questions.");
         setLoading(false);
@@ -113,14 +121,27 @@ const ExamContainer = ({ user }) => {
       return;
     }
     loadQuestions();
-  }, [dispatch, isTestMode, testId, isSampleMode]);
+  }, [dispatch, isTestMode, testId, isSampleMode, topicsParam, countParam]);
 
   // Sync QBank question IDs if not test or sample mode
   useEffect(() => {
-    if (!isTestMode && !isSampleMode && qBankQuestionIds) {
-      setQuestionIds(qBankQuestionIds);
+    if (!isTestMode && !isSampleMode && hasFetchedQBank.current) {
+      if (!qBankQuestionLoading) {
+        if (qBankQuestionIds && qBankQuestionIds.length > 0) {
+           setQuestionIds(qBankQuestionIds);
+           setCurrentIndex(0);
+           setError(null);
+        } else {
+           setQuestionIds([]);
+           setError("You have completed all available questions for the selected topics, or no questions matched your filter. Please reset your Q-Bank progress to practice again.");
+        }
+        setLoading(false);
+      } else {
+        setLoading(true);
+        setError(null);
+      }
     }
-  }, [isTestMode, isSampleMode, qBankQuestionIds]);
+  }, [isTestMode, isSampleMode, qBankQuestionIds, qBankQuestionLoading]);
 
   // Load current question data
   useEffect(() => {
@@ -132,18 +153,21 @@ const ExamContainer = ({ user }) => {
       ) {
         const questionId = questionIds[currentIndex];
         try {
-          setLoading(true);
           if (isTestMode) {
+            setLoading(true);
             const data = await fetchTestQuestionData(testId, questionId, 0);
             setCurrentQuestion(data);
+            setLoading(false);
           } else if (isSampleMode) {
+            setLoading(true);
             const data = await fetchSampleQuestionData(questionId);
             setCurrentQuestion(data);
+            setLoading(false);
           } else {
+            // Q-Bank mode: use Redux loading state (qBankQuestionDataLoading)
             dispatch(getQBankQuestionData(questionId));
             return;
           }
-          setLoading(false);
         } catch (err) {
           setError(err.message || "Failed to load question data.");
           setLoading(false);
@@ -378,18 +402,35 @@ const ExamContainer = ({ user }) => {
     return null;
   }, [currentQuestion, isTestMode, loading, qBankQuestionDataLoading]);
 
+  if (error && !loading) {
+    return (
+      <Box sx={{ p: { xs: 2, md: 4 }, textAlign: 'center', mt: { xs: 5, md: 10 } }}>
+        <Typography variant="h5" color="error" gutterBottom sx={{ fontWeight: 600 }}>
+          Notice
+        </Typography>
+        <Typography variant="body1" sx={{ mb: 4, maxWidth: '600px', mx: 'auto', color: '#555' }}>
+          {error}
+        </Typography>
+        <Button 
+          variant="contained" 
+          onClick={() => navigate("/student/question-bank")}
+          sx={{ 
+            backgroundColor: '#2e3760', 
+            borderRadius: '20px',
+            px: 4,
+            textTransform: 'none',
+            '&:hover': { backgroundColor: '#1a2038' } 
+          }}
+        >
+          Back to Question Bank
+        </Button>
+      </Box>
+    );
+  }
+
   const isQuestionsListLoading = isTestMode ? loading : qBankQuestionLoading;
   if (isQuestionsListLoading || !questionIds || questionIds.length === 0) {
     return <div>Loading question list...</div>;
-  }
-
-  if (error) {
-    return (
-      <div>
-        <h3>Error: {error}</h3>
-        <button onClick={() => window.location.reload()}>Retry</button>
-      </div>
-    );
   }
 
   const showPrevious = isSampleMode || (!isTestMode && !isSampleMode);
@@ -398,18 +439,33 @@ const ExamContainer = ({ user }) => {
     : qbankSubmittedResult;
 
   return (
-    <>
-      {/* Conditional Navbar - Hide for sample mode */}
-      {!isSampleMode && <DashboardNavbar />}
+    <Box sx={{
+      display: 'flex',
+      flexDirection: 'column',
+      height: { xs: '100dvh', sm: '100dvh', md: 'auto' },
+      overflow: { xs: 'hidden', sm: 'hidden', md: 'visible' }
+    }}>
+      {/* Header section (fixed on mobile implicitly by being flex header and content being scrollable) */}
+      <Box sx={{ flexShrink: 0 }}>
+        {/* Conditional Navbar - Hide for sample mode */}
+        {!isSampleMode && <DashboardNavbar />}
 
-      <QuestionHeaderComponent
-        questionNumber={currentIndex + 1}
-        totalQuestions={questionIds.length}
-        qid={currentQuestion?.id || "N/A"}
-        user={user?.name || "Guest"}
-        time={formatTime(elapsedSeconds)}
-      />
-      <div >
+        <QuestionHeaderComponent
+          questionNumber={currentIndex + 1}
+          totalQuestions={questionIds.length}
+          qid={currentQuestion?.id || "N/A"}
+          user={user?.name || "Guest"}
+          time={formatTime(elapsedSeconds)}
+        />
+      </Box>
+
+      {/* Main Content Area */}
+      <Box sx={{ 
+        flexGrow: 1, 
+        overflowY: { xs: 'auto', sm: 'auto', md: 'visible' },
+        display: 'flex',
+        flexDirection: 'column',
+      }}>
         {(isTestMode ? loading : qBankQuestionDataLoading) ? (
           <p>Loading question...</p>
         ) : QuestionComponent ? (
@@ -427,23 +483,25 @@ const ExamContainer = ({ user }) => {
         ) : (
           <p>No question data available</p>
         )}
-      </div>
+      </Box>
 
-
-      <QuestionFooterComponent
-        onEnd={handleEnd}
-        onPause={handlePause}
-        onNext={handleNext}
-        onPrevious={handlePrevious}
-        disablePrevious={currentIndex === 0}
-        disableNext={questionIds && currentIndex === questionIds.length - 1}
-        questionNumber={currentIndex + 1}
-        totalQuestions={questionIds.length}
-        customButtonText={isTestMode ? "Submit & Exit" : "Back"}
-        customOnClick={handleEnd}
-        showPrevious={showPrevious}
-      />
-    </>
+      {/* Footer Section */}
+      <Box sx={{ flexShrink: 0 }}>
+        <QuestionFooterComponent
+          onEnd={handleEnd}
+          onPause={handlePause}
+          onNext={handleNext}
+          onPrevious={handlePrevious}
+          disablePrevious={currentIndex === 0}
+          disableNext={questionIds && currentIndex === questionIds.length - 1}
+          questionNumber={currentIndex + 1}
+          totalQuestions={questionIds.length}
+          customButtonText={isTestMode ? "Submit & Exit" : "Back"}
+          customOnClick={handleEnd}
+          showPrevious={showPrevious}
+        />
+      </Box>
+    </Box>
   );
 };
 

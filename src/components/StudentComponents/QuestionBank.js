@@ -1,22 +1,26 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Box, Typography, Button } from "@mui/material";
+import { Box, Typography, Button, Dialog, DialogContent } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
 import { useDispatch, useSelector } from "react-redux";
 import { FiPlus } from "react-icons/fi";
 import { getQuestionBankResult } from "../../features/exam/examSlice";
 import QuestionBankProgressCard from "./QuestionBankProgressCard";
+import CreateTestComponent from "./createTestComponent";
 
 
 
 const QuestionBank = () => {
   const navigate = useNavigate();
   const user = useSelector((state) => state.user); // adjust selector based on your redux slice
+  const isLoggedIn = user?.isLoggedIn || !!user?.id || !!sessionStorage.getItem("accessToken");
+
+  const [showCreateTest, setShowCreateTest] = useState(false);
 
   const handleStartTest = () => {
-    if (user?.isLoggedIn) {
-      // User logged in: navigate to user's test or exam normally
-      navigate("/student/exam"); // or append testId if needed
+    if (isLoggedIn) {
+      // User logged in: open the Create Test modal
+      setShowCreateTest(true);
     } else {
       // Not logged in: navigate to sample mode for without-auth sample questions
       navigate("/student/exam?mode=question-bank");
@@ -28,7 +32,7 @@ const QuestionBank = () => {
   const [showProgressCard, setShowProgressCard] = useState(false);
 
   const viewProgress = () => {
-    dispatch(getQuestionBankResult(token));
+    dispatch(getQuestionBankResult({ token, topicsQuery: "" }));
     setShowProgressCard(true);
   };
   
@@ -122,6 +126,12 @@ const QuestionBank = () => {
 
       </Box>
 
+
+      <Dialog open={showCreateTest} onClose={() => setShowCreateTest(false)} maxWidth="md" fullWidth>
+        <DialogContent sx={{ p: 0 }}>
+          <CreateTestComponent handleClose={() => setShowCreateTest(false)} />
+        </DialogContent>
+      </Dialog>
 
       {/* Render card only when needed */}
       {showProgressCard && (

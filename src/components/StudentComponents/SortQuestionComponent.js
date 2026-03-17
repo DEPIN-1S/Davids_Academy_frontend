@@ -218,9 +218,8 @@ const SortQuestionComponent = ({ question, onSubmit, submittedResult }) => {
         fontSize: { xs: "1rem", md: "1.25rem" },
         textAlign: "left",
         alignItems: "center",
-      }} variant="h6" fontWeight={700} mb={3}>
-        {questionText}
-      </Typography>
+          wordBreak: "break-word",
+      }} variant="h6" fontWeight={700} mb={3} dangerouslySetInnerHTML={{ __html: questionText || "" }} />
 
 
       <Typography variant="body1" textAlign="center" mb={4}>
@@ -293,7 +292,7 @@ const SortQuestionComponent = ({ question, onSubmit, submittedResult }) => {
                 color: "#333",
                 "& p": { margin: 0, marginBottom: "0.5em" },
                 "& p:last-child": { marginBottom: 0 },
-                "& *": { lineHeight: 1.6 },
+                "& *": { lineHeight: 1.6 , wordBreak: "break-word", overflowWrap: "anywhere" },
               }}
               dangerouslySetInnerHTML={{
                 __html:
@@ -504,7 +503,7 @@ const SortQuestionComponent = ({ question, onSubmit, submittedResult }) => {
             }
             additionalInfoImage={
               question.additionalInfo?.[0]?.image
-                ? `https://lunarsenterprises.com:6040/${question.additionalInfo[0].image}`
+                ? `${process.env.REACT_APP_API_URL.replace('/davidsacademy', '')}/${question.additionalInfo[0].image}`
                 : null
             }
             isAnswerCorrect={isCorrect}

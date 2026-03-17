@@ -42,6 +42,7 @@ const MultiradioQuestionContent = () => {
     const existingData = location.state?.questionData || {};
     const questionType = location.state?.questionType || existingData.questionType || "Multiple Radio";
     const cs_id = location.state?.cs_id || "";
+    const topic_id = location.state?.topic_id || "";
     const exam_type = location.state?.exam_type || "";
     const question_type_id = location.state?.question_type_id || "";
     const [instruction, setInstruction] = useState(existingData.instruction || "")
@@ -286,6 +287,7 @@ const MultiradioQuestionContent = () => {
         // ✅ Prepare ONLY serializable question data
         const questionData = {
             cs_id: cs_id,
+            topic_id: topic_id,
             exam_type: exam_type,
             question_type_id: question_type_id,
             questionType: questionType,
@@ -338,6 +340,7 @@ const MultiradioQuestionContent = () => {
                 questionData: currentData,
                 fromStep: 'content',
                 cs_id: cs_id,
+                topic_id: topic_id,
                 exam_type: exam_type,
                 question_type_id: question_type_id,
             }
@@ -413,27 +416,28 @@ const MultiradioQuestionContent = () => {
             </Card>
 
             {/* Question Input */}
-            <Typography variant="h6" mb={1} color="primary">
-                Question Text *
-            </Typography>
-
-            <TextField
-                fullWidth
-                label="Enter your question"
-                multiline
-                minRows={3}
-                maxRows={6}
-                value={question}
-                onChange={(e) => {
-                    setQuestion(e.target.value);
-                    setErrors(prev => ({ ...prev, question: null }));
-                }}
-                variant="outlined"
-                placeholder="Type your multiple radio question here..."
-                error={!!errors.question}
-                helperText={errors.question}
-                sx={{ mb: 3 }}
-            />
+            <Box sx={{ minHeight: '170px', mb: 3 }}>
+                <Typography variant="h6" mb={1} color="primary">
+                    Question Text *
+                </Typography>
+                <ReactQuill
+                    theme="snow"
+                    value={question}
+                    onChange={(content) => {
+                        setQuestion(content);
+                        setErrors(prev => ({ ...prev, question: null }));
+                    }}
+                    modules={tabModules}
+                    formats={tabFormats}
+                    placeholder="Type your multiple radio question here..."
+                    style={{ height: '120px', borderBottomLeftRadius: 4, borderBottomRightRadius: 4 }}
+                />
+                {errors.question && (
+                    <Typography color="error" variant="caption" sx={{ display: 'block', mt: 5 }}>
+                        {errors.question}
+                    </Typography>
+                )}
+            </Box>
 
             {/* Display Uploaded File */}
             {selectedFile && (
@@ -606,26 +610,28 @@ const MultiradioQuestionContent = () => {
                 </AccordionDetails>
             </Accordion>
 
-            <Typography variant="h6" mb={1} color="primary">
-                Instruction
-            </Typography>
-            <TextField
-                fullWidth
-                label="Enter Question instruction"
-                multiline
-                minRows={3}
-                maxRows={6}
-                value={instruction}
-                onChange={(e) => {
-                    setInstruction(e.target.value);
-                    setErrors(prev => ({ ...prev, instruction: null }));
-                }}
-                variant="outlined"
-                placeholder="Type your drag drop question instruction here..."
-                error={!!errors.instruction}
-                helperText={errors.instruction}
-                sx={{ mb: 3 }}
-            />
+            <Box sx={{ minHeight: '170px', mb: 3 }}>
+                <Typography variant="h6" mb={1} color="primary">
+                    Instruction
+                </Typography>
+                <ReactQuill
+                    theme="snow"
+                    value={instruction}
+                    onChange={(content) => {
+                        setInstruction(content);
+                        setErrors(prev => ({ ...prev, instruction: null }));
+                    }}
+                    modules={tabModules}
+                    formats={tabFormats}
+                    placeholder="Type your question instruction here..."
+                    style={{ height: '120px', borderBottomLeftRadius: 4, borderBottomRightRadius: 4 }}
+                />
+                {errors.instruction && (
+                    <Typography color="error" variant="caption" sx={{ display: 'block', mt: 5 }}>
+                        {errors.instruction}
+                    </Typography>
+                )}
+            </Box>
 
 
 

@@ -245,10 +245,9 @@ const DropdownQuestionComponent = ({ question, onSubmit, submittedResult }) => {
           fontSize: { xs: "1rem", md: "1.25rem" },
           textAlign: "left",
           alignItems: "center",
+          wordBreak: "break-word",
         }} fontWeight={700} mb={5}
-      >
-        {questionText}
-      </Typography>
+       dangerouslySetInnerHTML={{ __html: questionText || "" }} />
 
       {/* Instructions */}
       {!!instructions && (
@@ -268,10 +267,9 @@ const DropdownQuestionComponent = ({ question, onSubmit, submittedResult }) => {
               color: "black",
               fontSize: { xs: "0.9rem", md: "1rem" },
               lineHeight: 1.6,
+              wordBreak: "break-word",
             }}
-          >
-            {instructions}
-          </Typography>
+           dangerouslySetInnerHTML={{ __html: instructions || "" }} />
         </Box>
       )}
 
@@ -349,7 +347,7 @@ const DropdownQuestionComponent = ({ question, onSubmit, submittedResult }) => {
               lineHeight: 1.6,
               "& p": { margin: 0, marginBottom: "0.5em" },
               "& p:last-child": { marginBottom: 0 },
-              "& *": { lineHeight: "inherit" },
+              "& *": { lineHeight: "inherit" , wordBreak: "break-word", overflowWrap: "anywhere" },
             }}
             dangerouslySetInnerHTML={{
               __html: tabsInfo[activeTab]?.tabValue || "",
@@ -361,7 +359,7 @@ const DropdownQuestionComponent = ({ question, onSubmit, submittedResult }) => {
                 src={
                   tabsInfo[activeTab].tabImage.startsWith("http")
                     ? tabsInfo[activeTab].tabImage
-                    : `https://lunarsenterprises.com:6040/${tabsInfo[activeTab].tabImage}`
+                    : `${process.env.REACT_APP_API_URL.replace('/davidsacademy', '')}/${tabsInfo[activeTab].tabImage}`
                 }
                 alt="tab"
                 style={{
@@ -447,13 +445,14 @@ const DropdownQuestionComponent = ({ question, onSubmit, submittedResult }) => {
                       "&.Mui-focused": {
                         boxShadow: "0 4px 12px rgba(47,59,108,0.08)",
                       },
+                      ".MuiSelect-select": { whiteSpace: "normal", wordBreak: "break-word" },
                     }}
                   >
-                    <MenuItem value="">
+                    <MenuItem value="" sx={{ whiteSpace: "normal", wordBreak: "break-word" }}>
                       <em>Select</em>
                     </MenuItem>
                     {options.map((opt, oi) => (
-                      <MenuItem key={opt.id || oi} value={opt.dropdownValue}>
+                      <MenuItem key={opt.id || oi} value={opt.dropdownValue} sx={{ whiteSpace: "normal", wordBreak: "break-word" }}>
                         {opt.dropdownValue}
                       </MenuItem>
                     ))}
@@ -473,6 +472,7 @@ const DropdownQuestionComponent = ({ question, onSubmit, submittedResult }) => {
             display: "flex",
             justifyContent: "center",
             alignItems: "center",
+          wordBreak: "break-word",
             zIndex: 9999,
           }}>
             <Box sx={{
@@ -658,7 +658,7 @@ const DropdownQuestionComponent = ({ question, onSubmit, submittedResult }) => {
             }
             additionalInfoImage={
               question.additionalInfo?.[0]?.image
-                ? `https://lunarsenterprises.com:6040/${question.additionalInfo[0].image}`
+                ? `${process.env.REACT_APP_API_URL.replace('/davidsacademy', '')}/${question.additionalInfo[0].image}`
                 : null
             }
             isAnswerCorrect={isCorrect}

@@ -210,6 +210,7 @@ const MetaInfoComponent = () => {
     const getMCQFormData = () => ({
         questionType: receivedQuestionData.questionType,
         courseId: receivedQuestionData.cs_id,
+        topic_id: receivedQuestionData.topic_id,
         question_type_id: receivedQuestionData.question_type_id,
         question: receivedQuestionData.question || "",
         exam_type: receivedQuestionData.exam_type,
@@ -230,6 +231,7 @@ const MetaInfoComponent = () => {
         questionType: receivedQuestionData.questionType,
         question_type_id: receivedQuestionData.question_type_id,
         courseId: receivedQuestionData.cs_id,
+        topic_id: receivedQuestionData.topic_id,
         question: receivedQuestionData.question || "",
         difficulty: form.difficulty,
         instruction: receivedQuestionData.instruction || "",
@@ -248,6 +250,7 @@ const MetaInfoComponent = () => {
         questionType: receivedQuestionData.questionType,
         question_type_id: receivedQuestionData.question_type_id,
         courseId: receivedQuestionData.cs_id,
+        topic_id: receivedQuestionData.topic_id,
         exam_type: receivedQuestionData.exam_type,
         question: receivedQuestionData.question || "",
         instruction: receivedQuestionData.instruction || "",
@@ -267,6 +270,7 @@ const MetaInfoComponent = () => {
         questionType: receivedQuestionData.questionType, // type name if you store it
         question_type_id: receivedQuestionData.question_type_id,  // your helper for IDs
         courseId: receivedQuestionData.cs_id,
+        topic_id: receivedQuestionData.topic_id,
         exam_type: receivedQuestionData.exam_type,
         question: receivedQuestionData.question || "",
         sortItems: receivedQuestionData.sortitems || [],
@@ -282,6 +286,7 @@ const MetaInfoComponent = () => {
 
     const getFillInTheBlanksFormData = () => ({
         courseId: receivedQuestionData.cs_id,
+        topic_id: receivedQuestionData.topic_id,
         questionType: receivedQuestionData.questionType,
         exam_type: receivedQuestionData.exam_type,
         question: receivedQuestionData?.question_content?.[0]?.question_text,
@@ -299,6 +304,7 @@ const MetaInfoComponent = () => {
 
     const getMultiRadioFormData = () => ({
         courseId: receivedQuestionData.cs_id,
+        topic_id: receivedQuestionData.topic_id,
         questionType: receivedQuestionData.questionType,
         question_type_id: receivedQuestionData.question_type_id,
         exam_type: receivedQuestionData.exam_type,
@@ -319,6 +325,7 @@ const MetaInfoComponent = () => {
 
     const getSentenceHighlightFormData = () => ({
         courseId: receivedQuestionData.cs_id,
+        topic_id: receivedQuestionData.topic_id,
         questionType: receivedQuestionData.questionType,
         question_type_id: receivedQuestionData.question_type_id,
         exam_type: receivedQuestionData.exam_type,
@@ -340,6 +347,7 @@ const MetaInfoComponent = () => {
 
     const getTableDropdownFormData = () => ({
         courseId: receivedQuestionData.cs_id,
+        topic_id: receivedQuestionData.topic_id,
         questionType: receivedQuestionData.questionType,
         question_type_id: receivedQuestionData.question_type_id,
         exam_type: receivedQuestionData.exam_type,
@@ -362,6 +370,7 @@ const MetaInfoComponent = () => {
 
     const multiDropDownFormData = () => ({
         courseId: receivedQuestionData.cs_id,
+        topic_id: receivedQuestionData.topic_id,
         questionType: receivedQuestionData.questionType,
         question_type_id: receivedQuestionData.question_type_id,
         exam_type: receivedQuestionData.exam_type,
@@ -379,6 +388,7 @@ const MetaInfoComponent = () => {
 
     const tableHighlightFormData = () => ({
         courseId: receivedQuestionData.cs_id,
+        topic_id: receivedQuestionData.topic_id,
         questionType: receivedQuestionData.questionType,
         question_type_id: receivedQuestionData.question_type_id,
         exam_type: receivedQuestionData.exam_type,
@@ -480,6 +490,7 @@ const MetaInfoComponent = () => {
     const getMCQBaseData = () => ({
         questionType: receivedQuestionData.questionType,
         courseId: receivedQuestionData.cs_id,
+        topic_id: receivedQuestionData.topic_id,
         question_type_id: receivedQuestionData.question_type_id,
         question: receivedQuestionData.question || "",
         exam_type: receivedQuestionData.exam_type,
@@ -502,6 +513,7 @@ const MetaInfoComponent = () => {
         questionType: receivedQuestionData.questionType,
         question_type_id: receivedQuestionData.question_type_id,
         courseId: receivedQuestionData.cs_id,
+        topic_id: receivedQuestionData.topic_id,
         question: receivedQuestionData.question || "",
         difficulty: form.difficulty,
         exam_type: receivedQuestionData.exam_type,
@@ -519,6 +531,7 @@ const MetaInfoComponent = () => {
         questionType: receivedQuestionData.questionType,
         question_type_id: receivedQuestionData.question_type_id,
         courseId: receivedQuestionData.cs_id,
+        topic_id: receivedQuestionData.topic_id,
         exam_type: receivedQuestionData.exam_type,
         question: receivedQuestionData.question || "",
         drag_drop_content: receivedQuestionData.drag_drop_content || "",
@@ -538,6 +551,7 @@ const MetaInfoComponent = () => {
         questionType: receivedQuestionData.questionType,
         question_type_id: receivedQuestionData.question_type_id,
         courseId: receivedQuestionData.cs_id,
+        topic_id: receivedQuestionData.topic_id,
         exam_type: receivedQuestionData.exam_type,
         question: receivedQuestionData.question || "",
         instructions: receivedQuestionData.instruction || "",
@@ -553,6 +567,7 @@ const MetaInfoComponent = () => {
 
     const getFillInTheBlanksBaseData = () => ({
         courseId: receivedQuestionData.cs_id,
+        topic_id: receivedQuestionData.topic_id,
         questionType: receivedQuestionData.questionType,
         exam_type: receivedQuestionData.exam_type,
         question: receivedQuestionData?.question_content?.[0]?.question_text,
@@ -571,6 +586,7 @@ const MetaInfoComponent = () => {
 
     const getMultiRadioBaseData = () => ({
         courseId: receivedQuestionData.cs_id,
+        topic_id: receivedQuestionData.topic_id,
         questionType: receivedQuestionData.questionType,
         question_type_id: receivedQuestionData.question_type_id,
         exam_type: receivedQuestionData.exam_type,
@@ -590,6 +606,7 @@ const MetaInfoComponent = () => {
 
     const getSentenceHighlightBaseData = () => ({
         courseId: receivedQuestionData.cs_id,
+        topic_id: receivedQuestionData.topic_id,
         questionType: receivedQuestionData.questionType,
         question_type_id: receivedQuestionData.question_type_id,
         exam_type: receivedQuestionData.exam_type,
@@ -610,6 +627,7 @@ const MetaInfoComponent = () => {
 
     const getTableDropdownBaseData = () => ({
         courseId: receivedQuestionData.cs_id,
+        topic_id: receivedQuestionData.topic_id,
         questionType: receivedQuestionData.questionType,
         question_type_id: receivedQuestionData.question_type_id,
         exam_type: receivedQuestionData.exam_type,
@@ -630,6 +648,7 @@ const MetaInfoComponent = () => {
 
     const getMultiDropDownBaseData = () => ({
         courseId: receivedQuestionData.cs_id,
+        topic_id: receivedQuestionData.topic_id,
         questionType: receivedQuestionData.questionType,
         question_type_id: receivedQuestionData.question_type_id,
         exam_type: receivedQuestionData.exam_type,
@@ -649,6 +668,7 @@ const MetaInfoComponent = () => {
 
     const getTableHighlightBaseData = () => ({
         courseId: receivedQuestionData.cs_id,
+        topic_id: receivedQuestionData.topic_id,
         questionType: receivedQuestionData.questionType,
         question_type_id: receivedQuestionData.question_type_id,
         exam_type: receivedQuestionData.exam_type,

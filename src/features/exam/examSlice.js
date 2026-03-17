@@ -61,9 +61,9 @@ export const adminDeleteTest = createAsyncThunk(
 // Thunk to fetch mock test questions by courseId
 export const adminFetchMockTestQuestionsByCourseId = createAsyncThunk(
   "exam/fetchMockTestQuestionsByCourseId",
-  async (courseId, { rejectWithValue }) => {
+  async ({courseId, topics}, { rejectWithValue }) => {
     try {
-      return await fetchMockTestQuestionsByCourseId(courseId);
+      return await fetchMockTestQuestionsByCourseId(courseId, topics);
     } catch (error) {
       return rejectWithValue(error.message);
     }
@@ -219,11 +219,11 @@ export const getTestQuestions = createAsyncThunk(
 // Async thunk for creating a new test
 export const getQBankQuestions = createAsyncThunk(
   "questions/fetchQBankQuestions",
-  async (_, { rejectWithValue }) => {
+  async (filters, { rejectWithValue }) => {
     try {
-      const data = await fetchQBankQuestions(); // { submittedQuestions, questions }
+      const data = await fetchQBankQuestions(filters); // { submittedQuestions, questions }
       const submitted = data.submittedQuestions || [];
-      const questions = data.questions || [];
+      const questions = data.questions || data.Qbank || [];
       // Keep only questions that are NOT already in submittedQuestions
       const filteredQuestions = questions.filter(
         (id) => !submitted.includes(id)
@@ -314,9 +314,9 @@ export const deleteSuccessStory = createAsyncThunk(
 // ✅ Reset QBank Thunk
 export const resetQbank = createAsyncThunk(
   "exam/resetQbank",
-  async (student_id, { rejectWithValue }) => {
+  async ({ student_id, topic_id }, { rejectWithValue }) => {
     try {
-      const response = await resetQbankApi(student_id);
+      const response = await resetQbankApi(student_id, topic_id);
       return response;
     } catch (error) {
       return rejectWithValue(error.message || "Failed to reset QBank");
@@ -354,9 +354,9 @@ export const adminUpdateTestThunk = createAsyncThunk(
 // NEW THUNK: Get Question Bank Result
 export const getQuestionBankResult = createAsyncThunk(
   "exam/getQuestionBankResult",
-  async (token, { rejectWithValue }) => {
+  async ({ token, topicsQuery = "" }, { rejectWithValue }) => {
     try {
-      const data = await getQuestionBankResultApi(token);
+      const data = await getQuestionBankResultApi(token, topicsQuery);
       return data;
     } catch (error) {
       return rejectWithValue(error.message);

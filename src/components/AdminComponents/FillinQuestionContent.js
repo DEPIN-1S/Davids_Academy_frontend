@@ -35,6 +35,7 @@ const FillinQuestionContent = () => {
     const cs_id = location.state?.cs_id || "";
     const exam_type = location.state?.exam_type || "";
     const question_type_id = location.state?.question_type_id || "";
+    const topic_id = location.state?.topic_id || "";
     const questionType = "Fill in the Blanks";
 
     // Form state
@@ -201,7 +202,7 @@ const FillinQuestionContent = () => {
         // ✅ Prepare ONLY serializable question data matching the required structure
 
         const questionData = {
-            cs_id: cs_id,
+            cs_id: cs_id, topic_id: topic_id,
             exam_type: exam_type,
             question_type_id: question_type_id,
             questionType: questionType,
@@ -256,7 +257,7 @@ const FillinQuestionContent = () => {
             state: {
                 questionData: currentData,
                 fromStep: 'content',
-                 cs_id:cs_id
+                 cs_id:cs_id, topic_id: topic_id, exam_type: exam_type, question_type_id: question_type_id
             }
         });
     };

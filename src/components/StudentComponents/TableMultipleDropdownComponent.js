@@ -80,7 +80,7 @@ const TableMultipleDropdownComponent = ({ question, onSubmit, submittedResult })
 
     if (submittedResult?.result && previousAnswers?.length > 0) {
       try {
-        console.log("Previous multi-dropdown answers:", previousAnswers);
+
 
         const newDropdownValues = {};
 
@@ -106,7 +106,7 @@ const TableMultipleDropdownComponent = ({ question, onSubmit, submittedResult })
           });
         }
 
-        console.log("Restored dropdown values:", newDropdownValues);
+
         setDropdownValues(newDropdownValues);
 
         // Calculate correctness
@@ -186,7 +186,7 @@ const TableMultipleDropdownComponent = ({ question, onSubmit, submittedResult })
     const testId = searchParams.get('testId');
 
     if (pathname === "/student/exam" && (testId || searchParams.get('mode') === 'question-bank')) {
-      console.log("inside table multi-dropdown mock test response submitting");
+
 
       const rowsAnswer = rows.map((row, rIdx) => ({
         rowLabel: rIdx,
@@ -260,9 +260,7 @@ const TableMultipleDropdownComponent = ({ question, onSubmit, submittedResult })
           textAlign: "left",
           alignItems: "center",
         }}
-      >
-        {questionText}
-      </Typography>
+       dangerouslySetInnerHTML={{ __html: questionText || "" }} />
 
       {/* Instructions */}
       {instructions && (
@@ -283,9 +281,7 @@ const TableMultipleDropdownComponent = ({ question, onSubmit, submittedResult })
               fontSize: { xs: "0.9rem", md: "1rem" },
               lineHeight: 1.6,
             }}
-          >
-            {instructions}
-          </Typography>
+           dangerouslySetInnerHTML={{ __html: instructions || "" }} />
         </Box>
       )}
 
@@ -365,7 +361,7 @@ const TableMultipleDropdownComponent = ({ question, onSubmit, submittedResult })
                 // Prevent <p> tags from Quill from having unwanted margins
                 '& p': { margin: 0, marginBottom: '0.5em' },
                 '& p:last-child': { marginBottom: 0 },
-                '& *': { lineHeight: 1.6 },
+                '& *': { lineHeight: 1.6 , wordBreak: "break-word", overflowWrap: "anywhere" , wordBreak: "break-word", overflowWrap: "anywhere" },
               }}
               dangerouslySetInnerHTML={{
                 __html: tabsInfo.find((tab) => tab.tabKey === activeTab)?.tabValue || ''
@@ -377,7 +373,7 @@ const TableMultipleDropdownComponent = ({ question, onSubmit, submittedResult })
                   src={
                     tabsInfo[activeTab].tabImage.startsWith("http")
                       ? tabsInfo[activeTab].tabImage
-                      : `${'https://lunarsenterprises.com:6040/'}${tabsInfo[activeTab].tabImage}`
+                      : `${process.env.REACT_APP_API_URL.replace('/davidsacademy', '')}/${tabsInfo[activeTab].tabImage}`
                   }
                   alt="tab"
                   style={{
@@ -399,13 +395,13 @@ const TableMultipleDropdownComponent = ({ question, onSubmit, submittedResult })
           sx={{
             boxShadow: "0 4px 6px -1px rgb(0 0 0 / 0.1)",
             borderRadius: "0.75rem",
-            overflow: "hidden",
+            overflowX: "auto", overflowY: "hidden",
             maxWidth: { xs: "100%", md: 720 },
             margin: "0 auto",
             width: "100%",
           }}
         >
-          <Table sx={{ width: "100%", tableLayout: "fixed" }}>
+          <Table sx={{ width: "100%", tableLayout: { xs: "auto", md: "fixed" } }}>
             <TableHead>
               <TableRow
                 sx={{
@@ -419,6 +415,9 @@ const TableMultipleDropdownComponent = ({ question, onSubmit, submittedResult })
                       fontWeight: 600,
                       color: "#475569",
                       borderBottom: "1px solid #e2e8f0",
+                      width: { xs: "auto", md: `${100 / headers.length}%` },
+                      wordBreak: "break-word",
+                      minWidth: { xs: "140px", sm: "auto" },
                     }}
                   >
                     {h}
@@ -433,7 +432,12 @@ const TableMultipleDropdownComponent = ({ question, onSubmit, submittedResult })
                   sx={{ backgroundColor: "white" }}
                 >
                   <TableCell
-                    sx={{ color: "#1f2937", borderBottom: "1px solid #e2e8f0" }}
+                    sx={{ 
+                       color: "#1f2937", 
+                       borderBottom: "1px solid #e2e8f0",
+                       wordBreak: "break-word",
+                       minWidth: { xs: "140px", md: "auto" },
+                    }}
                   >
                     {row.rowLabel}
                   </TableCell>
@@ -453,7 +457,7 @@ const TableMultipleDropdownComponent = ({ question, onSubmit, submittedResult })
                     return (
                       <TableCell
                         key={key}
-                        sx={{ borderBottom: "1px solid #e2e8f0" }}
+                        sx={{ borderBottom: "1px solid #e2e8f0", minWidth: { xs: "160px", sm: "auto" } }}
                       >
                         <Select
                           value={userValue}
@@ -481,10 +485,12 @@ const TableMultipleDropdownComponent = ({ question, onSubmit, submittedResult })
                                     ? "#c0392b"
                                     : "#475569"
                                 : "#475569",
+                              whiteSpace: "normal",
+                              wordBreak: "break-word",
                             },
                           }}
                         >
-                          <MenuItem value="">
+                          <MenuItem value="" sx={{ whiteSpace: "normal", wordBreak: "break-word" }}>
                             <em>Select</em>
                           </MenuItem>
                           {Array.isArray(col.options) &&
@@ -493,13 +499,13 @@ const TableMultipleDropdownComponent = ({ question, onSubmit, submittedResult })
                               <MenuItem
                                 key={opt + i}
                                 value={opt}
-                                sx={{ color: "#475569" }}
+                                sx={{ color: "#475569", whiteSpace: "normal", wordBreak: "break-word" }}
                               >
                                 {opt}
                               </MenuItem>
                             ))
                           ) : (
-                            <MenuItem value="" disabled>
+                            <MenuItem value="" disabled sx={{ whiteSpace: "normal", wordBreak: "break-word" }}>
                               <em>No options</em>
                             </MenuItem>
                           )}
@@ -688,7 +694,7 @@ const TableMultipleDropdownComponent = ({ question, onSubmit, submittedResult })
             }
             additionalInfoImage={
               question.additionalInfo?.[0]?.image
-                ? `https://lunarsenterprises.com:6040/${question.additionalInfo[0].image}`
+                ? `${process.env.REACT_APP_API_URL.replace('/davidsacademy', '')}/${question.additionalInfo[0].image}`
                 : null
             }
             isAnswerCorrect={isCorrect}

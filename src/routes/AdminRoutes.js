@@ -25,6 +25,7 @@ import RecordedClassInfoComponent from "../components/AdminComponents/RecordClas
 import EnquireLeadComponent from "../components/AdminComponents/EnquireLeadComponent";
 import ExamTypeComponent from "../components/AdminComponents/ExamTypeComponent";
 import SelectCourseComponent from "../components/AdminComponents/SelectCourseComponent";
+import SelectTopicComponent from "../components/AdminComponents/SelectTopicComponent";
 import AddTestComponent from "../components/AdminComponents/AddTestComponent";
 import McqQuestionView from "../Admin Question View/McqQuestionView";
 import DragDropQuestionView from "../Admin Question View/DragDropQuestionView";
@@ -163,7 +164,17 @@ const AdminRoutes = () => (
                     <SelectCourseComponent />
                 </ProtectedRoutes>
             } />
+            <Route path="/admin/select-course" element={
+                <ProtectedRoutes allowedRoles={['admin']}>
+                    <SelectCourseComponent />
+                </ProtectedRoutes>
+            } />
 
+            <Route path="/admin/select-topic" element={
+                <ProtectedRoutes allowedRoles={['admin']}>
+                    <SelectTopicComponent />
+                </ProtectedRoutes>
+            } />
 
             <Route path="/admin/exam-type" element={
                 <ProtectedRoutes allowedRoles={['admin']}>

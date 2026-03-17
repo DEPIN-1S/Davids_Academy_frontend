@@ -72,9 +72,7 @@ function MultiRadioQuestionView() {
           fontWeight={700}
           mb={2}
           sx={{ textAlign: "center", color: "#2e3760", pt: 4 }}
-        >
-          {questionText}
-        </Typography>
+         dangerouslySetInnerHTML={{ __html: questionText || "" }} />
 
 
 
@@ -104,7 +102,7 @@ function MultiRadioQuestionView() {
               <Box sx={{ textAlign: "center", py: 2 }}>
                 {activeTabData?.tabImage && (
                   <img
-                    src={`https://lunarsenterprises.com:6040/${activeTabData.tabImage}`}
+                    src={`${process.env.REACT_APP_API_URL.replace('/davidsacademy', '')}/${activeTabData.tabImage}`}
                     alt="Tab Image"
                     style={{ maxWidth: "100%", width: 500, borderRadius: 8, marginBottom: 8 }}
                   />
@@ -128,9 +126,7 @@ function MultiRadioQuestionView() {
         {questionData?.data?.instructions &&
           <Box sx={{ pb: "10px", py: 4, alignItems: "center", justifyContent: "center", textAlign: "center" }} >
             <Typography sx={{ fontWeight: 200 }} ><h4>Question Instruction</h4></Typography>
-            <Typography variant="h3" sx={{ fontWeight: 200, fontSize: 15, pt: 2 }}>
-              {questionData?.data?.instructions}
-            </Typography>
+            <Typography variant="h3" sx={{ fontWeight: 200, fontSize: 15, pt: 2 }} dangerouslySetInnerHTML={{ __html: questionData?.data?.instructions || "" }} />
           </Box>
         }
 
