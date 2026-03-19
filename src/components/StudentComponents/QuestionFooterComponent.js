@@ -20,6 +20,8 @@ const QuestionFooterComponent = ({
   onNext,
   disablePrevious = false,
   onPrevious,
+  onSkip,
+  skipCount,
   questionNumber,
   totalQuestions,
   customButtonText = "Submit & Exit",
@@ -89,7 +91,6 @@ const QuestionFooterComponent = ({
               Question {questionNumber} of {totalQuestions}
             </Typography>
 
-
             {/* display only on Q-Bank question */}
             {isQuestionBankRoute && customButtonText !== "Submit & Exit" && (
               <Button
@@ -121,6 +122,14 @@ const QuestionFooterComponent = ({
 
 
       <div className="right-buttons">
+        <Button
+          className="footer-button"
+          onClick={onSkip}
+          variant="outlined"
+          sx={{ color: "white", borderColor: "rgba(255,255,255,0.5)", mr: { xs: 1, md: 2 }, textTransform: "none", borderRadius: "8px", '&:hover': { borderColor: "white" } }}
+        >
+          {skipCount > 0 ? `Skip (${skipCount})` : "Skip"}
+        </Button>
         <Button
           disabled={false}
           onClick={() => {

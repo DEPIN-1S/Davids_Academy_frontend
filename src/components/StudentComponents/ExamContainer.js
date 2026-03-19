@@ -75,6 +75,8 @@ const ExamContainer = ({ user }) => {
   const [answeredIndices, setAnsweredIndices] = useState(new Set());
   const [correctCount, setCorrectCount] = useState(0);
   const [incorrectCount, setIncorrectCount] = useState(0);
+  const [refreshKey, setRefreshKey] = useState(0);
+  const [skipCount, setSkipCount] = useState(0);
   const hasFetchedQBank = useRef(false);
 
 
@@ -242,7 +244,6 @@ const ExamContainer = ({ user }) => {
 
 
 
-  // Same fix for handleNext
   const handleNext = useCallback(() => {
     if (questionIds && currentIndex < questionIds.length - 1) {
       const nextQuestionId = questionIds[currentIndex + 1];
@@ -282,7 +283,52 @@ const ExamContainer = ({ user }) => {
     }
   }, [currentIndex, questionIds, isTestMode, isSampleMode, dispatch, testId]);
 
+  const handleSkip = useCallback(() => {
+    if (questionIds && currentIndex < questionIds.length) {
+      sessionStorage.setItem("hasAnswered", "false");
+      sessionStorage.setItem("isRevealed", "false");
 
+      const skippedQuestionId = questionIds[currentIndex];
+
+      // Append skipped question and advance the index natively.
+      const newQuestionIds = [...questionIds, skippedQuestionId];
+      setQuestionIds(newQuestionIds);
+      setRefreshKey((k) => k + 1);
+      setSkipCount((c) => c + 1);
+
+      // Navigate to the logically next question in the sequence
+      const nextQuestionId = newQuestionIds[currentIndex + 1];
+
+      if (isTestMode) {
+        dispatch(
+          getMockTestSubmittedResult({ questionId: nextQuestionId, test_id: testId })
+        )
+          .unwrap()
+          .then(() => {
+            setCurrentIndex((idx) => idx + 1);
+            setCurrentQuestionId(nextQuestionId);
+          })
+          .catch(() => {
+            setCurrentIndex((idx) => idx + 1);
+            setCurrentQuestionId(nextQuestionId);
+          });
+      } else if (!isSampleMode) {
+        dispatch(getQBankSubmittedResult(nextQuestionId))
+          .unwrap()
+          .then(() => {
+            setCurrentIndex((idx) => idx + 1);
+            setCurrentQuestionId(nextQuestionId);
+          })
+          .catch(() => {
+            setCurrentIndex((idx) => idx + 1);
+            setCurrentQuestionId(nextQuestionId);
+          });
+      } else {
+        setCurrentIndex((idx) => idx + 1);
+        setCurrentQuestionId(nextQuestionId);
+      }
+    }
+  }, [currentIndex, questionIds, isTestMode, isSampleMode, dispatch, testId]);
 
   // Sync Redux result to currentQuestion
   const {
@@ -293,9 +339,13 @@ const ExamContainer = ({ user }) => {
 
   useEffect(() => {
     if (!isTestMode && !isSampleMode && qbankSubmittedResult) {
-      setCurrentQuestion(qbankSubmittedResult.data || qbankSubmittedResult);
+      if (qbankSubmittedResult.result !== false) {
+        setCurrentQuestion(qbankSubmittedResult.data || qbankSubmittedResult);
+      }
     } else if (isTestMode && mockTestSubmittedResult) {
-      setCurrentQuestion(mockTestSubmittedResult.data || mockTestSubmittedResult);
+      if (mockTestSubmittedResult.result !== false) {
+        setCurrentQuestion(mockTestSubmittedResult.data || mockTestSubmittedResult);
+      }
     }
   }, [qbankSubmittedResult, mockTestSubmittedResult, isTestMode, isSampleMode]);
 
@@ -433,6 +483,11 @@ const ExamContainer = ({ user }) => {
     return <div>Loading question list...</div>;
   }
 
+  // Enforce boundary to the original length so users don't see growing counts (e.g. 939)
+  const uniqueCount = new Set(questionIds).size;
+  const displayQuestionNumber = Math.min(currentIndex + 1, uniqueCount);
+  const displayTotalQuestions = uniqueCount;
+
   const showPrevious = isSampleMode || (!isTestMode && !isSampleMode);
   const submittedResultForCurrent = isTestMode
     ? mockTestSubmittedResult
@@ -451,8 +506,8 @@ const ExamContainer = ({ user }) => {
         {!isSampleMode && <DashboardNavbar />}
 
         <QuestionHeaderComponent
-          questionNumber={currentIndex + 1}
-          totalQuestions={questionIds.length}
+          questionNumber={displayQuestionNumber}
+          totalQuestions={displayTotalQuestions}
           qid={currentQuestion?.id || "N/A"}
           user={user?.name || "Guest"}
           time={formatTime(elapsedSeconds)}
@@ -470,6 +525,7 @@ const ExamContainer = ({ user }) => {
           <p>Loading question...</p>
         ) : QuestionComponent ? (
           <QuestionComponent
+            key={`${currentQuestion?.id || currentIndex}-${refreshKey}`}
             question={currentQuestion}
             submittedResult={submittedResultForCurrent}
             onSubmit={handleAnswerSubmit}
@@ -485,17 +541,18 @@ const ExamContainer = ({ user }) => {
         )}
       </Box>
 
-      {/* Footer Section */}
       <Box sx={{ flexShrink: 0 }}>
         <QuestionFooterComponent
           onEnd={handleEnd}
           onPause={handlePause}
           onNext={handleNext}
           onPrevious={handlePrevious}
+          onSkip={handleSkip}
+          skipCount={skipCount}
           disablePrevious={currentIndex === 0}
           disableNext={questionIds && currentIndex === questionIds.length - 1}
-          questionNumber={currentIndex + 1}
-          totalQuestions={questionIds.length}
+          questionNumber={displayQuestionNumber}
+          totalQuestions={displayTotalQuestions}
           customButtonText={isTestMode ? "Submit & Exit" : "Back"}
           customOnClick={handleEnd}
           showPrevious={showPrevious}

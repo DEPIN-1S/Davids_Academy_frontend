@@ -22,6 +22,10 @@ export const FileProvider = ({ children }) => {
         console.log("explanation file in file context:::", explanationFile);
         console.log("question file in file context:::", questionFile);
 
+        if (questionData.topic_id !== undefined && questionData.topic_id !== null) {
+            formData.append("topic_id", questionData.topic_id);
+        }
+
         switch (questionData.questionType) {
             case "MCQ":
                 formData.append("questionType", questionData.questionType);
