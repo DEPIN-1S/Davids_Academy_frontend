@@ -53,7 +53,7 @@ const SuccessStories = () => {
             <div className="slide" key={index}>
               <div className="story-card">
                 <img
-                  src={item.imageUrl}
+                  src={`${process.env.REACT_APP_API_URL.replace('/davidsacademy', '')}${item.imageUrl}`}
                   alt={`Story ${index + 1}`}
                   className="story-card-image"
                 />

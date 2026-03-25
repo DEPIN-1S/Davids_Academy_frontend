@@ -10,6 +10,7 @@ import {
   TableHead,
   TableRow,
   Radio,
+  Checkbox,
   Button,
   useMediaQuery,
   useTheme,
@@ -52,7 +53,30 @@ const MultiRadioQuestionComponent = ({ question, onSubmit, submittedResult }) =>
   const location = useLocation();
   const handleSelect = (findingIndex, selectedValue) => () => {
     if (showAnswer) return;
-    setAnswers((prev) => ({ ...prev, [findingIndex]: selectedValue }));
+
+    const finding = questionContent[findingIndex];
+    const expected = finding?.answer;
+    const isMultiple = Array.isArray(expected) || (typeof expected === 'string' && expected.includes(','));
+
+    setAnswers((prev) => {
+      const current = prev[findingIndex];
+      if (isMultiple) {
+        let currentArray = [];
+        if (Array.isArray(current)) {
+          currentArray = current;
+        } else if (typeof current === 'string') {
+          currentArray = current.split(',').map(s => s.trim()).filter(Boolean);
+        }
+
+        if (currentArray.includes(selectedValue)) {
+          return { ...prev, [findingIndex]: currentArray.filter(v => v !== selectedValue) };
+        } else {
+          return { ...prev, [findingIndex]: [...currentArray, selectedValue] };
+        }
+      } else {
+        return { ...prev, [findingIndex]: selectedValue };
+      }
+    });
   };
   const [alreadyShownModal, setAlreadyShownModal] = useState(false);
   useEffect(() => {
@@ -113,13 +137,21 @@ const MultiRadioQuestionComponent = ({ question, onSubmit, submittedResult }) =>
     }
 
     // Existing reveal logic below...
-    const correctAnswersMap = questionContent.reduce((acc, finding, idx) => {
-      acc[idx] = finding.answer;
-      return acc;
-    }, {});
+    const normalize = (val) => {
+      if (!val) return [];
+      if (Array.isArray(val)) return val.map(v => String(v).trim()).sort();
+      if (typeof val === 'string' && val.includes(',')) return val.split(',').map(v => String(v).trim()).sort();
+      return [String(val).trim()];
+    };
+
+    const isFindingCorrect = (userAns, correctAns) => {
+      const u = normalize(userAns);
+      const c = normalize(correctAns);
+      return u.length === c.length && u.every((v, i) => v === c[i]);
+    };
 
     const correctStatus = questionContent.every(
-      (finding, idx) => answers[idx] === correctAnswersMap[idx]
+      (finding, idx) => isFindingCorrect(answers[idx], finding.answer)
     );
 
     const mark = correctStatus ? question?.marks || 5 : 0;
@@ -136,10 +168,13 @@ const MultiRadioQuestionComponent = ({ question, onSubmit, submittedResult }) =>
     if (pathname === "/student/exam" && (testId || searchParams.get('mode') === 'question-bank')) {
 
 
-      const question_content_answers = questionContent.map((item, idx) => ({
-        question_text: item.client_findings || `Question ${idx + 1}`,
-        selected: answers[idx] || ""
-      }));
+      const question_content_answers = questionContent.map((item, idx) => {
+        const userAns = answers[idx];
+        return {
+          question_text: item.client_findings || `Question ${idx + 1}`,
+          selected: Array.isArray(userAns) ? userAns.join(',') : (userAns || "")
+        };
+      });
 
       const payload = {
         questionId: question.id,
@@ -271,23 +306,26 @@ const MultiRadioQuestionComponent = ({ question, onSubmit, submittedResult }) =>
                   "No content available"
               }}
             />
-            {tabsInfo[activeTab]?.tabImage && (
-              <Box sx={{ mt: 2, textAlign: "center" }}>
-                <img
-                  src={
-                    tabsInfo[activeTab].tabImage.startsWith("http")
-                      ? tabsInfo[activeTab].tabImage
-                      : `${process.env.REACT_APP_API_URL.replace('/davidsacademy', '')}/${tabsInfo[activeTab].tabImage}`
-                  }
-                  alt="tab"
-                  style={{
-                    maxWidth: "100%",
-                    borderRadius: 8,
-                    height: "auto",
-                  }}
-                />
-              </Box>
-            )}
+            {(() => {
+              const currentTab = tabsInfo.find((tab) => tab.tabKey === activeTab);
+              return currentTab?.tabImage ? (
+                <Box sx={{ mt: 2, textAlign: "center" }}>
+                  <img
+                    src={
+                      currentTab.tabImage.startsWith("http")
+                        ? currentTab.tabImage
+                        : `${process.env.REACT_APP_API_URL.replace('/davidsacademy', '')}/${currentTab.tabImage}`
+                    }
+                    alt="tab"
+                    style={{
+                      maxWidth: "100%",
+                      borderRadius: 8,
+                      height: "auto",
+                    }}
+                  />
+                </Box>
+              ) : null;
+            })()}
           </Box>
         </>
       )}
@@ -314,9 +352,8 @@ const MultiRadioQuestionComponent = ({ question, onSubmit, submittedResult }) =>
                   color: "white",
                   fontSize: "16px",
                 }}
-              >
-                {multiradioHeading}
-              </TableCell>
+                dangerouslySetInnerHTML={{ __html: multiradioHeading || "" }}
+              />
               {uniqueAnswers.map((answer, colIdx) => (
                 <TableCell
                   key={colIdx}
@@ -327,9 +364,8 @@ const MultiRadioQuestionComponent = ({ question, onSubmit, submittedResult }) =>
                     color: "white",
                     fontSize: "16px",
                   }}
-                >
-                  {answer}
-                </TableCell>
+                  dangerouslySetInnerHTML={{ __html: answer || "" }}
+                />
               ))}
             </TableRow>
           </TableHead>
@@ -337,12 +373,22 @@ const MultiRadioQuestionComponent = ({ question, onSubmit, submittedResult }) =>
           <TableBody>
             {questionContent.map((finding, rowIdx) => (
               <TableRow key={rowIdx}>
-                <TableCell sx={{ fontSize: "15px", color: "#333" }}>
-                  {finding.client_findings}
-                </TableCell>
+                <TableCell sx={{ fontSize: "15px", color: "#333" }} dangerouslySetInnerHTML={{ __html: finding.client_findings || "" }} />
                 {uniqueAnswers.map((answer, colIdx) => {
-                  const isSelected = answers[rowIdx] === answer;
-                  const isCorrectAnswer = finding.answer === answer;
+                  const expected = finding.answer;
+                  const isMultiple = Array.isArray(expected) || (typeof expected === 'string' && expected.includes(','));
+                  
+                  const isSelected = isMultiple ? 
+                    (Array.isArray(answers[rowIdx]) ? answers[rowIdx].includes(answer) : (typeof answers[rowIdx] === 'string' ? answers[rowIdx].split(',').includes(answer) : answers[rowIdx] === answer)) : 
+                    (answers[rowIdx] === answer);
+
+                  const normalizeAnswer = (a) => {
+                    if (Array.isArray(a)) return a;
+                    if (typeof a === 'string' && a.includes(',')) return a.split(',').map(s => s.trim());
+                    return [a];
+                  };
+                  
+                  const isCorrectAnswer = normalizeAnswer(finding.answer).includes(answer);
 
                   const showCorrect =
                     showAnswer && isSelected && isCorrectAnswer;
@@ -378,16 +424,27 @@ const MultiRadioQuestionComponent = ({ question, onSubmit, submittedResult }) =>
                           gap: 0.5,
                         }}
                       >
-                        <Radio
-                          name={`row-${rowIdx}`}
-                          checked={answers[rowIdx] === answer}
-                          onChange={handleSelect(rowIdx, answer)}
-                          disabled={showAnswer}
-                          value={answer}
-                          sx={{
-                            "&.Mui-checked": { color: "#2F3B6C" },
-                          }}
-                        />
+                        {isMultiple ? (
+                          <Checkbox
+                            checked={isSelected}
+                            onChange={handleSelect(rowIdx, answer)}
+                            disabled={showAnswer}
+                            sx={{
+                              "&.Mui-checked": { color: "#2F3B6C" },
+                            }}
+                          />
+                        ) : (
+                          <Radio
+                            name={`row-${rowIdx}`}
+                            checked={isSelected}
+                            onChange={handleSelect(rowIdx, answer)}
+                            disabled={showAnswer}
+                            value={answer}
+                            sx={{
+                              "&.Mui-checked": { color: "#2F3B6C" },
+                            }}
+                          />
+                        )}
                         {showAnswer && (
                           <>
                             {showCorrect && (

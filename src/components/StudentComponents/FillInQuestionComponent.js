@@ -68,16 +68,14 @@ const FillInQuestionComponent = ({ question, onSubmit }) => {
             ))}
           </Tabs>
           <Box sx={{ background: '#fff', borderRadius: 2, my: 2, p: 2 }}>
-            <Typography variant="body2">{tabs[tabIndex]?.tabValue}</Typography>
+            <Typography variant="body2" dangerouslySetInnerHTML={{ __html: tabs[tabIndex]?.tabValue || "" }} />
 
           </Box>
         </>
       )}
 
       {/* Question Heading */}
-      <Typography variant="h6" fontWeight={600} my={2} textAlign="center">
-        {questionHeading}
-      </Typography>
+      <Typography variant="h6" fontWeight={600} my={2} textAlign="center" dangerouslySetInnerHTML={{ __html: questionHeading || "" }} />
 
       {/* Fill-in-the-blank composed sentence */}
       <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', flexWrap: 'wrap', gap: 2 }}>
@@ -92,12 +90,12 @@ const FillInQuestionComponent = ({ question, onSubmit }) => {
               sx={{ minWidth: 150, mx: 1, bgcolor: 'white' }}
             >
               <MenuItem value="">Select</MenuItem>
-              {allOptions.map(optVal =>
-                <MenuItem key={optVal} value={optVal}>{optVal}</MenuItem>
-              )}
+              {allOptions.map((optVal, optIdx) => (
+                <MenuItem key={optIdx} value={optVal} dangerouslySetInnerHTML={{ __html: optVal || "" }} />
+              ))}
             </Select>
           ) : (
-            <Typography sx={{ mx: 0.5 }} key={idx} component="span">{part.question_text}</Typography>
+            <Typography sx={{ mx: 0.5 }} key={idx} component="span" dangerouslySetInnerHTML={{ __html: part.question_text || "" }} />
           )
         )}
       </Box>
@@ -122,7 +120,7 @@ const FillInQuestionComponent = ({ question, onSubmit }) => {
               onClick={() => !showReveal && handleActionSelect(a.value || a.label)}
             >
               <CardContent sx={{ py: 1, px: 2 }}>
-                <Typography variant="body2">{a.label || a.value}</Typography>
+                <Typography variant="body2" dangerouslySetInnerHTML={{ __html: (a.label || a.value) || "" }} />
               </CardContent>
             </Card>
           ))}
@@ -149,7 +147,7 @@ const FillInQuestionComponent = ({ question, onSubmit }) => {
           </Typography>
           <ul>
             {blanks.map((b, idx) => (
-              <li key={idx}>{userBlanks[`blank${idx}`] || 'Not selected'}</li>
+              <li key={idx} dangerouslySetInnerHTML={{ __html: (userBlanks[`blank${idx}`] || 'Not selected') }} />
             ))}
           </ul>
           <Typography variant="subtitle1" fontWeight={600} mt={2} mb={1} color="#2E3760">
@@ -157,7 +155,7 @@ const FillInQuestionComponent = ({ question, onSubmit }) => {
           </Typography>
           <ul>
             {correctAnswers.map((a, idx) => (
-              <li key={idx}>{a}</li>
+              <li key={idx} dangerouslySetInnerHTML={{ __html: a || "" }} />
             ))}
           </ul>
           <Typography variant="subtitle1" fontWeight={600} mt={2} mb={1} color={isCorrect ? 'green' : 'red'}>

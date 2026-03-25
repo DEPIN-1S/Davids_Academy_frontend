@@ -284,9 +284,8 @@ function TableDropDownQuestionView({ onSubmit }) {
                     borderBottom: "1px solid #e2e8f0",
                   }}
                   width="60%"
-                >
-                  {tableHeaders.leftHeader || "Category"}
-                </TableCell>
+                  dangerouslySetInnerHTML={{ __html: tableHeaders.leftHeader || "Category" }}
+                />
                 <TableCell
                   sx={{
                     fontWeight: 600,
@@ -294,9 +293,8 @@ function TableDropDownQuestionView({ onSubmit }) {
                     borderBottom: "1px solid #e2e8f0",
                   }}
                   width="40%"
-                >
-                  {tableHeaders.rightHeader || "Anticipated Order"}
-                </TableCell>
+                  dangerouslySetInnerHTML={{ __html: tableHeaders.rightHeader || "Anticipated Order" }}
+                />
               </TableRow>
             </TableHead>
             <TableBody>
@@ -309,9 +307,8 @@ function TableDropDownQuestionView({ onSubmit }) {
                         color: "#1f2937",
                         borderBottom: "1px solid #e2e8f0",
                       }}
-                    >
-                      {field.fieldLabel}
-                    </TableCell>
+                      dangerouslySetInnerHTML={{ __html: field.fieldLabel || "" }}
+                    />
                     <TableCell sx={{ borderBottom: "1px solid #e2e8f0" }}>
                       <Select
                         value={dropdownValues[key] ?? ""}
@@ -329,9 +326,7 @@ function TableDropDownQuestionView({ onSubmit }) {
                           <em>Select</em>
                         </MenuItem>
                         {(field.dropdownOptions || []).map((option, optIndex) => (
-                          <MenuItem key={option ?? optIndex} value={option}>
-                            {option}
-                          </MenuItem>
+                          <MenuItem key={option ?? optIndex} value={option} dangerouslySetInnerHTML={{ __html: option || "" }} />
                         ))}
                       </Select>
                     </TableCell>

@@ -387,9 +387,8 @@ const TableDropdownQuestionComponent = ({ question, onSubmit, submittedResult })
                     wordBreak: "break-word",
                       minWidth: { xs: "140px", sm: "auto" },
                   }}
-                >
-                  {tableHeaders.leftHeader || "Category"}
-                </TableCell>
+                  dangerouslySetInnerHTML={{ __html: tableHeaders.leftHeader || "Category" }}
+                />
                 <TableCell
                   sx={{
                     fontWeight: 600,
@@ -400,9 +399,8 @@ const TableDropdownQuestionComponent = ({ question, onSubmit, submittedResult })
                     wordBreak: "break-word",
                       minWidth: { xs: "140px", sm: "auto" },
                   }}
-                >
-                  {tableHeaders.rightHeader || "Anticipated Order"}
-                </TableCell>
+                  dangerouslySetInnerHTML={{ __html: tableHeaders.rightHeader || "Anticipated Order" }}
+                />
               </TableRow>
             </TableHead>
             <TableBody>
@@ -432,9 +430,8 @@ const TableDropdownQuestionComponent = ({ question, onSubmit, submittedResult })
                         wordBreak: "break-word",
                        minWidth: { xs: "140px", sm: "auto" }
                     }}
-                    >
-                      {field.fieldLabel}
-                    </TableCell>
+                    dangerouslySetInnerHTML={{ __html: field.fieldLabel || "" }}
+                    />
                     <TableCell
                       sx={{
                         borderBottom: "1px solid #e2e8f0",
@@ -489,9 +486,8 @@ const TableDropdownQuestionComponent = ({ question, onSubmit, submittedResult })
                               whiteSpace: "normal",
                               wordBreak: "break-word",
                             }}
-                          >
-                            {option}
-                          </MenuItem>
+                            dangerouslySetInnerHTML={{ __html: option || "" }}
+                          />
                         ))}
                       </Select>
                     </TableCell>
@@ -581,7 +577,7 @@ const TableDropdownQuestionComponent = ({ question, onSubmit, submittedResult })
               return (
                 <ListItem key={field.id || idx} disablePadding>
                   <ListItemText
-                    primary={`${field.fieldLabel}: ${userValue}`}
+                    primary={<span dangerouslySetInnerHTML={{ __html: `${field.fieldLabel}: ${userValue}` }} />}
                     primaryTypographyProps={{
                       sx: {
                         color: isCorrect ? "green" : "red",
@@ -607,7 +603,7 @@ const TableDropdownQuestionComponent = ({ question, onSubmit, submittedResult })
             {tableDropdownAnswers.map((answer, idx) => (
               <ListItem key={idx} disablePadding>
                 <ListItemText
-                  primary={`${answer.rowLabel}: ${answer.answer}`}
+                  primary={<span dangerouslySetInnerHTML={{ __html: `${answer.rowLabel}: ${answer.answer}` }} />}
                   primaryTypographyProps={{
                     sx: { color: "green", fontWeight: 500 },
                   }}

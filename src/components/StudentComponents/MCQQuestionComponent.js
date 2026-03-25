@@ -392,8 +392,8 @@ const MCQQuestionComponent = ({ question, onSubmit, submittedResult }) => {
                     gap: "8px",
                     fontSize: "0.95rem",
                   }}
+                  dangerouslySetInnerHTML={{ __html: optionText || "" }}
                 >
-                  {optionText}
                   {feedbackIcon}
                 </span>
               }

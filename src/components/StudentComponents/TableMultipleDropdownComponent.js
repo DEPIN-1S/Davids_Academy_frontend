@@ -419,9 +419,8 @@ const TableMultipleDropdownComponent = ({ question, onSubmit, submittedResult })
                       wordBreak: "break-word",
                       minWidth: { xs: "140px", sm: "auto" },
                     }}
-                  >
-                    {h}
-                  </TableCell>
+                    dangerouslySetInnerHTML={{ __html: h || "" }}
+                  />
                 ))}
               </TableRow>
             </TableHead>
@@ -438,9 +437,8 @@ const TableMultipleDropdownComponent = ({ question, onSubmit, submittedResult })
                        wordBreak: "break-word",
                        minWidth: { xs: "140px", md: "auto" },
                     }}
-                  >
-                    {row.rowLabel}
-                  </TableCell>
+                    dangerouslySetInnerHTML={{ __html: row.rowLabel || "" }}
+                  />
                   {row.columns.map((col) => {
                     const key = `${rIdx}-${col.colIndex}`;
                     const userValue = dropdownValues[key] || "";
@@ -500,9 +498,8 @@ const TableMultipleDropdownComponent = ({ question, onSubmit, submittedResult })
                                 key={opt + i}
                                 value={opt}
                                 sx={{ color: "#475569", whiteSpace: "normal", wordBreak: "break-word" }}
-                              >
-                                {opt}
-                              </MenuItem>
+                                dangerouslySetInnerHTML={{ __html: opt || "" }}
+                              />
                             ))
                           ) : (
                             <MenuItem value="" disabled sx={{ whiteSpace: "normal", wordBreak: "break-word" }}>
@@ -599,7 +596,7 @@ const TableMultipleDropdownComponent = ({ question, onSubmit, submittedResult })
               <React.Fragment key={row.rowLabel + rIdx}>
                 <ListItem disablePadding sx={{ py: 0.5 }}>
                   <ListItemText
-                    primary={row.rowLabel}
+                    primary={<span dangerouslySetInnerHTML={{ __html: row.rowLabel || "" }} />}
                     primaryTypographyProps={{ sx: { fontWeight: 700 } }}
                   />
                 </ListItem>
@@ -612,8 +609,7 @@ const TableMultipleDropdownComponent = ({ question, onSubmit, submittedResult })
                   return (
                     <ListItem key={key} disablePadding sx={{ pl: 3 }}>
                       <ListItemText
-                        primary={`${headers[col.colIndex] || `Col ${col.colIndex}`
-                          }: ${userVal}`}
+                        primary={<span dangerouslySetInnerHTML={{ __html: `${headers[col.colIndex] || `Col ${col.colIndex}`}: ${userVal}` }} />}
                         primaryTypographyProps={{
                           sx: {
                             color: isCellCorrect
@@ -646,7 +642,7 @@ const TableMultipleDropdownComponent = ({ question, onSubmit, submittedResult })
               <React.Fragment key={"correct-" + row.rowLabel + rIdx}>
                 <ListItem disablePadding sx={{ py: 0.5 }}>
                   <ListItemText
-                    primary={row.rowLabel}
+                    primary={<span dangerouslySetInnerHTML={{ __html: row.rowLabel || "" }} />}
                     primaryTypographyProps={{ sx: { fontWeight: 700 } }}
                   />
                 </ListItem>
@@ -657,8 +653,7 @@ const TableMultipleDropdownComponent = ({ question, onSubmit, submittedResult })
                     sx={{ pl: 3 }}
                   >
                     <ListItemText
-                      primary={`${headers[col.colIndex] || `Col ${col.colIndex}`
-                        }: ${col.answer || "-"}`}
+                      primary={<span dangerouslySetInnerHTML={{ __html: `${headers[col.colIndex] || `Col ${col.colIndex}`}: ${col.answer || "-"}` }} />}
                       primaryTypographyProps={{
                         sx: {
                           color: col.answer ? "green" : "#374151",

@@ -88,13 +88,12 @@ function SentenceHighlightQuestionView() {
               borderRadius: "4px",
               margin: "0 2px",
             }}
-          >
-            {part}
-          </span>
+            dangerouslySetInnerHTML={{ __html: part }}
+          />
         );
       }
 
-      return <span key={index}>{part}</span>;
+      return <span key={index} dangerouslySetInnerHTML={{ __html: part }} />;
     });
   };
 
@@ -198,7 +197,7 @@ function SentenceHighlightQuestionView() {
         >
           <Typography
             variant="body1"
-            sx={{ fontSize: "1rem", color: "#333", whiteSpace: "pre-line" }}
+            sx={{ fontSize: "1rem", color: "#333" }}
           >
             {renderHighlightedPassage()}
           </Typography>

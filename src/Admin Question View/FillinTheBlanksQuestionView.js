@@ -124,9 +124,7 @@ function FillinTheBlanksQuestionView() {
               minHeight: '100px',
             }}
           >
-            <Typography variant="body1" sx={{ color: '#333' }}>
-              {tabsInfo[Math.min(activeTab, tabsInfo.length - 1)]?.tabValue || 'No content available'}
-            </Typography>
+            <Typography variant="body1" sx={{ color: '#333' }} dangerouslySetInnerHTML={{ __html: tabsInfo[Math.min(activeTab, tabsInfo.length - 1)]?.tabValue || 'No content available' }} />
           </Box>
         </>
       )}
@@ -158,9 +156,8 @@ function FillinTheBlanksQuestionView() {
               '&:hover': { backgroundColor: '#f0f0f0' },
             }}
             onClick={() => handleToggleSentence(opt.options)}
-          >
-            {opt.options}
-          </Typography>
+            dangerouslySetInnerHTML={{ __html: opt.options || "" }}
+          />
         ))}
       </Box>
 

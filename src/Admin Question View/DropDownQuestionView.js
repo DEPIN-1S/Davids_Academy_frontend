@@ -84,9 +84,7 @@ const DropdownQuestionComponent = () => {
 
           return (
             <span key={dropdownId}>
-              <span style={{ marginRight: blankOrNot ? "8px" : "4px" }}>
-                {dt.dropdownField}
-              </span>
+              <span style={{ marginRight: blankOrNot ? "8px" : "4px" }} dangerouslySetInnerHTML={{ __html: dt.dropdownField || "" }} />
 
               {blankOrNot && (
                 <FormControl
@@ -152,9 +150,8 @@ const DropdownQuestionComponent = () => {
         fontWeight={700}
         mb={2}
         sx={{ textAlign: "center", color: "#2e3760", py: 4 }}
-      >
-        {q.question}
-      </Typography>
+        dangerouslySetInnerHTML={{ __html: q.question || "" }}
+      />
 
 
       {/* Tabs */}
@@ -211,9 +208,7 @@ const DropdownQuestionComponent = () => {
       {q.instructions &&
         <Box sx={{ pb: "10px", py: 4, alignItems: "center", justifyContent: "center", textAlign: "center" }} >
           <Typography sx={{ fontWeight: 200 }} ><h4>Question Instruction</h4></Typography>
-          <Typography variant="h3" sx={{ fontWeight: 200, fontSize: 15, pt: 2 }}>
-            {q.instructions}
-          </Typography>
+          <Typography variant="h3" sx={{ fontWeight: 200, fontSize: 15, pt: 2 }} dangerouslySetInnerHTML={{ __html: q.instructions || "" }} />
         </Box>
       }
 

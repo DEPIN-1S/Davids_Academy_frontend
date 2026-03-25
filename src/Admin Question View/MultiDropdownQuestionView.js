@@ -236,18 +236,14 @@ function MultiDropdownQuestionView({ onSubmit }) {
                         <TableRow sx={{ backgroundColor: "#f1f5f9" }}>
 
                             {headers.map((h, idx) => (
-                                <TableCell key={idx} sx={{ fontWeight: 600 }}>
-                                    {h}
-                                </TableCell>
+                                <TableCell key={idx} sx={{ fontWeight: 600 }} dangerouslySetInnerHTML={{ __html: h || "" }} />
                             ))}
                         </TableRow>
                     </TableHead>
                     <TableBody>
                         {rows.map((row, rIdx) => (
                             <TableRow key={rIdx}>
-                                <TableCell sx={{ fontWeight: 500 }}>
-                                    {row.rowLabel}
-                                </TableCell>
+                                <TableCell sx={{ fontWeight: 500 }} dangerouslySetInnerHTML={{ __html: row.rowLabel || "" }} />
                                 {row.columns.map((col) => {
                                     const key = `${rIdx}-${col.colIndex}`;
                                     const value = dropdownValues[key] ?? "";
@@ -267,9 +263,7 @@ function MultiDropdownQuestionView({ onSubmit }) {
                                                         <em>Select</em>
                                                     </MenuItem>
                                                     {options.map((opt, i) => (
-                                                        <MenuItem key={i} value={opt}>
-                                                            {opt}
-                                                        </MenuItem>
+                                                        <MenuItem key={i} value={opt} dangerouslySetInnerHTML={{ __html: opt || "" }} />
                                                     ))}
                                                 </Select>
                                             </FormControl>

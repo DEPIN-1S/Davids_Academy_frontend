@@ -47,7 +47,29 @@ function MultiRadioQuestionView() {
   };
 
   const handleSelect = (findingIndex, group) => {
-    setAnswers((prev) => ({ ...prev, [findingIndex]: group }));
+    const finding = questionContent[findingIndex];
+    const expected = finding?.answer;
+    const isMultiple = Array.isArray(expected) || (typeof expected === 'string' && expected.includes(','));
+
+    setAnswers((prev) => {
+      const current = prev[findingIndex];
+      if (isMultiple) {
+        let currentArray = [];
+        if (Array.isArray(current)) {
+          currentArray = current;
+        } else if (typeof current === 'string') {
+          currentArray = current.split(',').map(s => s.trim()).filter(Boolean);
+        }
+
+        if (currentArray.includes(group)) {
+          return { ...prev, [findingIndex]: currentArray.filter(v => v !== group) };
+        } else {
+          return { ...prev, [findingIndex]: [...currentArray, group] };
+        }
+      } else {
+        return { ...prev, [findingIndex]: group };
+      }
+    });
   };
 
   return (
@@ -135,7 +157,7 @@ function MultiRadioQuestionView() {
           <table className="radio-table">
             <thead>
               <tr>
-                <th>{questionData?.data?.multiradioHeading}</th>
+                <th dangerouslySetInnerHTML={{ __html: questionData?.data?.multiradioHeading || "" }} />
                 {answerGroups.map((group) => (
                   <th key={group}>{group}</th>
                 ))}
@@ -144,19 +166,28 @@ function MultiRadioQuestionView() {
             <tbody>
               {questionContent.map((finding, idx) => (
                 <tr key={finding.id || idx}>
-                  <td>{finding.client_findings}</td>
-                  {answerGroups.map((group) => (
-                    <td key={group}>
-                      <input
-                        type="radio"
-                        name={`finding-${idx}`}
-                        value={group}
-                        checked={answers[idx] === group}
-                        onChange={() => handleSelect(idx, group)}
-                        disabled={showReveal}
-                      />
-                    </td>
-                  ))}
+                  <td dangerouslySetInnerHTML={{ __html: finding.client_findings || "" }} />
+                  {answerGroups.map((group) => {
+                    const finding = questionContent[idx];
+                    const expected = finding?.answer;
+                    const isMultiple = Array.isArray(expected) || (typeof expected === 'string' && expected.includes(','));
+                    const isSelected = isMultiple ? 
+                      (Array.isArray(answers[idx]) ? answers[idx].includes(group) : (typeof answers[idx] === 'string' ? answers[idx].split(',').includes(group) : answers[idx] === group)) : 
+                      (answers[idx] === group);
+
+                    return (
+                      <td key={group}>
+                        <input
+                          type={isMultiple ? "checkbox" : "radio"}
+                          name={`finding-${idx}`}
+                          value={group}
+                          checked={isSelected}
+                          onChange={() => handleSelect(idx, group)}
+                          disabled={showReveal}
+                        />
+                      </td>
+                    );
+                  })}
                 </tr>
               ))}
             </tbody>

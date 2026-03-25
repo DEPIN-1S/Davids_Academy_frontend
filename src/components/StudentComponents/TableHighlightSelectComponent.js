@@ -376,9 +376,8 @@ const TableHighlightSelectComponent = ({ question, onSubmit, submittedResult }) 
                     borderBottom: "1px solid #e2e8f0",
                     width: { xs: "auto", md: "50%" },
                   }}
-                >
-                  {tableHeaders.leftHeader || "Category"}
-                </TableCell>
+                  dangerouslySetInnerHTML={{ __html: tableHeaders.leftHeader || "Category" }}
+                />
                 <TableCell
                   sx={{
                     fontWeight: 600,
@@ -386,9 +385,8 @@ const TableHighlightSelectComponent = ({ question, onSubmit, submittedResult }) 
                     borderBottom: "1px solid #e2e8f0",
                     width: { xs: "auto", md: "50%" },
                   }}
-                >
-                  {tableHeaders.rightHeader || "Options"}
-                </TableCell>
+                  dangerouslySetInnerHTML={{ __html: tableHeaders.rightHeader || "Options" }}
+                />
               </TableRow>
             </TableHead>
             <TableBody>
@@ -413,9 +411,8 @@ const TableHighlightSelectComponent = ({ question, onSubmit, submittedResult }) 
                         padding: { xs: "12px", md: "16px" },
                         wordBreak: "break-word",
                       }}
-                    >
-                      {field.leftColumn}
-                    </TableCell>
+                      dangerouslySetInnerHTML={{ __html: field.leftColumn || "" }}
+                    />
                     <TableCell
                       onClick={() => handleRightColumnClick(field.rightColumn)}
                       sx={{
@@ -457,7 +454,7 @@ const TableHighlightSelectComponent = ({ question, onSubmit, submittedResult }) 
                           },
                       }}
                     >
-                      {field.rightColumn}
+                      <span dangerouslySetInnerHTML={{ __html: field.rightColumn || "" }} />
                       {isSelected && !showReveal && (
                         <Typography
                           component="span"
@@ -537,7 +534,7 @@ const TableHighlightSelectComponent = ({ question, onSubmit, submittedResult }) 
               answer.map((correctItem, idx) => (
                 <ListItem key={idx} disablePadding sx={{ py: 0.5 }}>
                   <ListItemText
-                    primary={correctItem}
+                    primary={<span dangerouslySetInnerHTML={{ __html: correctItem || "" }} />}
                     primaryTypographyProps={{
                       sx: {
                         color: "green",

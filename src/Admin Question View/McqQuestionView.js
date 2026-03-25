@@ -174,6 +174,7 @@ function McqQuestionView() {
                           }}
                         />
                       )}
+                      {console.log("activeTabData?.tabValue", activeTabData?.tabImage)}
                       <Typography variant="body1" sx={{ color: "#333", textAlign: 'left' }} dangerouslySetInnerHTML={{ __html: activeTabData?.tabValue || "" }} />
                     </>
                   );
@@ -200,7 +201,7 @@ function McqQuestionView() {
                   key={optionObj.id}
                   value={optionObj.option}
                   control={<Radio />}
-                  label={<span className="radio-label">{optionObj.option}</span>}
+                  label={<span className="radio-label" dangerouslySetInnerHTML={{ __html: optionObj.option || "" }} />}
                   sx={{
                     display: "flex",
                     alignItems: "center", // aligns radio at top-left

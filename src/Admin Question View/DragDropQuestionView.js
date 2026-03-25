@@ -127,9 +127,8 @@ const DragDropQuestionView = () => {
                   color: "#333",
                   textAlign: "center",
                 }}
-              >
-                {branch.headings || "Action to take"}
-              </Typography>
+                dangerouslySetInnerHTML={{ __html: branch.headings || "Action to take" }}
+              />
 
               {branch.dragdropoption?.map((opt, index) => {
                 const isCorrect = String(opt.id) === String(branch.drag_drop_answer);
@@ -170,9 +169,8 @@ const DragDropQuestionView = () => {
                         fontSize: "0.9rem",
                         fontWeight: isCorrect ? 600 : 400,
                       }}
-                    >
-                      {opt.options_value}
-                    </Typography>
+                      dangerouslySetInnerHTML={{ __html: opt.options_value || "" }}
+                    />
                   </Paper>
                 );
               })}

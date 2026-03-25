@@ -133,7 +133,7 @@ function ManageSuccessStories() {
           successStories.map((story) => (
             <div className="success-story-card" key={story.id}>
               <img
-                src={story.imageUrl}
+                src={`${process.env.REACT_APP_API_URL.replace('/davidsacademy', '')}${story.imageUrl || story.image}`}
                 alt={`Success Story ${story.id}`}
                 className="story-image"
               />

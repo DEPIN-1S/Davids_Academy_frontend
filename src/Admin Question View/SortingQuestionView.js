@@ -143,9 +143,8 @@ function SortingQuestionView() {
         variant="h6"
         fontWeight={700}
         sx={{ textAlign: "center", mb: 2, pt: 4, fontSize: { xs: "1rem", md: "1.45rem", color: "#2e3760" } }}
-      >
-        {question?.question}
-      </Typography>
+        dangerouslySetInnerHTML={{ __html: question?.question || "" }}
+      />
 
 
       {/* Tabs */}

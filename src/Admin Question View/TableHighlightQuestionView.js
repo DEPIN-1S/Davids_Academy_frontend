@@ -238,12 +238,8 @@ function TableHighlightQuestionView({ onSubmit }) {
                     <Table sx={{ width: "100%" }}>
                         <TableHead>
                             <TableRow sx={{ backgroundColor: "#f1f5f9" }}>
-                                <TableCell sx={{ fontWeight: 600, color: "#475569" }}>
-                                    {tableHeaders.leftHeader || "Category"}
-                                </TableCell>
-                                <TableCell sx={{ fontWeight: 600, color: "#475569" }}>
-                                    {tableHeaders.rightHeader || "Options"}
-                                </TableCell>
+                                <TableCell sx={{ fontWeight: 600, color: "#475569" }} dangerouslySetInnerHTML={{ __html: tableHeaders.leftHeader || "Category" }} />
+                                <TableCell sx={{ fontWeight: 600, color: "#475569" }} dangerouslySetInnerHTML={{ __html: tableHeaders.rightHeader || "Options" }} />
                             </TableRow>
                         </TableHead>
                         <TableBody>
@@ -257,7 +253,7 @@ function TableHighlightQuestionView({ onSubmit }) {
                                     !answer.includes(field.rightColumn);
                                 return (
                                     <TableRow key={field.id || idx}>
-                                        <TableCell>{field.leftColumn}</TableCell>
+                                        <TableCell dangerouslySetInnerHTML={{ __html: field.leftColumn || "" }} />
                                         <TableCell
                                             onClick={() =>
                                                 handleRightColumnClick(field.rightColumn)
@@ -284,9 +280,8 @@ function TableHighlightQuestionView({ onSubmit }) {
                                                         : "#475569",
                                                 fontWeight: isSelected ? 600 : 400,
                                             }}
-                                        >
-                                            {field.rightColumn}
-                                        </TableCell>
+                                            dangerouslySetInnerHTML={{ __html: field.rightColumn || "" }}
+                                        />
                                     </TableRow>
                                 );
                             })}

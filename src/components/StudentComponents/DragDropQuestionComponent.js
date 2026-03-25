@@ -296,7 +296,6 @@ const DragDropQuestionComponent = ({ question, onSubmit, submittedResult }) => {
               sx={{
                 color: "#374151",
                 textAlign: "left",
-                whiteSpace: "pre-line", // Keep this for plain text fallback
                 fontSize: { xs: "0.9rem", md: "1rem" },
                 lineHeight: 1.6,
                 // Fix Quill <p> spacing
@@ -372,9 +371,8 @@ const DragDropQuestionComponent = ({ question, onSubmit, submittedResult }) => {
                           wordWrap: "break-word",
                           overflowWrap: "break-word",
                         }}
-                      >
-                        {b.headings}
-                      </Typography>
+                        dangerouslySetInnerHTML={{ __html: b.headings || "" }}
+                      />
                       <FormControl size="small" fullWidth>
                         <Select
                           value={dropdownValues[actualIndex] || ""}
@@ -403,9 +401,7 @@ const DragDropQuestionComponent = ({ question, onSubmit, submittedResult }) => {
                             <em>Select</em>
                           </MenuItem>
                           {b.dragdropoption?.map((opt) => (
-                            <MenuItem key={opt.id} value={opt.options_value} sx={{ whiteSpace: "normal", wordBreak: "break-word" }}>
-                              {opt.options_value}
-                            </MenuItem>
+                            <MenuItem key={opt.id} value={opt.options_value} sx={{ whiteSpace: "normal", wordBreak: "break-word" }} dangerouslySetInnerHTML={{ __html: opt.options_value || "" }} />
                           ))}
                         </Select>
                       </FormControl>
@@ -440,9 +436,8 @@ const DragDropQuestionComponent = ({ question, onSubmit, submittedResult }) => {
                       wordWrap: "break-word",
                       overflowWrap: "break-word",
                     }}
-                  >
-                    {branches[0].headings}
-                  </Typography>
+                    dangerouslySetInnerHTML={{ __html: branches[0].headings || "" }}
+                  />
                   <FormControl size="small" fullWidth>
                     <Select
                       value={dropdownValues[0] || ""}
@@ -469,9 +464,7 @@ const DragDropQuestionComponent = ({ question, onSubmit, submittedResult }) => {
                         <em>Select</em>
                       </MenuItem>
                       {branches[0].dragdropoption?.map((opt) => (
-                        <MenuItem key={opt.id} value={opt.options_value} sx={{ whiteSpace: "normal", wordBreak: "break-word" }}>
-                          {opt.options_value}
-                        </MenuItem>
+                        <MenuItem key={opt.id} value={opt.options_value} sx={{ whiteSpace: "normal", wordBreak: "break-word" }} dangerouslySetInnerHTML={{ __html: opt.options_value || "" }} />
                       ))}
                     </Select>
                   </FormControl>
@@ -511,9 +504,8 @@ const DragDropQuestionComponent = ({ question, onSubmit, submittedResult }) => {
                           wordWrap: "break-word",
                           overflowWrap: "break-word",
                         }}
-                      >
-                        {b.headings}
-                      </Typography>
+                        dangerouslySetInnerHTML={{ __html: b.headings || "" }}
+                      />
                       <FormControl size="small" fullWidth>
                         <Select
                           value={dropdownValues[actualIndex] || ""}
@@ -542,9 +534,7 @@ const DragDropQuestionComponent = ({ question, onSubmit, submittedResult }) => {
                             <em>Select</em>
                           </MenuItem>
                           {b.dragdropoption?.map((opt) => (
-                            <MenuItem key={opt.id} value={opt.options_value} sx={{ whiteSpace: "normal", wordBreak: "break-word" }}>
-                              {opt.options_value}
-                            </MenuItem>
+                            <MenuItem key={opt.id} value={opt.options_value} sx={{ whiteSpace: "normal", wordBreak: "break-word" }} dangerouslySetInnerHTML={{ __html: opt.options_value || "" }} />
                           ))}
                         </Select>
                       </FormControl>
@@ -679,9 +669,8 @@ const DragDropQuestionComponent = ({ question, onSubmit, submittedResult }) => {
                       minWidth: { xs: "120px", sm: "150px" },
                       fontSize: { xs: "0.9rem", md: "1rem" },
                     }}
-                  >
-                    {b.headings}:
-                  </Typography>
+                    dangerouslySetInnerHTML={{ __html: (b.headings || "") + ":" }}
+                  />
                   <Typography
                     sx={{
                       color: isMatch ? "green" : "red",
@@ -689,9 +678,8 @@ const DragDropQuestionComponent = ({ question, onSubmit, submittedResult }) => {
                       flex: 1,
                       fontSize: { xs: "0.9rem", md: "1rem" },
                     }}
-                  >
-                    {selected}
-                  </Typography>
+                    dangerouslySetInnerHTML={{ __html: selected || "" }}
+                  />
                 </Box>
               );
             })}
@@ -737,9 +725,8 @@ const DragDropQuestionComponent = ({ question, onSubmit, submittedResult }) => {
                     minWidth: { xs: "120px", sm: "150px" },
                     fontSize: { xs: "0.9rem", md: "1rem" },
                   }}
-                >
-                  {b.headings}:
-                </Typography>
+                  dangerouslySetInnerHTML={{ __html: (b.headings || "") + ":" }}
+                />
                 <Typography
                   sx={{
                     color: "#16a34a",
@@ -747,9 +734,8 @@ const DragDropQuestionComponent = ({ question, onSubmit, submittedResult }) => {
                     flex: 1,
                     fontSize: { xs: "0.9rem", md: "1rem" },
                   }}
-                >
-                  {b.drag_drop_answer}
-                </Typography>
+                  dangerouslySetInnerHTML={{ __html: b.drag_drop_answer || "" }}
+                />
               </Box>
             ))}
           </Box>

@@ -342,7 +342,6 @@ const DropdownQuestionComponent = ({ question, onSubmit, submittedResult }) => {
             sx={{
               color: "#374151",
               textAlign: "left",
-              whiteSpace: "pre-line",
               fontSize: { xs: "0.9rem", md: "1rem" },
               lineHeight: 1.6,
               "& p": { margin: 0, marginBottom: "0.5em" },
@@ -410,9 +409,8 @@ const DropdownQuestionComponent = ({ question, onSubmit, submittedResult }) => {
                     lineHeight: 1.4,
                     maxWidth: { xs: "100%", sm: "250px", md: "300px" },
                   }}
-                >
-                  {label}
-                </Typography>
+                  dangerouslySetInnerHTML={{ __html: label || "" }}
+                />
                 <FormControl
                   size="small"
                   sx={{
@@ -452,9 +450,7 @@ const DropdownQuestionComponent = ({ question, onSubmit, submittedResult }) => {
                       <em>Select</em>
                     </MenuItem>
                     {options.map((opt, oi) => (
-                      <MenuItem key={opt.id || oi} value={opt.dropdownValue} sx={{ whiteSpace: "normal", wordBreak: "break-word" }}>
-                        {opt.dropdownValue}
-                      </MenuItem>
+                      <MenuItem key={opt.id || oi} value={opt.dropdownValue} sx={{ whiteSpace: "normal", wordBreak: "break-word" }} dangerouslySetInnerHTML={{ __html: opt.dropdownValue || "" }} />
                     ))}
                   </Select>
                 </FormControl>
@@ -607,9 +603,8 @@ const DropdownQuestionComponent = ({ question, onSubmit, submittedResult }) => {
                         fontWeight: 500,
                         fontSize: "0.95rem",
                       }}
-                    >
-                      {userVal}
-                    </td>
+                      dangerouslySetInnerHTML={{ __html: userVal || "" }}
+                    />
                     <td
                       style={{
                         padding: "10px 14px",
@@ -617,9 +612,8 @@ const DropdownQuestionComponent = ({ question, onSubmit, submittedResult }) => {
                         fontWeight: 500,
                         fontSize: "0.95rem",
                       }}
-                    >
-                      {correctVal}
-                    </td>
+                      dangerouslySetInnerHTML={{ __html: correctVal || "" }}
+                    />
                     <td
                       style={{
                         padding: "10px 14px",

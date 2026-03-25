@@ -33,6 +33,7 @@ const SortQuestionComponent = ({ question, onSubmit, submittedResult }) => {
     sortingoptions = [],
     explanation = [],
     additionalInfo = [],
+    marks = 0,
     tabsInfo = [],
   } = question || {};
 
@@ -365,9 +366,7 @@ const SortQuestionComponent = ({ question, onSubmit, submittedResult }) => {
                   backgroundColor: bg,
                 }}
               >
-                <Typography sx={{ color, fontWeight: 600 }}>
-                  {step.text}
-                </Typography>
+                <Typography sx={{ color, fontWeight: 600 }} dangerouslySetInnerHTML={{ __html: step.text || "" }} />
               </Box>
             );
           })
@@ -476,9 +475,7 @@ const SortQuestionComponent = ({ question, onSubmit, submittedResult }) => {
                   backgroundColor: "#e6f4ea",
                 }}
               >
-                <Typography sx={{ color: "#1b7a3b", fontWeight: 600 }}>
-                  {item}
-                </Typography>
+                <Typography sx={{ color: "#1b7a3b", fontWeight: 600 }} dangerouslySetInnerHTML={{ __html: item || "" }} />
               </Box>
             ))}
           </Box>

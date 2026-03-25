@@ -20,7 +20,7 @@ const SortableItemComponent = ({ id, text }) => {
 
   return (
     <div ref={setNodeRef} style={style} className="sortable-item" {...attributes} {...listeners}>
-      <span className="drag-icon">≡</span> {text}
+      <span className="drag-icon">≡</span> <span dangerouslySetInnerHTML={{ __html: text || "" }} />
     </div>
   );
 };

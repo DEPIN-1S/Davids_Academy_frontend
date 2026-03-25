@@ -504,7 +504,7 @@ const SentenceQuestionComponent = ({ question, onSubmit, submittedResult }) => {
               .filter(Boolean)
               .map((txt, idx) => (
                 <ListItem key={idx} disablePadding>
-                  <ListItemText primary={txt} />
+                  <ListItemText primary={<span dangerouslySetInnerHTML={{ __html: txt || "" }} />} />
                 </ListItem>
               ))}
           </List>
@@ -515,7 +515,7 @@ const SentenceQuestionComponent = ({ question, onSubmit, submittedResult }) => {
           <List dense>
             {(userAnswer ? userAnswer.split(", ") : ["Not selected"]).map((item, idx) => (
               <ListItem key={idx} disablePadding>
-                <ListItemText primary={item} />
+                <ListItemText primary={<span dangerouslySetInnerHTML={{ __html: item || "" }} />} />
               </ListItem>
             ))}
           </List>
