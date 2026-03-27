@@ -131,17 +131,7 @@ const MCQQuestionComponent = ({ question, onSubmit, submittedResult }) => {
   };
 
   const handleReveal = () => {
-    console.log("helooooooo!!✅")
-    /* if (selectedOptions.length === 0) {
-      setShowNotAnsweredModal(true);
-      return;
-    } */
-
     // ✅ BLOCK if already submitted
-    if (submittedResult?.result) {
-      return; // Already revealed, no action needed
-    }
-    console.log("helooooo88oo!!✅")
     if (selectedOptions.length === 0) {
       setShowNotAnsweredModal(true);
       return;
@@ -382,20 +372,24 @@ const MCQQuestionComponent = ({ question, onSubmit, submittedResult }) => {
                 />
               }
               label={
-                <span
-                  style={{
-                    color: feedbackColor,
-                    fontWeight: showFeedback && isCorrectAnswer ? 600 : "normal",
+                <Box
+                  sx={{
                     display: "flex",
                     alignItems: "center",
-                    textAlign: "left",
                     gap: "8px",
-                    fontSize: "0.95rem",
                   }}
-                  dangerouslySetInnerHTML={{ __html: optionText || "" }}
                 >
+                  <span
+                    style={{
+                      color: feedbackColor,
+                      fontWeight: showFeedback && isCorrectAnswer ? 600 : "normal",
+                      textAlign: "left",
+                      fontSize: "0.95rem",
+                    }}
+                    dangerouslySetInnerHTML={{ __html: optionText || "" }}
+                  />
                   {feedbackIcon}
-                </span>
+                </Box>
               }
               sx={{ m: 0 }}
             />

@@ -51,15 +51,18 @@ const TableMultipleDropdownComponent = ({ question, onSubmit, submittedResult })
   useEffect(() => {
     sessionStorage.setItem("hasAnswered", "false");
     sessionStorage.setItem("isRevealed", "false");
-  }, [])
+    setActiveTab(0);
+    setShowReveal(false);
+  }, [questionId]);
 
-  // Tabs state
-  const [activeTab, setActiveTab] = useState(() =>
-    tabsInfo && tabsInfo.length ? tabsInfo[0].tabKey : ""
-  );
+  const [activeTab, setActiveTab] = useState(0);
 
   useEffect(() => {
-    if (tabsInfo && tabsInfo.length) setActiveTab(tabsInfo[0].tabKey);
+    if (!tabsInfo || !tabsInfo.length) {
+      setActiveTab(0);
+      return;
+    }
+    setActiveTab((prev) => Math.min(prev, tabsInfo.length - 1));
   }, [tabsInfo]);
 
   const handleTabChange = (_e, newVal) => setActiveTab(newVal);
@@ -334,11 +337,11 @@ const TableMultipleDropdownComponent = ({ question, onSubmit, submittedResult })
                 },
               }}
             >
-              {tabsInfo.map((tab) => (
+              {tabsInfo.map((tab, idx) => (
                 <Tab
                   label={tab.tabKey}
-                  value={tab.tabKey}
-                  key={tab.id || tab.tabKey}
+                  value={idx}
+                  key={tab.id || idx}
                   disableRipple
                 />
               ))}
@@ -364,16 +367,16 @@ const TableMultipleDropdownComponent = ({ question, onSubmit, submittedResult })
                 '& *': { lineHeight: 1.6 , wordBreak: "break-word", overflowWrap: "anywhere" , wordBreak: "break-word", overflowWrap: "anywhere" },
               }}
               dangerouslySetInnerHTML={{
-                __html: tabsInfo.find((tab) => tab.tabKey === activeTab)?.tabValue || ''
+                __html: tabsInfo[Math.min(activeTab, tabsInfo.length - 1)]?.tabValue || ""
               }}
             />
-            {tabsInfo[activeTab]?.tabImage && (
+            {tabsInfo[Math.min(activeTab, tabsInfo.length - 1)]?.tabImage && (
               <Box sx={{ mt: 2, textAlign: "center" }}>
                 <img
                   src={
-                    tabsInfo[activeTab].tabImage.startsWith("http")
-                      ? tabsInfo[activeTab].tabImage
-                      : `${process.env.REACT_APP_API_URL.replace('/davidsacademy', '')}/${tabsInfo[activeTab].tabImage}`
+                    tabsInfo[Math.min(activeTab, tabsInfo.length - 1)].tabImage.startsWith("http")
+                      ? tabsInfo[Math.min(activeTab, tabsInfo.length - 1)].tabImage
+                      : `${process.env.REACT_APP_API_URL.replace('/davidsacademy', '')}/${tabsInfo[Math.min(activeTab, tabsInfo.length - 1)].tabImage}`
                   }
                   alt="tab"
                   style={{

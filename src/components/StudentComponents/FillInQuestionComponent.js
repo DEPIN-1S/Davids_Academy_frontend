@@ -91,7 +91,9 @@ const FillInQuestionComponent = ({ question, onSubmit }) => {
             >
               <MenuItem value="">Select</MenuItem>
               {allOptions.map((optVal, optIdx) => (
-                <MenuItem key={optIdx} value={optVal} dangerouslySetInnerHTML={{ __html: optVal || "" }} />
+                <MenuItem key={optIdx} value={optVal}>
+                  <span dangerouslySetInnerHTML={{ __html: optVal || "" }} />
+                </MenuItem>
               ))}
             </Select>
           ) : (

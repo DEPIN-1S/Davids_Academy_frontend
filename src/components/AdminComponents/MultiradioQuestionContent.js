@@ -6,6 +6,7 @@ import {
     TextField,
     IconButton,
     Radio,
+    Checkbox,
     Select,
     MenuItem,
     FormControl,
@@ -41,8 +42,8 @@ const MultiradioQuestionContent = () => {
     // Get any existing data from previous steps
     const existingData = location.state?.questionData || {};
     const questionType = location.state?.questionType || existingData.questionType || "Multiple Radio";
-    const cs_id = location.state?.cs_id || "";
-    const topic_id = location.state?.topic_id || "";
+    const cs_id = location.state?.cs_id || existingData.cs_id || "";
+    const topic_id = location.state?.topic_id || existingData.topic_id || "";
     const exam_type = location.state?.exam_type || "";
     const question_type_id = location.state?.question_type_id || "";
     const [instruction, setInstruction] = useState(existingData.instruction || "")
@@ -211,6 +212,7 @@ const MultiradioQuestionContent = () => {
 
     const handleQuestionAnswerChange = (index, value) => {
         const newQuestionContent = [...questionContent];
+        // Ensure it's stored as an array if it's a multiple selection
         newQuestionContent[index].question_answer = value;
         setQuestionContent(newQuestionContent);
     };
@@ -262,7 +264,11 @@ const MultiradioQuestionContent = () => {
             newErrors.tabs = 'At least one tab with key and value is required';
         }
 
-        const validQuestions = questionContent.filter(q => q.question_text.trim() && q.question_answer.trim());
+        const validQuestions = questionContent.filter(q => {
+            const hasText = q.question_text.trim();
+            const hasAnswer = Array.isArray(q.question_answer) ? q.question_answer.length > 0 : (q.question_answer && q.question_answer.trim());
+            return hasText && hasAnswer;
+        });
         if (validQuestions.length === 0) {
             newErrors.questionContent = 'At least one sentence with answer is required';
         }
@@ -294,7 +300,15 @@ const MultiradioQuestionContent = () => {
             question: question.trim(),
             instruction: instruction.trim(),
             tabs: tabs.filter(tab => tab.tabKey.trim() && tab.tabValue.trim()),
-            question_content: questionContent.filter(q => q.question_text.trim() && q.question_answer.trim()),
+            question_content: questionContent.filter(q => {
+                const hasText = q.question_text.trim();
+                const hasAnswer = Array.isArray(q.question_answer) ? q.question_answer.length > 0 : (q.question_answer && q.question_answer.trim());
+                return hasText && hasAnswer;
+            }).map(q => ({
+                ...q,
+                // Join array answers with comma for backend compatibility
+                question_answer: Array.isArray(q.question_answer) ? q.question_answer.join(',') : q.question_answer
+            })),
             multiradioHeading: multiradioHeading.trim(),
             radio_options: radioOptions.filter(option => option.option_value.trim()),
             // ✅ No file objects in navigation state
@@ -365,7 +379,11 @@ const MultiradioQuestionContent = () => {
     const isFormValid = () => {
         const hasValidQuestion = question.trim() !== "";
         
-        const hasValidQuestions = questionContent.some(q => q.question_text.trim() && q.question_answer.trim());
+        const hasValidQuestions = questionContent.some(q => {
+            const hasText = q.question_text.trim();
+            const hasAnswer = Array.isArray(q.question_answer) ? q.question_answer.length > 0 : (q.question_answer && q.question_answer.trim());
+            return hasText && hasAnswer;
+        });
         const hasValidRadioOptions = radioOptions.filter(option => option.option_value.trim()).length >= 2;
         
         const hasValidHeading = multiradioHeading.trim() !== ""; // ✅ added
@@ -752,9 +770,17 @@ const MultiradioQuestionContent = () => {
                             <FormControl fullWidth>
                                 <InputLabel>Correct Answer</InputLabel>
                                 <Select
-                                    value={content.question_answer}
+                                    multiple
+                                    value={Array.isArray(content.question_answer) ? content.question_answer : (content.question_answer ? content.question_answer.split(',').filter(Boolean) : [])}
                                     onChange={(e) => handleQuestionAnswerChange(index, e.target.value)}
                                     label="Correct Answer"
+                                    renderValue={(selected) => (
+                                        <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
+                                            {selected.map((value) => (
+                                                <Chip key={value} label={value} size="small" />
+                                            ))}
+                                        </Box>
+                                    )}
                                 >
                                     {radioOptions.filter(opt => opt.option_value.trim()).map((option, optIdx) => (
                                         <MenuItem key={optIdx} value={option.option_value}>
@@ -770,16 +796,34 @@ const MultiradioQuestionContent = () => {
                                 <Typography variant="body2" sx={{ mb: 1 }}>
                                     {content.question_text || "Sentence text will appear here..."}
                                 </Typography>
-                                {radioOptions.filter(opt => opt.option_value.trim()).map((option, optIdx) => (
-                                    <Box key={optIdx} display="flex" alignItems="center" gap={1}>
-                                        <Radio
-                                            checked={content.question_answer === option.option_value}
-                                            size="small"
-                                            disabled
-                                        />
-                                        <Typography variant="body2">{option.option_value}</Typography>
-                                    </Box>
-                                ))}
+                                {radioOptions.filter(opt => opt.option_value.trim()).map((option, optIdx) => {
+                                    const isAnswer = Array.isArray(content.question_answer) 
+                                        ? content.question_answer.includes(option.option_value)
+                                        : (content.question_answer && content.question_answer.split(',').includes(option.option_value));
+                                    
+                                    const isMultiple = Array.isArray(content.question_answer) 
+                                        ? content.question_answer.length > 1
+                                        : (content.question_answer && content.question_answer.includes(','));
+
+                                    return (
+                                        <Box key={optIdx} display="flex" alignItems="center" gap={1}>
+                                            {isMultiple ? (
+                                                <Checkbox
+                                                    checked={isAnswer}
+                                                    size="small"
+                                                    disabled
+                                                />
+                                            ) : (
+                                                <Radio
+                                                    checked={isAnswer}
+                                                    size="small"
+                                                    disabled
+                                                />
+                                            )}
+                                            <Typography variant="body2">{option.option_value}</Typography>
+                                        </Box>
+                                    );
+                                })}
                             </Box>
                         </Paper>
                     ))}
@@ -817,7 +861,11 @@ const MultiradioQuestionContent = () => {
                         • Radio Options: {radioOptions.filter(opt => opt.option_value.trim()).length} options
                     </Typography>
                     <Typography variant="body2" color="textSecondary">
-                        • Sentences: {questionContent.filter(q => q.question_text.trim() && q.question_answer.trim()).length} complete sentences
+                        • Sentences: {questionContent.filter(q => {
+                            const hasText = q.question_text.trim();
+                            const hasAnswer = Array.isArray(q.question_answer) ? q.question_answer.length > 0 : (q.question_answer && q.question_answer.trim());
+                            return hasText && hasAnswer;
+                        }).length} complete sentences
                     </Typography>
                     <Typography variant="body2" color="textSecondary">
                         • Exhibit: {selectedFile ? `✓ ${selectedFile.name} (Context Managed)` : '○ Optional'}

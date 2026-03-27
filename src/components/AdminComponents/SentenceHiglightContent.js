@@ -38,10 +38,10 @@ const SentenceHighlightContent = () => {
     // Get any existing data from previous steps
     const existingData = location.state?.questionData || {};
     const questionType = location.state?.questionType || existingData.questionType || "Sentence Highlight";
-    const cs_id = location.state?.cs_id || "";
-    const exam_type = location.state?.exam_type || "";
-    const question_type_id = location.state?.question_type_id || "";
-    const topic_id = location.state?.topic_id || "";
+    const cs_id = location.state?.cs_id || existingData.cs_id || "";
+    const exam_type = location.state?.exam_type || existingData.exam_type || "";
+    const question_type_id = location.state?.question_type_id || existingData.question_type_id || "";
+    const topic_id = location.state?.topic_id || existingData.topic_id || "";
     const [instruction, setInstruction] = useState(existingData.instruction || "")
     // Form state
     const [question, setQuestion] = useState(existingData.question || "");

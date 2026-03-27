@@ -44,9 +44,7 @@ const TableDropdownQuestionComponent = ({ question, onSubmit, submittedResult })
   const [dropdownValues, setDropdownValues] = useState({});
   const [showReveal, setShowReveal] = useState(false);
   const [isCorrect, setIsCorrect] = useState(false);
-  const [activeTab, setActiveTab] = useState(() =>
-    tabsInfo && tabsInfo.length ? tabsInfo[0].tabKey : ""
-  );
+  const [activeTab, setActiveTab] = useState(0);
   const [showNotAnsweredModal, setShowNotAnsweredModal] = useState(false);
   const dispatch = useDispatch();
   const location = useLocation();
@@ -58,8 +56,8 @@ const TableDropdownQuestionComponent = ({ question, onSubmit, submittedResult })
   }, [questionId])
 
   useEffect(() => {
-    if (tabsInfo && tabsInfo.length) setActiveTab(tabsInfo[0].tabKey);
-  }, [tabsInfo]);
+    setActiveTab(0);
+  }, [questionId]);
 
 
   useEffect(() => {
@@ -301,11 +299,11 @@ const TableDropdownQuestionComponent = ({ question, onSubmit, submittedResult })
                 },
               }}
             >
-              {tabsInfo.map((tab) => (
+              {tabsInfo.map((tab, idx) => (
                 <Tab
                   label={tab.tabKey}
-                  value={tab.tabKey}
-                  key={tab.id || tab.tabKey}
+                  value={idx}
+                  key={tab.id || idx}
                   disableRipple
                 />
               ))}
@@ -332,17 +330,17 @@ const TableDropdownQuestionComponent = ({ question, onSubmit, submittedResult })
               }}
               dangerouslySetInnerHTML={{
                 __html:
-                  tabsInfo.find((tab) => tab.tabKey === activeTab)?.tabValue ||
+                  tabsInfo[Math.min(activeTab, tabsInfo.length - 1)]?.tabValue ||
                   "No content available"
               }}
             />
-            {tabsInfo[activeTab]?.tabImage && (
+            {tabsInfo[Math.min(activeTab, tabsInfo.length - 1)]?.tabImage && (
               <Box sx={{ mt: 2, textAlign: "center" }}>
                 <img
                   src={
-                    tabsInfo[activeTab].tabImage.startsWith("http")
-                      ? tabsInfo[activeTab].tabImage
-                      : `${process.env.REACT_APP_API_URL.replace('/davidsacademy', '')}/${tabsInfo[activeTab].tabImage}`
+                    tabsInfo[Math.min(activeTab, tabsInfo.length - 1)].tabImage.startsWith("http")
+                      ? tabsInfo[Math.min(activeTab, tabsInfo.length - 1)].tabImage
+                      : `${process.env.REACT_APP_API_URL.replace('/davidsacademy', '')}/${tabsInfo[Math.min(activeTab, tabsInfo.length - 1)].tabImage}`
                   }
                   alt="tab"
                   style={{

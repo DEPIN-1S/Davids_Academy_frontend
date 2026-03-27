@@ -143,7 +143,7 @@ const RevealAnswerComponent = ({
         {additionalInfoImage && (
           <Box
             component="img"
-            src={'https://lunarsenterprises.com:6040' + additionalInfoImage}
+            src={`${process.env.REACT_APP_API_URL.replace('/davidsacademy', '')}${additionalInfoImage}`}
             alt="Additional Info"
             sx={{ width: '100%', mt: 2, borderRadius: 2 }}
           />

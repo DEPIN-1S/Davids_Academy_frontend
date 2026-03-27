@@ -450,7 +450,9 @@ const DropdownQuestionComponent = ({ question, onSubmit, submittedResult }) => {
                       <em>Select</em>
                     </MenuItem>
                     {options.map((opt, oi) => (
-                      <MenuItem key={opt.id || oi} value={opt.dropdownValue} sx={{ whiteSpace: "normal", wordBreak: "break-word" }} dangerouslySetInnerHTML={{ __html: opt.dropdownValue || "" }} />
+                      <MenuItem key={opt.id || oi} value={opt.dropdownValue} sx={{ whiteSpace: "normal", wordBreak: "break-word" }}>
+                        <span dangerouslySetInnerHTML={{ __html: opt.dropdownValue || "" }} />
+                      </MenuItem>
                     ))}
                   </Select>
                 </FormControl>

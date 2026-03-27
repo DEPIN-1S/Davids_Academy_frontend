@@ -401,7 +401,9 @@ const DragDropQuestionComponent = ({ question, onSubmit, submittedResult }) => {
                             <em>Select</em>
                           </MenuItem>
                           {b.dragdropoption?.map((opt) => (
-                            <MenuItem key={opt.id} value={opt.options_value} sx={{ whiteSpace: "normal", wordBreak: "break-word" }} dangerouslySetInnerHTML={{ __html: opt.options_value || "" }} />
+                            <MenuItem key={opt.id} value={opt.options_value} sx={{ whiteSpace: "normal", wordBreak: "break-word" }}>
+                              <span dangerouslySetInnerHTML={{ __html: opt.options_value || "" }} />
+                            </MenuItem>
                           ))}
                         </Select>
                       </FormControl>
@@ -464,7 +466,9 @@ const DragDropQuestionComponent = ({ question, onSubmit, submittedResult }) => {
                         <em>Select</em>
                       </MenuItem>
                       {branches[0].dragdropoption?.map((opt) => (
-                        <MenuItem key={opt.id} value={opt.options_value} sx={{ whiteSpace: "normal", wordBreak: "break-word" }} dangerouslySetInnerHTML={{ __html: opt.options_value || "" }} />
+                        <MenuItem key={opt.id} value={opt.options_value} sx={{ whiteSpace: "normal", wordBreak: "break-word" }}>
+                          <span dangerouslySetInnerHTML={{ __html: opt.options_value || "" }} />
+                        </MenuItem>
                       ))}
                     </Select>
                   </FormControl>
@@ -534,7 +538,9 @@ const DragDropQuestionComponent = ({ question, onSubmit, submittedResult }) => {
                             <em>Select</em>
                           </MenuItem>
                           {b.dragdropoption?.map((opt) => (
-                            <MenuItem key={opt.id} value={opt.options_value} sx={{ whiteSpace: "normal", wordBreak: "break-word" }} dangerouslySetInnerHTML={{ __html: opt.options_value || "" }} />
+                            <MenuItem key={opt.id} value={opt.options_value} sx={{ whiteSpace: "normal", wordBreak: "break-word" }}>
+                              <span dangerouslySetInnerHTML={{ __html: opt.options_value || "" }} />
+                            </MenuItem>
                           ))}
                         </Select>
                       </FormControl>

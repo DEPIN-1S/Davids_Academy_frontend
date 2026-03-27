@@ -367,6 +367,7 @@ const AnswerExplain = () => {
                 question_type_id: previousQuestionData.question_type_id,
                 questionType: previousQuestionData.questionType,
                 cs_id: previousQuestionData.cs_id,
+                topic_id: previousQuestionData.topic_id,
                 questionData: dataToSendBack,
                 hasFile: hasQuestionFile,
                 fileInfo: hasQuestionFile

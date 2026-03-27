@@ -35,13 +35,17 @@ const McqQuestionContent = () => {
     // ✅ Use File Context instead of passing files through navigation
     const { addQuestionFile, questionFile, hasQuestionFile } = useFileContext();
     const state = location.state || {};
+    const existingQuestionData = state.questionData || {};
+    const cs_id = state.cs_id || existingQuestionData.cs_id || "";
+    const topic_id = state.topic_id || existingQuestionData.topic_id || "";
+
     const {
         exam_type,
         question_type_id,
         questionType: questionTypeName,
-        questionData: existingQuestionData,
-        cs_id,
-        topic_id,
+        questionData: tempExistingData,
+        cs_id: temp_cs_id,
+        topic_id: temp_topic_id,
     } = state;
     const [instruction, setInstruction] = useState(existingQuestionData?.instruction || "")
     React.useEffect(() => {

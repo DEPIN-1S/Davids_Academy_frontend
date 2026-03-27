@@ -109,8 +109,21 @@ const MultiRadioQuestionComponent = ({ question, onSubmit, submittedResult }) =>
         setAnswers(parsedAnswers);
 
         // Calculate overall correctness
+        const normalize = (val) => {
+          if (!val) return [];
+          if (Array.isArray(val)) return val.map(v => String(v).trim()).sort();
+          if (typeof val === 'string' && val.includes(',')) return val.split(',').map(v => String(v).trim()).sort();
+          return [String(val).trim()];
+        };
+
+        const isFindingCorrect = (userAns, correctAns) => {
+          const u = normalize(userAns);
+          const c = normalize(correctAns);
+          return u.length === c.length && u.every((v, i) => v === c[i]);
+        };
+
         const correctStatus = questionContent.every((finding, idx) =>
-          parsedAnswers[idx] === finding.answer
+          isFindingCorrect(parsedAnswers[idx], finding.answer)
         );
 
         setIsCorrect(correctStatus);

@@ -131,6 +131,30 @@ const MetaInfoComponent = () => {
     // ✅ Submit using Context FormData for multipart support
     // Updated handleSubmitWithContextFormData function
     const handleSubmitWithContextFormData = async () => {
+        // ✅ Strict Validation: Ensure topic_id and courseId are present
+        const receivedTopicId = receivedQuestionData.topic_id;
+        const receivedCourseId = receivedQuestionData.cs_id;
+
+        if (!receivedTopicId || receivedTopicId === "") {
+            toast.error("❌ Critical Error: Topic ID is missing. Please go back and re-select the topic.", {
+                position: "top-right",
+                autoClose: 5000,
+                theme: "colored",
+            });
+            console.error("🛑 Submission blocked: topic_id is missing", receivedQuestionData);
+            return;
+        }
+
+        if (!receivedCourseId || receivedCourseId === "") {
+            toast.error("❌ Critical Error: Course ID is missing.", {
+                position: "top-right",
+                autoClose: 5000,
+                theme: "colored",
+            });
+            console.error("🛑 Submission blocked: cs_id is missing", receivedQuestionData);
+            return;
+        }
+
         console.log("🔍 Context from MetaInfo:", {
             hasQuestionFile,
             hasExplanationFile,
@@ -450,6 +474,30 @@ const MetaInfoComponent = () => {
 
     // ✅ Fallback: Submit using JSON (if no files in Context)
     const handleSubmitWithJSON = async () => {
+        // ✅ Strict Validation: Ensure topic_id and courseId are present
+        const receivedTopicId = receivedQuestionData.topic_id;
+        const receivedCourseId = receivedQuestionData.cs_id;
+
+        if (!receivedTopicId || receivedTopicId === "") {
+            toast.error("❌ Critical Error: Topic ID is missing. Please go back and re-select the topic.", {
+                position: "top-right",
+                autoClose: 5000,
+                theme: "colored",
+            });
+            console.error("🛑 JSON Submission blocked: topic_id is missing", receivedQuestionData);
+            return;
+        }
+
+        if (!receivedCourseId || receivedCourseId === "") {
+            toast.error("❌ Critical Error: Course ID is missing.", {
+                position: "top-right",
+                autoClose: 5000,
+                theme: "colored",
+            });
+            console.error("🛑 JSON Submission blocked: cs_id is missing", receivedQuestionData);
+            return;
+        }
+
         // Show loading toast
         const loadingToastId = toast.loading('📝 Adding question to Q-Bank...', {
             position: "top-right",
