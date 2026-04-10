@@ -279,10 +279,20 @@
 
 
 .recorded-class-delete-btn:hover {
+  background: #c0392b;
   transform: translateY(-3px);
 }
 
 .recorded-class-delete-btn:active {
+  transform: scale(0.95);
+}
+
+.recorded-class-edit-btn:hover {
+  background: #2c3e50;
+  transform: translateY(-3px);
+}
+
+.recorded-class-edit-btn:active {
   transform: scale(0.95);
 }
 

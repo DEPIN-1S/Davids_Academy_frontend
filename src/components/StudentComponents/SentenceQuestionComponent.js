@@ -213,7 +213,7 @@ const SentenceQuestionComponent = ({ question, onSubmit, submittedResult }) => {
           textAlign: "left",
           alignItems: "center",
           wordBreak: "break-word",
-        }} component="h1" fontWeight={700} mb={5} dangerouslySetInnerHTML={{ __html: questionText || "" }} />
+        }} component="div" fontWeight={700} mb={5} dangerouslySetInnerHTML={{ __html: questionText || "" }} />
 
       {/* Instructions */}
       {!!instructions && (
@@ -228,6 +228,7 @@ const SentenceQuestionComponent = ({ question, onSubmit, submittedResult }) => {
             Instructions :
           </Typography>
           <Typography
+            component="div"
             variant="body1"
             sx={{ textAlign: "left", color: "#111827", lineHeight: 1.6 }}
            dangerouslySetInnerHTML={{ __html: instructions || "" }} />
@@ -282,6 +283,7 @@ const SentenceQuestionComponent = ({ question, onSubmit, submittedResult }) => {
             }}
           >
             <Typography
+              component="div"
               variant="body1"
               sx={{
                 color: "#333",
@@ -504,7 +506,7 @@ const SentenceQuestionComponent = ({ question, onSubmit, submittedResult }) => {
               .filter(Boolean)
               .map((txt, idx) => (
                 <ListItem key={idx} disablePadding>
-                  <ListItemText primary={<span dangerouslySetInnerHTML={{ __html: txt || "" }} />} />
+                  <ListItemText primary={<div dangerouslySetInnerHTML={{ __html: txt || "" }} />} />
                 </ListItem>
               ))}
           </List>
@@ -515,7 +517,7 @@ const SentenceQuestionComponent = ({ question, onSubmit, submittedResult }) => {
           <List dense>
             {(userAnswer ? userAnswer.split(", ") : ["Not selected"]).map((item, idx) => (
               <ListItem key={idx} disablePadding>
-                <ListItemText primary={<span dangerouslySetInnerHTML={{ __html: item || "" }} />} />
+                <ListItemText primary={<div dangerouslySetInnerHTML={{ __html: item || "" }} />} />
               </ListItem>
             ))}
           </List>

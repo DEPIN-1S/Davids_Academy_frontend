@@ -1,5 +1,5 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import { createRecording, listRecordedClasses, base64ToFile, DeleteRecordedClass } from "./recordedClassApi";
+import { createRecording, listRecordedClasses, base64ToFile, DeleteRecordedClass, UpdateRecordedClass } from "./recordedClassApi";
 
 
 export const fetchRecordedClasses = createAsyncThunk(
@@ -71,6 +71,40 @@ export const addRecording = createAsyncThunk(
     }
 );
 
+// Update recording
+export const updateRecording = createAsyncThunk(
+    "recordings/updateRecording",
+    async (recordingData, { rejectWithValue }) => {
+        try {
+            const token = sessionStorage.getItem("accessToken");
+            
+            const payload = {
+                recording_id: recordingData.recording_id,
+                title: recordingData.classTitle,
+                course: recordingData.courseId,
+                duration: recordingData.classDuration,
+                tutor_name: recordingData.tutorName,
+                video_url: recordingData.videoUrl,
+                recordDate: recordingData.recordDate
+            };
+            
+            if (recordingData.recordimage) {
+                payload.recordimage = recordingData.recordimage;
+            }
+
+            const response = await UpdateRecordedClass(token, payload);
+            
+            if (!response || response.result === false) {
+                return rejectWithValue(response?.message || "Failed to update recorded class");
+            }
+            
+            return { id: recordingData.recording_id, payload };
+        } catch (error) {
+            return rejectWithValue(error.message);
+        }
+    }
+);
+
 const recordingSlice = createSlice({
     name: "recordings",
     /* initialState: { list: [], loading: false, error: null }, */
@@ -118,6 +152,19 @@ const recordingSlice = createSlice({
                 state.list.push(action.payload);
             })
             .addCase(addRecording.rejected, (state, action) => {
+                state.loading = false;
+                state.error = action.payload;
+            })
+
+            .addCase(updateRecording.pending, (state) => {
+                state.loading = true;
+            })
+            .addCase(updateRecording.fulfilled, (state, action) => {
+                state.loading = false;
+                // Just let fetchRecordedClasses handle the list update on next load
+                // or optionally update the item in the list here
+            })
+            .addCase(updateRecording.rejected, (state, action) => {
                 state.loading = false;
                 state.error = action.payload;
             })

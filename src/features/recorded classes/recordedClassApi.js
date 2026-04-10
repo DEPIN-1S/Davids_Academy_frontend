@@ -112,6 +112,32 @@ export async function createRecording(token, recordingData) {
 }
 
 
+export async function UpdateRecordedClass(token, recordingData) {
+    console.log("Inside edit recording API");
+    const formData = new FormData();
+    Object.entries(recordingData).forEach(([key, value]) => {
+        if (value !== undefined && value !== null) {
+            formData.append(key, value);
+        }
+    });
+
+    const response = await fetch(`${baseUrl}/admin/record/edit`, {
+        method: "POST",
+        headers: {
+            "Authorization": `Bearer ${token}`
+        },
+        body: formData
+    });
+
+    if (!response.ok) {
+        const errorText = await response.text();
+        throw new Error(errorText || "Failed to update recording");
+    }
+
+    const data = await response.json();
+    return data;
+}
+
 export function base64ToFile(base64String, filename) {
     const arr = base64String.split(",");
     const mime = arr[0].match(/:(.*?);/)[1];

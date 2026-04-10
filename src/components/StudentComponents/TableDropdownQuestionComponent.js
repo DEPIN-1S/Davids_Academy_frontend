@@ -217,6 +217,7 @@ const TableDropdownQuestionComponent = ({ question, onSubmit, submittedResult })
 
       {/* Question Text */}
       <Typography
+        component="div"
         variant="h6"
         sx={{
           color: "#2e3760",
@@ -238,6 +239,7 @@ const TableDropdownQuestionComponent = ({ question, onSubmit, submittedResult })
             Instructions :
           </Typography>
           <Typography
+            component="div"
             variant="body1"
             sx={{
               textAlign: "left",
@@ -320,6 +322,7 @@ const TableDropdownQuestionComponent = ({ question, onSubmit, submittedResult })
             }}
           >
             <Typography
+              component="div"
               variant="body1"
               sx={{
                 color: "#333",
@@ -385,8 +388,9 @@ const TableDropdownQuestionComponent = ({ question, onSubmit, submittedResult })
                     wordBreak: "break-word",
                       minWidth: { xs: "140px", sm: "auto" },
                   }}
-                  dangerouslySetInnerHTML={{ __html: tableHeaders.leftHeader || "Category" }}
-                />
+                >
+                  <div dangerouslySetInnerHTML={{ __html: tableHeaders.leftHeader || "Category" }} />
+                </TableCell>
                 <TableCell
                   sx={{
                     fontWeight: 600,
@@ -397,8 +401,9 @@ const TableDropdownQuestionComponent = ({ question, onSubmit, submittedResult })
                     wordBreak: "break-word",
                       minWidth: { xs: "140px", sm: "auto" },
                   }}
-                  dangerouslySetInnerHTML={{ __html: tableHeaders.rightHeader || "Anticipated Order" }}
-                />
+                >
+                  <div dangerouslySetInnerHTML={{ __html: tableHeaders.rightHeader || "Anticipated Order" }} />
+                </TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
@@ -428,8 +433,9 @@ const TableDropdownQuestionComponent = ({ question, onSubmit, submittedResult })
                         wordBreak: "break-word",
                        minWidth: { xs: "140px", sm: "auto" }
                     }}
-                    dangerouslySetInnerHTML={{ __html: field.fieldLabel || "" }}
-                    />
+                    >
+                      <div dangerouslySetInnerHTML={{ __html: field.fieldLabel || "" }} />
+                    </TableCell>
                     <TableCell
                       sx={{
                         borderBottom: "1px solid #e2e8f0",
@@ -484,8 +490,9 @@ const TableDropdownQuestionComponent = ({ question, onSubmit, submittedResult })
                               whiteSpace: "normal",
                               wordBreak: "break-word",
                             }}
-                            dangerouslySetInnerHTML={{ __html: option || "" }}
-                          />
+                          >
+                            <div dangerouslySetInnerHTML={{ __html: option || "" }} />
+                          </MenuItem>
                         ))}
                       </Select>
                     </TableCell>
@@ -575,7 +582,7 @@ const TableDropdownQuestionComponent = ({ question, onSubmit, submittedResult })
               return (
                 <ListItem key={field.id || idx} disablePadding>
                   <ListItemText
-                    primary={<span dangerouslySetInnerHTML={{ __html: `${field.fieldLabel}: ${userValue}` }} />}
+                    primary={<div dangerouslySetInnerHTML={{ __html: `${field.fieldLabel}: ${userValue}` }} />}
                     primaryTypographyProps={{
                       sx: {
                         color: isCorrect ? "green" : "red",
@@ -601,7 +608,7 @@ const TableDropdownQuestionComponent = ({ question, onSubmit, submittedResult })
             {tableDropdownAnswers.map((answer, idx) => (
               <ListItem key={idx} disablePadding>
                 <ListItemText
-                  primary={<span dangerouslySetInnerHTML={{ __html: `${answer.rowLabel}: ${answer.answer}` }} />}
+                  primary={<div dangerouslySetInnerHTML={{ __html: `${answer.rowLabel}: ${answer.answer}` }} />}
                   primaryTypographyProps={{
                     sx: { color: "green", fontWeight: 500 },
                   }}

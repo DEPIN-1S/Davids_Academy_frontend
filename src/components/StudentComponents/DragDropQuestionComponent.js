@@ -195,8 +195,8 @@ const DragDropQuestionComponent = ({ question, onSubmit, submittedResult }) => {
     >
       {/* Question Title */}
       <Typography
+        component="div"
         variant="h6"
-        component="h1"
         sx={{
           color: "#2F3B6C",
           fontWeight: 600,
@@ -220,6 +220,7 @@ const DragDropQuestionComponent = ({ question, onSubmit, submittedResult }) => {
             Instructions :
           </Typography>
           <Typography
+            component="div"
             variant="body1"
             sx={{
               textAlign: "left",
@@ -293,6 +294,7 @@ const DragDropQuestionComponent = ({ question, onSubmit, submittedResult }) => {
             }}
           >
             <Typography
+              component="div"
               sx={{
                 color: "#374151",
                 textAlign: "left",
@@ -362,6 +364,7 @@ const DragDropQuestionComponent = ({ question, onSubmit, submittedResult }) => {
                   return (
                     <Box key={`left-${b.id || idx}`}>
                       <Typography
+                        component="div"
                         sx={{
                           color: "#0f172a",
                           fontSize: { xs: "0.9rem", md: "1rem" },
@@ -402,7 +405,7 @@ const DragDropQuestionComponent = ({ question, onSubmit, submittedResult }) => {
                           </MenuItem>
                           {b.dragdropoption?.map((opt) => (
                             <MenuItem key={opt.id} value={opt.options_value} sx={{ whiteSpace: "normal", wordBreak: "break-word" }}>
-                              <span dangerouslySetInnerHTML={{ __html: opt.options_value || "" }} />
+                              <div dangerouslySetInnerHTML={{ __html: opt.options_value || "" }} />
                             </MenuItem>
                           ))}
                         </Select>
@@ -428,6 +431,7 @@ const DragDropQuestionComponent = ({ question, onSubmit, submittedResult }) => {
               {branches.length > 0 && (
                 <Box>
                   <Typography
+                    component="div"
                     sx={{
                       color: "#0f172a",
                       fontSize: { xs: "0.9rem", md: "1rem" },
@@ -467,7 +471,7 @@ const DragDropQuestionComponent = ({ question, onSubmit, submittedResult }) => {
                       </MenuItem>
                       {branches[0].dragdropoption?.map((opt) => (
                         <MenuItem key={opt.id} value={opt.options_value} sx={{ whiteSpace: "normal", wordBreak: "break-word" }}>
-                          <span dangerouslySetInnerHTML={{ __html: opt.options_value || "" }} />
+                          <div dangerouslySetInnerHTML={{ __html: opt.options_value || "" }} />
                         </MenuItem>
                       ))}
                     </Select>
@@ -499,6 +503,7 @@ const DragDropQuestionComponent = ({ question, onSubmit, submittedResult }) => {
                   return (
                     <Box key={`right-${b.id || idx}`}>
                       <Typography
+                        component="div"
                         sx={{
                           color: "#0f172a",
                           fontSize: { xs: "0.9rem", md: "1rem" },
@@ -539,7 +544,7 @@ const DragDropQuestionComponent = ({ question, onSubmit, submittedResult }) => {
                           </MenuItem>
                           {b.dragdropoption?.map((opt) => (
                             <MenuItem key={opt.id} value={opt.options_value} sx={{ whiteSpace: "normal", wordBreak: "break-word" }}>
-                              <span dangerouslySetInnerHTML={{ __html: opt.options_value || "" }} />
+                              <div dangerouslySetInnerHTML={{ __html: opt.options_value || "" }} />
                             </MenuItem>
                           ))}
                         </Select>
@@ -667,6 +672,7 @@ const DragDropQuestionComponent = ({ question, onSubmit, submittedResult }) => {
                   }}
                 >
                   <Typography
+                    component="div"
                     sx={{
                       color: "#333",
                       fontWeight: 500,
@@ -678,6 +684,7 @@ const DragDropQuestionComponent = ({ question, onSubmit, submittedResult }) => {
                     dangerouslySetInnerHTML={{ __html: (b.headings || "") + ":" }}
                   />
                   <Typography
+                    component="div"
                     sx={{
                       color: isMatch ? "green" : "red",
                       fontWeight: 600,
@@ -723,6 +730,7 @@ const DragDropQuestionComponent = ({ question, onSubmit, submittedResult }) => {
                 }}
               >
                 <Typography
+                  component="div"
                   sx={{
                     color: "#333",
                     fontWeight: 500,
@@ -734,6 +742,7 @@ const DragDropQuestionComponent = ({ question, onSubmit, submittedResult }) => {
                   dangerouslySetInnerHTML={{ __html: (b.headings || "") + ":" }}
                 />
                 <Typography
+                  component="div"
                   sx={{
                     color: "#16a34a",
                     fontWeight: 600,

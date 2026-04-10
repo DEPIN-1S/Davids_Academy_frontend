@@ -255,6 +255,7 @@ const TableMultipleDropdownComponent = ({ question, onSubmit, submittedResult })
 
       {/* Question Text */}
       <Typography
+        component="div"
         variant="h6"
         fontWeight={700}
         sx={{
@@ -277,6 +278,7 @@ const TableMultipleDropdownComponent = ({ question, onSubmit, submittedResult })
             Instructions :
           </Typography>
           <Typography
+            component="div"
             variant="body1"
             sx={{
               textAlign: "left",
@@ -358,6 +360,7 @@ const TableMultipleDropdownComponent = ({ question, onSubmit, submittedResult })
             }}
           >
             <Typography
+              component="div"
               variant="body1"
               sx={{
                 color: "#333",
@@ -422,8 +425,9 @@ const TableMultipleDropdownComponent = ({ question, onSubmit, submittedResult })
                       wordBreak: "break-word",
                       minWidth: { xs: "140px", sm: "auto" },
                     }}
-                    dangerouslySetInnerHTML={{ __html: h || "" }}
-                  />
+                  >
+                    <div dangerouslySetInnerHTML={{ __html: h || "" }} />
+                  </TableCell>
                 ))}
               </TableRow>
             </TableHead>
@@ -440,8 +444,9 @@ const TableMultipleDropdownComponent = ({ question, onSubmit, submittedResult })
                        wordBreak: "break-word",
                        minWidth: { xs: "140px", md: "auto" },
                     }}
-                    dangerouslySetInnerHTML={{ __html: row.rowLabel || "" }}
-                  />
+                  >
+                    <div dangerouslySetInnerHTML={{ __html: row.rowLabel || "" }} />
+                  </TableCell>
                   {row.columns.map((col) => {
                     const key = `${rIdx}-${col.colIndex}`;
                     const userValue = dropdownValues[key] || "";
@@ -501,8 +506,9 @@ const TableMultipleDropdownComponent = ({ question, onSubmit, submittedResult })
                                 key={opt + i}
                                 value={opt}
                                 sx={{ color: "#475569", whiteSpace: "normal", wordBreak: "break-word" }}
-                                dangerouslySetInnerHTML={{ __html: opt || "" }}
-                              />
+                              >
+                                <div dangerouslySetInnerHTML={{ __html: opt || "" }} />
+                              </MenuItem>
                             ))
                           ) : (
                             <MenuItem value="" disabled sx={{ whiteSpace: "normal", wordBreak: "break-word" }}>
@@ -599,7 +605,7 @@ const TableMultipleDropdownComponent = ({ question, onSubmit, submittedResult })
               <React.Fragment key={row.rowLabel + rIdx}>
                 <ListItem disablePadding sx={{ py: 0.5 }}>
                   <ListItemText
-                    primary={<span dangerouslySetInnerHTML={{ __html: row.rowLabel || "" }} />}
+                    primary={<div dangerouslySetInnerHTML={{ __html: row.rowLabel || "" }} />}
                     primaryTypographyProps={{ sx: { fontWeight: 700 } }}
                   />
                 </ListItem>
@@ -612,7 +618,7 @@ const TableMultipleDropdownComponent = ({ question, onSubmit, submittedResult })
                   return (
                     <ListItem key={key} disablePadding sx={{ pl: 3 }}>
                       <ListItemText
-                        primary={<span dangerouslySetInnerHTML={{ __html: `${headers[col.colIndex] || `Col ${col.colIndex}`}: ${userVal}` }} />}
+                        primary={<div dangerouslySetInnerHTML={{ __html: `${headers[col.colIndex] || `Col ${col.colIndex}`}: ${userVal}` }} />}
                         primaryTypographyProps={{
                           sx: {
                             color: isCellCorrect
@@ -645,7 +651,7 @@ const TableMultipleDropdownComponent = ({ question, onSubmit, submittedResult })
               <React.Fragment key={"correct-" + row.rowLabel + rIdx}>
                 <ListItem disablePadding sx={{ py: 0.5 }}>
                   <ListItemText
-                    primary={<span dangerouslySetInnerHTML={{ __html: row.rowLabel || "" }} />}
+                    primary={<div dangerouslySetInnerHTML={{ __html: row.rowLabel || "" }} />}
                     primaryTypographyProps={{ sx: { fontWeight: 700 } }}
                   />
                 </ListItem>
@@ -656,7 +662,7 @@ const TableMultipleDropdownComponent = ({ question, onSubmit, submittedResult })
                     sx={{ pl: 3 }}
                   >
                     <ListItemText
-                      primary={<span dangerouslySetInnerHTML={{ __html: `${headers[col.colIndex] || `Col ${col.colIndex}`}: ${col.answer || "-"}` }} />}
+                      primary={<div dangerouslySetInnerHTML={{ __html: `${headers[col.colIndex] || `Col ${col.colIndex}`}: ${col.answer || "-"}` }} />}
                       primaryTypographyProps={{
                         sx: {
                           color: col.answer ? "green" : "#374151",

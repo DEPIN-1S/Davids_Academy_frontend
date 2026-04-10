@@ -213,6 +213,7 @@ const TableHighlightSelectComponent = ({ question, onSubmit, submittedResult }) 
 
       {/* Question Text */}
       <Typography
+        component="div"
         variant="h6"
         fontWeight={700}
         sx={{
@@ -237,6 +238,7 @@ const TableHighlightSelectComponent = ({ question, onSubmit, submittedResult }) 
             Instructions :
           </Typography>
           <Typography
+            component="div"
             variant="body1"
             sx={{
               textAlign: "left",
@@ -319,6 +321,7 @@ const TableHighlightSelectComponent = ({ question, onSubmit, submittedResult }) 
             }}
           >
             <Typography
+              component="div"
               variant="body1"
               sx={{
                 color: "#333",
@@ -379,8 +382,9 @@ const TableHighlightSelectComponent = ({ question, onSubmit, submittedResult }) 
                     borderBottom: "1px solid #e2e8f0",
                     width: { xs: "auto", md: "50%" },
                   }}
-                  dangerouslySetInnerHTML={{ __html: tableHeaders.leftHeader || "Category" }}
-                />
+                >
+                  <div dangerouslySetInnerHTML={{ __html: tableHeaders.leftHeader || "Category" }} />
+                </TableCell>
                 <TableCell
                   sx={{
                     fontWeight: 600,
@@ -388,8 +392,9 @@ const TableHighlightSelectComponent = ({ question, onSubmit, submittedResult }) 
                     borderBottom: "1px solid #e2e8f0",
                     width: { xs: "auto", md: "50%" },
                   }}
-                  dangerouslySetInnerHTML={{ __html: tableHeaders.rightHeader || "Options" }}
-                />
+                >
+                  <div dangerouslySetInnerHTML={{ __html: tableHeaders.rightHeader || "Options" }} />
+                </TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
@@ -414,8 +419,9 @@ const TableHighlightSelectComponent = ({ question, onSubmit, submittedResult }) 
                         padding: { xs: "12px", md: "16px" },
                         wordBreak: "break-word",
                       }}
-                      dangerouslySetInnerHTML={{ __html: field.leftColumn || "" }}
-                    />
+                    >
+                      <div dangerouslySetInnerHTML={{ __html: field.leftColumn || "" }} />
+                    </TableCell>
                     <TableCell
                       onClick={() => handleRightColumnClick(field.rightColumn)}
                       sx={{
@@ -457,7 +463,7 @@ const TableHighlightSelectComponent = ({ question, onSubmit, submittedResult }) 
                           },
                       }}
                     >
-                      <span dangerouslySetInnerHTML={{ __html: field.rightColumn || "" }} />
+                      <div dangerouslySetInnerHTML={{ __html: field.rightColumn || "" }} />
                       {isSelected && !showReveal && (
                         <Typography
                           component="span"
@@ -537,7 +543,7 @@ const TableHighlightSelectComponent = ({ question, onSubmit, submittedResult }) 
               answer.map((correctItem, idx) => (
                 <ListItem key={idx} disablePadding sx={{ py: 0.5 }}>
                   <ListItemText
-                    primary={<span dangerouslySetInnerHTML={{ __html: correctItem || "" }} />}
+                    primary={<div dangerouslySetInnerHTML={{ __html: correctItem || "" }} />}
                     primaryTypographyProps={{
                       sx: {
                         color: "green",

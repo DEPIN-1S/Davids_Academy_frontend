@@ -194,6 +194,7 @@ const MCQQuestionComponent = ({ question, onSubmit, submittedResult }) => {
     }} >
       {/* Question */}
       <Typography
+        component="div"
         fontWeight={700}
         sx={{
           textAlign: "left",
@@ -225,6 +226,7 @@ const MCQQuestionComponent = ({ question, onSubmit, submittedResult }) => {
             Instructions :
           </Typography>
           <Typography
+            component="div"
             sx={{
               color: "black",
               mb: 2,
@@ -282,7 +284,7 @@ const MCQQuestionComponent = ({ question, onSubmit, submittedResult }) => {
                   textAlign: "left"
                 }}
               >
-                <Typography sx={{ color: "#333", fontSize: "0.95rem" , wordBreak: "break-word", overflowWrap: "anywhere"}} dangerouslySetInnerHTML={{ __html: active?.tabValue || "No content available" }} />
+                <Typography component="div" sx={{ color: "#333", fontSize: "0.95rem" , wordBreak: "break-word", overflowWrap: "anywhere"}} dangerouslySetInnerHTML={{ __html: active?.tabValue || "No content available" }} />
                 {active?.tabImage && (
                   <Box sx={{ mt: 2, textAlign: "center" }}>
                     <img
@@ -379,7 +381,7 @@ const MCQQuestionComponent = ({ question, onSubmit, submittedResult }) => {
                     gap: "8px",
                   }}
                 >
-                  <span
+                  <div
                     style={{
                       color: feedbackColor,
                       fontWeight: showFeedback && isCorrectAnswer ? 600 : "normal",

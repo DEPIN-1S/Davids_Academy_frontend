@@ -223,6 +223,7 @@ const MultiRadioQuestionComponent = ({ question, onSubmit, submittedResult }) =>
     >
 
       <Typography
+        component="div"
         fontWeight={700}
         sx={{
           textAlign: "left",
@@ -305,6 +306,7 @@ const MultiRadioQuestionComponent = ({ question, onSubmit, submittedResult }) =>
             }}
           >
             <Typography
+              component="div"
               variant="body1"
               sx={{
                 color: "#333",
@@ -349,7 +351,7 @@ const MultiRadioQuestionComponent = ({ question, onSubmit, submittedResult }) =>
           <Typography variant="h6" component="h2" align="left" sx={{ mb: 1, color: "text.primary", fontWeight: 600 }}>
             Instructions :
           </Typography>
-          <Typography variant="body1" sx={{ textAlign: "left", color: "black" }} dangerouslySetInnerHTML={{ __html: instructions || "" }} />
+          <Typography component="div" variant="body1" sx={{ textAlign: "left", color: "black" }} dangerouslySetInnerHTML={{ __html: instructions || "" }} />
         </Box>
       )}
 
@@ -365,8 +367,9 @@ const MultiRadioQuestionComponent = ({ question, onSubmit, submittedResult }) =>
                   color: "white",
                   fontSize: "16px",
                 }}
-                dangerouslySetInnerHTML={{ __html: multiradioHeading || "" }}
-              />
+              >
+                <div dangerouslySetInnerHTML={{ __html: multiradioHeading || "" }} />
+              </TableCell>
               {uniqueAnswers.map((answer, colIdx) => (
                 <TableCell
                   key={colIdx}
@@ -377,8 +380,9 @@ const MultiRadioQuestionComponent = ({ question, onSubmit, submittedResult }) =>
                     color: "white",
                     fontSize: "16px",
                   }}
-                  dangerouslySetInnerHTML={{ __html: answer || "" }}
-                />
+                >
+                  <div dangerouslySetInnerHTML={{ __html: answer || "" }} />
+                </TableCell>
               ))}
             </TableRow>
           </TableHead>
@@ -386,7 +390,9 @@ const MultiRadioQuestionComponent = ({ question, onSubmit, submittedResult }) =>
           <TableBody>
             {questionContent.map((finding, rowIdx) => (
               <TableRow key={rowIdx}>
-                <TableCell sx={{ fontSize: "15px", color: "#333" }} dangerouslySetInnerHTML={{ __html: finding.client_findings || "" }} />
+                <TableCell sx={{ fontSize: "15px", color: "#333" }} >
+                  <div dangerouslySetInnerHTML={{ __html: finding.client_findings || "" }} />
+                </TableCell>
                 {uniqueAnswers.map((answer, colIdx) => {
                   const expected = finding.answer;
                   const isMultiple = Array.isArray(expected) || (typeof expected === 'string' && expected.includes(','));

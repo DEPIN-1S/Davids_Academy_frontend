@@ -238,8 +238,8 @@ const DropdownQuestionComponent = ({ question, onSubmit, submittedResult }) => {
 
       {/* Title */}
       <Typography
+        component="div"
         variant="h6"
-        component="h1"
         sx={{
           color: "#2e3760",
           fontSize: { xs: "1rem", md: "1.25rem" },
@@ -261,6 +261,7 @@ const DropdownQuestionComponent = ({ question, onSubmit, submittedResult }) => {
             Instructions :
           </Typography>
           <Typography
+            component="div"
             variant="body1"
             sx={{
               textAlign: "left",
@@ -339,6 +340,7 @@ const DropdownQuestionComponent = ({ question, onSubmit, submittedResult }) => {
           }}
         >
           <Typography
+            component="div"
             sx={{
               color: "#374151",
               textAlign: "left",
@@ -402,6 +404,7 @@ const DropdownQuestionComponent = ({ question, onSubmit, submittedResult }) => {
                 }}
               >
                 <Typography
+                  component="div"
                   sx={{
                     color: "#0f172a",
                     fontSize: { xs: "0.9rem", md: "1rem" },
@@ -451,7 +454,7 @@ const DropdownQuestionComponent = ({ question, onSubmit, submittedResult }) => {
                     </MenuItem>
                     {options.map((opt, oi) => (
                       <MenuItem key={opt.id || oi} value={opt.dropdownValue} sx={{ whiteSpace: "normal", wordBreak: "break-word" }}>
-                        <span dangerouslySetInnerHTML={{ __html: opt.dropdownValue || "" }} />
+                        <div dangerouslySetInnerHTML={{ __html: opt.dropdownValue || "" }} />
                       </MenuItem>
                     ))}
                   </Select>

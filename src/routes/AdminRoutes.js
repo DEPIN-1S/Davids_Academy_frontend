@@ -22,6 +22,7 @@ import CourseManagement from "../components/AdminComponents/CourseManagementComp
 import AddCourseComponent from "../components/AdminComponents/AddCourseComponent";
 import UploadThumbnailComponent from "../components/AdminComponents/UploadThumbnailComponent";
 import RecordedClassInfoComponent from "../components/AdminComponents/RecordClassComponent";
+import EditRecordedClassComponent from "../components/AdminComponents/EditRecordedClassComponent";
 import EnquireLeadComponent from "../components/AdminComponents/EnquireLeadComponent";
 import ExamTypeComponent from "../components/AdminComponents/ExamTypeComponent";
 import SelectCourseComponent from "../components/AdminComponents/SelectCourseComponent";
@@ -214,6 +215,11 @@ const AdminRoutes = () => (
             <Route path="/admin/record-class-info" element={
                 <ProtectedRoutes allowedRoles={['admin']}>
                     <RecordedClassInfoComponent />
+                </ProtectedRoutes>
+            } />
+            <Route path="/admin/edit-recorded-class/:id" element={
+                <ProtectedRoutes allowedRoles={['admin']}>
+                    <EditRecordedClassComponent />
                 </ProtectedRoutes>
             } />
 

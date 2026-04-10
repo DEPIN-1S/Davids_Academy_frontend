@@ -126,9 +126,9 @@ const CourseManagement = () => {
                                     <button onClick={() => handleDelete(cls.r_id)} className="recorded-class-delete-btn">
                                         Delete class
                                     </button>
-                                    {/* <button  className="recorded-class-edit-btn">
+                                    <button onClick={() => navigate(`/admin/edit-recorded-class/${cls.r_id}`)} className="recorded-class-edit-btn">
                                         Edit class
-                                    </button> */}
+                                    </button>
                                 </div>
                             </div>
                         </div>
