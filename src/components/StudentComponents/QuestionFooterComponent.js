@@ -128,7 +128,7 @@ const QuestionFooterComponent = ({
           variant="outlined"
           sx={{ color: "white", borderColor: "rgba(255,255,255,0.5)", mr: { xs: 1, md: 2 }, textTransform: "none", borderRadius: "8px", '&:hover': { borderColor: "white" } }}
         >
-          {skipCount > 0 ? `Skip (${skipCount})` : "Skip"}
+          Skip
         </Button>
         <Button
           disabled={false}
