@@ -72,7 +72,7 @@ const ContactForm = ({ open, onClose }) => {
 
     dispatch(submitContact(contactFormData)).then((action) => {
       if (action.type.endsWith("fulfilled")) {
-        alert("Message sent successfully!");
+        alert(action.payload?.message || "Message sent successfully!");
         setContactFormData({
           name: "",
           email: "",
@@ -85,7 +85,7 @@ const ContactForm = ({ open, onClose }) => {
         // FIX: Navigate to sample exam to load questions
         navigate("/exam?mode=sample"); // Adjust to your route (e.g., /student/exam?mode=sample if auth needed)
       } else if (action.type.endsWith("rejected")) {
-        alert("Failed to send message. Please try again later.");
+        alert(action.payload || "Failed to send message. Please try again later.");
       }
     });
   };

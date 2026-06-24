@@ -55,7 +55,7 @@ const ContactPage = () => {
 
     dispatch(submitContact(contactFormData)).then((action) => {
       if (action.type.endsWith("fulfilled")) {
-        toast.success("Message sent successfully!");
+        toast.success(action.payload?.message || "Message sent successfully!");
         setContactFormData({
           name: "",
           email: "",
@@ -65,7 +65,7 @@ const ContactPage = () => {
         });
         setErrors({});
       } else if (action.type.endsWith("rejected")) {
-        toast.error("Failed to send message. Please try again later.");
+        toast.error(action.payload || "Failed to send message. Please try again later.");
       }
     });
 
