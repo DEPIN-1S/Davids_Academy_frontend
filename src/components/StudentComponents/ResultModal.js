@@ -6,17 +6,25 @@ import { FaCheck } from "react-icons/fa6";
 
 
 function ResultModal({ open, handleClose, isAnswerCorrect }) {
+  const handleCloseRef = React.useRef(handleClose);
+
+  useEffect(() => {
+    handleCloseRef.current = handleClose;
+  }, [handleClose]);
+
   useEffect(() => {
     if (!open) return;
-    const timer = setTimeout(() => handleClose(), 3000);
+    const timer = setTimeout(() => {
+      handleCloseRef.current();
+    }, 3000);
     return () => clearTimeout(timer);
-  }, [open, handleClose]);
+  }, [open]);
 
   if (!open) return null;
 
   return (
     <>
-      <div className="luxe-overlay">
+      <div className="luxe-overlay" onClick={handleClose}>
         {/* Animated Background Particles */}
         <div className="cosmic-particles">
           {[...Array(60)].map((_, i) => (
@@ -34,7 +42,10 @@ function ResultModal({ open, handleClose, isAnswerCorrect }) {
           ))}
         </div>
 
-        <div className={`luxe-modal ${isAnswerCorrect ? 'mode-success' : 'mode-error'}`}>
+        <div 
+          className={`luxe-modal ${isAnswerCorrect ? 'mode-success' : 'mode-error'}`}
+          onClick={(e) => e.stopPropagation()}
+        >
 
           {/* Rotating Hexagon Particles */}
           <div className="hex-particles">
