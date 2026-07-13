@@ -18,11 +18,9 @@ const RecordedClassInfoComponent = ({ onNext, onBack }) => {
 
 
 
-    const { list: courses, loading: coursesLoading } = useSelector((state) => state.course);
+    const { list: courses } = useSelector((state) => state.course);
     const dispatch = useDispatch();
     useEffect(() => {
-        console.log("courses in contact page ::", courses);
-
         dispatch(fetchCourses());
     }, [dispatch]);
 

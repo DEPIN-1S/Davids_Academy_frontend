@@ -1,21 +1,7 @@
-import React from "react";
-import { FaBars, FaCompress, FaExpand } from "react-icons/fa";
-import {
-  FaThLarge,
-  FaUserGraduate,
-  FaBook,
-  FaClipboardList,
-  FaVideo,
-  FaPhone,
-  FaPlus,
-  FaEdit,
-  FaQuestionCircle,
-  FaLightbulb,
-} from "react-icons/fa";
+import { FaQuestionCircle, FaLightbulb } from "react-icons/fa";
 import { useLocation } from "react-router-dom";
 import "../../../styles/AdminStyles/NavBar.css";
 import UserDropdownComponent from "../UserDropdownComponent";
-import { logout } from "../../../features/user/userSlice";
 const NavBar = () => {
   const location = useLocation();
   // Define route-specific headings, subtitles, and icons

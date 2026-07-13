@@ -7,10 +7,10 @@ import { toast } from "react-toastify";
 
 const ContactPage = () => {
   const dispatch = useDispatch();
-  const { submitLoading, submitSuccess, submitError } = useSelector(
+  const { submitLoading } = useSelector(
     (state) => state.contact
   );
-  const { list: courses, loading: coursesLoading } = useSelector((state) => state.course);
+  const { list: courses } = useSelector((state) => state.course);
   const [contactFormData, setContactFormData] = useState({
     name: "",
     email: "",
@@ -21,10 +21,8 @@ const ContactPage = () => {
 
   const [errors, setErrors] = useState({});
   useEffect(() => {
-    console.log("courses in contact page ::", courses);
-
     dispatch(fetchCourses());
-  }, [dispatch]);
+  }, [dispatch]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const validateForm = () => {
     const newErrors = {};

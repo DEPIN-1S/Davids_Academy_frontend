@@ -6,8 +6,6 @@ import {
   InputLabel,
   Select,
   MenuItem,
-  useMediaQuery,
-  useTheme,
   Button,
 } from "@mui/material";
 import { useDispatch, useSelector } from "react-redux";
@@ -16,8 +14,6 @@ import { useNavigate, useParams } from "react-router-dom";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 
 const DropdownQuestionComponent = () => {
-  const theme = useTheme();
-  const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
   const dispatch = useDispatch();
   const { questionData } = useSelector((state) => state.exam);
   const { questionId } = useParams();

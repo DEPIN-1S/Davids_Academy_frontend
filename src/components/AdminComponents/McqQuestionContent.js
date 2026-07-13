@@ -43,9 +43,6 @@ const McqQuestionContent = () => {
         exam_type,
         question_type_id,
         questionType: questionTypeName,
-        questionData: tempExistingData,
-        cs_id: temp_cs_id,
-        topic_id: temp_topic_id,
     } = state;
     const [instruction, setInstruction] = useState(existingQuestionData?.instruction || "")
     React.useEffect(() => {

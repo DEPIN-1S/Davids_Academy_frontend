@@ -1,4 +1,4 @@
-import React, { useState, useRef } from "react";
+import React, { useState } from "react";
 import {
     Box,
     Button,
@@ -8,7 +8,6 @@ import {
     Card,
     CardContent,
     Chip,
-    Alert,
     Paper,
     Accordion,
     AccordionSummary,
@@ -17,7 +16,7 @@ import {
 import AddIcon from "@mui/icons-material/Add";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
-import { CloudUpload, Delete, Image, PictureAsPdf, Description, DragIndicator, ExpandMore } from '@mui/icons-material';
+import { CloudUpload, Delete, DragIndicator, ExpandMore } from '@mui/icons-material';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useDispatch } from "react-redux";
 import { deleteTabImage, uploadTabImage } from "../../features/exam/examSlice";
@@ -41,9 +40,8 @@ const SortQuestionContent = () => {
     const [sortItems, setSortItems] = useState(existingData.sortItems || [
         { sortItem: "", itemOrder: 1 }
     ]);
-    const [selectedFile, setSelectedFile] = useState(existingData.exhibit || null);
+    const [selectedFile] = useState(existingData.exhibit || null);
     const [errors, setErrors] = useState({});
-    const fileInputRef = useRef(null);
     const dispatch = useDispatch()
 
 
@@ -76,12 +74,6 @@ const SortQuestionContent = () => {
         setErrors(prev => ({ ...prev, sortItems: null }));
     };
 
-    const handleSortOrderChange = (index, value) => {
-        const newSortItems = [...sortItems];
-        const orderValue = parseInt(value) || 1;
-        newSortItems[index].itemOrder = orderValue;
-        setSortItems(newSortItems);
-    };
 
     const handleAddSortItem = () => {
         const newOrder = sortItems.length + 1;

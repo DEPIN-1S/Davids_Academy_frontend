@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import {
     Box,
     Typography,
@@ -46,15 +46,7 @@ const SelectTopicComponent = () => {
     const [deletingTopic, setDeletingTopic] = useState(false);
     const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
 
-    useEffect(() => {
-        if (!cs_id) {
-            navigate("/admin/selectCourse");
-            return;
-        }
-        fetchTopics();
-    }, [cs_id, navigate]);
-
-    const fetchTopics = async () => {
+    const fetchTopics = useCallback(async () => {
         setLoading(true);
         try {
             const token = sessionStorage.getItem("accessToken");
@@ -75,7 +67,15 @@ const SelectTopicComponent = () => {
         } finally {
             setLoading(false);
         }
-    };
+    }, [cs_id]);
+
+    useEffect(() => {
+        if (!cs_id) {
+            navigate("/admin/selectCourse");
+            return;
+        }
+        fetchTopics();
+    }, [cs_id, navigate, fetchTopics]);
 
     const handleCreateTopic = async () => {
         if (!newTopicName.trim()) {

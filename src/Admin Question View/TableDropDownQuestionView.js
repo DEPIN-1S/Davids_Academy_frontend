@@ -20,11 +20,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { useNavigate, useParams } from "react-router-dom";
 import { getQuestionData } from "../features/exam/examSlice";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
-import ReactQuill from 'react-quill-new'; // <-- CHANGE THIS
-import 'react-quill-new/dist/quill.snow.css';
-
-
-function TableDropDownQuestionView({ onSubmit }) {
+function TableDropDownQuestionView() {
   const dispatch = useDispatch();
   const { questionData, loading, error } = useSelector((state) => state.exam);
   const { questionId } = useParams();
@@ -92,14 +88,6 @@ function TableDropDownQuestionView({ onSubmit }) {
 
   const handleTabChange = (_event, newTab) => {
     setActiveTab(newTab);
-  };
-
-  const handleSubmit = () => {
-    if (typeof onSubmit === "function") {
-      onSubmit(questionId, dropdownValues);
-      return;
-    }
-    console.log("Submit answers for", questionId, dropdownValues);
   };
 
   if (loading) {

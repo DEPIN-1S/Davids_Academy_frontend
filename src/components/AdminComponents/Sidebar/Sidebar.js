@@ -12,7 +12,7 @@ import {
   FaChevronRight,
 } from "react-icons/fa";
 import { useNavigate, useLocation } from "react-router-dom";
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
 import { logout } from '../../../features/user/userSlice';
 import "../../../styles/AdminStyles/Sidebar.css";
 import { FaTrophy } from "react-icons/fa6";
@@ -22,7 +22,7 @@ const Sidebar = ({ isOpen, isCollapsed, toggleSidebar, toggleCollapse }) => {
   const navigate = useNavigate();
   const location = useLocation();
   const dispatch = useDispatch();
-  const user = useSelector((state) => state.user.user);
+
   const menuItems = [
     { name: "Dashboard", icon: <FaThLarge />, path: "/admin/dashboard" },
     { name: "Student Management", icon: <FaUserGraduate />, path: "/admin/student-manage" },
@@ -63,7 +63,6 @@ const Sidebar = ({ isOpen, isCollapsed, toggleSidebar, toggleCollapse }) => {
   return (
     <aside
       className={`admin-sidebar ${isOpen ? "mobile-open" : ""} ${isCollapsed ? "collapsed" : ""}`}
-      role="complementary"
       aria-label="Main navigation sidebar"
     >
       {/* Sidebar Header */}

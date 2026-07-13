@@ -1,9 +1,8 @@
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState, useRef, useEffect, useMemo } from "react";
 import {
     Box,
     Button,
     Typography,
-    TextField,
     Card,
     CardContent,
     Chip,
@@ -35,7 +34,7 @@ const AnswerExplain = () => {
     } = useFileContext();
 
     // ✅ Receive only serializable data
-    const previousQuestionData = location.state?.questionData || {};
+    const previousQuestionData = useMemo(() => location.state?.questionData || {}, [location.state?.questionData]);
 
     // Component state
     const [explanationHeading, setExplanationHeading] = useState(
@@ -44,7 +43,7 @@ const AnswerExplain = () => {
     const [explanationText, setExplanationText] = useState(
         previousQuestionData.explanationText || ""
     );
-    const [additionalInfoHeading, setAdditionalInfoHeading] = useState(
+    const [additionalInfoHeading] = useState(
         previousQuestionData.additionalInfoHeading || ""
     );
     const [additionalInfo, setAdditionalInfo] = useState(
@@ -68,7 +67,7 @@ const AnswerExplain = () => {
         console.log('Context Status:');
         console.log('📎Question file in context:', hasQuestionFile ? questionFile?.name : 'None');
         console.log('📎 Explanation file in context:', hasExplanationFile ? explanationFile?.name : 'None');
-    }, [hasQuestionFile, hasExplanationFile, questionFile, explanationFile]);
+    }, [hasQuestionFile, hasExplanationFile, questionFile, explanationFile, previousQuestionData]);
 
     // ✅ File upload handlers - Store in Context instead of passing through navigation
     const handleFileSelect = (event) => {
@@ -194,7 +193,6 @@ const AnswerExplain = () => {
             //for Table Highlight
             answers: previousQuestionData.answers,
             tableFields: previousQuestionData.tableFields,
-            tableHeaders: previousQuestionData.tableHeaders,
 
             // Current explanation data
             explanationHeading: explanationHeading.trim(),
@@ -291,11 +289,6 @@ const AnswerExplain = () => {
             correctHighlights: previousQuestionData.correctHighlights,
             answer: previousQuestionData.answer,
 
-            //for table dropdown
-            tableDropdownAnswers: previousQuestionData.tableDropdownAnswers,
-            tableHeaders: previousQuestionData.tableHeaders,
-            tableDropdownFields: previousQuestionData.tableDropdownFields,
-
             //for multi-dropdown question
             rows: previousQuestionData.rows,
             headers: previousQuestionData.headers,
@@ -303,7 +296,6 @@ const AnswerExplain = () => {
             //for Table Highlight
             answers: previousQuestionData.answers,
             tableFields: previousQuestionData.tableFields,
-            tableHeaders: previousQuestionData.tableHeaders,
 
             // Current explanation data
             explanationHeading: explanationHeading.trim(),

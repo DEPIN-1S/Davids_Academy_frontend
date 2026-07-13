@@ -28,7 +28,7 @@ const RevealAnswerComponent = ({
   sessionStorage.setItem("isRevealed", "true");
 
   // for sample questionare result calculation
-  const { sampleQuestionnaireResult, setSampleQuestionnaireResult } =
+  const { setSampleQuestionnaireResult } =
     useContext(SampleQuestionnaireResultContext);
 
   const hasUpdated = React.useRef(false);
@@ -45,7 +45,7 @@ const RevealAnswerComponent = ({
       attemptedQuestion: prev.attemptedQuestion + 1,
       corrected: isAnswerCorrect ? prev.corrected + 1 : prev.corrected
     }));
-  }, []);
+  }, [isAnswerCorrect, setSampleQuestionnaireResult, submittedResult]);
 
 
 

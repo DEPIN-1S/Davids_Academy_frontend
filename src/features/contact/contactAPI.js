@@ -2,7 +2,6 @@
 
 const baseUrl = process.env.REACT_APP_API_URL;
 const accessToken = sessionStorage.getItem('accessToken');
-const refreshToken = sessionStorage.getItem('refreshToken');
 // POST: Submit a new contact message
 export const postContact = async (contactData) => {
     try {

@@ -1,4 +1,4 @@
-import React, { useState, useRef } from "react";
+import React, { useState } from "react";
 import {
     Box,
     Button,
@@ -8,18 +8,16 @@ import {
     Card,
     CardContent,
     Chip,
-    Alert,
     Accordion,
     AccordionSummary,
     AccordionDetails,
     FormControlLabel,
-    Checkbox,
-    Divider
+    Checkbox
 } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
-import { CloudUpload, Delete, ExpandMore, Image, PictureAsPdf, Description } from '@mui/icons-material';
+import { Delete, ExpandMore, Image, PictureAsPdf, Description } from '@mui/icons-material';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useFileContext } from '../../context/FileContext'; // ✅ Import the Context
 
@@ -52,9 +50,7 @@ const FillinQuestionContent = () => {
     // ✅ Generate answer field from question content
     const [answer, setAnswer] = useState(existingData.answer || "");
     const [selectedFile, setSelectedFile] = useState(null); // ✅ Local state for UI, Context for persistence
-    const [errors, setErrors] = useState({});
 
-    const fileInputRef = useRef(null);
 
     // ✅ Initialize with existing file from context if available
     React.useEffect(() => {
@@ -76,50 +72,11 @@ const FillinQuestionContent = () => {
         setAnswer(answerParts.join(' '));
     }, [questionContent]);
 
-    // ✅ File upload handlers - Store in Context instead of passing through navigation
-    const handleFileSelect = (event) => {
-        const file = event.target.files[0];
-        if (file) {
-            if (file.size > 10 * 1024 * 1024) {
-                setErrors(prev => ({ ...prev, file: 'File size must be less than 10MB' }));
-                return;
-            }
-
-            const allowedTypes = ['image/jpeg', 'image/png', 'image/gif', 'application/pdf'];
-            if (!allowedTypes.includes(file.type)) {
-                setErrors(prev => ({ ...prev, file: 'Only images and PDF files are allowed' }));
-                return;
-            }
-
-            const fileData = {
-                file: file,
-                name: file.name,
-                size: file.size,
-                type: file.type,
-                url: URL.createObjectURL(file),
-                uploadedAt: new Date().toISOString()
-            };
-
-            // ✅ Store in both local state (for UI) and Context (for persistence)
-            setSelectedFile(fileData);
-            addQuestionFile(fileData); // Store in Context
-            setErrors(prev => ({ ...prev, file: null }));
-
-            console.log('File stored in Context:', fileData.name);
-        }
-        event.target.value = '';
-    };
-
-    const handleButtonClick = () => {
-        fileInputRef.current?.click();
-    };
-
     const handleRemoveFile = () => {
         if (selectedFile) {
             URL.revokeObjectURL(selectedFile.url);
             setSelectedFile(null);
             addQuestionFile(null); // ✅ Remove from Context as well
-            setErrors(prev => ({ ...prev, file: null }));
         }
     };
 

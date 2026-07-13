@@ -1,12 +1,9 @@
-import React, { useEffect, useState } from "react";
-import { FaChevronDown } from "react-icons/fa";
+import React, { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { fetchContacts } from "../../features/contact/contactSlice";
 import "../../styles/AdminStyles/EnquireLeadComponent.css";
 import { fetchRecentEnquiries } from "../../features/contact/contactSlice";
 
 const EnquireLeadComponent = () => {
-    const [showDropdown, setShowDropdown] = useState(false);
     const { recentEnquiries, loading, error } = useSelector((state) => state.contact);
     const dispatch = useDispatch();
     console.log("Enquiries::::", recentEnquiries);

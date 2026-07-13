@@ -5,7 +5,6 @@ import { useNavigate } from "react-router-dom";
 import { FaRegCalendarAlt } from "react-icons/fa";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchRecordedClasses, deleteRecordedClass } from "../../features/recorded classes/recordedClassSlice";
-const baseUrl = process.env.BASE_URL;
 const CourseManagement = () => {
     const dispatch = useDispatch();
     const navigate = useNavigate();

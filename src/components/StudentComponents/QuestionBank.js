@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Box, Typography, Button, Dialog, DialogContent } from "@mui/material";
-import AddIcon from "@mui/icons-material/Add";
 import { useDispatch, useSelector } from "react-redux";
 import { FiPlus } from "react-icons/fi";
 import { getQuestionBankResult } from "../../features/exam/examSlice";

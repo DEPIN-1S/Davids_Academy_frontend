@@ -4,7 +4,6 @@ import ProtectedRoutes from "./ProtectedRoutes";
 import QuestionBankPage from "../pages/StudentPages/QuestionBankPage";
 import RecordedClassesPage from "../pages/StudentPages/RecordedClassesPage";
 import NotesPage from "../pages/StudentPages/NotesPage";
-import MockTestPage from "../pages/StudentPages/MockTestPage";
 import PreviousTestPage from "../pages/StudentPages/PreviousTestPage";
 import RadioButtonQuestionPage from "../pages/StudentPages/RadioButtonQuestionPage";
 import RevealAnswerRadioPage from "../pages/StudentPages/RevealAnswerPage";

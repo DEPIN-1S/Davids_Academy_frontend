@@ -31,7 +31,6 @@ function AddTest() {
     adminMockTestQuestionsByCourseIdError: questionError,
     loading: submitLoading,
     error: submitError,
-    success: submitSuccess,
   } = useSelector((state) => state.exam);
 
   // ⬇️ Local states

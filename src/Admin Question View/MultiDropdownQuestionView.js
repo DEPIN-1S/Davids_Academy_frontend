@@ -22,7 +22,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 
 
-function MultiDropdownQuestionView({ onSubmit }) {
+function MultiDropdownQuestionView() {
     const dispatch = useDispatch();
     const { questionData, loading, error } = useSelector((state) => state.exam);
     const { questionId } = useParams();
@@ -37,8 +37,6 @@ function MultiDropdownQuestionView({ onSubmit }) {
 
     // Initialize dropdown values
     useEffect(() => {
-        console.log("qData", questionData?.data);
-
         const rows = questionData?.data?.rows || [];
         const initial = {};
         rows.forEach((row, rIdx) => {
@@ -65,14 +63,6 @@ function MultiDropdownQuestionView({ onSubmit }) {
 
     const handleTabChange = (_event, newTab) => {
         setActiveTab(newTab);
-    };
-
-    const handleSubmit = () => {
-        if (typeof onSubmit === "function") {
-            onSubmit(questionId, dropdownValues);
-        } else {
-            console.log("Table Dropdown Answers:", questionId, dropdownValues);
-        }
     };
 
     const questionText = questionData?.data?.question || "";

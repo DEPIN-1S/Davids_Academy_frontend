@@ -8,8 +8,6 @@ import {
   Button,
   Tabs,
   Tab,
-  useMediaQuery,
-  useTheme,
 } from "@mui/material";
 import RevealAnswerComponent from "./RevealAnswerComponent";
 import { useDispatch } from "react-redux";
@@ -18,13 +16,9 @@ import { submitMockTestQuestionResponseThunk } from "../../features/exam/examSli
 
 
 const DropdownQuestionComponent = ({ question, onSubmit, submittedResult }) => {
-  const theme = useTheme();
-  const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
   const [activeTab, setActiveTab] = useState(0);
   const [dropdownValues, setDropdownValues] = useState({});
   const [showReveal, setShowReveal] = useState(false);
-  const [userAnswer, setUserAnswer] = useState("");
-  const [correctAnswer, setCorrectAnswer] = useState("");
   const [isCorrect, setIsCorrect] = useState(false);
   const [showNotAnsweredModal, setShowNotAnsweredModal] = useState(false);
   const dispatch = useDispatch();
@@ -149,18 +143,6 @@ const DropdownQuestionComponent = ({ question, onSubmit, submittedResult }) => {
       })
       .join(", ");
 
-    const correctAnswerStr = dropdowns
-      .map((dt) => {
-        const backendAnswer = dt.dropdownanswer;
-        const fallbackOpt =
-          dt.dropdownoption?.find((opt) => opt.is_correct) ||
-          dt.dropdownoption?.[0];
-        const correctDisplay =
-          backendAnswer ?? fallbackOpt?.dropdownValue ?? "Not available";
-        return `${dt.dropdownField || "Option"}: ${correctDisplay}`;
-      })
-      .join(", ");
-
     const correctStatus = dropdowns.every((dt) => {
       const dropdownId = dt.id;
       const backendAnswer = dt.dropdownanswer;
@@ -177,8 +159,8 @@ const DropdownQuestionComponent = ({ question, onSubmit, submittedResult }) => {
       onSubmit(questionId, correctStatus, mark, userAnswerStr);
     }
 
-    setUserAnswer(userAnswerStr);
-    setCorrectAnswer(correctAnswerStr);
+    // setUserAnswer(userAnswerStr);
+    // setCorrectAnswer(correctAnswerStr);
     setIsCorrect(correctStatus);
     setShowReveal(true);
 
@@ -583,7 +565,6 @@ const DropdownQuestionComponent = ({ question, onSubmit, submittedResult }) => {
             <tbody>
               {dropdowns.map((dt, idx) => {
                 const dropdownId = dt.id;
-                const label = dt.dropdownField || `Option ${idx + 1}`;
                 const userVal = dropdownValues[dropdownId] || "Not selected";
                 const backendAnswer = dt.dropdownanswer;
                 const fallbackVal =

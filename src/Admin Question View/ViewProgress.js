@@ -6,7 +6,7 @@ import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import { fetchStudentProgress } from "../features/students/studentSlice";
 import { useDispatch, useSelector } from "react-redux";
 import { resetMockTest, resetQbank } from "../features/exam/examSlice";
-import { ToastContainer, toast } from 'react-toastify';
+import { toast } from 'react-toastify';
 
 function ViewProgress() {
     const { studentId } = useParams();

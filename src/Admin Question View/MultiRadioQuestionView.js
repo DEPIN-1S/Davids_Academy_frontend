@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from "react";
-import QuestionHeader from "./QuestionHeader";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate, useParams } from "react-router-dom";
 import { getQuestionData } from "../features/exam/examSlice";
@@ -9,12 +8,12 @@ import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 function MultiRadioQuestionView() {
   const { questionId } = useParams();
   const dispatch = useDispatch();
-  const { questionData, loading, error } = useSelector((state) => state.exam);
+  const { questionData } = useSelector((state) => state.exam);
   const navigate = useNavigate();
 
   const [activeTab, setActiveTab] = useState("");
   const [answers, setAnswers] = useState({});
-  const [showReveal, setShowReveal] = useState(false);
+  const showReveal = false;
 
   useEffect(() => {
     if (questionId) {
@@ -125,7 +124,7 @@ function MultiRadioQuestionView() {
                 {activeTabData?.tabImage && (
                   <img
                     src={`${process.env.REACT_APP_API_URL.replace('/davidsacademy', '')}/${activeTabData.tabImage}`}
-                    alt="Tab Image"
+                    alt="Tab content"
                     style={{ maxWidth: "100%", width: 500, borderRadius: 8, marginBottom: 8 }}
                   />
                 )}

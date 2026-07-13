@@ -1,15 +1,5 @@
 // src/api/examApi.js
 const baseUrl = process.env.REACT_APP_API_URL;
-const accessToken = sessionStorage.getItem("accessToken");
-const refreshToken = sessionStorage.getItem("refreshToken");
-
-const getToken = () => {
-  const token = sessionStorage.getItem("accessToken");
-  if (!token) {
-    throw new Error("No authentication token found. Please log in.");
-  }
-  return token;
-};
 
 export const postQuestion = async (questionData) => {
   console.log("question data in api call :::::", questionData);

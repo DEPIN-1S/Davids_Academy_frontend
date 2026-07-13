@@ -1,4 +1,4 @@
-import React, { useState, useRef } from "react";
+import React, { useState } from "react";
 import {
   Box,
   Button,
@@ -10,7 +10,6 @@ import {
   Accordion,
   AccordionSummary,
   AccordionDetails,
-  InputLabel,
   Select,
   MenuItem,
   FormControl,
@@ -21,9 +20,6 @@ import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
 import {
   CloudUpload,
   Delete,
-  Image,
-  PictureAsPdf,
-  Description,
   ExpandMore,
 } from "@mui/icons-material";
 import { useNavigate, useLocation } from "react-router-dom";
@@ -37,7 +33,7 @@ const DropdownQuestionContent = () => {
   const navigate = useNavigate();
   const location = useLocation();
   // ✅ Use File Context instead of passing files through navigation
-  const { addQuestionFile, questionFile, hasQuestionFile } = useFileContext();
+  const { questionFile, hasQuestionFile } = useFileContext();
   const dispatch = useDispatch();
   // Get any existing data from previous steps
   const existingData = location.state?.questionData || {};

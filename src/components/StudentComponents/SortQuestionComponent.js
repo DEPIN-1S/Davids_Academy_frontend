@@ -34,7 +34,6 @@ const SortQuestionComponent = ({ question, onSubmit, submittedResult }) => {
     sortingoptions = [],
     explanation = [],
     additionalInfo = [],
-    marks = 0,
     tabsInfo = [],
   } = question || {};
 
@@ -51,7 +50,7 @@ const SortQuestionComponent = ({ question, onSubmit, submittedResult }) => {
   const location = useLocation();
   const [steps, setSteps] = useState(initialUserSteps);
   const [showReveal, setShowReveal] = useState(false);
-  const [userAnswer, setUserAnswer] = useState([]);
+  const [userAnswer, setUserAnswer] = useState([]); // eslint-disable-line no-unused-vars
   const [correctAnswer, setCorrectAnswer] = useState([]);
   const [isCorrect, setIsCorrect] = useState(false);
   const [activeTab, setActiveTab] = useState(
@@ -174,7 +173,6 @@ const SortQuestionComponent = ({ question, onSubmit, submittedResult }) => {
       .sort((a, b) => a.order - b.order);
 
     const userAnswerStr = steps.map((step) => step.text).join(", ");
-    const correctAnswerStr = correctOrder.map((step) => step.text).join(", ");
     const correctStatus = steps.every(
       (step, index) => step.id === correctOrder[index].id
     );

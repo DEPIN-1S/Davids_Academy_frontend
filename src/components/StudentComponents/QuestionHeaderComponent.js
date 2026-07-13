@@ -1,9 +1,6 @@
 import React from 'react';
 import '../../styles/DashboardStyles/QuestionHeaderComponent.css';
-import { Box, IconButton, Typography } from '@mui/material';
-import EditNoteIcon from '@mui/icons-material/EditNote';
-import MenuIcon from '@mui/icons-material/Menu';
-import FlagIcon from '@mui/icons-material/Flag';
+import { Box, Typography } from '@mui/material';
 
 const QuestionHeaderComponent = ({
   questionNumber = 1,

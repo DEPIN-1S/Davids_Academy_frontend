@@ -1,8 +1,6 @@
-import React, { useContext, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import "../../styles/DashboardStyles/QuestionFooterComponent.css";
 import { Box, Button, Typography } from "@mui/material";
-import LogoutIcon from "@mui/icons-material/Logout";
-import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
 import { PiCheckCircleBold } from "react-icons/pi";
 import { useDispatch, useSelector } from "react-redux";
 import { getQuestionBankResult } from "../../features/exam/examSlice";
@@ -11,7 +9,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { IoIosArrowForward } from "react-icons/io";
 import { IoIosArrowBack } from "react-icons/io";
 import SampleQuestionnaireProgressCard from "./SampleQuestionnaireProgressCard";
-import { SampleQuestionnaireResultContext } from "../../context/ResultProvider";
+
 
 
 
@@ -37,7 +35,7 @@ const QuestionFooterComponent = ({
   const isQuestionBankRoute = searchParams.get("mode") === "question-bank";
   const topicsQuery = searchParams.get("topics") || "";
   const isSampleRoute = searchParams.get("mode") === "sample";
-  const [isRevealed, setIsRevealed] = useState(false);
+  const [, setIsRevealed] = useState(false);
   const [showNotAnsweredModal, setShowNotAnsweredModal] = useState(false);
 
   const handleSubmitAndExit = () => {
@@ -59,8 +57,7 @@ const QuestionFooterComponent = ({
     const interval = setInterval(checkRevealStatus, 200);
     return () => clearInterval(interval);
   }, []);
-  const { sampleQuestionnaireResult } = useContext(SampleQuestionnaireResultContext);
-  const { attemptedQuestion, corrected, wrong } = sampleQuestionnaireResult;
+
   const [showSampleCompletedModal, setShowSampleCompletedModal] = useState(false);
 
 

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
@@ -46,7 +46,7 @@ const MetaInfoComponent = () => {
     });
 
     // ✅ Receive only serializable question data
-    const receivedQuestionData = location.state?.questionData || {};
+    const receivedQuestionData = useMemo(() => location.state?.questionData || {}, [location.state?.questionData]);
     const { loading, success, error } = useSelector(state => state.exam);
     const [form, setForm] = useState({
         difficulty: receivedQuestionData.difficulty || "",

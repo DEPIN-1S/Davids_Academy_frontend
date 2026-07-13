@@ -36,7 +36,6 @@ const TableMultipleDropdownComponent = ({ question, onSubmit, submittedResult })
     tabsInfo = [],
     instructions,
     marks,
-    difficulty,
   } = question || {};
 
   // Initialize per-cell dropdownValues state keyed by `${rowIndex}-${colIndex}`
@@ -367,7 +366,7 @@ const TableMultipleDropdownComponent = ({ question, onSubmit, submittedResult })
                 // Prevent <p> tags from Quill from having unwanted margins
                 '& p': { margin: 0, marginBottom: '0.5em' },
                 '& p:last-child': { marginBottom: 0 },
-                '& *': { lineHeight: 1.6 , wordBreak: "break-word", overflowWrap: "anywhere" , wordBreak: "break-word", overflowWrap: "anywhere" },
+                '& *': { lineHeight: 1.6 , wordBreak: "break-word", overflowWrap: "anywhere" },
               }}
               dangerouslySetInnerHTML={{
                 __html: tabsInfo[Math.min(activeTab, tabsInfo.length - 1)]?.tabValue || ""

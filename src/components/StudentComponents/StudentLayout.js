@@ -3,9 +3,8 @@ import { Outlet } from "react-router-dom";
 import NavBar from "./Navbar/Navbar";
 import "../../styles/AdminStyles/AdminLayout.css";
 const StudentLayout = () => {
-    const [isOpen, setIsOpen] = useState(false);
+    const [isOpen] = useState(false);
 
-    const toggleSidebar = () => setIsOpen(!isOpen);
     return (
         <div className="main-layout-container">
             <div

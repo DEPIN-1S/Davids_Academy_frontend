@@ -10,7 +10,7 @@ function ResultModal({ open, handleClose, isAnswerCorrect }) {
     if (!open) return;
     const timer = setTimeout(() => handleClose(), 3000);
     return () => clearTimeout(timer);
-  }, [open]);
+  }, [open, handleClose]);
 
   if (!open) return null;
 

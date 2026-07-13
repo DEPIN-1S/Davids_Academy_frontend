@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useMemo } from "react";
 import {
   DndContext,
   closestCenter,
@@ -23,7 +23,6 @@ import {
   Button,
   Typography,
   Paper,
-  Divider,
   CircularProgress,
   Tab,
   Tabs,
@@ -36,10 +35,10 @@ function SortingQuestionView() {
   const { questionData, loading } = useSelector((state) => state.exam);
   const navigate = useNavigate();
   const [steps, setSteps] = useState([]);
-  const [showReveal, setShowReveal] = useState(false);
   const [activeTab, setActiveTab] = useState("");
+  const showReveal = false;
   const question = questionData?.data || {};
-  const sortingOptions = question?.sortingoptions || [];
+  const sortingOptions = useMemo(() => question?.sortingoptions || [], [question?.sortingoptions]);
   const mark = questionData?.data?.marks;
   const difficulty = questionData?.data?.difficulty;
   const question_type = questionData?.data?.question_type;
@@ -93,7 +92,7 @@ function SortingQuestionView() {
     }
   };
 
-  const tabsInfo = questionData?.data?.tabsInfo || [];
+  const tabsInfo = useMemo(() => questionData?.data?.tabsInfo || [], [questionData?.data?.tabsInfo]);
   const handleTabChange = (_event, newTab) => {
     setActiveTab(newTab);
   };
@@ -106,13 +105,7 @@ function SortingQuestionView() {
     if (firstTabKey && !activeTab) {
       setActiveTab(firstTabKey);
     }
-  }, [tabsInfo]);
-
-
-
-  const handleReveal = () => {
-    setShowReveal(true);
-  };
+  }, [tabsInfo, activeTab]);
 
   if (loading) {
     return (

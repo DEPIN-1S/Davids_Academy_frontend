@@ -11,7 +11,7 @@ function SentenceHighlightQuestionView() {
   const { questionId } = useParams();
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  const { questionData, loading, error } = useSelector((state) => state.exam);
+  const { questionData } = useSelector((state) => state.exam);
 
   useEffect(() => {
     if (questionId) {
@@ -147,7 +147,7 @@ function SentenceHighlightQuestionView() {
               {currentTab.tabImage && (
                 <img
                   src={`${process.env.REACT_APP_API_URL.replace('/davidsacademy', '')}/${currentTab.tabImage}`}
-
+                  alt="Tab content"
                   style={{
                     width: 500,
                     borderRadius: "8px",

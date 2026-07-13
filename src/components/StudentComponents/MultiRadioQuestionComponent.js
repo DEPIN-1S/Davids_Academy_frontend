@@ -12,8 +12,6 @@ import {
   Radio,
   Checkbox,
   Button,
-  useMediaQuery,
-  useTheme,
 } from "@mui/material";
 import { FaCheckCircle, FaTimesCircle } from "react-icons/fa";
 import "../../styles/DashboardStyles/MultiRadioQuestionComponent.css";
@@ -25,8 +23,6 @@ import { submitMockTestQuestionResponseThunk } from "../../features/exam/examSli
 
 
 const MultiRadioQuestionComponent = ({ question, onSubmit, submittedResult }) => {
-  const theme = useTheme();
-  const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
 
   const {
     id: questionId,
@@ -37,7 +33,6 @@ const MultiRadioQuestionComponent = ({ question, onSubmit, submittedResult }) =>
     radioOption = [],
     explanation = [],
     additionalInfo = [],
-    marks,
     instructions,
   } = question || {};
 
@@ -78,7 +73,7 @@ const MultiRadioQuestionComponent = ({ question, onSubmit, submittedResult }) =>
       }
     });
   };
-  const [alreadyShownModal, setAlreadyShownModal] = useState(false);
+
   useEffect(() => {
     sessionStorage.setItem("hasAnswered", "false");
     sessionStorage.setItem("isRevealed", "false");

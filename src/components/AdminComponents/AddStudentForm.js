@@ -2,23 +2,20 @@ import React, { useEffect, useState } from 'react';
 import { createStudent } from "../../features/students/studentSlice";
 import {
     Box, Typography, Button, TextField, Card, CardContent, Container,
-    useTheme, useMediaQuery, Grid, FormControl, Select, MenuItem,
+    Grid, FormControl, Select, MenuItem,
     Switch, FormControlLabel, InputAdornment
 } from '@mui/material';
 import {
     Save as SaveIcon, Cancel as CancelIcon, Email as EmailIcon,
-    Person as PersonIcon, School as SchoolIcon, Class as ClassIcon
+    Person as PersonIcon, School as SchoolIcon
 } from '@mui/icons-material';
 import { useDispatch, useSelector } from 'react-redux';
 import { fetchCourses } from '../../features/courses/courseSlice';
-import { toast, ToastContainer } from 'react-toastify';
+import { ToastContainer } from 'react-toastify';
 
 const AddStudentForm = ({ onSuccess, onClose }) => {   // ✅ accept callbacks
-    const theme = useTheme();
-    const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
     const { list: courses } = useSelector((state) => state.course);
     const dispatch = useDispatch();
-    const [backendError, setBackendError] = useState('');
 
     useEffect(() => {
         dispatch(fetchCourses());
@@ -34,7 +31,7 @@ const AddStudentForm = ({ onSuccess, onClose }) => {   // ✅ accept callbacks
         autoGeneratePassword: false
     });
     const [errors, setErrors] = useState({});
-    const [showPassword, setShowPassword] = useState(false);
+    const [showPassword] = useState(false);
 
     const generatePasswordValue = (name) => {
         if (!name) return '';
@@ -131,7 +128,6 @@ const AddStudentForm = ({ onSuccess, onClose }) => {   // ✅ accept callbacks
                 console.error("Error adding student:", error);
                alert(error)
                 // Optional: display it in UI using state
-                setBackendError(error);
             });
     };
 

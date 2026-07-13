@@ -1,7 +1,5 @@
 import React, { useEffect, useRef } from "react";
 import "../../styles/QuestionBankProgressCard.css";
-import { useNavigate } from "react-router-dom";
-
 function QuestionBankProgressCard({ data }) {
 
     const logged = useRef(false);
@@ -11,8 +9,6 @@ function QuestionBankProgressCard({ data }) {
             logged.current = true;
         }
     }, [data]);
-
-    const navigate = useNavigate();
 
     const onClose = () => {
         console.log(":on close");

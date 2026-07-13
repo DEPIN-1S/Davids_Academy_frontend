@@ -1,5 +1,5 @@
 import React, { useState, useRef } from "react";
-import { FaUpload, FaTimes, FaImage, FaCheck } from "react-icons/fa";
+import { FaTimes, FaImage, FaCheck } from "react-icons/fa";
 import "../../styles/AdminStyles/UploadThumbnailComponent.css";
 import { useNavigate } from "react-router-dom";
 

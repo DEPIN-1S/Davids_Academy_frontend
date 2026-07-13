@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Box, Typography, Paper, Grid, Button, styled } from "@mui/material";
+import { Box, Typography, Paper, Grid, Button } from "@mui/material";
 import { useNavigate, useParams } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { getQuestionData } from "../features/exam/examSlice";

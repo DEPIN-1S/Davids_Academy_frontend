@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useMemo } from 'react';
 import { Box, Typography, Radio, RadioGroup, FormControlLabel, Button, Tab, Tabs, } from '@mui/material';
 import { getQuestionData } from "../features/exam/examSlice"
 import '../styles/DashboardStyles/RadioButtonQuestionComponent.css';
@@ -7,10 +7,9 @@ import { useDispatch, useSelector } from 'react-redux';
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 function McqQuestionView() {
   const [selectedOption, setSelectedOption] = useState('');
-  const [showAnswer, setShowAnswer] = useState(false);
   const { questionId } = useParams()
   const dispatch = useDispatch();
-  const { questionData, loading, error } = useSelector((state) => state.exam);
+  const { questionData } = useSelector((state) => state.exam);
   console.log("Question id in params", questionId);
 
   const navigate = useNavigate();
@@ -33,7 +32,7 @@ function McqQuestionView() {
   const exhibit = questionData?.data?.exhibit;
   const [activeTab, setActiveTab] = useState("");
 
-  const tabsInfo = questionData?.data?.tabsInfo || [];
+  const tabsInfo = useMemo(() => questionData?.data?.tabsInfo || [], [questionData?.data?.tabsInfo]);
   const handleTabChange = (_event, newTab) => {
     setActiveTab(newTab);
   };
@@ -46,16 +45,12 @@ function McqQuestionView() {
     if (firstTabKey && !activeTab) {
       setActiveTab(firstTabKey);
     }
-  }, [tabsInfo]);
+  }, [tabsInfo, activeTab]);
 
 
 
   const handleChange = (event) => {
     setSelectedOption(event.target.value);
-  };
-
-  const handleReveal = () => {
-    setShowAnswer(true);
   };
 
 

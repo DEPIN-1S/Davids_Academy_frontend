@@ -8,7 +8,6 @@ const FillInQuestionComponent = ({ question, onSubmit }) => {
   const {
     question: questionHeading,
     question_content = [],
-    answer = '',
     marks,
     options = [],
     tabs = [],

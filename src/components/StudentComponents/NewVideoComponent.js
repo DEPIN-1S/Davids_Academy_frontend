@@ -37,7 +37,7 @@ const formatVideoUrl = (url) => {
   if (!url) return '';
   if (url.includes('youtube')) {
     const regExp =
-      /^.*(youtu\.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
+      /^.*(youtu\.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=)([^#&?]*).*/;
     const match = url.match(regExp);
     if (match && match[2].length === 11)
       return `https://www.youtube.com/embed/${match[2]}`;
@@ -66,7 +66,6 @@ const NewVideoGrid = () => {
 
   const [selectedVideo, setSelectedVideo] = useState(null);
   const [searchTerm, setSearchTerm] = useState("");
-  const [typingTimeout, setTypingTimeout] = useState(null);
 
   // Initial load
   useEffect(() => {
@@ -76,26 +75,6 @@ const NewVideoGrid = () => {
     }
   }, [dispatch, limit]);
 
-  // Debounced search handler
-  const handleSearch = (value) => {
-    setSearchTerm(value);
-
-    if (typingTimeout) clearTimeout(typingTimeout);
-
-    const timeout = setTimeout(() => {
-      const token = sessionStorage.getItem('accessToken');
-      dispatch(
-        fetchStudentRecordedClasses({
-          token,
-          page: 1,
-          limit: 12,
-          searchQuery: value.trim(),
-        })
-      );
-    }, 300);
-
-    setTypingTimeout(timeout);
-  };
 
   // Pagination handler
   const handlePageChange = (event, newPage) => {

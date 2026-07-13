@@ -414,8 +414,6 @@ const questionSlice = createSlice({
     tests: [],
 
     tabImage: null, // for uploaded image info
-    loading: false, // for upload status
-    error: null,
 
     questionTypes: [],
     questionTypesLoading: false,

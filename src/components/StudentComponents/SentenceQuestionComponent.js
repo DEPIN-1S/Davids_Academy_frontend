@@ -8,8 +8,6 @@ import {
   List,
   ListItem,
   ListItemText,
-  useMediaQuery,
-  useTheme,
 } from "@mui/material";
 import RevealAnswerComponent from "./RevealAnswerComponent";
 import { useDispatch } from "react-redux";
@@ -39,8 +37,6 @@ const normalize = (str) =>
     .trim();
 
 const SentenceQuestionComponent = ({ question, onSubmit, submittedResult }) => {
-  const theme = useTheme();
-  const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
 
   const {
     id: questionId,
@@ -59,7 +55,6 @@ const SentenceQuestionComponent = ({ question, onSubmit, submittedResult }) => {
   const [selectedIds, setSelectedIds] = useState([]);
   const [showAnswer, setShowAnswer] = useState(false);
   const [userAnswer, setUserAnswer] = useState("");
-  const [correctAnswer, setCorrectAnswer] = useState("");
   const [isCorrect, setIsCorrect] = useState(false);
   const [showNotAnsweredModal, setShowNotAnsweredModal] = useState(false);
   const dispatch = useDispatch();
@@ -108,10 +103,6 @@ const SentenceQuestionComponent = ({ question, onSubmit, submittedResult }) => {
       .map((id) => optionList.find((o) => o.id === id)?.text || id)
       .filter(Boolean);
 
-    const correctTexts = optionList
-      .filter((o) => correctIdSet.has(o.id))
-      .map((o) => o.text);
-
     const selectedSet = new Set(selectedIds);
     const correctIds = Array.from(correctIdSet);
     const correctSet = new Set(correctIds);
@@ -121,7 +112,6 @@ const SentenceQuestionComponent = ({ question, onSubmit, submittedResult }) => {
     const mark = allMatch ? marks : 0;
     onSubmit?.(questionId, allMatch, mark, selectedTexts.join(", "));
     setUserAnswer(selectedTexts.join(", ") || "Not selected");
-    setCorrectAnswer(correctTexts.join(", ") || "Not available");
     setIsCorrect(allMatch);
 
     const pathname = location.pathname;
@@ -173,7 +163,7 @@ const SentenceQuestionComponent = ({ question, onSubmit, submittedResult }) => {
 
         // Set user answer text for display
         const selectedTexts = previousIds
-          .map((id) => optionList.find((o) => o.id == id)?.text)
+          .map((id) => optionList.find((o) => o.id === id)?.text)
           .filter(Boolean);
         setUserAnswer(selectedTexts.join(", "));
 

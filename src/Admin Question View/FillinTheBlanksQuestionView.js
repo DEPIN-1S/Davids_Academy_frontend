@@ -6,7 +6,7 @@ import { useParams } from 'react-router-dom';
 function FillinTheBlanksQuestionView() {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
-  const { questionId } = useParams()
+  useParams();
   // ✅ Static data
   const question = {
     id: 1,
@@ -44,8 +44,6 @@ function FillinTheBlanksQuestionView() {
     tabsInfo = [],
     highlightOptions = [],
     answer: correctAnswerStr = '',
-    explanation = [],
-    additionalInfo = [],
   } = question || {};
 
   const [activeTab, setActiveTab] = useState(0);
@@ -78,7 +76,8 @@ function FillinTheBlanksQuestionView() {
       selectedSentences.length === correctAnswerList.length &&
       selectedSentences.every((sentence) => correctAnswerList.includes(sentence));
 
-    const mark = correctStatus ? (question?.marks || 5) : 0;
+    // marks calculation available for future use
+    // const mark = correctStatus ? (question?.marks || 5) : 0;
 
     setUserAnswer(userAnswerStr);
     setCorrectAnswer(correctAnswerText);

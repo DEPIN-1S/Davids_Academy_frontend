@@ -1,10 +1,9 @@
 import React, { useState } from 'react';
 import '../styles/NewsletterFooter.css';
-import { Link as ScrollLink } from "react-scroll"
 import { Link } from 'react-router-dom';
 const NewsletterFooter = () => {
   const closeMenu = () => setMenuOpen(false);
-  const [menuOpen, setMenuOpen] = useState(false);
+  const [, setMenuOpen] = useState(false);
   return (
     <footer className="footer">
       {/* Top Grid */}

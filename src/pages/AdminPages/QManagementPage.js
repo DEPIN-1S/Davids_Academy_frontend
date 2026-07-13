@@ -1,15 +1,13 @@
 import React, { useEffect, useState } from "react";
-import { FaTrash, FaEdit, FaPlus, FaSearch } from "react-icons/fa";
+import { FaTrash, FaEdit, FaPlus } from "react-icons/fa";
 import { adminFetchQBankQuestions, adminFetchMockTestQuestions, adminFetchTestQuestions, getTestQuestions, adminDeleteQBankQuestion, adminDeleteTest, adminUpdateTestThunk } from "../../features/exam/examSlice";
 import "../../styles/AdminStyles/QManagement.css";
 import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
-import { toast, ToastContainer } from 'react-toastify';
+import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import VisibilityIcon from "@mui/icons-material/Visibility";
-import { Button, TextField } from "@mui/material";
-import McqQuestionView from "../../Admin Question View/McqQuestionView";
-import { Modal, Box } from "@mui/material";
+import { Modal, Box, Button, TextField } from "@mui/material";
 import { stripHtml } from "../../utils/htmlHelper";
 
 
@@ -149,11 +147,8 @@ const QManagementPage = () => {
 
     // ✅ Fetch when page changes
     useEffect(() => {
-        console.log("Fetching Q-bank page:", qBankPage);
-        console.log(" ✅ Fetching Q bank questions :::", adminQBankQuestions);
-        console.log("Admin test question✅✅✅✅:", adminTestQuestions,);
         dispatch(adminFetchQBankQuestions({ page: qBankPage, limit }));
-    }, [dispatch, qBankPage]);
+    }, [dispatch, qBankPage, limit]);
 
     useEffect(() => {
         dispatch(adminFetchMockTestQuestions({ page: mockPage, limit }));
@@ -173,7 +168,7 @@ const QManagementPage = () => {
 
     // Tabs & Search
     const [activeTab, setActiveTab] = useState("Q-bank");
-    const [searchTerm, setSearchTerm] = useState("");
+    const [searchTerm] = useState("");
 
 
     // Handlers

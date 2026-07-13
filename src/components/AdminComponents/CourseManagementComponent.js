@@ -46,7 +46,6 @@ const CourseManagementComponent = () => {
 
     useEffect(() => {
         dispatch(fetchCourses());
-        console.log("courses in course management ::::", displayCourses);
     }, [dispatch]);
 
     // If all deletion is done (deleteLoading false), clear the pending list

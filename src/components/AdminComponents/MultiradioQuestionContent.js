@@ -1,4 +1,4 @@
-import React, { useState, useRef } from "react";
+import React, { useState } from "react";
 import {
     Box,
     Button,
@@ -14,12 +14,10 @@ import {
     Card,
     CardContent,
     Chip,
-    Alert,
     Accordion,
     AccordionSummary,
     AccordionDetails,
-    Paper,
-    Divider
+    Paper
 } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
@@ -61,7 +59,6 @@ const MultiradioQuestionContent = () => {
     ]);
     const [selectedFile, setSelectedFile] = useState(null); // ✅ Local state for UI, Context for persistence
     const [errors, setErrors] = useState({});
-    const fileInputRef = useRef(null);
 
     // ✅ Initialize with existing file from context if available
     React.useEffect(() => {

@@ -5,9 +5,6 @@ import {
   Checkbox,
   FormControlLabel,
   Button,
-  List,
-  ListItem,
-  ListItemText,
   Tabs,
   Tab,
 } from "@mui/material";
@@ -40,9 +37,9 @@ const MCQQuestionComponent = ({ question, onSubmit, submittedResult }) => {
     instructions,
   } = question || {};
   const location = useLocation();
-  const answerArray = Array.isArray(mcqAnswers)
+  const answerArray = useMemo(() => Array.isArray(mcqAnswers)
     ? mcqAnswers.map((ans) => (ans.mcqAnswer ?? "").trim())
-    : [];
+    : [], [mcqAnswers]);
   const [showNotAnsweredModal, setShowNotAnsweredModal] = useState(false);
   const [selectedOptions, setSelectedOptions] = useState([]);
   const [showAnswer, setShowAnswer] = useState(false);
@@ -119,16 +116,8 @@ const MCQQuestionComponent = ({ question, onSubmit, submittedResult }) => {
   };
 
 
-  const allOptionValues = useMemo(() => mcqoptions.map((o) => o.option), [mcqoptions]);
-  const allSelected =
-    allOptionValues.length > 0 && selectedOptions.length === allOptionValues.length;
 
-  const handleSelectAllToggle = () => {
-    if (showAnswer) return;
-    setSelectedOptions((prev) =>
-      prev.length === allOptionValues.length ? [] : allOptionValues
-    );
-  };
+
 
   const handleReveal = () => {
     // ✅ BLOCK if already submitted

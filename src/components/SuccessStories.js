@@ -5,14 +5,11 @@ import { useDispatch, useSelector } from 'react-redux';
 
 const SuccessStories = () => {
   const {
-    addSuccessStoryLoading,
-    addSuccessStoryError,
-    addSuccessStoryResult,
     successStories,
   } = useSelector((state) => state.exam);
 
   const dispatch = useDispatch();
-  const [currentIndex, setCurrentIndex] = useState(0);
+  const [, setCurrentIndex] = useState(0);
 
   // Fetch stories on mount
   useEffect(() => {
@@ -30,18 +27,6 @@ const SuccessStories = () => {
     }, 5000);
     return () => clearInterval(interval);
   }, [stories.length]);
-
-  const handleDotClick = (index) => {
-    setCurrentIndex(index);
-  };
-
-  const handlePrev = () => {
-    setCurrentIndex((prev) => (prev - 1 + stories.length) % stories.length);
-  };
-
-  const handleNext = () => {
-    setCurrentIndex((prev) => (prev + 1) % stories.length);
-  };
 
   return (
     <section id='HomeTestimonials' className="success-section">

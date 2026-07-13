@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 import '../styles/Courses.css';
-import { Link, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { fetchCourses } from '../features/courses/courseSlice';
 import { useDispatch } from 'react-redux';
 

@@ -1,4 +1,4 @@
-import React, { useState, useRef } from "react";
+import React, { useState } from "react";
 import {
     Box,
     Button,
@@ -8,12 +8,12 @@ import {
     Card,
     CardContent,
     Chip,
-    Alert,
+
     Accordion,
     AccordionSummary,
     AccordionDetails,
     Paper,
-    InputLabel,
+
     Select,
     MenuItem,
     Checkbox,
@@ -54,7 +54,7 @@ const SentenceHighlightContent = () => {
     const [errors, setErrors] = useState({});
     const [answer, setAnswer] = useState(existingData?.answer || [])
 
-    const fileInputRef = useRef(null);
+
 
 
     // here tab image is added to backend when user selects image from their local machine at that moment api call is triggered

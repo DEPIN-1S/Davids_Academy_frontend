@@ -1,27 +1,21 @@
 import React, { useEffect, useState } from 'react';
-import { createStudent } from "../../features/students/studentSlice";
 import {
-    Box, Typography, Button, TextField, Card, CardContent, useTheme, useMediaQuery, Grid, FormControl, Select, MenuItem,
+    Box, Typography, Button, TextField, Card, CardContent, Grid, FormControl, Select, MenuItem,
     InputAdornment
 } from '@mui/material';
 import {
     Save as SaveIcon,
     Cancel as CancelIcon,
-    Phone as PhoneIcon,
     Email as EmailIcon,
     Person as PersonIcon,
     School as SchoolIcon,
 } from '@mui/icons-material';
-import { useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { fetchCourses } from '../../features/courses/courseSlice';
 import { updateStudent } from '../../features/students/studentSlice';
 
 const EditStudentForm = ({ studentId, onClose }) => {
-    const theme = useTheme();
-    const navigate = useNavigate();
     const dispatch = useDispatch();
-    const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
     const { list: courses } = useSelector((state) => state.course);
     const { list: students } = useSelector((state) => state.students);
 

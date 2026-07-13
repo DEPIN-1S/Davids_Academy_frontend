@@ -11,9 +11,6 @@ import {
     TableRow,
     Tabs,
     Tab,
-    List,
-    ListItem,
-    ListItemText,
     Paper,
 } from "@mui/material";
 import { useDispatch, useSelector } from "react-redux";
@@ -21,15 +18,14 @@ import { getQuestionData } from "../features/exam/examSlice";
 import { useNavigate, useParams } from "react-router-dom";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 
-function TableHighlightQuestionView({ onSubmit }) {
+function TableHighlightQuestionView() {
     const dispatch = useDispatch();
     const { questionData, loading, error } = useSelector((state) => state.exam);
     const { questionId } = useParams();
     const navigate = useNavigate();
     const [selectedItems, setSelectedItems] = useState(new Set());
-    const [showReveal, setShowReveal] = useState(false);
-    const [isCorrect, setIsCorrect] = useState(false);
     const [activeTab, setActiveTab] = useState("");
+    const showReveal = false;
 
     useEffect(() => {
         if (questionId) dispatch(getQuestionData(questionId));
@@ -37,15 +33,11 @@ function TableHighlightQuestionView({ onSubmit }) {
 
     const data = questionData?.data || {};
     const {
-        id,
         question: questionText,
         tableHeaders = {},
         tableFields = [],
         answer = [],
-        explanation = [],
-        additionalInfo = [],
         tabsInfo = [],
-        instructions,
         marks,
         difficulty,
     } = data;
@@ -65,24 +57,6 @@ function TableHighlightQuestionView({ onSubmit }) {
                 : newSet.add(rightColumnValue);
             return newSet;
         });
-    };
-
-    const handleReveal = () => {
-        const selectedArray = Array.from(selectedItems);
-        const correctAnswers = answer || [];
-        const allCorrect =
-            selectedArray.length === correctAnswers.length &&
-            selectedArray.every((item) => correctAnswers.includes(item));
-
-        const userAnswerStr =
-            selectedArray.length > 0 ? selectedArray.join(", ") : "No items selected";
-        const mark = allCorrect ? Math.abs(marks) || 0 : 0;
-
-        if (typeof onSubmit === "function")
-            onSubmit(questionId, allCorrect, mark, userAnswerStr);
-
-        setIsCorrect(allCorrect);
-        setShowReveal(true);
     };
 
     if (loading)

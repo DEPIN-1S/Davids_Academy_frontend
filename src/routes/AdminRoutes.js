@@ -4,7 +4,6 @@ import ProtectedRoutes from "./ProtectedRoutes";
 import AdminLayout from "../components/AdminComponents/AdminLayout";
 import AdminDashboardPage from "../pages/AdminPages/AdminDashboardPage";
 import StudentManage from "../pages/AdminPages/StudentManage";
-import AddStudentForm from "../components/AdminComponents/AddStudentForm";
 import QManagementPage from "../pages/AdminPages/QManagementPage";
 import QuestionTypeComponent from "../components/AdminComponents/QuestionTypeComponent";
 import McqQuestionContent from "../components/AdminComponents/McqQuestionContent";

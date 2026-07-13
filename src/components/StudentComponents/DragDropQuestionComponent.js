@@ -16,7 +16,6 @@ import { useLocation } from "react-router-dom";
 import { submitMockTestQuestionResponseThunk } from "../../features/exam/examSlice";
 
 
-const baseUrl = process.env.BASE_URL;
 const DragDropQuestionComponent = ({ question, onSubmit, submittedResult }) => {
   const {
     id: questionId,
@@ -25,7 +24,6 @@ const DragDropQuestionComponent = ({ question, onSubmit, submittedResult }) => {
     explanation = [],
     additionalInfo = [],
     marks = 0,
-    difficulty = "",
     instructions = "",
     tabsInfo = [],
   } = question || {};
@@ -35,8 +33,6 @@ const DragDropQuestionComponent = ({ question, onSubmit, submittedResult }) => {
     branches.map(() => "")
   );
   const [showReveal, setShowReveal] = useState(false);
-  const [userAnswer, setUserAnswer] = useState("");
-  const [correctAnswer, setCorrectAnswer] = useState("");
   const [isCorrect, setIsCorrect] = useState(false);
   const [activeTab, setActiveTab] = useState(0);
   const [showNotAnsweredModal, setShowNotAnsweredModal] = useState(false);
@@ -129,9 +125,6 @@ const DragDropQuestionComponent = ({ question, onSubmit, submittedResult }) => {
           `${b.headings}: ${dropdownValues[idx] || "Not selected"}`
       )
       .join("; ");
-    const correctAns = branches
-      .map((b) => `${b.headings}: ${b.drag_drop_answer}`)
-      .join("; ");
     const correctStatus = branches.every(
       (b, idx) =>
         String(dropdownValues[idx]) === String(b.drag_drop_answer)
@@ -143,8 +136,8 @@ const DragDropQuestionComponent = ({ question, onSubmit, submittedResult }) => {
       onSubmit(questionId, correctStatus, mark, userAns);
     }
 
-    setUserAnswer(userAns);
-    setCorrectAnswer(correctAns);
+    // setUserAnswer(userAns);
+    // setCorrectAnswer(correctAns);
     setIsCorrect(correctStatus);
     setShowReveal(true);
 
@@ -303,7 +296,7 @@ const DragDropQuestionComponent = ({ question, onSubmit, submittedResult }) => {
                 // Fix Quill <p> spacing
                 '& p': { margin: 0, marginBottom: '0.5em' },
                 '& p:last-child': { marginBottom: 0 },
-                '& *': { lineHeight: 'inherit' , wordBreak: "break-word", overflowWrap: "anywhere" , wordBreak: "break-word", overflowWrap: "anywhere" },
+                 '& *': { lineHeight: 'inherit' , wordBreak: "break-word", overflowWrap: "anywhere" },
               }}
               dangerouslySetInnerHTML={{
                 __html: tabsInfo[activeTab]?.tabValue || ''

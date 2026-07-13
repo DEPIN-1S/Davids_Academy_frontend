@@ -18,7 +18,7 @@ import { fetchCourses } from "../../features/courses/courseSlice";
 const SelectCourseComponent = () => {
     const navigate = useNavigate();
     const isMobile = useMediaQuery("(max-width:600px)");
-    const { list: courses, loading: coursesLoading } = useSelector((state) => state.course);
+    const { list: courses } = useSelector((state) => state.course);
     const dispatch = useDispatch();
     const [selectedCourseType, setSelectedCourseType] = useState("");
 
