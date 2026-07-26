@@ -307,9 +307,9 @@ export const fetchQBankQuestionData = async (questionId) => {
 };
 
 // ✅ Fetch Question Bank Test Questions in admin side
-export const adminGetQBankQuestions = async (page = 1, limit = 10) => {
+export const adminGetQBankQuestions = async (page = 1, limit = 10, search = "") => {
   try {
-    const url = `${baseUrl}/exam/list/questions/${page}?exam_type=q-bank&limit=${limit}`;
+    const url = `${baseUrl}/exam/list/questions/${page}?exam_type=q-bank&limit=${limit}&search=${encodeURIComponent(search)}`;
     console.log("Fetching URL:", url);
     const token = sessionStorage.getItem("accessToken");
     const response = await fetch(url, {
@@ -334,9 +334,9 @@ export const adminGetQBankQuestions = async (page = 1, limit = 10) => {
 };
 
 // ✅ Fetch Mock Test Questions in admin side
-export const adminGetMockTestQuestions = async (page = 1, limit = 10) => {
+export const adminGetMockTestQuestions = async (page = 1, limit = 10, search = "") => {
   try {
-    const url = `${baseUrl}/exam/list/questions/${page}?exam_type=mock test&limit=${limit}`;
+    const url = `${baseUrl}/exam/list/questions/${page}?exam_type=mock test&limit=${limit}&search=${encodeURIComponent(search)}`;
     const token = sessionStorage.getItem("accessToken");
     const response = await fetch(url, {
       method: "GET",

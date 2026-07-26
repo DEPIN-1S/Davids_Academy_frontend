@@ -133,6 +133,8 @@
 
 .search-box {
   position: relative;
+  display: flex;
+  align-items: center;
   flex: 1;
 }
 
@@ -142,15 +144,18 @@
   top: 50%;
   transform: translateY(-50%);
   color: var(--gray-500);
-  font-size: 0.875rem;
+  font-size: 1rem;
+  pointer-events: none;
+  z-index: 2;
 }
 
 .search-input {
   width: 100%;
-  padding: 0.75rem 0.875rem 0.75rem 2.5rem;
+  padding: 0.75rem 0.875rem 0.75rem 2.5rem !important;
   border: 1px solid var(--gray-300);
   border-radius: var(--border-radius);
   font-size: 0.875rem;
+  box-sizing: border-box;
 }
 
 .search-input:focus {

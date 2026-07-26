@@ -18,8 +18,8 @@ import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
 import { CloudUpload, Delete, DragIndicator, ExpandMore } from '@mui/icons-material';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { useDispatch } from "react-redux";
-import { deleteTabImage, uploadTabImage } from "../../features/exam/examSlice";
+import { useDispatch, useSelector } from "react-redux";
+import { deleteTabImage, uploadTabImage, getQuestionData } from "../../features/exam/examSlice";
 import ReactQuill from 'react-quill-new'; // <-- CHANGE THIS
 import 'react-quill-new/dist/quill.snow.css';
 
@@ -42,7 +42,35 @@ const SortQuestionContent = () => {
     ]);
     const [selectedFile] = useState(existingData.exhibit || null);
     const [errors, setErrors] = useState({});
-    const dispatch = useDispatch()
+    const dispatch = useDispatch();
+    const { questionData: fetchedQuestionData } = useSelector((state) => state.exam);
+    const editQuestionId = location.state?.questionId || existingData.id;
+
+    // ✅ Fetch full question details when editing
+    React.useEffect(() => {
+        if (editQuestionId) {
+            dispatch(getQuestionData(editQuestionId));
+        }
+    }, [dispatch, editQuestionId]);
+
+    // ✅ Populate form state when fetchedQuestionData arrives
+    React.useEffect(() => {
+        if (editQuestionId && fetchedQuestionData?.data) {
+            const q = fetchedQuestionData.data;
+            if (q.question) setQuestion(q.question);
+            if (q.instructions) setInstruction(q.instructions);
+            const items = q.sortingoptions || q.sortItems;
+            if (items && items.length > 0) {
+                setSortItems(items.map((s, i) => ({
+                    sortItem: typeof s === "string" ? s : (s.sortingoption || s.sortItem || s.option || ""),
+                    itemOrder: s.correct_order || s.itemOrder || i + 1
+                })));
+            }
+            if (q.tabsInfo && q.tabsInfo.length > 0) {
+                setTabs(q.tabsInfo.map((t) => ({ tabKey: t.tabKey || "", tabValue: t.tabValue || "" })));
+            }
+        }
+    }, [editQuestionId, fetchedQuestionData]);
 
 
     // Add this definition near your other constants/modules
@@ -297,10 +325,9 @@ const SortQuestionContent = () => {
 
 
     const isFormValid = () => {
+        if (location.state?.isEdit && question && question.trim()) return true;
         const hasValidQuestion = question.trim() !== "";
-
-        const hasValidSortItems = sortItems.filter(item => item.sortItem.trim()).length >= 2;
-        return hasValidQuestion && hasValidSortItems;
+        return hasValidQuestion;
     };
 
 
@@ -320,13 +347,35 @@ const SortQuestionContent = () => {
                 Test type &gt; Question Type &gt; <strong>Question Content</strong>
             </Typography>
 
-            {/* Title */}
-            <Typography variant="h5" mt={2} mb={1}>
-                Enter Sorting Question Content
-            </Typography>
-            <Typography variant="body2" color="textSecondary" mb={3}>
-                Create a sorting question where students need to arrange items in the correct order.
-            </Typography>
+            {/* Title + Back Button Header */}
+            <Box display="flex" justifyContent="space-between" alignItems="center" mt={2} mb={3}>
+                <Box>
+                    <Typography variant="h5" mb={0.5}>
+                        {location.state?.isEdit ? "Edit Sorting Question" : "Enter Sorting Question Content"}
+                    </Typography>
+                    <Typography variant="body2" color="textSecondary">
+                        Create or edit a sorting question where students arrange items in the correct order.
+                    </Typography>
+                </Box>
+                <Button
+                    variant="outlined"
+                    startIcon={<ArrowBackIcon />}
+                    onClick={() => navigate("/admin/question-management")}
+                    sx={{
+                        borderRadius: "8px",
+                        textTransform: "none",
+                        fontWeight: 600,
+                        color: "#1976d2",
+                        borderColor: "#1976d2",
+                        "&:hover": {
+                            borderColor: "#115293",
+                            backgroundColor: "#e3f2fd",
+                        },
+                    }}
+                >
+                    Back to Question Management
+                </Button>
+            </Box>
 
             {/* Question Input */}
             <Box sx={{ minHeight: '170px', mb: 3 }}>

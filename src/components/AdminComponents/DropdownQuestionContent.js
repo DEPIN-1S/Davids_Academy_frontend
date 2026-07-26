@@ -24,8 +24,8 @@ import {
 } from "@mui/icons-material";
 import { useNavigate, useLocation } from "react-router-dom";
 import { useFileContext } from "../../context/FileContext"; // ✅ Import the Context
-import { useDispatch } from "react-redux";
-import { deleteTabImage, uploadTabImage } from "../../features/exam/examSlice";
+import { useDispatch, useSelector } from "react-redux";
+import { deleteTabImage, uploadTabImage, getQuestionData } from "../../features/exam/examSlice";
 import ReactQuill from 'react-quill-new'; // <-- CHANGE THIS
 import 'react-quill-new/dist/quill.snow.css';
 
@@ -64,6 +64,52 @@ const DropdownQuestionContent = () => {
   );
   const [selectedFile, setSelectedFile] = useState(null); // ✅ Local state for UI, Context for persistence
   const [errors, setErrors] = useState({});
+
+  const { questionData: fetchedQuestionData } = useSelector((state) => state.exam);
+  const editQuestionId = location.state?.questionId || existingData.id;
+
+  // ✅ Fetch full question data from backend when editing
+  React.useEffect(() => {
+    if (editQuestionId) {
+      dispatch(getQuestionData(editQuestionId));
+    }
+  }, [dispatch, editQuestionId]);
+
+  // ✅ Populate full form data (question, instructions, tabs, dropdowns)
+  React.useEffect(() => {
+    if (editQuestionId && fetchedQuestionData?.data) {
+      const q = fetchedQuestionData.data;
+      if (q.question) setQuestion(q.question);
+      if (q.instructions) setInstruction(q.instructions);
+      if (q.tabsInfo && q.tabsInfo.length > 0) {
+        setTabs(
+          q.tabsInfo.map((t) => ({
+            tabKey: t.tabKey || "",
+            tabValue: t.tabValue || "",
+            tabImage: t.tabImage || "",
+          }))
+        );
+      }
+      if (q.dropdowns && q.dropdowns.length > 0) {
+        setDropdowns(
+          q.dropdowns.map((d) => {
+            const rawBlank = d.blank_or_not ?? d.blankOrNot;
+            const isBlank = rawBlank === true || rawBlank === 1 || rawBlank === "1" || rawBlank === "true" || String(rawBlank).toLowerCase() === "true";
+            const options = Array.isArray(d.dropdownoption)
+              ? d.dropdownoption.map((o) => typeof o === "string" ? o : (o.dropdownValue || o.option_value || o.option || o.dropdownoption || ""))
+              : [""];
+            return {
+              id: d.id,
+              dropdownField: d.dropdownfield || d.dropdownField || d.dropdowntext || "",
+              dropdownanswer: d.dropdownanswer || d.dropdownAnswer || "",
+              blank_or_not: isBlank,
+              dropDowneOption: options.length > 0 ? options : [""],
+            };
+          })
+        );
+      }
+    }
+  }, [editQuestionId, fetchedQuestionData]);
 
   // ✅ Initialize with existing file from context if available
   React.useEffect(() => {
@@ -337,28 +383,10 @@ const DropdownQuestionContent = () => {
     });
   };
 
-  const handleBack = () => {
-    // ✅ Prepare current data for potential restoration (all serializable)
-    const currentData = {
-      question: question.trim(),
-      tabs: tabs,
-      dropdowns: dropdowns,
-      // ✅ No file objects in navigation state
-    };
 
-    navigate("/admin/question-type", {
-      state: {
-        questionData: currentData,
-        fromStep: "content",
-        cs_id: cs_id,
-        topic_id: topic_id,
-        exam_type: exam_type,
-        question_type_id: question_type_id,
-      },
-    });
-  };
 
   const isFormValid = () => {
+    if (location.state?.isEdit && question && question.trim()) return true;
     const hasValidQuestion = question.trim() !== "";
    
     const hasValidDropdowns = dropdowns.some(
@@ -396,13 +424,35 @@ const DropdownQuestionContent = () => {
         Test type &gt; Question Type &gt; <strong>Question Content</strong>
       </Typography>
 
-      {/* Title */}
-      <Typography variant="h5" mt={2} mb={1}>
-        Enter Dropdown Question Content
-      </Typography>
-      <Typography variant="body2" color="textSecondary" mb={3}>
-        Create a dropdown question with multiple tabs and dropdown selections.
-      </Typography>
+      {/* Title + Back Button Header */}
+      <Box display="flex" justifyContent="space-between" alignItems="center" mt={2} mb={3}>
+        <Box>
+          <Typography variant="h5" mb={0.5}>
+            {location.state?.isEdit ? "Edit Dropdown Question" : "Enter Dropdown Question Content"}
+          </Typography>
+          <Typography variant="body2" color="textSecondary">
+            Create or edit a dropdown question with multiple tabs and dropdown selections.
+          </Typography>
+        </Box>
+        <Button
+          variant="outlined"
+          startIcon={<ArrowBackIcon />}
+          onClick={() => navigate("/admin/question-management")}
+          sx={{
+            borderRadius: "8px",
+            textTransform: "none",
+            fontWeight: 600,
+            color: "#1976d2",
+            borderColor: "#1976d2",
+            "&:hover": {
+              borderColor: "#115293",
+              backgroundColor: "#e3f2fd",
+            },
+          }}
+        >
+          Back to Question Management
+        </Button>
+      </Box>
 
       {/* ✅ Context Status Display */}
       <Card
@@ -842,9 +892,9 @@ const DropdownQuestionContent = () => {
         <Button
           variant="outlined"
           startIcon={<ArrowBackIcon />}
-          onClick={handleBack}
+          onClick={() => navigate("/admin/question-management")}
         >
-          Back
+          Back to Question Management
         </Button>
         <Button
           variant="contained"

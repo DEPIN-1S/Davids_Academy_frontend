@@ -126,7 +126,22 @@ const QuestionBank = () => {
       </Box>
 
 
-      <Dialog open={showCreateTest} onClose={() => setShowCreateTest(false)} maxWidth="md" fullWidth>
+      <Dialog
+        open={showCreateTest}
+        onClose={() => setShowCreateTest(false)}
+        maxWidth="sm"
+        fullWidth
+        PaperProps={{
+          sx: {
+            borderRadius: '20px',
+            boxShadow: '0 24px 60px rgba(0,0,0,0.15), 0 8px 24px rgba(26,115,232,0.1)',
+            overflow: 'hidden',
+            maxWidth: '640px',
+            width: '100%',
+            m: { xs: 1.5, sm: 2 },
+          }
+        }}
+      >
         <DialogContent sx={{ p: 0 }}>
           <CreateTestComponent handleClose={() => setShowCreateTest(false)} />
         </DialogContent>

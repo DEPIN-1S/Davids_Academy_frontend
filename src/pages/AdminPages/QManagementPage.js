@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { FaTrash, FaEdit, FaPlus } from "react-icons/fa";
+import { FaTrash, FaEdit, FaPlus, FaSearch } from "react-icons/fa";
 import { adminFetchQBankQuestions, adminFetchMockTestQuestions, adminFetchTestQuestions, getTestQuestions, adminDeleteQBankQuestion, adminDeleteTest, adminUpdateTestThunk } from "../../features/exam/examSlice";
 import "../../styles/AdminStyles/QManagement.css";
 import { useNavigate } from "react-router-dom";
@@ -102,6 +102,59 @@ const QManagementPage = () => {
         }
     };
 
+    const handleEditQuestion = (questionData) => {
+        console.log("Edit question Data:", questionData);
+        const { questionType, id, courseId, topic_id, exam_type, question_type_id } = questionData;
+        const navState = {
+            questionId: id,
+            isEdit: true,
+            questionData,
+            cs_id: courseId,
+            topic_id,
+            exam_type: exam_type || "q-bank",
+            question_type_id,
+            questionType
+        };
+
+        switch (questionType) {
+            case 'MCQ':
+                navigate(`/admin/mcq-content`, { state: navState });
+                break;
+            case 'Dropdown':
+                navigate(`/admin/dropdown-content`, { state: navState });
+                break;
+            case 'Drag Drop':
+                navigate(`/admin/dragdrop-content`, { state: navState });
+                break;
+            case 'Multiple Radio':
+                navigate(`/admin/multiradio-content`, { state: navState });
+                break;
+            case 'Fill in the Blanks':
+                navigate(`/admin/fill-content`, { state: navState });
+                break;
+            case 'Sentence Highlight':
+                navigate(`/admin/sentence-content`, { state: navState });
+                break;
+            case 'Sorting':
+                navigate(`/admin/sort-content`, { state: navState });
+                break;
+            case 'Table Dropdown':
+                navigate(`/admin/table-dropDown`, { state: navState });
+                break;
+            case 'Table Highlight':
+                navigate(`/admin/table-Highlight`, { state: navState });
+                break;
+            case 'Multidropdown':
+            case 'Multi-Dropdown':
+            case 'Multi Dropdown':
+                navigate(`/admin/multiDropDown`, { state: navState });
+                break;
+            default:
+                handleViewQuestion(questionData);
+                break;
+        }
+    };
+
     const handleEdit = (test) => {
         console.log("test:::::::i2345678",test);
         
@@ -145,14 +198,25 @@ const QManagementPage = () => {
 
 
 
-    // ✅ Fetch when page changes
+    // Tabs & Search
+    const [activeTab, setActiveTab] = useState("Q-bank");
+    const [searchTerm, setSearchTerm] = useState("");
+
+    // Reset pagination to page 1 when searching
     useEffect(() => {
-        dispatch(adminFetchQBankQuestions({ page: qBankPage, limit }));
-    }, [dispatch, qBankPage, limit]);
+        if (qBankPage !== 1) setQBankPage(1);
+        if (mockPage !== 1) setMockPage(1);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [searchTerm]);
+
+    // ✅ Fetch when page or search changes
+    useEffect(() => {
+        dispatch(adminFetchQBankQuestions({ page: qBankPage, limit, search: searchTerm }));
+    }, [dispatch, qBankPage, limit, searchTerm]);
 
     useEffect(() => {
-        dispatch(adminFetchMockTestQuestions({ page: mockPage, limit }));
-    }, [dispatch, mockPage]);
+        dispatch(adminFetchMockTestQuestions({ page: mockPage, limit, search: searchTerm }));
+    }, [dispatch, mockPage, limit, searchTerm]);
 
     useEffect(() => {
         console.log("✅ Fetching Test questions :::", testPage);
@@ -166,9 +230,7 @@ const QManagementPage = () => {
         dispatch(getTestQuestions());
     }, [dispatch]);
 
-    // Tabs & Search
-    const [activeTab, setActiveTab] = useState("Q-bank");
-    const [searchTerm] = useState("");
+
 
 
     // Handlers
@@ -220,20 +282,20 @@ const QManagementPage = () => {
                 ? adminMockTestQuestions
                 : adminTestQuestions;
 
-    // Filter (skip filtering for Test if unnecessary)
-    const filteredQuestions = questions.filter(
-        (q) =>
-            (q.questionId?.toLowerCase() || "").includes(
-                searchTerm.toLowerCase()
-            ) ||
-            (stripHtml(q.question)?.toLowerCase() || "").includes(
-                searchTerm.toLowerCase()
-            ) ||
-             (stripHtml(q.questionPreview)?.toLowerCase() || "").includes(
-                searchTerm.toLowerCase()
-            ) ||
-            (q.subject?.toLowerCase() || "").includes(searchTerm.toLowerCase())
-    );
+    // Filter
+    const filteredQuestions = questions.filter((q) => {
+        if (!searchTerm.trim()) return true;
+        const term = searchTerm.toLowerCase().trim();
+        return (
+            String(q.id || "").includes(term) ||
+            (q.cs_name?.toLowerCase() || "").includes(term) ||
+            (q.topic_name?.toLowerCase() || "").includes(term) ||
+            (stripHtml(q.question)?.toLowerCase() || "").includes(term) ||
+            (q.questionType?.toLowerCase() || "").includes(term) ||
+            (q.difficulty?.toLowerCase() || "").includes(term) ||
+            (q.testTitle?.toLowerCase() || "").includes(term)
+        );
+    });
 
     // Pagination Handlers
     const handlePrev = () => {
@@ -301,6 +363,18 @@ const QManagementPage = () => {
 
                     {/* Search + Add */}
                     <div className="action-bar">
+                        <div className="search-filter-section">
+                            <div className="search-box">
+                                <FaSearch className="search-icon" />
+                                <input
+                                    type="text"
+                                    className="search-input"
+                                    placeholder="Search by Q-ID, Course, Topic, Question text..."
+                                    value={searchTerm}
+                                    onChange={(e) => setSearchTerm(e.target.value)}
+                                />
+                            </div>
+                        </div>
 
                         {activeTab === "Test" && (
                             <button className="add-btn primary" onClick={handleAddTestClick}>
@@ -407,12 +481,22 @@ const QManagementPage = () => {
                                             <td>{q.questionType}</td>
                                             <td>{q.difficulty}</td>
                                             <td>
-                                                <button
-                                                    className="btn-icon-action btn-delete"
-                                                    onClick={() => handleDelete(q.id)}
-                                                >
-                                                    <FaTrash />
-                                                </button>
+                                                <div className="question-management-action-btn">
+                                                    <button
+                                                        className="btn-icon-action btn-edit"
+                                                        title="Edit Question"
+                                                        onClick={() => handleEditQuestion(q)}
+                                                    >
+                                                        <FaEdit />
+                                                    </button>
+                                                    <button
+                                                        className="btn-icon-action btn-delete"
+                                                        title="Delete Question"
+                                                        onClick={() => handleDelete(q.id)}
+                                                    >
+                                                        <FaTrash />
+                                                    </button>
+                                                </div>
                                             </td>
                                             <td>
                                                 <Button

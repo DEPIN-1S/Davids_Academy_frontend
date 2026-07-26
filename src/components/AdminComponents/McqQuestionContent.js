@@ -23,8 +23,8 @@ import { CloudUpload, Delete, Image, PictureAsPdf, Description, ExpandMore } fro
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useFileContext } from '../../context/FileContext'; // ✅ Import the Context
 
-import { useDispatch } from "react-redux";
-import { deleteTabImage, uploadTabImage } from "../../features/exam/examSlice";
+import { useDispatch, useSelector } from "react-redux";
+import { deleteTabImage, uploadTabImage, getQuestionData } from "../../features/exam/examSlice";
 import ReactQuill from 'react-quill-new';
 import 'react-quill-new/dist/quill.snow.css';
 
@@ -44,14 +44,24 @@ const McqQuestionContent = () => {
         question_type_id,
         questionType: questionTypeName,
     } = state;
-    const [instruction, setInstruction] = useState(existingQuestionData?.instruction || "")
+    const editQuestionId = state.questionId || existingQuestionData.id;
+    const { questionData: fetchedQuestionData } = useSelector((state) => state.exam);
+
     React.useEffect(() => {
-        if (!exam_type || !question_type_id || !questionTypeName || !cs_id) {
+        if (!state?.isEdit && !editQuestionId && (!exam_type || !question_type_id || !questionTypeName || !cs_id)) {
             navigate("/admin/question-type");
         }
-    }, [exam_type, question_type_id, questionTypeName, cs_id, navigate]);
+    }, [state?.isEdit, editQuestionId, exam_type, question_type_id, questionTypeName, cs_id, navigate]);
+
+    // ✅ Fetch full MCQ question details when editing
+    React.useEffect(() => {
+        if (editQuestionId) {
+            dispatch(getQuestionData(editQuestionId));
+        }
+    }, [dispatch, editQuestionId]);
 
     // Form state - initialize with existing data if available
+    const [instruction, setInstruction] = useState(existingQuestionData?.instruction || "");
     const [question, setQuestion] = useState(existingQuestionData?.question || "");
     const [options, setOptions] = useState(existingQuestionData?.options || ["", ""]);
     const [correctAnswer, setCorrectAnswer] = useState(
@@ -59,6 +69,36 @@ const McqQuestionContent = () => {
             ? existingQuestionData.correctAnswer
             : []
     );
+
+    // ✅ Populate form state when fetchedQuestionData arrives
+    React.useEffect(() => {
+        if (editQuestionId && fetchedQuestionData?.data) {
+            const q = fetchedQuestionData.data;
+            if (q.question) setQuestion(q.question);
+            if (q.instructions) setInstruction(q.instructions);
+            if (q.tabsInfo && q.tabsInfo.length > 0) {
+                setTabs(q.tabsInfo.map((t) => ({
+                    tabKey: t.tabKey || "",
+                    tabValue: t.tabValue || "",
+                    tabImage: t.tabImage || "",
+                })));
+            }
+            if (q.mcqoptions && q.mcqoptions.length > 0) {
+                const optStrings = q.mcqoptions.map(o => typeof o === "string" ? o : (o.option || o.option_value || ""));
+                setOptions(optStrings);
+
+                if (q.mcqAnswers && q.mcqAnswers.length > 0) {
+                    const ansStrings = q.mcqAnswers.map(a => typeof a === "string" ? a : (a.mcqAnswer || a.answer || ""));
+                    setCorrectAnswer(ansStrings);
+                } else {
+                    const correctAnswers = q.mcqoptions
+                        .filter(o => o.is_correct === 1 || o.is_correct === true)
+                        .map(o => o.option || o.option_value || "");
+                    if (correctAnswers.length > 0) setCorrectAnswer(correctAnswers);
+                }
+            }
+        }
+    }, [editQuestionId, fetchedQuestionData]);
 
     const [selectedFile, setSelectedFile] = useState(null);
     const [errors, setErrors] = useState({});
@@ -156,7 +196,7 @@ const McqQuestionContent = () => {
         } else if (question.trim().length < 10) {
             newErrors.question = 'Question must be at least 10 characters long';
         }
-        const validOptions = options.filter(opt => opt.trim() !== "");
+        const validOptions = options.filter(opt => typeof opt === 'string' && opt.trim() !== "");
         if (validOptions.length < 2) {
             newErrors.options = 'At least 2 options are required';
         }
@@ -297,7 +337,7 @@ const McqQuestionContent = () => {
             topic_id,
             tabs: tabs.filter((tab) => tab.tabKey.trim() && tab.tabValue.trim()),
             question: question.trim(),
-            options: options.filter(opt => opt.trim() !== "").map(opt => opt.trim()),
+            options: options.filter(opt => typeof opt === 'string' && opt.trim() !== "").map(opt => opt.trim()),
             correctAnswer: correctAnswer,
             instruction: instruction.trim(),
             createdAt: existingQuestionData?.createdAt || new Date().toISOString(),
@@ -355,15 +395,11 @@ const McqQuestionContent = () => {
 
     // ✅ FIXED: updated to work with array
     const isFormValid = () => {
-        const validOptions = options.filter(opt => opt.trim() !== "");
-        
+        if (location.state?.isEdit && question && question.trim()) return true;
+        const validOptions = options.filter(opt => typeof opt === 'string' && opt.trim() !== "");
         return (
             question.trim() !== "" &&
-            question.trim().length >= 10 &&
-            validOptions.length >= 2 &&
-            correctAnswer.length > 0 &&
-            correctAnswer.every(ans => validOptions.includes(ans))
-
+            validOptions.length >= 2
         );
     };
 
@@ -383,13 +419,35 @@ const McqQuestionContent = () => {
                 Test type &gt; Exam Type ({exam_type}) &gt; Question Type ({questionTypeName}) &gt; <strong>Question Content</strong>
             </Typography>
 
-            {/* Title */}
-            <Typography variant="h5" mt={2} mb={1}>
-                Enter {questionTypeName} Question Content
-            </Typography>
-            <Typography variant="body2" color="textSecondary" mb={3}>
-                Write the question your students will answer — be clear, concise, and clinically relevant.
-            </Typography>
+            {/* Title + Back Button Header */}
+            <Box display="flex" justifyContent="space-between" alignItems="center" mt={2} mb={3}>
+                <Box>
+                    <Typography variant="h5" mb={0.5}>
+                        {state?.isEdit ? "Edit MCQ Question" : `Enter ${questionTypeName || "MCQ"} Question Content`}
+                    </Typography>
+                    <Typography variant="body2" color="textSecondary">
+                        Write or edit the question your students will answer — be clear, concise, and clinically relevant.
+                    </Typography>
+                </Box>
+                <Button
+                    variant="outlined"
+                    startIcon={<ArrowBackIcon />}
+                    onClick={() => navigate("/admin/question-management")}
+                    sx={{
+                        borderRadius: "8px",
+                        textTransform: "none",
+                        fontWeight: 600,
+                        color: "#1976d2",
+                        borderColor: "#1976d2",
+                        "&:hover": {
+                            borderColor: "#115293",
+                            backgroundColor: "#e3f2fd",
+                        },
+                    }}
+                >
+                    Back to Question Management
+                </Button>
+            </Box>
 
             {/* ✅ Display selected types with Context status */}
             <Card sx={{ mb: 3, bgcolor: "#f0f0f0" }}>
@@ -720,7 +778,7 @@ const McqQuestionContent = () => {
             {options.map((opt, index) => (
                 <Box key={index} display="flex" alignItems="center" gap={1} mb={1}>
                     <Radio
-                        checked={correctAnswer === opt && opt.trim() !== ""}
+                        checked={correctAnswer === opt && typeof opt === 'string' && opt.trim() !== ""}
                         disabled
                         size="small"
                         color="success"
@@ -771,13 +829,13 @@ const McqQuestionContent = () => {
                     Select Correct Answer(s) *
                 </Typography>
 
-                {options.filter(opt => opt.trim() !== "").length === 0 ? (
+                {options.filter(opt => typeof opt === 'string' && opt.trim() !== "").length === 0 ? (
                     <Typography variant="body2" color="textSecondary" sx={{ ml: 1 }}>
                         ➡️ Please add answer options to select correct answers
                     </Typography>
                 ) : (
                     options
-                        .filter(opt => opt.trim() !== "")
+                        .filter(opt => typeof opt === 'string' && opt.trim() !== "")
                         .map((opt, idx) => (
                             <Box key={idx} display="flex" alignItems="center" mb={1}>
                                 <Checkbox
@@ -818,7 +876,7 @@ const McqQuestionContent = () => {
                         • Question: {question ? '✓ Complete' : '✗ Required'}
                     </Typography>
                     <Typography variant="body2" color="textSecondary">
-                        • Options: {options.filter(opt => opt.trim() !== "").length} provided (min. 2)
+                        • Options: {options.filter(opt => typeof opt === 'string' && opt.trim() !== "").length} provided (min. 2)
                     </Typography>
                     <Typography variant="body2" color="textSecondary">
                         • Correct Answer: {correctAnswer ? '✓ Selected' : '✗ Required'}

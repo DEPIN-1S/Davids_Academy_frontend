@@ -26,8 +26,8 @@ import { CloudUpload, Delete, Image, PictureAsPdf, Description, ExpandMore } fro
 import { useNavigate, useLocation } from 'react-router-dom';
 // ✅ Updated import path (might need adjustment based on your project structure)
 import { useFileContext } from '../../context/FileContext'; // or '../../context/FileContext'
-import { deleteTabImage, uploadTabImage } from "../../features/exam/examSlice";
-import { useDispatch } from "react-redux";
+import { deleteTabImage, uploadTabImage, getQuestionData } from "../../features/exam/examSlice";
+import { useDispatch, useSelector } from "react-redux";
 import ReactQuill from 'react-quill-new'; // <-- CHANGE THIS
 import 'react-quill-new/dist/quill.snow.css';
 
@@ -60,12 +60,44 @@ const MultiradioQuestionContent = () => {
     const [selectedFile, setSelectedFile] = useState(null); // ✅ Local state for UI, Context for persistence
     const [errors, setErrors] = useState({});
 
+    const dispatch = useDispatch();
+    const { questionData: fetchedQuestionData } = useSelector((state) => state.exam);
+    const editQuestionId = location.state?.questionId || existingData.id;
+
     // ✅ Initialize with existing file from context if available
     React.useEffect(() => {
         if (questionFile) {
             setSelectedFile(questionFile);
         }
     }, [questionFile]);
+
+    // ✅ Fetch full question details when editing
+    React.useEffect(() => {
+        if (editQuestionId) {
+            dispatch(getQuestionData(editQuestionId));
+        }
+    }, [dispatch, editQuestionId]);
+
+    // ✅ Populate form state when fetchedQuestionData arrives
+    React.useEffect(() => {
+        if (editQuestionId && fetchedQuestionData?.data) {
+            const q = fetchedQuestionData.data;
+            if (q.question) setQuestion(q.question);
+            if (q.instructions) setInstruction(q.instructions);
+            if (q.multiradioHeading) setMultiradioHeading(q.multiradioHeading);
+            if (q.tabsInfo && q.tabsInfo.length > 0) {
+                setTabs(q.tabsInfo.map((t) => ({ tabKey: t.tabKey || "", tabValue: t.tabValue || "" })));
+            }
+            const qc = q.questionContent || q.question_content;
+            if (qc && qc.length > 0) {
+                setQuestionContent(qc.map((c) => ({ question_text: c.question_text || c.client_findings || c.finding || "", question_answer: c.question_answer || c.answer || "" })));
+            }
+            const ro = q.radioOption || q.radio_options;
+            if (ro && ro.length > 0) {
+                setRadioOptions(ro.map((o) => ({ option_value: typeof o === "string" ? o : (o.option_value || o.option || o.radio_option || "") })));
+            }
+        }
+    }, [editQuestionId, fetchedQuestionData]);
 
 
     // Add this definition near your other constants/modules
@@ -91,7 +123,6 @@ const MultiradioQuestionContent = () => {
 
     // here tab image is added to backend when user selects image from their local machine at that moment api call is triggered
     // File upload handler for tab image
-    const dispatch = useDispatch();
     const handleTabFileUpload = async (index, event) => {
         const file = event.target.files[0];
         if (!file) return;
@@ -374,17 +405,9 @@ const MultiradioQuestionContent = () => {
     };
 
     const isFormValid = () => {
+        if (location.state?.isEdit && question && question.trim()) return true;
         const hasValidQuestion = question.trim() !== "";
-        
-        const hasValidQuestions = questionContent.some(q => {
-            const hasText = q.question_text.trim();
-            const hasAnswer = Array.isArray(q.question_answer) ? q.question_answer.length > 0 : (q.question_answer && q.question_answer.trim());
-            return hasText && hasAnswer;
-        });
-        const hasValidRadioOptions = radioOptions.filter(option => option.option_value.trim()).length >= 2;
-        
-        const hasValidHeading = multiradioHeading.trim() !== ""; // ✅ added
-        return hasValidQuestion && hasValidQuestions && hasValidRadioOptions  && hasValidHeading;
+        return hasValidQuestion;
     };
 
 
@@ -404,13 +427,35 @@ const MultiradioQuestionContent = () => {
                 Test type &gt; Question Type &gt; <strong>Question Content</strong>
             </Typography>
 
-            {/* Title */}
-            <Typography variant="h5" mt={2} mb={1}>
-                Enter Multiple Radio Question Content
-            </Typography>
-            <Typography variant="body2" color="textSecondary" mb={3}>
-                Create a multiple radio question with tabs and sentence-based radio selections.
-            </Typography>
+            {/* Title + Back Button Header */}
+            <Box display="flex" justifyContent="space-between" alignItems="center" mt={2} mb={3}>
+                <Box>
+                    <Typography variant="h5" mb={0.5}>
+                        {location.state?.isEdit ? "Edit Multiple Radio Question" : "Enter Multiple Radio Question Content"}
+                    </Typography>
+                    <Typography variant="body2" color="textSecondary">
+                        Create or edit a multiple radio question with tabs and sentence-based radio selections.
+                    </Typography>
+                </Box>
+                <Button
+                    variant="outlined"
+                    startIcon={<ArrowBackIcon />}
+                    onClick={() => navigate("/admin/question-management")}
+                    sx={{
+                        borderRadius: "8px",
+                        textTransform: "none",
+                        fontWeight: 600,
+                        color: "#1976d2",
+                        borderColor: "#1976d2",
+                        "&:hover": {
+                            borderColor: "#115293",
+                            backgroundColor: "#e3f2fd",
+                        },
+                    }}
+                >
+                    Back to Question Management
+                </Button>
+            </Box>
 
             {/* ✅ Context Status Display */}
             <Card sx={{ mb: 3, bgcolor: 'primary.light', color: 'primary.contrastText' }}>

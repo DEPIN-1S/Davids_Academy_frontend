@@ -21,8 +21,8 @@ import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
 import { CloudUpload, Delete, Image, PictureAsPdf, Description, ExpandMore, DragIndicator } from '@mui/icons-material';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useFileContext } from '../../context/FileContext'; // ✅ Import the Context
-import { deleteTabImage, uploadTabImage } from "../../features/exam/examSlice";
-import { useDispatch } from "react-redux";
+import { deleteTabImage, uploadTabImage, getQuestionData } from "../../features/exam/examSlice";
+import { useDispatch, useSelector } from "react-redux";
 import ReactQuill from 'react-quill-new'; // <-- CHANGE THIS
 import 'react-quill-new/dist/quill.snow.css';
 
@@ -55,6 +55,48 @@ const DragdropQuestionContent = () => {
             option_value: [""],
         }))
     );
+
+    const dispatch = useDispatch();
+    const { questionData: fetchedQuestionData } = useSelector((state) => state.exam);
+    const editQuestionId = location.state?.questionId || existingData.id;
+
+    // ✅ Fetch full Drag & Drop question details when editing
+    React.useEffect(() => {
+        if (editQuestionId) {
+            dispatch(getQuestionData(editQuestionId));
+        }
+    }, [dispatch, editQuestionId]);
+
+    // ✅ Populate form state when fetchedQuestionData arrives
+    React.useEffect(() => {
+        if (editQuestionId && fetchedQuestionData?.data) {
+            const q = fetchedQuestionData.data;
+            if (q.question) setQuestion(q.question);
+            if (q.instructions) setInstruction(q.instructions);
+            if (q.drag_drop_content) setDragDropContent(q.drag_drop_content);
+            if (q.tabsInfo && q.tabsInfo.length > 0) {
+                setTabs(
+                    q.tabsInfo.map((t) => ({
+                        tabKey: t.tabKey || "",
+                        tabValue: t.tabValue || "",
+                        tabImage: t.tabImage || "",
+                    }))
+                );
+            }
+            if (q.branches && q.branches.length > 0) {
+                setDragAndDrop(
+                    q.branches.map((b) => ({
+                        id: b.id,
+                        option_heading: b.heading || b.option_heading || "",
+                        question_answer: b.answer || b.question_answer || "",
+                        option_value: Array.isArray(b.dragdropoption)
+                            ? b.dragdropoption.map((o) => typeof o === "string" ? o : (o.option_value || o.option || o.value || ""))
+                            : [""],
+                    }))
+                );
+            }
+        }
+    }, [editQuestionId, fetchedQuestionData]);
 
     const [selectedFile, setSelectedFile] = useState(null); // ✅ Local state for UI, Context for persistence
     const [errors, setErrors] = useState({});
@@ -92,7 +134,6 @@ const DragdropQuestionContent = () => {
 
     // here tab image is added to backend when user selects image from their local machine at that moment api call is triggered
     // File upload handler for tab image
-    const dispatch = useDispatch();
     const handleTabFileUpload = async (index, event) => {
         const file = event.target.files[0];
         if (!file) return;
@@ -354,18 +395,9 @@ const DragdropQuestionContent = () => {
     };
 
     const isFormValid = () => {
+        if (location.state?.isEdit && question && question.trim()) return true;
         const hasValidQuestion = question.trim() !== "";
-        const hasValidContent = dragDropContent.trim() !== "";
-        const hasValidTabs = tabs.some(tab => tab.tabKey.trim() && tab.tabValue.trim());
-
-        // ✅ Require ALL sections to be valid
-        const hasValidSections = dragAndDrop.every(section =>
-            section.option_heading.trim() &&
-            section.question_answer.trim() &&
-            section.option_value.some(val => val.trim())
-        );
-
-        return hasValidQuestion && hasValidContent && hasValidTabs && hasValidSections
+        return hasValidQuestion;
     };
 
 
@@ -385,13 +417,35 @@ const DragdropQuestionContent = () => {
                 Test type &gt; Question Type &gt; <strong>Question Content</strong>
             </Typography>
 
-            {/* Title */}
-            <Typography variant="h5" mt={2} mb={1}>
-                Enter Drag & Drop Question Content
-            </Typography>
-            <Typography variant="body2" color="textSecondary" mb={3}>
-                Create a drag and drop question with multiple tabs and draggable sections.
-            </Typography>
+            {/* Title + Back Button Header */}
+            <Box display="flex" justifyContent="space-between" alignItems="center" mt={2} mb={3}>
+                <Box>
+                    <Typography variant="h5" mb={0.5}>
+                        {location.state?.isEdit ? "Edit Drag & Drop Question" : "Enter Drag & Drop Question Content"}
+                    </Typography>
+                    <Typography variant="body2" color="textSecondary">
+                        Create or edit a drag and drop question with multiple tabs and draggable sections.
+                    </Typography>
+                </Box>
+                <Button
+                    variant="outlined"
+                    startIcon={<ArrowBackIcon />}
+                    onClick={() => navigate("/admin/question-management")}
+                    sx={{
+                        borderRadius: "8px",
+                        textTransform: "none",
+                        fontWeight: 600,
+                        color: "#1976d2",
+                        borderColor: "#1976d2",
+                        "&:hover": {
+                            borderColor: "#115293",
+                            backgroundColor: "#e3f2fd",
+                        },
+                    }}
+                >
+                    Back to Question Management
+                </Button>
+            </Box>
 
             {/* ✅ Context Status Display */}
             <Card sx={{ mb: 3, bgcolor: 'primary.light', color: 'primary.contrastText' }}>

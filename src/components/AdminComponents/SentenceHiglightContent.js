@@ -26,9 +26,9 @@ import { CloudUpload, Delete, Image, PictureAsPdf, Description, ExpandMore, High
 import { useNavigate, useLocation } from 'react-router-dom';
 /* import { FormControl } from "react-bootstrap"; */
 import { FormControl } from "@mui/material";
-import { deleteTabImage, uploadTabImage } from "../../features/exam/examSlice";
-import { useDispatch } from "react-redux";
-import ReactQuill from 'react-quill-new'; // <-- CHANGE THIS
+import { deleteTabImage, uploadTabImage, getQuestionData } from "../../features/exam/examSlice";
+import { useDispatch, useSelector } from "react-redux";
+import ReactQuill from 'react-quill-new';
 import 'react-quill-new/dist/quill.snow.css';
 
 const SentenceHighlightContent = () => {
@@ -52,14 +52,42 @@ const SentenceHighlightContent = () => {
     const [correctHighlights, setCorrectHighlights] = useState(existingData.correctHighlights || [""]);
     const [selectedFile, setSelectedFile] = useState(existingData.exhibit || null);
     const [errors, setErrors] = useState({});
-    const [answer, setAnswer] = useState(existingData?.answer || [])
+    const [answer, setAnswer] = useState(existingData?.answer || []);
 
+    const dispatch = useDispatch();
+    const { questionData: fetchedQuestionData } = useSelector((state) => state.exam);
+    const editQuestionId = location.state?.questionId || existingData.id;
 
+    // ✅ Fetch full question details when editing
+    React.useEffect(() => {
+        if (editQuestionId) {
+            dispatch(getQuestionData(editQuestionId));
+        }
+    }, [dispatch, editQuestionId]);
 
+    // ✅ Populate form state when fetchedQuestionData arrives
+    React.useEffect(() => {
+        if (editQuestionId && fetchedQuestionData?.data) {
+            const q = fetchedQuestionData.data;
+            if (q.question) setQuestion(q.question);
+            if (q.instructions) setInstruction(q.instructions);
+            if (q.passage) setPassage(q.passage);
+            const ch = q.highlightOptions || q.correctHighlights;
+            if (ch && ch.length > 0) {
+                setCorrectHighlights(ch.map(o => typeof o === "string" ? o : (o.option || o.option_value || o.highlightOption || "")));
+            }
+            const ans = q.highlightAnswers || q.answer;
+            if (ans && ans.length > 0) {
+                setAnswer(ans.map(a => typeof a === "string" ? a : (a.answer || a.highlightAnswer || "")));
+            }
+            if (q.tabsInfo && q.tabsInfo.length > 0) {
+                setTabs(q.tabsInfo.map((t) => ({ tabKey: t.tabKey || "", tabValue: t.tabValue || "" })));
+            }
+        }
+    }, [editQuestionId, fetchedQuestionData]);
 
     // here tab image is added to backend when user selects image from their local machine at that moment api call is triggered
     // File upload handler for tab image
-    const dispatch = useDispatch();
     const handleTabFileUpload = async (index, event) => {
         const file = event.target.files[0];
         if (!file) return;
@@ -292,13 +320,9 @@ const SentenceHighlightContent = () => {
     };
 
     const isFormValid = () => {
+        if (location.state?.isEdit && question && question.trim()) return true;
         const hasValidQuestion = question.trim() !== "";
-        
-        const hasValidPassage = passage.trim() !== "";
-
-        const hasValidHighlights = correctHighlights.some(highlight => highlight.trim());
-      
-        return hasValidQuestion && hasValidPassage && hasValidHighlights ;
+        return hasValidQuestion;
     };
 
     // Helper function to create highlighted preview
@@ -334,13 +358,32 @@ const SentenceHighlightContent = () => {
                 Test type &gt; Question Type &gt; <strong>Question Content</strong>
             </Typography>
 
-            {/* Title */}
-            <Typography variant="h5" mt={2} mb={1}>
-                Enter Sentence Highlight Question Content
-            </Typography>
-            <Typography variant="body2" color="textSecondary" mb={3}>
-                Create a sentence highlighting question where students identify specific text in a passage.
-            </Typography>
+            {/* Title + Back Button Header */}
+            <Box display="flex" justifyContent="space-between" alignItems="center" mt={2} mb={3}>
+                <Box>
+                    <Typography variant="h5" mb={0.5}>
+                        {location.state?.isEdit ? "Edit Sentence Highlight Question" : "Enter Sentence Highlight Question Content"}
+                    </Typography>
+                    <Typography variant="body2" color="textSecondary">
+                        Create or edit a sentence highlighting question where students identify specific text.
+                    </Typography>
+                </Box>
+                <Button
+                    variant="outlined"
+                    startIcon={<ArrowBackIcon />}
+                    onClick={() => navigate("/admin/question-management")}
+                    sx={{
+                        borderRadius: "8px",
+                        textTransform: "none",
+                        fontWeight: 600,
+                        color: "#1976d2",
+                        borderColor: "#1976d2",
+                        "&:hover": { borderColor: "#115293", backgroundColor: "#e3f2fd" },
+                    }}
+                >
+                    Back to Question Management
+                </Button>
+            </Box>
 
             {/* Question Input */}
             <Box sx={{ minHeight: '170px', mb: 3 }}>

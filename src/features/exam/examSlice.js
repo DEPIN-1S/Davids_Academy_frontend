@@ -86,9 +86,9 @@ export const adminCreateTestThunk = createAsyncThunk(
 // Thunk for admin fetching Q-Bank questions
 export const adminFetchQBankQuestions = createAsyncThunk(
   "admin/fetchQBankQuestions",
-  async ({ page = 1, limit = 10 }, { rejectWithValue }) => {
+  async ({ page = 1, limit = 10, search = "" }, { rejectWithValue }) => {
     try {
-      const data = await adminGetQBankQuestions(page, limit);
+      const data = await adminGetQBankQuestions(page, limit, search);
       // Return everything, not just list (so reducer knows totalPages, count, etc.)
       return {
         list: data.list || [],
@@ -105,9 +105,9 @@ export const adminFetchQBankQuestions = createAsyncThunk(
 // Thunk for admin fetching Mock Test questions
 export const adminFetchMockTestQuestions = createAsyncThunk(
   "admin/fetchMockTestQuestions",
-  async ({ page = 1, limit = 10 }, { rejectWithValue }) => {
+  async ({ page = 1, limit = 10, search = "" }, { rejectWithValue }) => {
     try {
-      const data = await adminGetMockTestQuestions(page, limit);
+      const data = await adminGetMockTestQuestions(page, limit, search);
       return {
         list: data.list || [],
         page: data.page,

@@ -13,8 +13,9 @@ import {
     Pagination,
     useTheme,
     useMediaQuery,
-    Chip,
-    Tooltip
+    Tooltip,
+    Menu,
+    MenuItem
 } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
 import SearchIcon from '@mui/icons-material/Search';
@@ -24,6 +25,7 @@ import FormatListBulletedIcon from '@mui/icons-material/FormatListBulleted';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import RadioButtonUncheckedIcon from '@mui/icons-material/RadioButtonUnchecked';
 import EmojiEventsIcon from '@mui/icons-material/EmojiEvents';
+import SortByAlphaIcon from '@mui/icons-material/SortByAlpha';
 import { fetchStudentTopics } from '../../features/exam/examAPI';
 
 /* ─── Keyframe animations injected as a <style> tag ────────────────────── */
@@ -83,6 +85,23 @@ const CreateTestComponent = ({ handleClose }) => {
     const [page, setPage] = useState(1);
     const [scrollProgress, setScrollProgress] = useState(0);
     const [pageKey, setPageKey] = useState(0); // forces re-animation on page change
+    const [sortOrder, setSortOrder] = useState('asc'); // 'asc' | 'desc'
+    const [sortAnchorEl, setSortAnchorEl] = useState(null);
+
+    const handleSortMenuOpen = (event) => {
+        setSortAnchorEl(event.currentTarget);
+    };
+
+    const handleSortMenuClose = () => {
+        setSortAnchorEl(null);
+    };
+
+    const handleSortSelect = (order) => {
+        setSortOrder(order);
+        setSortAnchorEl(null);
+        setPage(1);
+        setPageKey(k => k + 1);
+    };
 
     useEffect(() => {
         /* Inject keyframes into document head */
@@ -149,6 +168,9 @@ const CreateTestComponent = ({ handleClose }) => {
     const sortedTopics = [...liveTopics].sort((a, b) => {
         const dA = typeof a === 'string' ? a : a.topic_name;
         const dB = typeof b === 'string' ? b : b.topic_name;
+        if (sortOrder === 'desc') {
+            return dB.localeCompare(dA);
+        }
         return dA.localeCompare(dB);
     });
 
@@ -202,25 +224,20 @@ const CreateTestComponent = ({ handleClose }) => {
 
     return (
         <Box sx={{
-            p: { xs: 2, sm: 3.5 },
-            maxWidth: 660,
-            mx: 'auto',
+            p: { xs: 2, sm: 3 },
+            width: '100%',
             position: 'relative',
-            borderRadius: '20px',
             bgcolor: '#FFFFFF',
             display: 'flex',
             flexDirection: 'column',
             maxHeight: { xs: '92vh', sm: '88vh' },
             overflow: 'hidden',
-            animation: 'scaleIn 0.3s cubic-bezier(.22,.68,0,1.2) both',
-            boxShadow: '0 24px 60px rgba(0,0,0,0.12), 0 8px 24px rgba(26,115,232,0.08)',
         }}>
 
             {/* ── Gradient accent bar at top ────────────────────────────── */}
             <Box sx={{
                 position: 'absolute', top: 0, left: 0, right: 0,
                 height: '4px',
-                borderRadius: '20px 20px 0 0',
                 background: `linear-gradient(90deg, ${blue}, #8AB4F8, ${gold}, ${blue})`,
                 backgroundSize: '200% auto',
                 animation: 'shimmer 3s linear infinite'
@@ -260,37 +277,112 @@ const CreateTestComponent = ({ handleClose }) => {
                     </IconButton>
                 </Box>
 
-                {/* Search */}
-                <TextField
-                    placeholder="Search topics..."
-                    variant="outlined"
-                    size="small"
-                    value={searchQuery}
-                    onChange={e => { setSearchQuery(e.target.value); setPage(1); setPageKey(k => k + 1); }}
-                    fullWidth
-                    sx={{
-                        mb: 2,
-                        '& .MuiOutlinedInput-root': {
-                            borderRadius: '14px',
-                            bgcolor: '#F8F9FA',
-                            transition: 'all 0.2s',
-                            '& fieldset': { borderColor: '#EBEBEB' },
-                            '&:hover fieldset': { borderColor: '#DADCE0' },
-                            '&.Mui-focused': {
-                                bgcolor: '#FFFFFF',
-                                '& fieldset': { borderColor: blue, borderWidth: '2px' }
+                {/* Search + Sort Bar */}
+                <Box sx={{ display: 'flex', gap: 1, mb: 2, alignItems: 'center' }}>
+                    <TextField
+                        placeholder="Search topics..."
+                        variant="outlined"
+                        size="small"
+                        value={searchQuery}
+                        onChange={e => { setSearchQuery(e.target.value); setPage(1); setPageKey(k => k + 1); }}
+                        fullWidth
+                        sx={{
+                            flex: 1,
+                            '& .MuiOutlinedInput-root': {
+                                borderRadius: '14px',
+                                bgcolor: '#F8F9FA',
+                                transition: 'all 0.2s',
+                                '& fieldset': { borderColor: '#EBEBEB' },
+                                '&:hover fieldset': { borderColor: '#DADCE0' },
+                                '&.Mui-focused': {
+                                    bgcolor: '#FFFFFF',
+                                    '& fieldset': { borderColor: blue, borderWidth: '2px' }
+                                },
                             },
-                        },
-                        '& input': { fontSize: '14px', py: 1.1, '&::placeholder': { color: '#9AA0A6' } }
-                    }}
-                    InputProps={{
-                        startAdornment: (
-                            <InputAdornment position="start">
-                                <SearchIcon sx={{ color: '#9AA0A6', fontSize: '19px' }} />
-                            </InputAdornment>
-                        ),
-                    }}
-                />
+                            '& input': { fontSize: '14px', py: 1.1, '&::placeholder': { color: '#9AA0A6' } }
+                        }}
+                        InputProps={{
+                            startAdornment: (
+                                <InputAdornment position="start">
+                                    <SearchIcon sx={{ color: '#9AA0A6', fontSize: '19px' }} />
+                                </InputAdornment>
+                            ),
+                        }}
+                    />
+
+                    {/* Sort button */}
+                    <Tooltip title="Sort topics" arrow>
+                        <Button
+                            onClick={handleSortMenuOpen}
+                            variant="outlined"
+                            size="small"
+                            startIcon={<SortByAlphaIcon sx={{ fontSize: '18px', color: blue }} />}
+                            sx={{
+                                borderRadius: '14px',
+                                height: '40px',
+                                px: 1.8,
+                                minWidth: 'auto',
+                                whiteSpace: 'nowrap',
+                                borderColor: '#EBEBEB',
+                                color: '#3C4043',
+                                bgcolor: '#F8F9FA',
+                                textTransform: 'none',
+                                fontWeight: 600,
+                                fontSize: '13px',
+                                transition: 'all 0.2s',
+                                '&:hover': {
+                                    borderColor: blue,
+                                    bgcolor: bluePale,
+                                    color: blue,
+                                }
+                            }}
+                        >
+                            {sortOrder === 'asc' ? 'A → Z' : 'Z → A'}
+                        </Button>
+                    </Tooltip>
+
+                    <Menu
+                        anchorEl={sortAnchorEl}
+                        open={Boolean(sortAnchorEl)}
+                        onClose={handleSortMenuClose}
+                        PaperProps={{
+                            elevation: 3,
+                            sx: {
+                                borderRadius: '12px',
+                                mt: 1,
+                                minWidth: '160px',
+                                p: 0.5,
+                                '& .MuiMenuItem-root': {
+                                    fontSize: '13px',
+                                    fontWeight: 500,
+                                    borderRadius: '8px',
+                                    py: 1,
+                                    px: 1.5,
+                                    color: '#3C4043',
+                                    '&.Mui-selected': {
+                                        bgcolor: bluePale,
+                                        color: blue,
+                                        fontWeight: 700,
+                                        '&:hover': { bgcolor: bluePale }
+                                    }
+                                }
+                            }
+                        }}
+                    >
+                        <MenuItem
+                            selected={sortOrder === 'asc'}
+                            onClick={() => handleSortSelect('asc')}
+                        >
+                            A → Z (Ascending)
+                        </MenuItem>
+                        <MenuItem
+                            selected={sortOrder === 'desc'}
+                            onClick={() => handleSortSelect('desc')}
+                        >
+                            Z → A (Descending)
+                        </MenuItem>
+                    </Menu>
+                </Box>
 
                 {/* Category chips + scroll */}
                 <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5, mb: 1 }}>

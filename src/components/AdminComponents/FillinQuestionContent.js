@@ -20,6 +20,8 @@ import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
 import { Delete, ExpandMore, Image, PictureAsPdf, Description } from '@mui/icons-material';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useFileContext } from '../../context/FileContext'; // ✅ Import the Context
+import { useDispatch, useSelector } from "react-redux";
+import { getQuestionData } from "../../features/exam/examSlice";
 
 const FillinQuestionContent = () => {
     const navigate = useNavigate();
@@ -51,6 +53,45 @@ const FillinQuestionContent = () => {
     const [answer, setAnswer] = useState(existingData.answer || "");
     const [selectedFile, setSelectedFile] = useState(null); // ✅ Local state for UI, Context for persistence
 
+
+    const dispatch = useDispatch();
+    const { questionData: fetchedQuestionData } = useSelector((state) => state.exam);
+    const editQuestionId = location.state?.questionId || existingData.id;
+
+    // ✅ Fetch full question details when editing
+    React.useEffect(() => {
+        if (editQuestionId) {
+            dispatch(getQuestionData(editQuestionId));
+        }
+    }, [dispatch, editQuestionId]);
+
+    // ✅ Populate form state when fetchedQuestionData arrives
+    React.useEffect(() => {
+        if (editQuestionId && fetchedQuestionData?.data) {
+            const q = fetchedQuestionData.data;
+            if (q.question) setQuestion(q.question);
+            if (q.tabsInfo && q.tabsInfo.length > 0) {
+                setTabs(
+                    q.tabsInfo.map((t) => ({
+                        tabKey: t.tabKey || "",
+                        tabValue: t.tabValue || "",
+                        tabImage: t.tabImage || "",
+                    }))
+                );
+            }
+            if (q.FTBquestion_content && q.FTBquestion_content.length > 0) {
+                setQuestionContent(q.FTBquestion_content);
+            }
+            if (q.FTBoptions) {
+                setOptions([{
+                    option_heading: q.FTBoptions.heading || "",
+                    option_value: Array.isArray(q.FTBoptions.options)
+                        ? q.FTBoptions.options.map(o => typeof o === "string" ? o : (o.option_value || o.option || o.value || ""))
+                        : [""]
+                }]);
+            }
+        }
+    }, [editQuestionId, fetchedQuestionData]);
 
     // ✅ Initialize with existing file from context if available
     React.useEffect(() => {
@@ -241,13 +282,35 @@ const FillinQuestionContent = () => {
                 Test type &gt; Question Type &gt; <strong>Question Content</strong>
             </Typography>
 
-            {/* Title */}
-            <Typography variant="h5" mt={2} mb={1}>
-                Fill in the Blanks Question Content
-            </Typography>
-            <Typography variant="body2" color="textSecondary" mb={3}>
-                Create fill-in-the-blank questions with multiple answer options for comprehensive assessment.
-            </Typography>
+            {/* Title + Back Button Header */}
+            <Box display="flex" justifyContent="space-between" alignItems="center" mt={2} mb={3}>
+                <Box>
+                    <Typography variant="h5" mb={0.5}>
+                        {location.state?.isEdit ? "Edit Fill in the Blanks Question" : "Fill in the Blanks Question Content"}
+                    </Typography>
+                    <Typography variant="body2" color="textSecondary">
+                        Create or edit fill-in-the-blank questions with multiple answer options for comprehensive assessment.
+                    </Typography>
+                </Box>
+                <Button
+                    variant="outlined"
+                    startIcon={<ArrowBackIcon />}
+                    onClick={() => navigate("/admin/question-management")}
+                    sx={{
+                        borderRadius: "8px",
+                        textTransform: "none",
+                        fontWeight: 600,
+                        color: "#1976d2",
+                        borderColor: "#1976d2",
+                        "&:hover": {
+                            borderColor: "#115293",
+                            backgroundColor: "#e3f2fd",
+                        },
+                    }}
+                >
+                    Back to Question Management
+                </Button>
+            </Box>
 
             {/* ✅ Context Status Display */}
             <Card sx={{ mb: 3, bgcolor: 'primary.light', color: 'primary.contrastText' }}>
