@@ -15,7 +15,8 @@ export const postQuestion = async (questionData) => {
     });
 
     if (!response.ok) {
-      throw new Error("Failed to post question");
+      const errJson = await response.json().catch(() => ({}));
+      throw new Error(errJson.message || errJson.error || "Failed to post question");
     }
 
     const result = await response.json(); // ✅ store result

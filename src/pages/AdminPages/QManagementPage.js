@@ -109,12 +109,18 @@ const QManagementPage = () => {
             questionId: id,
             isEdit: true,
             questionData,
-            cs_id: courseId,
-            topic_id,
+            cs_id: courseId || questionData.cs_id || 1,
+            topic_id: topic_id || questionData.topicId || 1,
             exam_type: exam_type || "q-bank",
-            question_type_id,
+            question_type_id: question_type_id || 1,
             questionType
         };
+
+        // ✅ CRITICAL: Store question ID in sessionStorage so it survives across all navigation steps
+        sessionStorage.setItem('editingQuestionId', String(id));
+        sessionStorage.setItem('editingQuestionType', questionType);
+        console.log('✅ Stored editingQuestionId in sessionStorage:', id);
+
 
         switch (questionType) {
             case 'MCQ':
@@ -206,6 +212,7 @@ const QManagementPage = () => {
     useEffect(() => {
         if (qBankPage !== 1) setQBankPage(1);
         if (mockPage !== 1) setMockPage(1);
+        if (testPage !== 1) setTestPage(1);
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [searchTerm]);
 
@@ -234,7 +241,11 @@ const QManagementPage = () => {
 
 
     // Handlers
-    const handleAddQuestionClick = () => navigate("/admin/selectCourse");
+    const handleAddQuestionClick = () => {
+        sessionStorage.removeItem('editingQuestionId');
+        sessionStorage.removeItem('editingQuestionType');
+        navigate("/admin/selectCourse");
+    };
     const handleAddTestClick = () => navigate("/admin/add-test");
 
 

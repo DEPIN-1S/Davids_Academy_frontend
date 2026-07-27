@@ -22,6 +22,10 @@ export const FileProvider = ({ children }) => {
         console.log("explanation file in file context:::", explanationFile);
         console.log("question file in file context:::", questionFile);
 
+        if (questionData.questionId) {
+            formData.append("questionId", questionData.questionId);
+        }
+
         if (questionData.topic_id !== undefined && questionData.topic_id !== null) {
             formData.append("topic_id", questionData.topic_id);
         }

@@ -318,7 +318,9 @@ const MultiradioQuestionContent = () => {
             return;
         }
 
-        // ✅ Prepare ONLY serializable question data
+        const realQuestionId = location.state?.questionId || location.state?.id || location.state?.questionData?.id || location.state?.questionData?.questionId || fetchedQuestionData?.data?.id || null;
+        const isEditMode = location.state?.isEdit || Boolean(realQuestionId);
+
         const questionData = {
             cs_id: cs_id,
             topic_id: topic_id,
@@ -334,15 +336,20 @@ const MultiradioQuestionContent = () => {
                 return hasText && hasAnswer;
             }).map(q => ({
                 ...q,
-                // Join array answers with comma for backend compatibility
                 question_answer: Array.isArray(q.question_answer) ? q.question_answer.join(',') : q.question_answer
             })),
             multiradioHeading: multiradioHeading.trim(),
             radio_options: radioOptions.filter(option => option.option_value.trim()),
-            // ✅ No file objects in navigation state
+            explanationHeading: fetchedQuestionData?.data?.explanationHeading || (Array.isArray(fetchedQuestionData?.data?.explanation) ? fetchedQuestionData?.data?.explanation[0]?.heading : "") || existingData?.explanationHeading || "",
+            explanationText: fetchedQuestionData?.data?.explanationText || (Array.isArray(fetchedQuestionData?.data?.explanation) ? fetchedQuestionData?.data?.explanation[0]?.explanation : "") || existingData?.explanationText || "",
+            additionalInfo: fetchedQuestionData?.data?.additionalInfo || (Array.isArray(fetchedQuestionData?.data?.additionalInfo) ? fetchedQuestionData?.data?.additionalInfo[0]?.info : "") || existingData?.additionalInfo || "",
+            difficulty: fetchedQuestionData?.data?.difficulty || existingData?.difficulty || "Medium",
+            marks: fetchedQuestionData?.data?.marks || existingData?.marks || 1,
             createdAt: existingData.createdAt || new Date().toISOString(),
             updatedAt: new Date().toISOString(),
-            questionId: existingData.questionId || `${questionType}_${Date.now()}`,
+            questionId: realQuestionId,
+            id: realQuestionId,
+            isEdit: isEditMode,
             currentStep: 'content',
             completedSteps: ['type', 'content']
         };
@@ -353,14 +360,14 @@ const MultiradioQuestionContent = () => {
         // ✅ Navigate with ONLY serializable data - NO file objects
         navigate('/admin/answer-explain', {
             state: {
+                isEdit: isEditMode,
+                questionId: realQuestionId,
                 questionData: questionData,
-                // ✅ Only pass file metadata for UI display, actual file is in Context
                 hasFile: hasQuestionFile,
                 fileInfo: selectedFile ? {
                     name: selectedFile.name,
                     type: selectedFile.type,
                     size: selectedFile.size
-                    // ✅ No 'file' or 'url' properties to avoid serialization issues
                 } : null,
                 fromStep: 'content'
             }
@@ -368,13 +375,15 @@ const MultiradioQuestionContent = () => {
     };
 
     const handleBack = () => {
-        // ✅ Prepare current data for potential restoration (all serializable)
+        if (location.state?.isEdit) {
+            navigate('/admin/question-management');
+            return;
+        }
         const currentData = {
             question: question.trim(),
             tabs: tabs,
             question_content: questionContent,
             radio_options: radioOptions,
-            // ✅ No file objects in navigation state
         };
 
         navigate('/admin/question-type', {

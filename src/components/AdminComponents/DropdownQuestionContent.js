@@ -329,13 +329,16 @@ const DropdownQuestionContent = () => {
       return;
     }
 
+    const realQuestionId = location.state?.questionId || location.state?.id || location.state?.questionData?.id || location.state?.questionData?.questionId || fetchedQuestionData?.data?.id || null;
+    const isEditMode = location.state?.isEdit || Boolean(realQuestionId);
+
     // ✅ Prepare ONLY serializable question data matching the required structure
     const questionData = {
-      cs_id: cs_id,
-      topic_id: topic_id,
-      exam_type: exam_type,
-      question_type_id: question_type_id,
+      exam_type,
+      question_type_id,
       questionType: questionType,
+      cs_id,
+      topic_id,
       question: question.trim(),
       tabs: tabs.filter((tab) => tab.tabKey.trim() && tab.tabValue.trim()),
       instruction: instruction.trim(),
@@ -353,10 +356,16 @@ const DropdownQuestionContent = () => {
           blank_or_not: dropdown.blank_or_not,
           dropDowneOption: dropdown.dropDowneOption.filter((val) => val.trim()),
         })),
-      // ✅ No file objects in navigation state
+      explanationHeading: fetchedQuestionData?.data?.explanationHeading || (Array.isArray(fetchedQuestionData?.data?.explanation) ? fetchedQuestionData?.data?.explanation[0]?.heading : "") || existingData?.explanationHeading || "",
+      explanationText: fetchedQuestionData?.data?.explanationText || (Array.isArray(fetchedQuestionData?.data?.explanation) ? fetchedQuestionData?.data?.explanation[0]?.explanation : "") || existingData?.explanationText || "",
+      additionalInfo: fetchedQuestionData?.data?.additionalInfo || (Array.isArray(fetchedQuestionData?.data?.additionalInfo) ? fetchedQuestionData?.data?.additionalInfo[0]?.info : "") || existingData?.additionalInfo || "",
+      difficulty: fetchedQuestionData?.data?.difficulty || existingData?.difficulty || "Medium",
+      marks: fetchedQuestionData?.data?.marks || existingData?.marks || 1,
       createdAt: existingData.createdAt || new Date().toISOString(),
       updatedAt: new Date().toISOString(),
-      questionId: existingData.questionId || `${questionType}_${Date.now()}`,
+      questionId: realQuestionId,
+      id: realQuestionId,
+      isEdit: isEditMode,
       currentStep: "content",
       completedSteps: ["type", "content"],
     };
@@ -367,6 +376,8 @@ const DropdownQuestionContent = () => {
     // ✅ Navigate with ONLY serializable data - NO file objects
     navigate("/admin/answer-explain", {
       state: {
+        isEdit: isEditMode,
+        questionId: realQuestionId,
         questionData: questionData,
         // ✅ Only pass file metadata for UI display, actual file is in Context
         hasFile: hasQuestionFile,

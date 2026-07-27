@@ -72,14 +72,23 @@ const SentenceHighlightContent = () => {
             if (q.question) setQuestion(q.question);
             if (q.instructions) setInstruction(q.instructions);
             if (q.passage) setPassage(q.passage);
-            const ch = q.highlightOptions || q.correctHighlights;
-            if (ch && ch.length > 0) {
-                setCorrectHighlights(ch.map(o => typeof o === "string" ? o : (o.option || o.option_value || o.highlightOption || "")));
+
+            const rawOptions = q.highlightoptions || q.highlightOptions || q.correctHighlights || q.highlight_options;
+            if (rawOptions && rawOptions.length > 0) {
+                const parsedOpts = rawOptions.map(o => typeof o === "string" ? o : (o.options || o.option || o.option_value || o.highlightOption || "")).filter(str => str.trim() !== "");
+                if (parsedOpts.length > 0) {
+                    setCorrectHighlights(parsedOpts);
+                }
             }
-            const ans = q.highlightAnswers || q.answer;
-            if (ans && ans.length > 0) {
-                setAnswer(ans.map(a => typeof a === "string" ? a : (a.answer || a.highlightAnswer || "")));
+
+            const rawAnswers = q.answers || q.answer || q.sentenceHighlightAnswers || q.submittedAnswer || q.highlightAnswers;
+            if (rawAnswers && rawAnswers.length > 0) {
+                const parsedAns = rawAnswers.map(a => typeof a === "string" ? a : (a.answer || a.highlightAnswer || "")).filter(str => str.trim() !== "");
+                if (parsedAns.length > 0) {
+                    setAnswer(parsedAns);
+                }
             }
+
             if (q.tabsInfo && q.tabsInfo.length > 0) {
                 setTabs(q.tabsInfo.map((t) => ({ tabKey: t.tabKey || "", tabValue: t.tabValue || "" })));
             }
@@ -211,20 +220,59 @@ const SentenceHighlightContent = () => {
 
     // Highlight handlers
     const handleCorrectHighlightChange = (index, value) => {
+        const oldText = correctHighlights[index];
         const newHighlights = [...correctHighlights];
         newHighlights[index] = value;
         setCorrectHighlights(newHighlights);
-        setErrors(prev => ({ ...prev, correctHighlights: null }));
+
+        // Keep answer array in sync if old text was selected as answer
+        if (oldText && answer.includes(oldText)) {
+            setAnswer(prev => prev.map(a => a === oldText ? value : a));
+        }
+        setErrors(prev => ({ ...prev, correctHighlights: null, answer: null }));
+    };
+
+    const toggleHighlightAnswer = (highlightText) => {
+        if (!highlightText || !highlightText.trim()) return;
+        const text = highlightText.trim();
+        setAnswer(prev => {
+            if (prev.includes(text)) {
+                return prev.filter(a => a !== text);
+            } else {
+                return [...prev, text];
+            }
+        });
+        setErrors(prev => ({ ...prev, answer: null }));
     };
 
     const handleAddCorrectHighlight = () => {
-        setCorrectHighlights([...correctHighlights, ""]);
+        setCorrectHighlights(prev => [...prev, ""]);
     };
 
     const handleRemoveCorrectHighlight = (index) => {
+        const textToRemove = correctHighlights[index];
         if (correctHighlights.length > 1) {
             const newHighlights = correctHighlights.filter((_, i) => i !== index);
             setCorrectHighlights(newHighlights);
+            if (textToRemove && answer.includes(textToRemove)) {
+                setAnswer(prev => prev.filter(a => a !== textToRemove));
+            }
+        }
+    };
+
+    const handleAddSelectionFromPassage = () => {
+        const selectedText = window.getSelection()?.toString()?.trim();
+        if (selectedText) {
+            // Replace if only one blank item, else append
+            if (correctHighlights.length === 1 && !correctHighlights[0].trim()) {
+                setCorrectHighlights([selectedText]);
+            } else if (!correctHighlights.includes(selectedText)) {
+                setCorrectHighlights(prev => [...prev, selectedText]);
+            }
+            if (!answer.includes(selectedText)) {
+                setAnswer(prev => [...prev, selectedText]);
+            }
+            setErrors(prev => ({ ...prev, correctHighlights: null, answer: null }));
         }
     };
 
@@ -245,8 +293,9 @@ const SentenceHighlightContent = () => {
             newErrors.correctHighlights = 'At least one correct highlight text is required';
         }
 
-        if (answer.length === 0) {
-            newErrors.answer = "Select at least one correct highlight";
+        const validAnswers = answer.filter(a => a.trim());
+        if (validAnswers.length === 0) {
+            newErrors.answer = "Select at least one correct highlight answer";
         }
 
         setErrors(newErrors);
@@ -258,6 +307,9 @@ const SentenceHighlightContent = () => {
         if (!validateForm()) {
             return;
         }
+        const realQuestionId = location.state?.questionId || location.state?.id || location.state?.questionData?.id || location.state?.questionData?.questionId || fetchedQuestionData?.data?.id || null;
+        const isEditMode = location.state?.isEdit || Boolean(realQuestionId);
+
         const questionData = {
             cs_id: cs_id, topic_id: topic_id,
             exam_type: exam_type,
@@ -270,9 +322,16 @@ const SentenceHighlightContent = () => {
             instruction: instruction.trim(),
             correctHighlights: correctHighlights.filter(highlight => highlight.trim()),
             exhibit: selectedFile,
+            explanationHeading: fetchedQuestionData?.data?.explanationHeading || (Array.isArray(fetchedQuestionData?.data?.explanation) ? fetchedQuestionData?.data?.explanation[0]?.heading : "") || existingData?.explanationHeading || "",
+            explanationText: fetchedQuestionData?.data?.explanationText || (Array.isArray(fetchedQuestionData?.data?.explanation) ? fetchedQuestionData?.data?.explanation[0]?.explanation : "") || existingData?.explanationText || "",
+            additionalInfo: fetchedQuestionData?.data?.additionalInfo || (Array.isArray(fetchedQuestionData?.data?.additionalInfo) ? fetchedQuestionData?.data?.additionalInfo[0]?.info : "") || existingData?.additionalInfo || "",
+            difficulty: fetchedQuestionData?.data?.difficulty || existingData?.difficulty || "Medium",
+            marks: fetchedQuestionData?.data?.marks || existingData?.marks || 1,
             createdAt: existingData.createdAt || new Date().toISOString(),
             updatedAt: new Date().toISOString(),
-            questionId: existingData.questionId || `${questionType}_${Date.now()}`,
+            questionId: realQuestionId,
+            id: realQuestionId,
+            isEdit: isEditMode,
             currentStep: 'content',
             completedSteps: ['type', 'content']
         };
@@ -280,6 +339,8 @@ const SentenceHighlightContent = () => {
         console.log('Sending sentence highlight question data:', questionData);
         navigate('/admin/answer-explain', {
             state: {
+                isEdit: isEditMode,
+                questionId: realQuestionId,
                 questionData: questionData,
                 fromStep: 'content'
             }
@@ -287,6 +348,10 @@ const SentenceHighlightContent = () => {
     };
 
     const handleBack = () => {
+        if (location.state?.isEdit) {
+            navigate('/admin/question-management');
+            return;
+        }
         const currentData = {
             question: question.trim(),
             tabs: tabs,
@@ -590,11 +655,21 @@ const SentenceHighlightContent = () => {
 
 
             {/* Passage Section */}
-            <Typography variant="h6" mb={1} color="primary">
-                Passage Text *
-            </Typography>
+            <Box display="flex" justifyContent="space-between" alignItems="center" mb={1}>
+                <Typography variant="h6" color="primary">
+                    Passage Text *
+                </Typography>
+                <Button
+                    variant="outlined"
+                    size="small"
+                    color="secondary"
+                    onClick={handleAddSelectionFromPassage}
+                >
+                    ➕ Add Highlight from Selected Text
+                </Button>
+            </Box>
             <Typography variant="body2" color="textSecondary" mb={2}>
-                Enter the passage that students will read and highlight from.
+                Enter the passage that students will read. Tip: Highlight any sentence in the passage and click "Add Highlight from Selected Text" above!
             </Typography>
             <TextField
                 fullWidth
@@ -617,49 +692,72 @@ const SentenceHighlightContent = () => {
 
             {/* Correct Highlights Section */}
             <Typography variant="h6" mb={1} color="primary">
-                Correct Highlight Texts *
+                Highlight Options *
             </Typography>
             <Typography variant="body2" color="textSecondary" mb={2}>
-                Enter the exact text phrases that should be highlighted. These must match text in the passage above.
+                Enter the exact text phrases that will be selectable highlights. Mark which ones are the **correct answers**.
             </Typography>
 
-            {correctHighlights.map((highlight, index) => (
-                <Paper key={index} sx={{ mb: 2, p: 2, border: '1px solid', borderColor: 'warning.main' }}>
-                    <Box display="flex" alignItems="center" gap={2}>
-                        <Highlight color="warning" />
-                        <Typography variant="body2" sx={{ minWidth: 100 }}>
-                            Highlight {index + 1}:
-                        </Typography>
-                        <TextField
-                            fullWidth
-                            label={`Highlight Option ${index + 1}`}
-                            multiline
-                            minRows={2}
-                            value={highlight}
-                            onChange={(e) => handleCorrectHighlightChange(index, e.target.value)}
-                            placeholder="Enter the exact text that should be highlighted..."
-                        />
-                        {correctHighlights.length > 1 && (
-                            <IconButton
-                                onClick={() => handleRemoveCorrectHighlight(index)}
-                                color="error"
+            {correctHighlights.map((highlight, index) => {
+                const isCorrect = answer.includes(highlight.trim()) && highlight.trim() !== "";
+                return (
+                    <Paper
+                        key={index}
+                        sx={{
+                            mb: 2,
+                            p: 2,
+                            border: '1.5px solid',
+                            borderColor: isCorrect ? 'success.main' : 'grey.300',
+                            bgcolor: isCorrect ? '#f0fff4' : 'white',
+                            transition: 'all 0.2s ease'
+                        }}
+                    >
+                        <Box display="flex" alignItems="center" gap={2}>
+                            <Highlight color={isCorrect ? "success" : "action"} />
+                            <Typography variant="body2" sx={{ minWidth: 80, fontWeight: 'bold' }}>
+                                Option {index + 1}:
+                            </Typography>
+                            <TextField
+                                fullWidth
+                                label={`Highlight Option ${index + 1}`}
+                                multiline
+                                minRows={2}
+                                value={highlight}
+                                onChange={(e) => handleCorrectHighlightChange(index, e.target.value)}
+                                placeholder="Enter the exact text phrase..."
+                            />
+                            <Button
+                                variant={isCorrect ? "contained" : "outlined"}
+                                color={isCorrect ? "success" : "inherit"}
                                 size="small"
+                                onClick={() => toggleHighlightAnswer(highlight)}
+                                disabled={!highlight.trim()}
+                                sx={{ whiteSpace: 'nowrap', minWidth: 140 }}
                             >
-                                <Delete />
-                            </IconButton>
-                        )}
-                    </Box>
-                </Paper>
-            ))}
+                                {isCorrect ? "✓ Correct Answer" : "Mark as Correct"}
+                            </Button>
+                            {correctHighlights.length > 1 && (
+                                <IconButton
+                                    onClick={() => handleRemoveCorrectHighlight(index)}
+                                    color="error"
+                                    size="small"
+                                >
+                                    <Delete />
+                                </IconButton>
+                            )}
+                        </Box>
+                    </Paper>
+                );
+            })}
 
             <Button
                 startIcon={<AddIcon />}
                 onClick={handleAddCorrectHighlight}
                 variant="outlined"
                 sx={{ mb: 3 }}
-                color="warning"
+                color="primary"
             >
-                Add Correct Highlight
+                Add Highlight Option
             </Button>
 
             {errors.correctHighlights && (
@@ -669,9 +767,8 @@ const SentenceHighlightContent = () => {
             )}
 
             <Typography variant="h6" mb={1} color="primary">
-                Select Correct Highlight *
+                Select Correct Highlight Answers *
             </Typography>
-
 
             <FormControl fullWidth margin="normal" className="pb-4" error={!!errors.answer}>
                 <Select
@@ -695,8 +792,7 @@ const SentenceHighlightContent = () => {
                             <MenuItem key={idx} value={highlight}>
                                 <Checkbox checked={answer.indexOf(highlight) > -1} />
                                 <ListItemText
-                                    primary={`Highlight ${idx + 1}: ${highlight.length > 50 ? highlight.slice(0, 50) + "..." : highlight
-                                        }`}
+                                    primary={`Option ${idx + 1}: ${highlight.length > 50 ? highlight.slice(0, 50) + "..." : highlight}`}
                                 />
                             </MenuItem>
                         ))}
@@ -757,7 +853,7 @@ const SentenceHighlightContent = () => {
                         • Instructions: {instruction ? '✅ Complete' : '❌ Required'}
                     </Typography>
                     <Typography variant="body2">
-                        • Correct Highlights: {correctHighlights.filter(h => h.trim()).length} defined
+                        • Correct Highlights: {correctHighlights.filter(h => h.trim()).length} options defined ({answer.filter(a => a.trim()).length} marked correct)
                     </Typography>
                 </CardContent>
             </Card>

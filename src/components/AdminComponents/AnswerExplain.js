@@ -13,14 +13,50 @@ import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
 import { CloudUpload, Delete, Image, PictureAsPdf, Description } from '@mui/icons-material';
 import { useNavigate, useLocation } from 'react-router-dom';
+import { useDispatch, useSelector } from 'react-redux';
+import { getQuestionData } from '../../features/exam/examSlice';
 import { useFileContext } from '../../context/FileContext'; // ✅ Import the Context
 import ReactQuill from "react-quill-new";
 
+const extractHeading = (data) => {
+    if (!data) return "";
+    if (data.explanationHeading) return data.explanationHeading;
+    if (Array.isArray(data.explanation) && data.explanation.length > 0) {
+        return data.explanation[0]?.heading || data.explanation[0]?.explanationHeading || "";
+    }
+    if (typeof data.explanation === 'object' && data.explanation !== null) {
+        return data.explanation.heading || data.explanation.explanationHeading || "";
+    }
+    return "";
+};
 
+const extractText = (data) => {
+    if (!data) return "";
+    if (data.explanationText) return data.explanationText;
+    if (Array.isArray(data.explanation) && data.explanation.length > 0) {
+        return data.explanation[0]?.explanation || data.explanation[0]?.explanationText || "";
+    }
+    if (typeof data.explanation === 'object' && data.explanation !== null) {
+        return data.explanation.explanation || data.explanation.explanationText || "";
+    }
+    return "";
+};
 
-
+const extractInfo = (data) => {
+    if (!data) return "";
+    if (data.additionalInfo && typeof data.additionalInfo === 'string') return data.additionalInfo;
+    if (Array.isArray(data.additionalInfo) && data.additionalInfo.length > 0) {
+        return data.additionalInfo[0]?.info || data.additionalInfo[0]?.additionalInfo || "";
+    }
+    if (typeof data.additionalInfo === 'object' && data.additionalInfo !== null) {
+        return data.additionalInfo.info || data.additionalInfo.additionalInfo || "";
+    }
+    if (data.info && typeof data.info === 'string') return data.info;
+    return "";
+};
 
 const AnswerExplain = () => {
+    const dispatch = useDispatch();
     const navigate = useNavigate();
     const location = useLocation();
 
@@ -37,18 +73,37 @@ const AnswerExplain = () => {
     const previousQuestionData = useMemo(() => location.state?.questionData || {}, [location.state?.questionData]);
 
     // Component state
-    const [explanationHeading, setExplanationHeading] = useState(
-        previousQuestionData.explanationHeading || ""
-    );
-    const [explanationText, setExplanationText] = useState(
-        previousQuestionData.explanationText || ""
-    );
-    const [additionalInfoHeading] = useState(
-        previousQuestionData.additionalInfoHeading || ""
-    );
-    const [additionalInfo, setAdditionalInfo] = useState(
-        previousQuestionData.additionalInfo || ""
-    );
+    const sessionQId = sessionStorage.getItem('editingQuestionId');
+    const editQuestionId = sessionQId || previousQuestionData.questionId || previousQuestionData.id || location.state?.questionId;
+    const { questionData: fetchedQuestionData } = useSelector((state) => state.exam);
+
+    useEffect(() => {
+        if (editQuestionId && !fetchedQuestionData?.data) {
+            dispatch(getQuestionData(editQuestionId));
+        }
+    }, [dispatch, editQuestionId]);
+
+    const initialHeading = extractHeading(previousQuestionData) || extractHeading(fetchedQuestionData?.data);
+    const initialText = extractText(previousQuestionData) || extractText(fetchedQuestionData?.data);
+    const initialInfo = extractInfo(previousQuestionData) || extractInfo(fetchedQuestionData?.data);
+
+    const [explanationHeading, setExplanationHeading] = useState(initialHeading);
+    const [explanationText, setExplanationText] = useState(initialText);
+    const [additionalInfoHeading] = useState(previousQuestionData.additionalInfoHeading || "");
+    const [additionalInfo, setAdditionalInfo] = useState(initialInfo);
+
+    useEffect(() => {
+        const source = fetchedQuestionData?.data || previousQuestionData;
+        if (source) {
+            const h = extractHeading(source) || extractHeading(previousQuestionData);
+            const t = extractText(source) || extractText(previousQuestionData);
+            const i = extractInfo(source) || extractInfo(previousQuestionData);
+            if (h && !explanationHeading) setExplanationHeading(h);
+            if (t && !explanationText) setExplanationText(t);
+            if (i && !additionalInfo) setAdditionalInfo(i);
+        }
+    }, [fetchedQuestionData, previousQuestionData]);
+
     const [selectedFile, setSelectedFile] = useState(null); // ✅ Local state for UI, Context for persistence
     const [errors, setErrors] = useState({});
 
@@ -156,7 +211,6 @@ const AnswerExplain = () => {
             options: previousQuestionData.options,
             correctAnswer: previousQuestionData.correctAnswer,
             createdAt: previousQuestionData.createdAt,
-            questionId: previousQuestionData.questionId,
             instruction: previousQuestionData.instruction,
 
             //for dropdown data
@@ -214,10 +268,18 @@ const AnswerExplain = () => {
             } : null,
 
             // Metadata
+            difficulty: previousQuestionData.difficulty || fetchedQuestionData?.data?.difficulty || "Medium",
+            marks: previousQuestionData.marks || fetchedQuestionData?.data?.marks || 1,
+            isEdit: location.state?.isEdit || previousQuestionData?.isEdit || Boolean(location.state?.questionId || previousQuestionData?.questionId),
+            questionId: location.state?.questionId || location.state?.questionData?.questionId || location.state?.questionData?.id || previousQuestionData?.questionId || previousQuestionData?.id || null,
+            id: location.state?.questionId || location.state?.questionData?.questionId || location.state?.questionData?.id || previousQuestionData?.questionId || previousQuestionData?.id || null,
             updatedAt: new Date().toISOString(),
             currentStep: 'explanation',
             completedSteps: ['exam-type', 'question-type', 'content', 'explanation']
         };
+
+        const realQuestionId = mergedQuestionData.questionId;
+        const isEditMode = mergedQuestionData.isEdit;
 
         console.log('✅ Navigating with serializable data only:', mergedQuestionData);
         console.log('✅ Files managed by Context:');
@@ -227,6 +289,8 @@ const AnswerExplain = () => {
         // ✅ Navigate with ONLY serializable data - NO file objects
         navigate('/admin/meta-info', {
             state: {
+                isEdit: isEditMode,
+                questionId: realQuestionId,
                 questionData: mergedQuestionData,
                 // ✅ Only pass file metadata for UI display, actual files are in Context
                 hasQuestionFile: hasQuestionFile,
@@ -355,6 +419,8 @@ const AnswerExplain = () => {
         // ✅ Navigate with preserved state
         navigate(route, {
             state: {
+                isEdit: location.state?.isEdit || previousQuestionData?.isEdit,
+                questionId: location.state?.questionId || previousQuestionData?.questionId,
                 exam_type: previousQuestionData.exam_type,
                 question_type_id: previousQuestionData.question_type_id,
                 questionType: previousQuestionData.questionType,

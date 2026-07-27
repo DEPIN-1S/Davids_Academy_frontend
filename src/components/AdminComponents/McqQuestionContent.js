@@ -329,6 +329,10 @@ const McqQuestionContent = () => {
             return;
         }
 
+        const realQuestionId = location.state?.questionId || location.state?.id || location.state?.questionData?.id || location.state?.questionData?.questionId || existingQuestionData?.questionId || existingQuestionData?.id || null;
+        const isEditMode = location.state?.isEdit || Boolean(realQuestionId);
+
+        const qData = fetchedQuestionData?.data || existingQuestionData || {};
         const questionData = {
             exam_type,
             question_type_id,
@@ -340,15 +344,24 @@ const McqQuestionContent = () => {
             options: options.filter(opt => typeof opt === 'string' && opt.trim() !== "").map(opt => opt.trim()),
             correctAnswer: correctAnswer,
             instruction: instruction.trim(),
+            explanationHeading: qData?.explanationHeading || (Array.isArray(qData?.explanation) ? qData?.explanation[0]?.heading : "") || "",
+            explanationText: qData?.explanationText || (Array.isArray(qData?.explanation) ? qData?.explanation[0]?.explanation : "") || "",
+            additionalInfo: qData?.additionalInfo || (Array.isArray(qData?.additionalInfo) ? qData?.additionalInfo[0]?.info : "") || "",
+            difficulty: qData?.difficulty || "Medium",
+            marks: qData?.marks || 1,
             createdAt: existingQuestionData?.createdAt || new Date().toISOString(),
             updatedAt: new Date().toISOString(),
-            questionId: existingQuestionData?.questionId || `${questionTypeName}_${Date.now()}`,
+            questionId: realQuestionId,
+            id: realQuestionId,
+            isEdit: isEditMode,
             currentStep: 'content',
             completedSteps: ['exam-type', 'question-type', 'content']
         };
 
         navigate('/admin/answer-explain', {
             state: {
+                isEdit: isEditMode,
+                questionId: realQuestionId,
                 questionData: questionData,
                 hasFile: hasQuestionFile,
                 fileInfo: selectedFile ? {
@@ -362,6 +375,10 @@ const McqQuestionContent = () => {
     };
 
     const handleBack = () => {
+        if (location.state?.isEdit) {
+            navigate('/admin/question-management');
+            return;
+        }
         const currentQuestionData = {
             question: question.trim(),
             options: options,

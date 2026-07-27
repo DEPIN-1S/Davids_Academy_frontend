@@ -47,15 +47,27 @@ const MetaInfoComponent = () => {
 
     // ✅ Receive only serializable question data
     const receivedQuestionData = useMemo(() => location.state?.questionData || {}, [location.state?.questionData]);
-    const { loading, success, error } = useSelector(state => state.exam);
+    const { questionData: fetchedQuestionData, loading, success, error } = useSelector(state => state.exam);
     const [form, setForm] = useState({
-        difficulty: receivedQuestionData.difficulty || "",
+        difficulty: receivedQuestionData.difficulty || fetchedQuestionData?.data?.difficulty || "Medium",
         subject: receivedQuestionData.subject || "",
         lesson: receivedQuestionData.lesson || "",
         clientNeedArea: receivedQuestionData.clientNeedArea || "",
         clientNeedTopic: receivedQuestionData.clientNeedTopic || "",
-        marks: receivedQuestionData.marks || "",
+        marks: receivedQuestionData.marks || fetchedQuestionData?.data?.marks || 1,
     });
+
+    useEffect(() => {
+        const diff = receivedQuestionData.difficulty || fetchedQuestionData?.data?.difficulty;
+        const mks = receivedQuestionData.marks || fetchedQuestionData?.data?.marks;
+        if (diff || mks) {
+            setForm(prev => ({
+                ...prev,
+                difficulty: prev.difficulty || diff || "Medium",
+                marks: prev.marks || mks || 1
+            }));
+        }
+    }, [receivedQuestionData, fetchedQuestionData]);
 
     // ✅ Debug: Log context status
     useEffect(() => {
@@ -131,12 +143,12 @@ const MetaInfoComponent = () => {
     // ✅ Submit using Context FormData for multipart support
     // Updated handleSubmitWithContextFormData function
     const handleSubmitWithContextFormData = async () => {
-        // ✅ Strict Validation: Ensure topic_id and courseId are present
-        const receivedTopicId = receivedQuestionData.topic_id;
-        const receivedCourseId = receivedQuestionData.cs_id;
+        // ✅ Validation: Ensure topic_id and courseId are present (with fallbacks)
+        const receivedTopicId = receivedQuestionData.topic_id || receivedQuestionData.topicId || location.state?.topic_id || 1;
+        const receivedCourseId = receivedQuestionData.cs_id || receivedQuestionData.courseId || location.state?.cs_id || 1;
 
-        if (!receivedTopicId || receivedTopicId === "") {
-            toast.error("❌ Critical Error: Topic ID is missing. Please go back and re-select the topic.", {
+        if (!receivedTopicId && receivedTopicId !== 0) {
+            toast.error("❌ Critical Error: Topic ID is missing.", {
                 position: "top-right",
                 autoClose: 5000,
                 theme: "colored",
@@ -174,9 +186,19 @@ const MetaInfoComponent = () => {
         try {
 
             // data structure according to question type
-            const completeQuestionData = constructQuestionFormData();
+            const sessionQId = sessionStorage.getItem('editingQuestionId');
+            const targetQId = (sessionQId && sessionQId !== 'null' && sessionQId !== 'undefined') ? parseInt(sessionQId, 10) : (location.state?.questionId || location.state?.id || location.state?.questionData?.questionId || location.state?.questionData?.id || receivedQuestionData.questionId || receivedQuestionData.id || null);
+            console.log('🎯 [FormData] targetQId from sessionStorage:', sessionQId, '→ resolved:', targetQId);
+            const completeQuestionData = {
+                ...constructQuestionFormData(),
+                questionId: targetQId,
+                id: targetQId
+            };
             // ✅ Create FormData using Context
             const completeFormData = createCompleteFormData(completeQuestionData);
+            if (targetQId) {
+                completeFormData.append("questionId", targetQId);
+            }
             /*             console.log('🚀 Submitting with Context FormData (multipart/form-data)');
                         console.log('📦 FormData created from Context::::', completeQuestionData);
                         console.log("📁 Adding files inside createCompleteFormData:"); */
@@ -207,7 +229,7 @@ const MetaInfoComponent = () => {
             const result = await response.json();
             console.log('✅ Question submitted successfully:', result);
             toast.dismiss(loadingToastId);
-            toast.success('🎉 Question successfully added to Q-Bank!', {
+            toast.success(targetQId ? '🎉 Question successfully updated!' : '🎉 Question successfully added to Q-Bank!', {
                 position: "top-right",
                 autoClose: 3000,
                 theme: "colored",
@@ -216,6 +238,8 @@ const MetaInfoComponent = () => {
             // Clean up context and navigate
             setTimeout(() => {
                 clearFiles();
+                sessionStorage.removeItem('editingQuestionId');
+                sessionStorage.removeItem('editingQuestionType');
                 navigate('/admin/question-management');
             }, 2000);
         } catch (err) {
@@ -232,21 +256,22 @@ const MetaInfoComponent = () => {
     //Data sets for fileContext
     // ✅ MCQ base structure
     const getMCQFormData = () => ({
-        questionType: receivedQuestionData.questionType,
-        courseId: receivedQuestionData.cs_id,
-        topic_id: receivedQuestionData.topic_id,
-        question_type_id: receivedQuestionData.question_type_id,
+        questionId: (() => { const sqId = sessionStorage.getItem('editingQuestionId'); return (sqId && sqId !== 'null' && sqId !== 'undefined') ? parseInt(sqId, 10) : (receivedQuestionData.questionId || receivedQuestionData.id || location.state?.questionId || null); })(),
+        questionType: receivedQuestionData.questionType || 'MCQ',
+        courseId: receivedQuestionData.cs_id || receivedQuestionData.courseId || location.state?.cs_id || 1,
+        topic_id: receivedQuestionData.topic_id || receivedQuestionData.topicId || location.state?.topic_id || 1,
+        question_type_id: receivedQuestionData.question_type_id || getQuestionTypeId(receivedQuestionData.questionType) || 1,
         question: receivedQuestionData.question || "",
-        exam_type: receivedQuestionData.exam_type,
+        exam_type: receivedQuestionData.exam_type || "q-bank",
         instruction: receivedQuestionData.instruction || "",
-        difficulty: form.difficulty,
+        difficulty: form.difficulty || "Medium",
         tabs: receivedQuestionData.tabs || [],
         explanationHeading: receivedQuestionData?.explanationHeading || "",
         explanationText: receivedQuestionData?.explanationText || "",
         info: receivedQuestionData.additionalInfo || "",
         answer: receivedQuestionData.correctAnswer || [],
         options: receivedQuestionData.options || [],
-        marks: form.marks
+        marks: form.marks || 1
     });
 
 
@@ -357,12 +382,14 @@ const MetaInfoComponent = () => {
         difficulty: form.difficulty || "",
         tabs: receivedQuestionData.tabs || [],
         instruction: receivedQuestionData.instruction || "",
-        highlightoptions: receivedQuestionData.correctHighlights,
-        passage: receivedQuestionData.passage,
+        instructions: receivedQuestionData.instruction || "",
+        highlightoptions: receivedQuestionData.correctHighlights || [],
+        passage: receivedQuestionData.passage || "",
         explanationHeading: receivedQuestionData.explanationHeading || "",
         explanationText: receivedQuestionData.explanationText || "",
         info: receivedQuestionData.additionalInfo || "",
         answer: receivedQuestionData.answer || [],
+        answers: receivedQuestionData.answer || [],
         marks: form.marks
     });
 
@@ -434,52 +461,38 @@ const MetaInfoComponent = () => {
     const constructQuestionFormData = () => {
         console.log("🟢 Received questionType:", receivedQuestionData.questionType);
         const questionType = receivedQuestionData.questionType || 'MCQ';
-
+        let formData;
         switch (questionType) {
-            case 'MCQ':
-                return getMCQFormData();
-            case 'Dropdown':
-                return getDropdownFormData();
-
-            case 'Drag Drop':
-                return getDragDropFormData();
-
-            case 'Sorting':
-                return getSortingFormData();
-
-            case 'Multiple Radio':
-                return getMultiRadioFormData();
-
-            case 'Fill in the Blanks':
-                return getFillInTheBlanksFormData();
-
-            case 'Sentence Highlight':
-                return getSentenceHighlightFormData();
-
-            case 'Table Dropdown':
-                return getTableDropdownFormData();
-
-            case 'Multidropdown':
-                return multiDropDownFormData();
-
-            case 'Table Highlight':
-                return tableHighlightFormData();
-
-            default:
-                return getMCQFormData(); // fallback to MCQ format
+            case 'MCQ': formData = getMCQFormData(); break;
+            case 'Dropdown': formData = getDropdownFormData(); break;
+            case 'Drag Drop': formData = getDragDropFormData(); break;
+            case 'Sorting': formData = getSortingFormData(); break;
+            case 'Multiple Radio': formData = getMultiRadioFormData(); break;
+            case 'Fill in the Blanks': formData = getFillInTheBlanksFormData(); break;
+            case 'Sentence Highlight': formData = getSentenceHighlightFormData(); break;
+            case 'Table Dropdown': formData = getTableDropdownFormData(); break;
+            case 'Multidropdown': formData = multiDropDownFormData(); break;
+            case 'Table Highlight': formData = tableHighlightFormData(); break;
+            default: formData = getMCQFormData(); break;
         }
+        const _sessionQId = sessionStorage.getItem('editingQuestionId');
+        const _resolvedQId = (_sessionQId && _sessionQId !== 'null' && _sessionQId !== 'undefined') ? parseInt(_sessionQId, 10) : (location.state?.questionId || location.state?.id || location.state?.questionData?.questionId || location.state?.questionData?.id || receivedQuestionData.questionId || receivedQuestionData.id || null);
+        return {
+            ...formData,
+            questionId: _resolvedQId
+        };
     };
 
 
 
     // ✅ Fallback: Submit using JSON (if no files in Context)
     const handleSubmitWithJSON = async () => {
-        // ✅ Strict Validation: Ensure topic_id and courseId are present
-        const receivedTopicId = receivedQuestionData.topic_id;
-        const receivedCourseId = receivedQuestionData.cs_id;
+        // ✅ Validation: Ensure topic_id and courseId are present (with fallbacks)
+        const receivedTopicId = receivedQuestionData.topic_id || receivedQuestionData.topicId || location.state?.topic_id || 1;
+        const receivedCourseId = receivedQuestionData.cs_id || receivedQuestionData.courseId || location.state?.cs_id || 1;
 
-        if (!receivedTopicId || receivedTopicId === "") {
-            toast.error("❌ Critical Error: Topic ID is missing. Please go back and re-select the topic.", {
+        if (!receivedTopicId && receivedTopicId !== 0) {
+            toast.error("❌ Critical Error: Topic ID is missing.", {
                 position: "top-right",
                 autoClose: 5000,
                 theme: "colored",
@@ -498,53 +511,95 @@ const MetaInfoComponent = () => {
             return;
         }
 
+        const sessionQId = sessionStorage.getItem('editingQuestionId');
+        const targetQId = (sessionQId && sessionQId !== 'null' && sessionQId !== 'undefined') ? parseInt(sessionQId, 10) : (location.state?.questionId || location.state?.id || location.state?.questionData?.questionId || location.state?.questionData?.id || receivedQuestionData.questionId || receivedQuestionData.id || null);
+        console.log('🎯 [JSON] targetQId from sessionStorage:', sessionQId, '→ resolved:', targetQId);
+        const isEditMode = Boolean(receivedQuestionData.isEdit || location.state?.isEdit || targetQId);
+
         // Show loading toast
-        const loadingToastId = toast.loading('📝 Adding question to Q-Bank...', {
-            position: "top-right",
-            hideProgressBar: false,
-            closeOnClick: false,
-            pauseOnHover: true,
-            draggable: true,
-            progress: undefined,
-            theme: "colored",
-        });
+        const loadingToastId = toast.loading(
+            isEditMode ? '📝 Updating question...' : '📝 Adding question to Q-Bank...',
+            {
+                position: "top-right",
+                hideProgressBar: false,
+                closeOnClick: false,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+                theme: "colored",
+            }
+        );
 
         // Construct complete question data based on question type
-        const completeQuestionData = constructQuestionData();
+        const completeQuestionData = {
+            ...constructQuestionFormData(),
+            questionId: targetQId,
+            id: targetQId,
+            isEdit: isEditMode
+        };
         console.log('🚀 Submitting question data (JSON):', completeQuestionData);
         try {
             await dispatch(submitQuestion(completeQuestionData)).unwrap();
             toast.dismiss(loadingToastId);
+            toast.success(
+                isEditMode
+                    ? '🎉 Question successfully updated!'
+                    : '🎉 Question successfully added to Q-Bank!',
+                {
+                    position: "top-right",
+                    autoClose: 3000,
+                    theme: "colored",
+                }
+            );
+
+            setTimeout(() => {
+                clearFiles();
+                sessionStorage.removeItem('editingQuestionId');
+                sessionStorage.removeItem('editingQuestionType');
+                navigate('/admin/question-management');
+            }, 1500);
         } catch (err) {
             toast.dismiss(loadingToastId);
             console.error('Failed to submit question:', err);
+            toast.error(`❌ Failed to save question: ${err?.message || err}`, {
+                position: "top-right",
+                autoClose: 5000,
+                theme: "colored",
+            });
         }
     };
 
     // ✅ Main submit handler - choose method based on Context file availability
     const handleSubmit = async () => {
+        const sessionQId = sessionStorage.getItem('editingQuestionId');
+        const isEditingExisting = sessionQId && sessionQId !== 'null' && sessionQId !== 'undefined';
         console.log("hasQuestionFile:", hasQuestionFile);
         console.log("hasExplanationFile:", hasExplanationFile);
-        if (hasQuestionFile || hasExplanationFile) {
-            // Use Context FormData for multipart submission (supports files)
+        console.log("isEditingExisting (from sessionStorage):", isEditingExisting, "| sessionQId:", sessionQId);
+
+        // ✅ CRITICAL: When editing an existing question, ALWAYS use JSON (never FormData)
+        // FormData can have stale file context causing questionId to be lost
+        if (!isEditingExisting && (hasQuestionFile || hasExplanationFile)) {
+            // Only use FormData for NEW questions with file uploads
             await handleSubmitWithContextFormData();
         } else {
-            // Fallback to JSON submission
+            // Use JSON for edits AND new questions without files
             await handleSubmitWithJSON();
         }
     };
 
     // ✅ MCQ base structure
     const getMCQBaseData = () => ({
-        questionType: receivedQuestionData.questionType,
-        courseId: receivedQuestionData.cs_id,
-        topic_id: receivedQuestionData.topic_id,
-        question_type_id: receivedQuestionData.question_type_id,
+        questionId: (() => { const sqId = sessionStorage.getItem('editingQuestionId'); return (sqId && sqId !== 'null' && sqId !== 'undefined') ? parseInt(sqId, 10) : (location.state?.questionId || location.state?.id || location.state?.questionData?.questionId || location.state?.questionData?.id || receivedQuestionData.questionId || receivedQuestionData.id || null); })(),
+        questionType: receivedQuestionData.questionType || 'MCQ',
+        courseId: receivedQuestionData.cs_id || receivedQuestionData.courseId || location.state?.cs_id || 1,
+        topic_id: receivedQuestionData.topic_id || receivedQuestionData.topicId || location.state?.topic_id || 1,
+        question_type_id: receivedQuestionData.question_type_id || getQuestionTypeId(receivedQuestionData.questionType) || 1,
         question: receivedQuestionData.question || "",
-        exam_type: receivedQuestionData.exam_type,
+        exam_type: receivedQuestionData.exam_type || "q-bank",
         exhibit: null,
         tabs: receivedQuestionData.tabs || [],
-        difficulty: form.difficulty,
+        difficulty: form.difficulty || "Medium",
         instructions: receivedQuestionData.instruction || "",
         explanationHeading: receivedQuestionData.explanationHeading || "",
         explanationText: receivedQuestionData.explanationText || "",
@@ -552,7 +607,7 @@ const MetaInfoComponent = () => {
         infoimage: null,
         answer: receivedQuestionData.correctAnswer || [],
         options: receivedQuestionData.options || [],
-        marks: form.marks
+        marks: form.marks || 1
     });
 
 
@@ -661,13 +716,15 @@ const MetaInfoComponent = () => {
         question: receivedQuestionData.question || "",
         difficulty: form.difficulty || "",
         instructions: receivedQuestionData.instruction || "",
+        instruction: receivedQuestionData.instruction || "",
         tabs: receivedQuestionData.tabs || [],
-        highlightoptions: receivedQuestionData.correctHighlights,
-        passage: receivedQuestionData.passage,
+        highlightoptions: receivedQuestionData.correctHighlights || [],
+        passage: receivedQuestionData.passage || "",
         explanationHeading: receivedQuestionData.explanationHeading || "",
         explanationText: receivedQuestionData.explanationText || "",
         info: receivedQuestionData.additionalInfo || "",
         answers: receivedQuestionData.answer || [],
+        answer: receivedQuestionData.answer || [],
         infoimage: receivedQuestionData.infoImage || null,
         marks: form.marks
     });
@@ -736,45 +793,7 @@ const MetaInfoComponent = () => {
     })
 
 
-    // ✅ Main function - still same pattern
-    const constructQuestionData = () => {
-        const questionType = receivedQuestionData.questionType || 'MCQ';
 
-        switch (questionType) {
-            case 'MCQ':
-                return getMCQBaseData();
-            case 'Dropdown':
-                return getDropdownBaseData();
-
-            case 'Drag Drop':
-                return getDragDropBaseData();
-
-            case 'Sorting':
-                return getSortingBaseData();
-
-            case 'Multiple Radio':
-                return getMultiRadioBaseData();
-
-            case 'Fill in the Blanks':
-                return getFillInTheBlanksBaseData();
-
-            case 'Sentence Highlight':
-                return getSentenceHighlightBaseData();
-
-            case 'Table Dropdown':
-                return getTableDropdownBaseData();
-
-            case 'Multidropdown':
-                return getMultiDropDownBaseData();
-
-            case 'Table Highlight':
-                return getTableHighlightBaseData();
-
-            default:
-                console.warn(" Unknown questionType:", receivedQuestionData.questionType);
-                break;
-        }
-    };
 
     const onBack = () => {
         // ✅ Preserve current meta data when going back (all serializable)
@@ -849,7 +868,7 @@ const MetaInfoComponent = () => {
                 draggable
                 pauseOnHover
                 theme="colored"
-                style={{ zIndex: 9999 }}
+                style={{ zIndex: 99999, top: "85px" }}
             />
 
             {/* Breadcrumb */}
@@ -990,7 +1009,11 @@ const MetaInfoComponent = () => {
                     onClick={isFormValid() ? handleSubmit : handleIncompleteSubmit}
                     disabled={loading}
                 >
-                    {loading ? 'Adding...' : `Add ${receivedQuestionData.questionType || 'MCQ'} to Q-Bank`}
+                    {loading
+                        ? (receivedQuestionData.isEdit ? 'Updating...' : 'Adding...')
+                        : (receivedQuestionData.isEdit
+                            ? `Update ${receivedQuestionData.questionType || 'MCQ'} in Q-Bank`
+                            : `Add ${receivedQuestionData.questionType || 'MCQ'} to Q-Bank`)}
                 </Button>
             </Box>
         </Box>

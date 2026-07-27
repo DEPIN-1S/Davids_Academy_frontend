@@ -201,6 +201,9 @@ function TableHighlightsQuestionContent() {
             rightColumn: row.options[1][0],
         }));
 
+        const realQuestionId = location.state?.questionId || location.state?.id || location.state?.questionData?.id || location.state?.questionData?.questionId || fetchedQuestionData?.data?.id || null;
+        const isEditMode = location.state?.isEdit || Boolean(realQuestionId);
+
         const questionData = {
             cs_id,
             topic_id,
@@ -216,15 +219,24 @@ function TableHighlightsQuestionContent() {
             tabs: tabs.filter((tab) => tab.tabKey.trim() && tab.tabValue.trim()),
             instruction: instruction.trim(),
             answers,
+            explanationHeading: fetchedQuestionData?.data?.explanationHeading || (Array.isArray(fetchedQuestionData?.data?.explanation) ? fetchedQuestionData?.data?.explanation[0]?.heading : "") || existingData?.explanationHeading || "",
+            explanationText: fetchedQuestionData?.data?.explanationText || (Array.isArray(fetchedQuestionData?.data?.explanation) ? fetchedQuestionData?.data?.explanation[0]?.explanation : "") || existingData?.explanationText || "",
+            additionalInfo: fetchedQuestionData?.data?.additionalInfo || (Array.isArray(fetchedQuestionData?.data?.additionalInfo) ? fetchedQuestionData?.data?.additionalInfo[0]?.info : "") || existingData?.additionalInfo || "",
+            difficulty: fetchedQuestionData?.data?.difficulty || existingData?.difficulty || "Medium",
+            marks: fetchedQuestionData?.data?.marks || existingData?.marks || 1,
             createdAt: existingData.createdAt || new Date().toISOString(),
             updatedAt: new Date().toISOString(),
-            questionId: existingData.questionId || `${questionType}_${Date.now()}`,
+            questionId: realQuestionId,
+            id: realQuestionId,
+            isEdit: isEditMode,
             currentStep: "content",
             completedSteps: ["type", "content"],
         };
 
         navigate("/admin/answer-explain", {
             state: {
+                isEdit: isEditMode,
+                questionId: realQuestionId,
                 questionData,
                 hasFile: hasQuestionFile,
                 fileInfo: selectedFile
@@ -236,6 +248,10 @@ function TableHighlightsQuestionContent() {
     };
 
     const handleBack = () => {
+        if (location.state?.isEdit) {
+            navigate('/admin/question-management');
+            return;
+        }
         const currentData = { question: question.trim(), headers, tabs, rows, instruction, answers };
         navigate("/admin/question-type", {
             state: { questionData: currentData, fromStep: "content", cs_id, topic_id, exam_type, question_type_id }
