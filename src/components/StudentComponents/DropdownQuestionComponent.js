@@ -191,9 +191,16 @@ const DropdownQuestionComponent = ({ question, onSubmit, submittedResult }) => {
   };
 
   if (!question || !dropdowns.length) {
+    // Debug: log what was received so we can diagnose the issue
+    console.error('[DropdownQuestionComponent] No dropdown data available. question:', question, 'dropdowns:', dropdowns);
     return (
       <Box sx={{ padding: 2, textAlign: "center" }}>
         <Typography>No dropdown question data available</Typography>
+        {question && (
+          <Typography variant="caption" sx={{ color: '#999', mt: 1, display: 'block' }}>
+            QID: {question.id} | Type: {question.question_type} | Fields: {dropdowns.length}
+          </Typography>
+        )}
       </Box>
     );
   }
