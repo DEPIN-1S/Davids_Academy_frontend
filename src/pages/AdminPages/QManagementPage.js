@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { FaTrash, FaEdit, FaPlus, FaSearch } from "react-icons/fa";
+import { FaTrash, FaEdit, FaPlus, FaSearch, FaWhatsapp } from "react-icons/fa";
 import { adminFetchQBankQuestions, adminFetchMockTestQuestions, adminFetchTestQuestions, getTestQuestions, adminDeleteQBankQuestion, adminDeleteTest, adminUpdateTestThunk } from "../../features/exam/examSlice";
 import "../../styles/AdminStyles/QManagement.css";
 import { useNavigate } from "react-router-dom";
@@ -9,6 +9,7 @@ import 'react-toastify/dist/ReactToastify.css';
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import { Modal, Box, Button, TextField } from "@mui/material";
 import { stripHtml } from "../../utils/htmlHelper";
+import { buildChannelCaption, getChannelQuestionUrl } from "../../config/whatsapp";
 
 
 const QManagementPage = () => {
@@ -49,6 +50,15 @@ const QManagementPage = () => {
     const [testPage, setTestPage] = useState(1);
     const limit = 10;
 
+    const handleCopyChannelLink = async (questionId) => {
+        const caption = buildChannelCaption(questionId);
+        try {
+            await navigator.clipboard.writeText(caption);
+            toast.success(`Copied Channel caption for Q-${questionId}`);
+        } catch {
+            window.prompt("Copy this caption for WhatsApp Channel:", caption);
+        }
+    };
 
     const handleViewQuestion = (questionData) => {
         console.log("Question Data in question view", questionData);
@@ -523,6 +533,15 @@ const QManagementPage = () => {
                                                 >
                                                     <VisibilityIcon fontSize="small" />
                                                     View
+                                                </button>
+                                                <button
+                                                    type="button"
+                                                    className="copy-channel-btn"
+                                                    title={getChannelQuestionUrl(q.id)}
+                                                    onClick={() => handleCopyChannelLink(q.id)}
+                                                >
+                                                    <FaWhatsapp />
+                                                    Copy
                                                 </button>
                                             </td>
 

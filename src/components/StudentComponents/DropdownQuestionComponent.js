@@ -264,6 +264,7 @@ const DropdownQuestionComponent = ({ question, onSubmit, submittedResult }) => {
       )}
 
       {/* Tabs Card */}
+      {tabsInfo?.length > 0 && (
       <Box
         sx={{
 
@@ -362,6 +363,7 @@ const DropdownQuestionComponent = ({ question, onSubmit, submittedResult }) => {
           )}
         </Box>
       </Box>
+      )}
 
       {/* Dropdowns */}
       <Box sx={{ mb: 4 }}>

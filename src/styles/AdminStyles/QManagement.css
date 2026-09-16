@@ -243,6 +243,20 @@
   cursor: pointer;
 }
 
+.q-management-futuristic .copy-channel-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-left: 6px;
+  border: none;
+  border-radius: 999px;
+  padding: 6px 12px;
+  background: #25d366;
+  color: #fff;
+  font-weight: 700;
+  cursor: pointer;
+}
+
 .q-management-futuristic .pagination-controls {
   display: flex;
   justify-content: center;

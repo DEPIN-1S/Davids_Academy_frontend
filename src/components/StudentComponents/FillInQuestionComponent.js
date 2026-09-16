@@ -3,18 +3,36 @@ import {
   Box, Typography, Button, Select, MenuItem, Tabs, Tab, Card, CardContent
 } from '@mui/material';
 import RevealAnswerComponent from './RevealAnswerComponent';
+const isTruthyBlank = (value) =>
+  value === true || value === "true" || value === 1 || value === "1";
+
 const FillInQuestionComponent = ({ question, onSubmit }) => {
-  // Destructure question object
+  // Destructure question object — sample/Q-bank APIs send FTB* field names
   const {
     question: questionHeading,
-    question_content = [],
     marks,
-    options = [],
-    tabs = [],
     actions = [],
     explanation = [],
     additionalInfo = []
   } = question || {};
+
+  const question_content = (question?.question_content || question?.FTBquestion_content || []).map((part) => ({
+    ...part,
+    question_text: part.question_text || "",
+    blank_or_not: isTruthyBlank(part.blank_or_not ?? part.blankOrNot) ? "true" : "false",
+    fill_blanks_answer: part.fill_blanks_answer || part.answers || "",
+  }));
+  const tabs = question?.tabs?.length ? question.tabs : (question?.tabsInfo || []);
+  let options = question?.options || [];
+  if ((!options || !options.length) && question?.FTBoptions) {
+    const ftbOpts = question.FTBoptions;
+    const values = Array.isArray(ftbOpts.options)
+      ? ftbOpts.options.map((o) =>
+          typeof o === "string" ? o : o.option_value || o.option || o.value || ""
+        )
+      : [];
+    options = [{ option_heading: ftbOpts.heading || "", option_value: values }];
+  }
 
   // Tab management
   const [tabIndex, setTabIndex] = useState(0);
@@ -102,13 +120,11 @@ const FillInQuestionComponent = ({ question, onSubmit }) => {
       </Box>
 
       {/* Actions to take */}
+      {actions?.length > 0 && (
       <Box sx={{ mt: 4, mb: 0, display: 'flex', flexDirection: 'row', justifyContent: 'flex-end' }}>
         <Box>
           <Typography variant="subtitle2" fontWeight={700} mb={1}>Action to take</Typography>
-          {(actions?.length ? actions : [
-            // fallback example
-            { label: 'Administer high-flow oxygen via a non-rebreather mask.' }
-          ]).map((a, idx) => (
+          {actions.map((a, idx) => (
             <Card
               key={a.label || idx}
               sx={{
@@ -127,6 +143,7 @@ const FillInQuestionComponent = ({ question, onSubmit }) => {
           ))}
         </Box>
       </Box>
+      )}
 
       {/* Reveal answer button */}
       <Box textAlign="center" mt={4}>

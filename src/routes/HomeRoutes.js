@@ -9,7 +9,8 @@ import ContactPage from "../pages/ContactPage";
 import SampleQuestionsPage from "../pages/SampleQuestionnaire";
 import SampleQuestionnaire from "../components/SampleQuestionnaire";
 import LoginPage from "../pages/LoginPage";
-import ExamContainer from "../components/StudentComponents/ExamContainer"; // Adjust path
+import ExamContainer from "../components/StudentComponents/ExamContainer";
+import PublicQuestionPage from "../pages/PublicQuestionPage";
 
 const HomeRoutes = () => (
   <>
@@ -21,9 +22,10 @@ const HomeRoutes = () => (
       <Route path="/contact-us" element={<ContactPage />} />
       <Route path="/sample-questionnaire" element={<SampleQuestionnaire />} />
       <Route path="/sample-questions" element={<SampleQuestionsPage />} />
+      <Route path="/q/:id" element={<PublicQuestionPage />} />
+      <Route path="/q" element={<PublicQuestionPage />} />
       <Route path="/login" element={<LoginPage />} />
-      {/* { Add route for sample exam (no auth, no navbar) */} 
-      <Route path="/exam" element={<ExamContainer />} />  
+      <Route path="/exam" element={<ExamContainer />} />
     </Route>
   </>
 );

@@ -612,7 +612,10 @@ export const fetchSampleQuestionData = async (questionId) => {
     }
 
     const data = await response.json();
-    return data.data; // Assumes structure with question details
+    if (!data?.result || !data.data) {
+      throw new Error(data?.message || "Question not found");
+    }
+    return data.data;
   } catch (error) {
     throw error;
   }

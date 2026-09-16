@@ -5,12 +5,16 @@ import { WA_CHANNEL_URL } from "../config/whatsapp";
 import "../styles/WhatsAppCta.css";
 
 const HIDE_FLOAT_PATH =
-  /\/(admin|student\/(exam|mcq|dropdown-question|dragdrop-question|multi-radio-question|sort-question|sentence-question|fill-in-question|reveal-answer))/;
+  /\/(admin|q(\/|$)|student\/(exam|mcq|dropdown-question|dragdrop-question|multi-radio-question|sort-question|sentence-question|fill-in-question|reveal-answer))/;
 
 const WhatsAppChannelFloat = () => {
   const { pathname } = useLocation();
 
-  if (!WA_CHANNEL_URL || HIDE_FLOAT_PATH.test(pathname)) {
+  if (
+    !WA_CHANNEL_URL ||
+    pathname.startsWith("/q") ||
+    HIDE_FLOAT_PATH.test(pathname)
+  ) {
     return null;
   }
 

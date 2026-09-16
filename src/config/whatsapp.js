@@ -73,3 +73,21 @@ export const buildExamHelpLink = (studentName, options) =>
 
 export const WA_PHONE_HREF = `tel:+${WA_NUMBER}`;
 export const WA_CHAT_HREF = `https://wa.me/${WA_NUMBER}`;
+
+export const SITE_URL = "https://davids-academy.com";
+
+const siteOrigin = (origin = SITE_URL) => String(origin || SITE_URL).replace(/\/$/, "");
+
+export const getChannelQuestionPath = (questionId) => `/q/${questionId}`;
+
+export const getChannelQuestionUrl = (questionId, origin = SITE_URL) =>
+  `${siteOrigin(origin)}${getChannelQuestionPath(questionId)}`;
+
+export const buildChannelCaption = (questionId, origin = SITE_URL) =>
+  [
+    "Today's practice question. Answer here:",
+    getChannelQuestionUrl(questionId, origin),
+    "",
+    "Follow for daily NCLEX / DHA questions:",
+    `${siteOrigin(origin)}/`,
+  ].join("\n");
