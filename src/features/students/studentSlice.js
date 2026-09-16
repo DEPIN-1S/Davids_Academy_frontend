@@ -7,7 +7,13 @@ import { fetchStudentTestProgress } from "../../features/students/studentApi"
 
 export const fetchStudents = createAsyncThunk(
   "students/fetchStudents",
-  async ({ page, limit, searchQuery, filterStatus }, { rejectWithValue }) => {
+  async (args = {}, { rejectWithValue }) => {
+    const {
+      page = 1,
+      limit = 10,
+      searchQuery = "",
+      filterStatus = "all",
+    } = args || {};
     try {
       const token = sessionStorage.getItem("accessToken");
       const response = await listStudents(token, page, limit, searchQuery, filterStatus);
@@ -140,10 +146,10 @@ const studentSlice = createSlice({
       })
       .addCase(fetchStudents.fulfilled, (state, action) => {
         state.loading = false;
-        state.list = action.payload.data || [];   // or .list depending on API
-        state.totalPages = action.payload.pagination.totalPages;
-        state.currentPage = action.payload.pagination.page;
-        state.total = action.payload.pagination.total;
+        state.list = action.payload.data || [];
+        state.totalPages = action.payload.pagination?.totalPages || 1;
+        state.currentPage = action.payload.pagination?.page || 1;
+        state.total = action.payload.pagination?.total || 0;
       })
 
       .addCase(fetchStudents.rejected, (state, action) => {

@@ -24,6 +24,7 @@ import {
 import { useNavigate } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import { fetchCourses, removeCourse } from '../../features/courses/courseSlice';
+import '../../styles/AdminStyles/CourseManage.css';
 
 const CourseManagementComponent = () => {
     const theme = useTheme();
@@ -85,52 +86,34 @@ const CourseManagementComponent = () => {
 
 
     // Display all courses except those being deleted right now
-    const displayCourses = courses.filter(
+    const displayCourses = (courses || []).filter(
         (course) => !pendingDeleteIds.includes(course.cs_id)
     );
 
 
     return (
-        <Container maxWidth="xl" sx={{ py: { xs: 2, sm: 3, md: 4 } }}>
+        <Container maxWidth="xl" className="course-manage-futuristic" sx={{ py: { xs: 2, sm: 3, md: 4 } }}>
             {/* Header Section */}
-            <Box
-                sx={{
-                    display: 'flex',
-                    flexDirection: { xs: 'column', sm: 'row' },
-                    justifyContent: 'space-between',
-                    alignItems: { xs: 'stretch', sm: 'center' },
-                    mb: { xs: 2, sm: 3, md: 4 },
-                    gap: { xs: 2, sm: 0 }
-                }}
-            >
+            <Box className="course-manage-header">
                 <Typography
                     variant="h4"
                     component="h4"
+                    className="course-manage-title"
                     sx={{
-                        fontWeight: 600,
+                        fontWeight: 700,
                         fontSize: { xs: '1.5rem', sm: '2rem', md: '2.25rem' },
-                        color: 'text.primary',
                         mb: { xs: 1, sm: 0 }
                     }}
                 >
                     Available Courses
+                    <span className="course-count">{displayCourses.length}</span>
                 </Typography>
                 <Button
                     variant="contained"
                     startIcon={<AddIcon />}
                     onClick={handleAddCourse}
-                    sx={{
-                        bgcolor: '#ff9800',
-                        color: '#ffff',
-                        fontWeight: 500,
-                        px: { xs: 2, sm: "13px" },
-                        py: { xs: 1, sm: "8px" },
-                        borderRadius: 2,
-                        textTransform: 'none',
-                        fontSize: { xs: '0.875rem', sm: '0.85rem' },
-                        minWidth: { xs: '100%', sm: 'auto' },
-                        '&:hover': { bgcolor: '#e88b00' }
-                    }}
+                    className="add-course-btn"
+                    sx={{ textTransform: 'none' }}
                 >
                     Add Course
                 </Button>
@@ -216,27 +199,21 @@ const CourseManagementComponent = () => {
 
             {/* Course Cards */}
             <Grid container spacing={{ xs: 2, sm: 3, md: 3 }}>
-                {displayCourses.map((course) => (
+                {displayCourses.map((course, index) => (
                     <Grid
                         item
                         xs={12}
                         sm={6}
                         key={course.cs_id}
+                        style={{ animationDelay: `${index * 0.06}s` }}
+                        className="course-card-wrap"
                     >
                         <Card
+                            className="course-glass-card"
                             sx={{
                                 height: '100%',
                                 display: 'flex',
-                                flexDirection: 'column',
-                                borderRadius: 3,
-                                boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
-                                transition: 'all 0.3s ease',
-                                border: '1px solid',
-                                borderColor: 'grey.200',
-                                '&:hover': {
-                                    boxShadow: '0 8px 24px rgba(0,0,0,0.15)',
-                                    transform: 'translateY(-2px)'
-                                }
+                                flexDirection: 'column'
                             }}
                         >
                             <CardContent
@@ -335,20 +312,9 @@ const CourseManagementComponent = () => {
 
                                 {/* Status Chip */}
                                 <Chip
+                                    className={`status-chip ${course.cs_status === 'inactive' ? 'is-inactive' : 'is-active'}`}
                                     label={course.cs_status ? course.cs_status.charAt(0).toUpperCase() + course.cs_status.slice(1) : "Active"}
                                     size="medium"
-                                    sx={{
-                                        bgcolor: course.cs_status === 'inactive' ? '#FFE6E6' : '#E6F4EA', // red-ish for inactive, green-ish for active
-                                        color: course.cs_status === 'inactive' ? '#D32F2F' : '#388E3C',
-                                        fontWeight: 600,
-                                        fontSize: { xs: '1rem', sm: '1.1rem' },  // larger text
-                                        borderRadius: '16px',   // slightly more rounded
-                                        px: 2.5,                // more horizontal padding
-                                        py: 1,                  // more vertical padding
-                                        minHeight: '40px',      // ensures height is bigger
-                                        textTransform: 'capitalize',
-                                        
-                                    }}
                                 />
                             </CardContent>
 
@@ -396,30 +362,21 @@ const CourseManagementComponent = () => {
                                     <Stack direction="row" spacing={1}>
                                         <Button
                                             variant="outlined"
+                                            className="course-edit-btn"
                                             startIcon={<EditIcon />}
                                             onClick={() => handleEditCourse(course.cs_id)}
                                             size={isTablet ? "small" : "medium"}
-                                            sx={{
-                                                textTransform: 'none',
-                                                fontWeight: 500,
-                                                borderRadius: 2,
-                                                px: { sm: 1.5, md: 2 }
-                                            }}
+                                            sx={{ textTransform: 'none' }}
                                         >
                                             Edit
                                         </Button>
                                         <Button
                                             variant="outlined"
-                                            color="error"
+                                            className="course-delete-btn"
                                             startIcon={<DeleteIcon />}
                                             onClick={() => handleDeleteCourse(course.cs_id)}
                                             size={isTablet ? "small" : "medium"}
-                                            sx={{
-                                                textTransform: 'none',
-                                                fontWeight: 500,
-                                                borderRadius: 2,
-                                                px: { sm: 1.5, md: 2 }
-                                            }}
+                                            sx={{ textTransform: 'none' }}
                                             disabled={deleteLoading}
                                         >
                                             Delete

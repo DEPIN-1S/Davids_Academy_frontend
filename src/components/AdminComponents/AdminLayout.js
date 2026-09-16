@@ -3,6 +3,7 @@ import { Outlet } from "react-router-dom";
 import Sidebar from "./Sidebar/Sidebar";
 import NavBar from "./NavBar/NavBar";
 import "../../styles/AdminStyles/AdminLayout.css";
+import "../../styles/AdminStyles/QuestionEditor.css";
 
 const AdminLayout = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false); // Mobile toggle
@@ -17,7 +18,11 @@ const AdminLayout = () => {
     };
 
     window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
+    document.body.classList.add("admin-theme");
+    return () => {
+      window.removeEventListener('resize', handleResize);
+      document.body.classList.remove("admin-theme");
+    };
   }, []);
 
   const toggleSidebar = () => setIsSidebarOpen(!isSidebarOpen);

@@ -120,7 +120,7 @@ function AddTest() {
 
 
   return (
-    <Box sx={{ maxWidth: 1400, mx: "auto", px: 2, display: "flex", flexDirection: "column", gap: 2 }}>
+    <Box className="question-editor-futuristic question-editor-wide" sx={{ maxWidth: 1400, mx: "auto", px: 2, py: 3, display: "flex", flexDirection: "column", gap: 2 }}>
       <Typography variant="subtitle2" color="text.secondary">
         Tests &nbsp;&gt;&nbsp; Add Test
       </Typography>

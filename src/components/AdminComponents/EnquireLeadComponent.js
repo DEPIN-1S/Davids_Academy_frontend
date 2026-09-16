@@ -13,7 +13,7 @@ const EnquireLeadComponent = () => {
     }, [dispatch]);
 
     return (
-        <div className="enquire-lead-page">
+        <div className="enquire-lead-page enquire-lead-futuristic">
             <div className="content-area">
                 
                 {/* Table Section */}
@@ -31,7 +31,7 @@ const EnquireLeadComponent = () => {
                             </div>
                         )}
                         {/* Desktop Table */}
-                        {!loading && !error && recentEnquiries.length > 0 && (
+                        {!loading && !error && (recentEnquiries || []).length > 0 && (
                             <div className="desktop-table">
                                 <table className="enquiries-table">
                                     <thead>
@@ -44,8 +44,12 @@ const EnquireLeadComponent = () => {
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        {recentEnquiries.map((enquiry, index) => (
-                                            <tr key={enquiry.cu_id || index} className={index % 2 === 1 ? "row-even" : "row-odd"}>
+                                        {(recentEnquiries || []).map((enquiry, index) => (
+                                            <tr
+                                                key={enquiry.cu_id || index}
+                                                className={index % 2 === 1 ? "row-even" : "row-odd"}
+                                                style={{ animationDelay: `${index * 0.03}s` }}
+                                            >
                                                 <td className="cell-qid">{enquiry?.cu_id || index + 1}</td>
                                                 <td className="cell-preview">{enquiry?.cu_name}</td>
                                                 <td className="cell-contact">
@@ -60,17 +64,21 @@ const EnquireLeadComponent = () => {
                             </div>
                         )}
                         {/* Empty state */}
-                        {!loading && !error && recentEnquiries.length === 0 && (
+                        {!loading && !error && (recentEnquiries || []).length === 0 && (
                             <div style={{ textAlign: "center", color: "#888", padding: "3rem" }}>
                                 No enquiries found.
                             </div>
                         )}
 
                         {/* Mobile Cards */}
-                        {!loading && !error && recentEnquiries.length > 0 && (
+                        {!loading && !error && (recentEnquiries || []).length > 0 && (
                             <div className="mobile-cards">
                                 {recentEnquiries.map((enquiry, index) => (
-                                    <div key={enquiry.cu_id || index} className="enquiry-card">
+                                    <div
+                                        key={enquiry.cu_id || index}
+                                        className="enquiry-card"
+                                        style={{ animationDelay: `${index * 0.04}s` }}
+                                    >
                                         <div className="card-header">
                                             <span className="qid-badge">{enquiry.cu_id || index + 1}</span>
                                         </div>

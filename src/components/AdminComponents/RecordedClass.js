@@ -70,11 +70,23 @@ const CourseManagement = () => {
         }, 400); // 400ms debounce
     };
 
-    if (loading) return <p>Loading recordings...</p>;
-    if (error) return <p style={{ color: "red" }}>Error: {error}</p>;
+    if (loading) {
+        return (
+            <div className="recorded-classes-container recorded-classes-futuristic">
+                <p className="rc-status">Loading recordings...</p>
+            </div>
+        );
+    }
+    if (error) {
+        return (
+            <div className="recorded-classes-container recorded-classes-futuristic">
+                <p className="rc-status is-error">Error: {error}</p>
+            </div>
+        );
+    }
 
     return (
-        <div className="recorded-classes-container">
+        <div className="recorded-classes-container recorded-classes-futuristic">
             <div className="recorded-class-header">
                 <div className="search-container">
                     <input
@@ -92,8 +104,12 @@ const CourseManagement = () => {
 
             <div className="classes-grid">
                 {Array.isArray(recordings) && recordings.length > 0 ? (
-                    recordings.map((cls) => (
-                        <div key={cls.r_id} className="class-card">
+                    recordings.map((cls, index) => (
+                        <div
+                            key={cls.r_id}
+                            className="class-card"
+                            style={{ animationDelay: `${index * 0.06}s` }}
+                        >
                             <div className="card-thumbnail">
                                 <img
                                     src={`${process.env.REACT_APP_API_URL.replace('/davidsacademy', '')}/${cls.r_thumbnail}`}

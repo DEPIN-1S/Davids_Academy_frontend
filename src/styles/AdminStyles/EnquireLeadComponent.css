@@ -8,6 +8,13 @@
   padding-top: 30px;
 }
 
+.enquire-lead-futuristic.enquire-lead-page {
+  background: transparent;
+  padding-top: 0;
+  font-family: "Inter", "Segoe UI", sans-serif;
+  color: #e8eefc;
+}
+
 /* Page Header */
 .page-header {
   background: white;
@@ -122,6 +129,90 @@
   border-radius: 8px;
   overflow: hidden;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.enquire-lead-futuristic .content-area {
+  max-width: none;
+  padding: 0;
+}
+
+.enquire-lead-futuristic .table-section {
+  background: linear-gradient(180deg, rgba(20, 32, 64, 0.96), rgba(12, 20, 42, 0.96));
+  border: 1px solid rgba(94, 234, 212, 0.16);
+  border-radius: 18px;
+  box-shadow: 0 16px 36px rgba(8, 16, 36, 0.12);
+}
+
+.enquire-lead-futuristic .enquiries-table thead {
+  background: rgba(34, 211, 238, 0.12);
+}
+
+.enquire-lead-futuristic .enquiries-table th {
+  color: #d7e3f7;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+  font-weight: 700;
+  font-size: 0.75rem;
+}
+
+.enquire-lead-futuristic .enquiries-table td {
+  color: #e8eefc;
+  border-bottom: 1px solid rgba(157, 176, 208, 0.1);
+}
+
+.enquire-lead-futuristic .enquiries-table tbody tr {
+  animation: rowIn 0.4s ease both;
+}
+
+.enquire-lead-futuristic .enquiries-table tbody tr.row-odd {
+  background: transparent;
+}
+
+.enquire-lead-futuristic .enquiries-table tbody tr.row-even {
+  background: rgba(255, 255, 255, 0.03);
+}
+
+.enquire-lead-futuristic .enquiries-table tbody tr:hover {
+  background: rgba(34, 211, 238, 0.1) !important;
+}
+
+.enquire-lead-futuristic .cell-qid {
+  color: #67e8f9;
+}
+
+.enquire-lead-futuristic .cell-preview,
+.enquire-lead-futuristic .cell-contact,
+.enquire-lead-futuristic .cell-course {
+  color: #e8eefc;
+}
+
+.enquire-lead-futuristic .cell-message {
+  color: #93a4c7;
+}
+
+.enquire-lead-futuristic .enquiry-card {
+  background: linear-gradient(180deg, rgba(20, 32, 64, 0.96), rgba(12, 20, 42, 0.96));
+  border: 1px solid rgba(94, 234, 212, 0.16);
+  animation: rowIn 0.4s ease both;
+}
+
+.enquire-lead-futuristic .qid-badge {
+  background: rgba(34, 211, 238, 0.16);
+  color: #67e8f9;
+}
+
+.enquire-lead-futuristic .card-preview,
+.enquire-lead-futuristic .detail-row strong {
+  color: #e8eefc;
+}
+
+.enquire-lead-futuristic .detail-row {
+  color: #93a4c7;
+}
+
+@keyframes rowIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
 .desktop-table {

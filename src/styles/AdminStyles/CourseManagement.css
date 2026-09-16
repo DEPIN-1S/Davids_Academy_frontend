@@ -390,3 +390,156 @@
     border: none;
     cursor: pointer;
 }
+
+.recorded-classes-futuristic.recorded-classes-container {
+  padding: 0;
+  background: transparent;
+  min-height: auto;
+  font-family: "Inter", "Segoe UI", sans-serif;
+  color: #e8eefc;
+}
+
+.recorded-classes-futuristic .recorded-class-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  padding: 16px 18px;
+  margin-bottom: 18px;
+  background: linear-gradient(180deg, rgba(20, 32, 64, 0.96), rgba(12, 20, 42, 0.96));
+  border: 1px solid rgba(94, 234, 212, 0.16);
+  border-radius: 18px;
+  box-shadow: 0 16px 36px rgba(8, 16, 36, 0.12);
+}
+
+.recorded-classes-futuristic .search-container {
+  margin: 0;
+  max-width: 420px;
+  justify-content: flex-start;
+}
+
+.recorded-classes-futuristic .search-input {
+  background: rgba(8, 16, 36, 0.45);
+  border: 1px solid rgba(94, 234, 212, 0.22);
+  color: #e8eefc;
+  border-radius: 12px;
+}
+
+.recorded-classes-futuristic .search-input::placeholder {
+  color: #93a4c7;
+}
+
+.recorded-classes-futuristic .add-questions-btn {
+  background: linear-gradient(90deg, #f0c94a, #fbbf24);
+  color: #04121f;
+  border-radius: 999px;
+  font-weight: 700;
+  box-shadow: 0 0 16px rgba(240, 201, 74, 0.28);
+  animation: pulseGold 2.2s ease-in-out infinite;
+}
+
+.recorded-classes-futuristic .add-questions-btn:hover {
+  background: linear-gradient(90deg, #fbbf24, #f0c94a);
+}
+
+.recorded-classes-futuristic .classes-grid {
+  max-width: none;
+}
+
+.recorded-classes-futuristic .class-card {
+  background: linear-gradient(180deg, rgba(20, 32, 64, 0.96), rgba(12, 20, 42, 0.96));
+  border: 1px solid rgba(94, 234, 212, 0.16);
+  box-shadow: 0 16px 36px rgba(8, 16, 36, 0.12);
+  animation: rowIn 0.45s ease both;
+}
+
+.recorded-classes-futuristic .class-card:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 0 24px rgba(34, 211, 238, 0.18);
+}
+
+.recorded-classes-futuristic .class-title {
+  color: #e8eefc;
+}
+
+.recorded-classes-futuristic .meta-item {
+  color: #93a4c7;
+}
+
+.recorded-classes-futuristic .meta-icon {
+  color: #67e8f9;
+}
+
+.recorded-classes-futuristic .play-button {
+  background: linear-gradient(90deg, #22d3ee, #38bdf8);
+  color: #04121f;
+}
+
+.recorded-classes-futuristic .recorded-class-delete-btn {
+  background: rgba(251, 113, 133, 0.16);
+  color: #fda4af;
+  border: 1px solid rgba(251, 113, 133, 0.4);
+  box-shadow: none;
+  border-radius: 999px;
+  font-size: 0.85rem;
+  padding: 10px 16px;
+}
+
+.recorded-classes-futuristic .recorded-class-edit-btn {
+  background: linear-gradient(90deg, #22d3ee, #38bdf8);
+  color: #04121f;
+  box-shadow: none;
+  border-radius: 999px;
+  font-size: 0.85rem;
+  padding: 10px 16px;
+}
+
+.recorded-classes-futuristic .pagination-controls button {
+  background: linear-gradient(90deg, #22d3ee, #38bdf8);
+  color: #04121f;
+  border-radius: 999px;
+  font-weight: 700;
+}
+
+.recorded-classes-futuristic .pagination-controls button:disabled {
+  background: #334155;
+  color: #94a3b8;
+}
+
+.recorded-classes-futuristic .pagination-controls span {
+  color: #0f1b36;
+}
+
+.recorded-classes-futuristic .rc-status {
+  padding: 24px;
+  text-align: center;
+  color: #93a4c7;
+}
+
+.recorded-classes-futuristic .rc-status.is-error {
+  color: #fda4af;
+}
+
+@keyframes rowIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes pulseGold {
+  0%, 100% { box-shadow: 0 0 10px rgba(240, 201, 74, 0.2); }
+  50% { box-shadow: 0 0 20px rgba(240, 201, 74, 0.5); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .recorded-classes-futuristic .add-questions-btn,
+  .recorded-classes-futuristic .class-card {
+    animation: none;
+  }
+}
+
+@media (max-width: 768px) {
+  .recorded-classes-futuristic .recorded-class-header {
+    flex-direction: column;
+    align-items: stretch;
+  }
+}

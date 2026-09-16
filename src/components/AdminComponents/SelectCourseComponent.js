@@ -40,6 +40,7 @@ const SelectCourseComponent = () => {
 
     return (
         <Box
+            className="question-editor-futuristic"
             sx={{
                 maxWidth: 600,
                 mx: "auto",

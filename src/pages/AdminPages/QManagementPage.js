@@ -294,7 +294,7 @@ const QManagementPage = () => {
                 : adminTestQuestions;
 
     // Filter
-    const filteredQuestions = questions.filter((q) => {
+    const filteredQuestions = (questions || []).filter((q) => {
         if (!searchTerm.trim()) return true;
         const term = searchTerm.toLowerCase().trim();
         return (
@@ -339,7 +339,7 @@ const QManagementPage = () => {
 
     
     return (
-        <div className="q-management-page">
+        <div className="q-management-page q-management-futuristic">
             <div className="content-area">
                 {/* Tabs */}
                 <div className="controls-section">
@@ -432,6 +432,7 @@ const QManagementPage = () => {
                                         <tr
                                             key={index}
                                             className={index % 2 === 1 ? "row-even" : "row-odd"}
+                                            style={{ animationDelay: `${index * 0.04}s` }}
                                         >
                                             <td>{t.id}</td>
                                             <td>{t.cs_name}</td>
@@ -480,6 +481,7 @@ const QManagementPage = () => {
                                         <tr
                                             key={index}
                                             className={index % 2 === 1 ? "row-even" : "row-odd"}
+                                            style={{ animationDelay: `${index * 0.04}s` }}
                                         >
                                             <td>{q.id}</td>
                                             <td>{q.cs_name}</td>
@@ -490,7 +492,11 @@ const QManagementPage = () => {
                                                     : stripHtml(q.question)}
                                             </td>
                                             <td>{q.questionType}</td>
-                                            <td>{q.difficulty}</td>
+                                            <td>
+                                                <span className={`difficulty-pill ${(q.difficulty || "").toLowerCase()}`}>
+                                                    {q.difficulty}
+                                                </span>
+                                            </td>
                                             <td>
                                                 <div className="question-management-action-btn">
                                                     <button
@@ -510,22 +516,14 @@ const QManagementPage = () => {
                                                 </div>
                                             </td>
                                             <td>
-                                                <Button
-                                                    variant="text"
-                                                    sx={{
-                                                        px: 1.8,
-                                                        py: .8,
-                                                        bgcolor: "#2c3e50",
-                                                        color: "white",
-                                                        textTransform: "none",
-                                                        display: "flex",       // ✅ Ensure flex layout
-                                                        alignItems: "center",  // ✅ Align icon and text
-                                                    }}
-                                                    startIcon={<VisibilityIcon />}
+                                                <button
+                                                    type="button"
+                                                    className="view-btn"
                                                     onClick={() => handleViewQuestion(q)}
                                                 >
+                                                    <VisibilityIcon fontSize="small" />
                                                     View
-                                                </Button>
+                                                </button>
                                             </td>
 
 
@@ -561,6 +559,7 @@ const QManagementPage = () => {
                 aria-describedby="edit-question-modal-description"
             >
                 <Box
+                    className="question-editor-futuristic question-editor-modal"
                     sx={{
                         position: 'absolute',
                         top: '50%',

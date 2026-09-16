@@ -86,7 +86,7 @@ function ManageSuccessStories() {
   console.log("✅ Success Stories Data:", successStories);
 
   return (
-    <div className="success-stories-container">
+    <div className="success-stories-container success-stories-futuristic">
       <button className="add-success-story-btn" onClick={handleOpenModal}>
         + Add Success Story
       </button>
@@ -134,8 +134,12 @@ function ManageSuccessStories() {
       {/* Success Stories Grid */}
       <div className="success-stories-grid">
         {successStories && successStories.length > 0 ? (
-          successStories.map((story) => (
-            <div className="success-story-card" key={story.id}>
+          successStories.map((story, index) => (
+            <div
+              className="success-story-card"
+              key={story.id}
+              style={{ animationDelay: `${index * 0.05}s` }}
+            >
               <img
                 src={successStoryImageSrc(story)}
                 alt={`Success Story ${story.id}`}

@@ -1,229 +1,222 @@
-.table-header {
+.student-manage-futuristic {
+  font-family: "Inter", "Segoe UI", sans-serif;
+  color: #e8eefc;
+}
+
+.student-manage-futuristic .table-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 10px;
-  padding-left: 20px;
-  padding-right: 20px;
+  gap: 16px;
+  margin-bottom: 16px;
+  padding: 16px 18px;
+  background: linear-gradient(180deg, rgba(20, 32, 64, 0.96), rgba(12, 20, 42, 0.96));
+  border: 1px solid rgba(94, 234, 212, 0.16);
+  border-radius: 18px;
+  box-shadow: 0 16px 36px rgba(8, 16, 36, 0.12);
 }
 
-.status-dropdown {
-  padding: 7px 13px;      
-  border-radius: 8px;        
-  border: 1px solid #ccc;    
+.student-manage-futuristic .total-chip span {
+  display: block;
+  font-size: 0.78rem;
+  color: #93a4c7;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.student-manage-futuristic .total-chip h3 {
+  margin: 4px 0 0;
+  font-size: 1.8rem;
+  color: #67e8f9;
+  animation: countGlow 2.4s ease-in-out infinite;
+}
+
+.student-manage-futuristic .controls {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.student-manage-futuristic .search-input,
+.student-manage-futuristic .status-dropdown {
+  padding: 9px 12px;
+  border-radius: 10px;
+  border: 1px solid rgba(94, 234, 212, 0.22);
+  background: rgba(8, 16, 36, 0.45);
+  color: #e8eefc;
   font-size: 14px;
-  background-color: #fff;   
-  color: #333;
-  cursor: pointer;
-  transition: all 0.2s ease;
   outline: none;
 }
 
-.status-dropdown:hover {
-  border-color: #253d73;     
+.student-manage-futuristic .search-input {
+  flex: 0 0 240px;
 }
 
-.status-dropdown:focus {
-  border-color: #253d73;
-  box-shadow: 0 0 5px rgba(37, 61, 115, 0.3);
+.student-manage-futuristic .search-input::placeholder {
+  color: #93a4c7;
 }
 
-
-.table-header .controls {
-  display: flex;
-  align-items: center;
-  gap: 10px; /* space between search, dropdown, and button */
+.student-manage-futuristic .status-dropdown option {
+  color: #0f1b36;
 }
 
-.search-input {
-  flex: 0 0 280px; /* do not grow/shrink, fixed width */
-}
-
-
-.add-student {
-  /* padding: 6px 14px;
-  border: none;
-  border-radius: 20px;
-  background-color: #f5b700;
-  color: white;
-  font-weight: 500;
-  cursor: pointer; */
-  background: #ff9800;
-  color: #fff;
+.student-manage-futuristic .add-student {
+  background: linear-gradient(90deg, #f0c94a, #fbbf24);
+  color: #04121f;
   border: none;
   padding: 0.5rem 1rem;
-  border-radius: 6px;
-  font-weight: 500;
+  border-radius: 999px;
+  font-weight: 700;
   cursor: pointer;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.4rem;
-  font-size: 0.85rem;
   height: 38px;
+  box-shadow: 0 0 16px rgba(240, 201, 74, 0.28);
+  animation: pulseGold 2.2s ease-in-out infinite;
 }
 
-.add-student:hover {
-  background: #f57c00;
-  
-}
-
-.modal-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
+.student-manage-futuristic .table-container {
   width: 100%;
-  height: 100%;
-  background-color: rgba(0, 0, 0, 0.5);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  z-index: 999;
-}
-
-.table-container {
-  width: 100%;
-  padding: 20px;
-  font-family: Arial, sans-serif;
   overflow-x: auto;
-  /* Enable horizontal scroll */
-  overflow-y: hidden;
 }
 
-.student-table {
+.student-manage-futuristic .student-table {
   border-collapse: collapse;
   text-align: center;
   width: max-content;
-  /* Allow expanding */
   min-width: 100%;
-  /* Fill container at least */
+  background: linear-gradient(180deg, rgba(20, 32, 64, 0.96), rgba(12, 20, 42, 0.96));
+  border: 1px solid rgba(94, 234, 212, 0.16);
+  border-radius: 16px;
+  overflow: hidden;
 }
 
-.student-table th {
-  background-color: #253d73;
-  color: #fff;
+.student-manage-futuristic .student-table th {
+  background: rgba(34, 211, 238, 0.12);
+  color: #d7e3f7;
   padding: 12px;
   white-space: nowrap;
 }
 
-.student-table td {
+.student-manage-futuristic .student-table td {
   padding: 12px;
   white-space: nowrap;
+  color: #e8eefc;
 }
 
-.striped {
-  background-color: #f7f7f7;
+.student-manage-futuristic .student-table tbody tr {
+  animation: rowIn 0.45s ease both;
+  transition: background 0.2s ease, transform 0.2s ease;
 }
 
-/* Action Buttons */
-.action-buttons {
+.student-manage-futuristic .student-table tbody tr:hover {
+  background: rgba(34, 211, 238, 0.1);
+}
+
+.student-manage-futuristic .striped {
+  background-color: rgba(255, 255, 255, 0.03);
+}
+
+.student-manage-futuristic .status-pill {
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: capitalize;
+}
+
+.student-manage-futuristic .status-pill.is-active {
+  color: #6ee7b7;
+  background: rgba(52, 211, 153, 0.14);
+  box-shadow: 0 0 0 0 rgba(52, 211, 153, 0.35);
+  animation: statusPulse 2s ease-in-out infinite;
+}
+
+.student-manage-futuristic .status-pill.is-inactive {
+  color: #fda4af;
+  background: rgba(251, 113, 133, 0.14);
+}
+
+.student-manage-futuristic .action-buttons {
   display: flex;
   justify-content: center;
   align-items: center;
   gap: 8px;
 }
 
-.progress-btn {
-  background-color: #253d73;
-  color: #fff;
+.student-manage-futuristic .progress-btn {
+  background: linear-gradient(90deg, #22d3ee, #38bdf8);
+  color: #04121f;
   border: none;
   padding: 6px 12px;
-  border-radius: 4px;
+  border-radius: 999px;
   cursor: pointer;
+  font-weight: 700;
 }
 
-.inactive-btn {
-  background-color: #fff;
-  color: red;
-  border: 1px solid red;
+.student-manage-futuristic .inactive-btn,
+.student-manage-futuristic .active-btn,
+.student-manage-futuristic .edit-btn,
+.student-manage-futuristic .key-btn {
+  background: rgba(8, 16, 36, 0.4);
+  border-radius: 8px;
+  cursor: pointer;
   padding: 6px 8px;
-  border-radius: 4px;
-  cursor: pointer;
 }
 
-.active-btn {
-  background-color: #fff;
-  color: greenyellow;
-  border: 1px solid greenyellow;
-  padding: 6px 8px;
-  border-radius: 4px;
-  cursor: pointer;
+.student-manage-futuristic .active-btn {
+  color: #86efac;
+  border: 1px solid rgba(134, 239, 172, 0.45);
 }
 
-.edit-btn {
-  background-color: #fff;
-  color: #253d73;
-  border: 1px solid #253d73;
-  padding: 6px 8px;
-  border-radius: 4px;
-  cursor: pointer;
+.student-manage-futuristic .inactive-btn {
+  color: #fda4af;
+  border: 1px solid rgba(253, 164, 175, 0.45);
 }
 
-.key-btn {
-  background-color: #fff;
-  color: #fc0026;
-  border: 1px solid #fc0026;
-  padding: 6px 8px;
-  border-radius: 4px;
-  cursor: pointer;
+.student-manage-futuristic .edit-btn {
+  color: #67e8f9;
+  border: 1px solid rgba(103, 232, 249, 0.4);
 }
 
-/* Hover effects */
-.progress-btn:hover {
-  background-color: #1e2f5b;
+.student-manage-futuristic .key-btn {
+  color: #f0c94a;
+  border: 1px solid rgba(240, 201, 74, 0.4);
 }
 
-.delete-btn:hover {
-  background-color: #ffe6e6;
-}
-
-.edit-btn:hover {
-  background-color: #e6ebf7;
-}
-
-.key-btn:hover {
-   background-color: #e6ebf7;
-}
-
-.pagination-controls {
+.student-manage-futuristic .pagination-controls {
   display: flex;
   justify-content: center;
   align-items: center;
   gap: 12px;
-  margin-top: 30px;
+  margin-top: 24px;
 }
 
-.pagination-controls button {
+.student-manage-futuristic .pagination-controls button {
   padding: 8px 16px;
   border: none;
-  border-radius: 8px;
-  background-color: #ff9800;
-  color: #fff;
+  border-radius: 999px;
+  background: linear-gradient(90deg, #22d3ee, #38bdf8);
+  color: #04121f;
   font-size: 14px;
-  font-weight: 500;
+  font-weight: 700;
   cursor: pointer;
-  transition: background-color 0.2s ease, transform 0.1s ease;
 }
 
-.pagination-controls button:hover:not(:disabled) {
-  background-color: #f57c00;
-  transform: translateY(-1px);
-}
-
-.pagination-controls button:disabled {
-  background-color: #ccc;
+.student-manage-futuristic .pagination-controls button:disabled {
+  background: #334155;
+  color: #94a3b8;
   cursor: not-allowed;
 }
 
-.pagination-controls span {
+.student-manage-futuristic .pagination-controls span {
   font-size: 14px;
-  font-weight: 500;
-  color: #333;
+  font-weight: 600;
+  color: #0f1b36;
 }
 
-
-
-/* password change modal */
 .modal-overlay {
   position: fixed;
   top: 0;
@@ -239,54 +232,41 @@
   z-index: 1000;
 }
 
-/* Modal box */
 .modal-box {
-  background: #ffffff;
+  background: linear-gradient(180deg, rgba(20, 32, 64, 0.98), rgba(12, 20, 42, 0.98));
   padding: 30px 25px;
   width: 360px;
   border-radius: 18px;
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+  border: 1px solid rgba(94, 234, 212, 0.2);
   animation: slideUp 0.35s ease;
-  position: relative;
+  color: #e8eefc;
 }
 
-/* Title */
 .modal-box h2 {
   text-align: center;
   font-size: 22px;
   font-weight: 600;
   margin-bottom: 20px;
-  color: #2b2b2b;
+  color: #e8eefc;
 }
 
-/* Input styling */
 .modal-box input {
   width: 100%;
   padding: 12px;
   margin-bottom: 14px;
-  border: 1px solid #d2d2d2;
+  border: 1px solid rgba(94, 234, 212, 0.22);
   border-radius: 10px;
   font-size: 14px;
-  background: #f9f9f9;
-  transition: all 0.25s ease;
+  background: rgba(8, 16, 36, 0.45);
+  color: #e8eefc;
 }
 
-.modal-box input:focus {
-  border-color: #007bff;
-  background: #ffffff;
-  box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.15);
-  outline: none;
-}
-
-/* Button container */
 .modal-actions {
   display: flex;
   justify-content: flex-end;
   gap: 12px;
-  margin-top: 5px;
 }
 
-/* Buttons */
 .cancel-btn,
 .save-btn {
   padding: 10px 18px;
@@ -294,56 +274,22 @@
   border-radius: 8px;
   font-size: 14px;
   cursor: pointer;
-  font-weight: 500;
-  transition: background 0.25s ease, transform 0.15s ease;
+  font-weight: 600;
 }
 
 .cancel-btn {
-  background: #e0e0e0;
-  color: #333;
-}
-
-.cancel-btn:hover {
-  background: #cfcfcf;
-  transform: translateY(-1px);
+  background: #334155;
+  color: #e8eefc;
 }
 
 .save-btn {
-  background: #253d73;
-  color: #fff;
+  background: linear-gradient(90deg, #22d3ee, #38bdf8);
+  color: #04121f;
 }
 
-.save-btn:hover {
-  background: #1a2a50;
-  transform: translateY(-1px);
-}
-
-/* Open modal button */
-.open-modal-btn {
-  padding: 12px 18px;
-  background: #253d73;
-  color: white;
-  border: none;
-  border-radius: 10px;
-  cursor: pointer;
-  font-size: 15px;
-  font-weight: 500;
-  transition: background 0.25s ease, transform 0.15s ease;
-}
-
-.open-modal-btn:hover {
-  background: #1a2a50;
-  transform: translateY(-1px);
-}
-
-/* Animations */
 @keyframes fadeIn {
-  from {
-    opacity: 0;
-  }
-  to {
-    opacity: 1;
-  }
+  from { opacity: 0; }
+  to { opacity: 1; }
 }
 
 @keyframes slideUp {
@@ -354,5 +300,51 @@
   to {
     transform: translateY(0);
     opacity: 1;
+  }
+}
+
+@keyframes rowIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes countGlow {
+  0%, 100% { text-shadow: 0 0 0 rgba(103, 232, 249, 0.2); }
+  50% { text-shadow: 0 0 16px rgba(103, 232, 249, 0.7); }
+}
+
+@keyframes pulseGold {
+  0%, 100% { box-shadow: 0 0 10px rgba(240, 201, 74, 0.2); }
+  50% { box-shadow: 0 0 20px rgba(240, 201, 74, 0.5); }
+}
+
+@keyframes statusPulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(52, 211, 153, 0.28); }
+  50% { box-shadow: 0 0 0 6px rgba(52, 211, 153, 0); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .student-manage-futuristic .total-chip h3,
+  .student-manage-futuristic .add-student,
+  .student-manage-futuristic .status-pill.is-active,
+  .student-manage-futuristic .student-table tbody tr {
+    animation: none;
+  }
+}
+
+@media (max-width: 900px) {
+  .student-manage-futuristic .table-header {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .student-manage-futuristic .search-input {
+    flex: 1;
   }
 }

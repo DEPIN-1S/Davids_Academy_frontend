@@ -367,7 +367,7 @@ function TableDropdownQuestionContent() {
     };
 
     return (
-        <Box p={3} maxWidth="900px" mx="auto">
+        <Box className="question-editor-futuristic" p={3} maxWidth="900px" mx="auto">
             <Typography variant="caption" color="textSecondary" mb={2} display="block">
                 Test type &gt; Question Type &gt; <strong>Question Content</strong>
             </Typography>

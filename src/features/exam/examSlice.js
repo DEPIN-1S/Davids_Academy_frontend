@@ -123,7 +123,7 @@ export const adminFetchMockTestQuestions = createAsyncThunk(
 // Thunk for fetching admin test questions
 export const adminFetchTestQuestions = createAsyncThunk(
   "admin/fetchTestQuestions",
-  async ({ page = 1, limit = 10 }, { rejectWithValue }) => {
+  async ({ page = 1, limit = 10 } = {}, { rejectWithValue }) => {
     try {
       const data = await adminGetTestQuestions(page, limit);
       return {

@@ -2,6 +2,12 @@
     padding: 20px;
 }
 
+.success-stories-futuristic.success-stories-container {
+    padding: 0;
+    font-family: "Inter", "Segoe UI", sans-serif;
+    color: #e8eefc;
+}
+
 .add-success-story-btn {
     background-color: #ff9800;
     color: #fff;
@@ -17,6 +23,83 @@
 
 .add-success-story-btn:hover {
     background-color: #e88b00;
+}
+
+.success-stories-futuristic .add-success-story-btn {
+    background: linear-gradient(90deg, #f0c94a, #fbbf24);
+    color: #04121f;
+    border-radius: 999px;
+    font-weight: 700;
+    padding: 10px 16px;
+    box-shadow: 0 0 16px rgba(240, 201, 74, 0.28);
+    animation: pulseGold 2.2s ease-in-out infinite;
+}
+
+.success-stories-futuristic .add-success-story-btn:hover {
+    background: linear-gradient(90deg, #fbbf24, #f0c94a);
+}
+
+.success-stories-futuristic .success-story-card {
+    background: linear-gradient(180deg, rgba(20, 32, 64, 0.96), rgba(12, 20, 42, 0.96));
+    border: 1px solid rgba(94, 234, 212, 0.16);
+    box-shadow: 0 16px 36px rgba(8, 16, 36, 0.12);
+    animation: rowIn 0.45s ease both;
+}
+
+.success-stories-futuristic .success-story-card:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 0 24px rgba(34, 211, 238, 0.18);
+}
+
+.success-stories-futuristic .success-story-card .delete-btn {
+    background: rgba(251, 113, 133, 0.92);
+    border-radius: 999px;
+    font-weight: 700;
+}
+
+.success-stories-futuristic .modal-content {
+    background: linear-gradient(180deg, rgba(20, 32, 64, 0.98), rgba(12, 20, 42, 0.98));
+    border: 1px solid rgba(94, 234, 212, 0.2);
+    color: #e8eefc;
+}
+
+.success-stories-futuristic .modal-content h3 {
+    color: #e8eefc;
+}
+
+.success-stories-futuristic .drag-drop-area {
+    border-color: rgba(94, 234, 212, 0.35);
+    color: #67e8f9;
+    background: rgba(8, 16, 36, 0.45);
+}
+
+.success-stories-futuristic .upload-btn {
+    background: linear-gradient(90deg, #22d3ee, #38bdf8);
+    color: #04121f;
+    font-weight: 700;
+    border-radius: 999px;
+}
+
+.success-stories-futuristic .close-btn {
+    background: #334155;
+    border-radius: 999px;
+}
+
+@keyframes rowIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes pulseGold {
+  0%, 100% { box-shadow: 0 0 10px rgba(240, 201, 74, 0.2); }
+  50% { box-shadow: 0 0 20px rgba(240, 201, 74, 0.5); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .success-stories-futuristic .add-success-story-btn,
+  .success-stories-futuristic .success-story-card {
+    animation: none;
+  }
 }
 
 /* Modal overlay */

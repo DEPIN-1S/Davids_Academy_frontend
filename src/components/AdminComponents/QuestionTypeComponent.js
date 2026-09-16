@@ -90,6 +90,7 @@ const QuestionTypeComponent = () => {
 
     return (
         <Box
+            className="question-editor-futuristic"
             sx={{
                 maxWidth: 600,
                 mx: "auto",
@@ -116,7 +117,7 @@ const QuestionTypeComponent = () => {
             </Typography>
 
             {/* Display selected exam type */}
-            <Box sx={{ p: 2, bgcolor: "#f0f0f0", borderRadius: 1 }}>
+            <Box className="editor-info-card" sx={{ p: 2, borderRadius: 1 }}>
                 <Typography variant="body2" color="text.secondary">
                     Selected Exam Type:
                 </Typography>
@@ -160,7 +161,7 @@ const QuestionTypeComponent = () => {
 
             {/* Display selected question type details (optional) */}
             {selectedQuestionType && (
-                <Box sx={{ p: 2, bgcolor: "#e8f5e8", borderRadius: 1 }}>
+                <Box className="editor-info-card is-selected" sx={{ p: 2, borderRadius: 1 }}>
                     <Typography variant="body2" color="text.secondary">
                         Selected Question Type:
                     </Typography>

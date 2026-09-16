@@ -160,6 +160,7 @@ const SelectTopicComponent = () => {
 
     return (
         <Box
+            className="question-editor-futuristic"
             sx={{
                 maxWidth: 600,
                 mx: "auto",
@@ -234,12 +235,12 @@ const SelectTopicComponent = () => {
                     <Button 
                         startIcon={<AddIcon />} 
                         onClick={() => setShowCreateForm(true)}
-                        sx={{ color: '#0066cc' }}
+                        sx={{ color: '#67e8f9' }}
                     >
                         Create New Topic
                     </Button>
                 ) : (
-                    <Box sx={{ p: 2, bgcolor: '#f0f7ff', borderRadius: 2, border: '1px dashed #0066cc' }}>
+                    <Box className="editor-info-card" sx={{ p: 2, borderRadius: 2 }}>
                         <Typography variant="subtitle2" mb={1} color="primary">Add New Topic</Typography>
                         <Stack direction={isMobile ? "column" : "row"} spacing={2}>
                             <TextField 

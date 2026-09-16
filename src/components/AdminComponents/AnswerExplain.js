@@ -468,7 +468,7 @@ const AnswerExplain = () => {
     }, [selectedFile]);
 
     return (
-        <Box p={3} maxWidth="800px" mx="auto">
+        <Box className="question-editor-futuristic" p={3} maxWidth="800px" mx="auto">
             {/* Breadcrumb */}
             <Typography variant="caption" color="textSecondary" mb={2} display="block">
                 Test type &gt; Exam Type ({previousQuestionData.exam_type}) &gt; Question Type ({previousQuestionData.questionType}) &gt; Question Content &gt; <strong>Explanation</strong>

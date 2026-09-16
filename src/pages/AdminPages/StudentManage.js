@@ -95,9 +95,12 @@ const StudentManage = () => {
   };
 
   return (
-    <>
+    <div className="student-manage-futuristic">
       <div className="table-header">
-        <h3>Total Students: {total || 0}</h3>
+        <div className="total-chip">
+          <span>Total Students</span>
+          <h3>{total || 0}</h3>
+        </div>
         <div className="controls">
           <input
             type="text"
@@ -145,12 +148,17 @@ const StudentManage = () => {
                 <tr
                   key={student.id || index}
                   className={index % 2 === 1 ? "striped" : ""}
+                  style={{ animationDelay: `${index * 0.05}s` }}
                 >
                   <td>{student.id}</td>
                   <td>{student.firstname} {student.lastname}</td>
                   <td>{student.email}</td>
                   <td>{student.cs_name || "N/A"}</td>
-                  <td>{student.status || "N/A"}</td>
+                  <td>
+                    <span className={`status-pill ${student.status === "active" ? "is-active" : "is-inactive"}`}>
+                      {student.status || "N/A"}
+                    </span>
+                  </td>
                   <td className="action-buttons">
                     <button
                       onClick={() => navigateToViewProgress(student.id)}
@@ -289,7 +297,7 @@ const StudentManage = () => {
           </div>
         )}
       </div>
-    </>
+    </div>
   );
 };
 
