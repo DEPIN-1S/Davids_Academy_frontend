@@ -1,21 +1,63 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import '../styles/Hero.css';
 import { FaBook } from "react-icons/fa";
 
+const HIGHLIGHT_PHRASES = [
+  'International Nursing',
+  'NCLEX-RN Success',
+  'DHA & Prometric',
+];
+
+const JuggleText = ({ text, accent = false }) => (
+  <span className={accent ? 'hero-juggle hero-juggle-accent' : 'hero-juggle'} aria-label={text}>
+    {text.split(' ').map((word, wordIndex, words) => (
+      <span className="hero-word" key={`${text}-w${wordIndex}`}>
+        {word.split('').map((char, index) => (
+          <span
+            className="hero-letter"
+            style={{ '--i': wordIndex * 8 + index }}
+            key={`${text}-${wordIndex}-${index}`}
+          >
+            {char}
+          </span>
+        ))}
+        {wordIndex < words.length - 1 ? '\u00A0' : null}
+      </span>
+    ))}
+  </span>
+);
 
 const Hero = () => {
+  const [phraseIndex, setPhraseIndex] = useState(0);
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setPhraseIndex((current) => (current + 1) % HIGHLIGHT_PHRASES.length);
+    }, 3200);
+    return () => clearInterval(timer);
+  }, []);
+
   return (
     <>
-      <section  className="hero-container">
-        <div className='hero-content-main' >
+      <section className="hero-container">
+        <span className="hero-glow hero-glow-1" aria-hidden="true" />
+        <span className="hero-glow hero-glow-2" aria-hidden="true" />
+        <span className="hero-glow hero-glow-3" aria-hidden="true" />
+
+        <div className="hero-content-main">
           <div className="hero-content">
+            <span className="hero-badge">NCLEX-RN • DHA • Prometric</span>
             <h1 className="hero-title">
-              Achieve Your International Nursing Goals with Confidence
+              <JuggleText text="Achieve Your" />
+              {' '}
+              <JuggleText text={HIGHLIGHT_PHRASES[phraseIndex]} accent />
+              {' '}
+              <JuggleText text="Goals with Confidence" />
             </h1>
 
             <div className="hero-subtitle">
-              <FaBook className='book-icon' />
-              <h1> Achieve top ranks in entrance exams</h1>
+              <FaBook className="book-icon" />
+              <h2>Achieve top ranks in entrance exams</h2>
             </div>
           </div>
 
@@ -29,17 +71,15 @@ const Hero = () => {
               <p>Course Count</p>
             </div>
             <div className="stat-item">
-              <h2>10+Years</h2>
+              <h2>10+ Years</h2>
               <p>Experienced Mentors</p>
             </div>
             <div className="stat-item">
-              <h2>GCC Opportunities</h2>
-              <p>Seamless Placement Assistance</p>
+              <h2>GCC Jobs</h2>
+              <p>Placement Support</p>
             </div>
           </div>
-
         </div>
-
 
         <div className="hero-image-wrapper">
           <img src="/images/Group24.png" alt="Nurse illustration" className="hero-image" />

@@ -194,7 +194,10 @@ const QuestionFooterComponent = ({
             <button
               onClick={() => {
                 setShowCompletedModal(false);
-                navigate("/student/tests");
+                const testId = searchParams.get("testId");
+                navigate("/student/tests", {
+                  state: testId ? { analyzeTestId: testId } : undefined,
+                });
               }}
               className="mock-modal-btn"
             >

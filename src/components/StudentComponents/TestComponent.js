@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
-import { fetchStudentTests } from "../../features/exam/examAPI";
+import { useLocation, useNavigate } from "react-router-dom";
+import { fetchStudentTests, fetchTestResult } from "../../features/exam/examAPI";
+import QuestionBankProgressCard from "./QuestionBankProgressCard";
 import "../../styles/TestComponent.css";
+import "../../styles/QuestionBankProgressCard.css";
 
 const TestComponent = () => {
   const [testData, setTestData] = useState([]);
@@ -9,9 +11,14 @@ const TestComponent = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const navigate = useNavigate();
+  const location = useLocation();
 
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 7;
+  const [analysisTest, setAnalysisTest] = useState(null);
+  const [analysisData, setAnalysisData] = useState(null);
+  const [analysisError, setAnalysisError] = useState(null);
+  const [analysisLoading, setAnalysisLoading] = useState(false);
 
   const fetchTestData = async () => {
     setLoading(true);
@@ -136,6 +143,43 @@ const TestComponent = () => {
     }
   };
 
+  const openAnalysis = async (test) => {
+    setAnalysisTest(test);
+    setAnalysisData(null);
+    setAnalysisError(null);
+    setAnalysisLoading(true);
+    try {
+      const rows = await fetchTestResult(test.id);
+      const attempted = rows.length;
+      const correct = rows.filter(
+        (row) => Number(row.is_correct ?? row.sq_is_correct) === 1
+      ).length;
+      setAnalysisData({
+        data: {
+          total: test.totalQuestions,
+          attempted,
+          correct,
+          details: rows,
+        },
+      });
+    } catch (err) {
+      setAnalysisError(err.message || "Failed to load analysis.");
+    } finally {
+      setAnalysisLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    const analyzeTestId = location.state?.analyzeTestId;
+    if (!analyzeTestId || testData.length === 0) return;
+    const match = testData.find((test) => String(test.id) === String(analyzeTestId));
+    if (match) {
+      openAnalysis(match);
+      navigate(location.pathname, { replace: true, state: {} });
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [location.state, testData]);
+
   if (loading) return <div className="loading">Loading tests...</div>;
   if (error) return <div className="error">Error: {error}</div>;
 
@@ -225,13 +269,22 @@ const TestComponent = () => {
                 </span>
 
                 <span>
-                  <button
-                    className={`start-btn ${actionDisabled ? "disabled" : ""}`}
-                    disabled={actionDisabled}
-                    onClick={() => handleActionClick(test.id, actionLabel)}
-                  >
-                    {actionLabel}
-                  </button>
+                  {finalStatus === "Completed" ? (
+                    <button
+                      className="start-btn"
+                      onClick={() => openAnalysis(test)}
+                    >
+                      View Analysis
+                    </button>
+                  ) : (
+                    <button
+                      className={`start-btn ${actionDisabled ? "disabled" : ""}`}
+                      disabled={actionDisabled}
+                      onClick={() => handleActionClick(test.id, actionLabel)}
+                    >
+                      {actionLabel}
+                    </button>
+                  )}
                 </span>
               </div>
             );
@@ -305,13 +358,22 @@ const TestComponent = () => {
               </div>
 
               <footer className="test-card__footer">
-                <button
-                  className={`btn btn--primary ${actionDisabled ? "btn--disabled" : ""}`}
-                  disabled={actionDisabled}
-                  onClick={() => handleActionClick(test.id, actionLabel)}
-                >
-                  {actionLabel}
-                </button>
+                {finalStatus === "Completed" ? (
+                  <button
+                    className="btn btn--primary"
+                    onClick={() => openAnalysis(test)}
+                  >
+                    View Analysis
+                  </button>
+                ) : (
+                  <button
+                    className={`btn btn--primary ${actionDisabled ? "btn--disabled" : ""}`}
+                    disabled={actionDisabled}
+                    onClick={() => handleActionClick(test.id, actionLabel)}
+                  >
+                    {actionLabel}
+                  </button>
+                )}
               </footer>
             </div>
 
@@ -339,6 +401,46 @@ const TestComponent = () => {
           Next
         </button>
       </div>
+
+      {analysisTest && (
+        <>
+          {analysisLoading && (
+            <div className="progress-card-main">
+              <div className="card-box">
+                <p>Loading analysis...</p>
+              </div>
+            </div>
+          )}
+          {analysisError && (
+            <div className="progress-card-main">
+              <div className="card-box">
+                <p className="error">{analysisError}</p>
+                <button
+                  className="bottom-close-btn"
+                  onClick={() => setAnalysisTest(null)}
+                >
+                  Close
+                </button>
+              </div>
+            </div>
+          )}
+          {analysisData && (
+            <QuestionBankProgressCard
+              data={analysisData}
+              title="Mock Test Result"
+              examContext={
+                analysisTest.name
+                  ? `the mock test "${analysisTest.name}"`
+                  : "a mock test"
+              }
+              onClose={() => {
+                setAnalysisTest(null);
+                setAnalysisData(null);
+              }}
+            />
+          )}
+        </>
+      )}
     </div>
   );
 };

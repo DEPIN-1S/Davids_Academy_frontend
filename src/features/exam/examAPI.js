@@ -648,7 +648,7 @@ export const addSuccessStoryApi = async (formData) => {
 export const fetchSuccessStoriesApi = async () => {
   try {
     const token = sessionStorage.getItem("accessToken");
-    const response = await fetch(`${baseUrl}/student/success-story/list`, {
+    const response = await fetch(`${baseUrl}/student/success-story/list?limit=100&offset=0`, {
       headers: {
         Authorization: `Bearer ${token}`,
       },
@@ -888,6 +888,23 @@ export const fetchMockTestSubmittedResult = async (questionId, test_id) => {
     console.error("mocktest submitted result API error:", error);
     throw error;
   }
+};
+
+export const fetchTestResult = async (test_id) => {
+  const token = sessionStorage.getItem("accessToken");
+  const response = await fetch(`${baseUrl}/student/result/data`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify({ test_id }),
+  });
+  const json = await response.json();
+  if (!response.ok || json.result !== true) {
+    throw new Error(json.message || "Failed to fetch test result");
+  }
+  return json.data || [];
 };
 
 

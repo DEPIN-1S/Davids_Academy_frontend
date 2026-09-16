@@ -98,6 +98,13 @@
   border-radius: 3px;
 }
 
+.success-empty {
+  margin: 0;
+  padding: 0 1.5rem 0.5rem;
+  color: #3d4f73;
+  font-weight: 600;
+}
+
 /* Responsive styling */
 @media screen and (max-width: 768px) {
   .story-card-image {

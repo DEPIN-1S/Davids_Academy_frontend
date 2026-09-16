@@ -6,6 +6,10 @@ import {
   deleteSuccessStory,
   fetchSuccessStories,
 } from "../../features/exam/examSlice";
+import {
+  successStoryImageFallback,
+  successStoryImageSrc,
+} from "../../config/media";
 
 function ManageSuccessStories() {
   const dispatch = useDispatch();
@@ -133,9 +137,23 @@ function ManageSuccessStories() {
           successStories.map((story) => (
             <div className="success-story-card" key={story.id}>
               <img
-                src={`${process.env.REACT_APP_API_URL.replace('/davidsacademy', '')}${story.imageUrl || story.image}`}
+                src={successStoryImageSrc(story)}
                 alt={`Success Story ${story.id}`}
                 className="story-image"
+                onError={(event) => {
+                  const fallback = successStoryImageFallback(story);
+                  const currentSrc = event.target.currentSrc || event.target.src;
+                  if (
+                    fallback &&
+                    event.target.dataset.fallback !== "1" &&
+                    currentSrc !== fallback
+                  ) {
+                    event.target.dataset.fallback = "1";
+                    event.target.src = fallback;
+                    return;
+                  }
+                  event.target.closest(".success-story-card")?.remove();
+                }}
               />
               <button
                 onClick={() => handleDeleteStory(story.id)}

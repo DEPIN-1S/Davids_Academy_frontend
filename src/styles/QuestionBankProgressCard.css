@@ -9,7 +9,9 @@
   padding: 24px 20px;
   border-radius: 14px;
   width: 90%;
-  max-width: 380px;
+  max-width: 440px;
+  max-height: 90vh;
+  overflow-y: auto;
 
   text-align: center;
   box-shadow: 0px 12px 35px rgba(0, 0, 0, 0.25);
@@ -94,6 +96,97 @@
 
 .bottom-close-btn:hover {
   background: #162043;
+}
+
+.exam-analysis {
+  width: 100%;
+  text-align: left;
+  margin-top: 18px;
+  padding-top: 8px;
+  border-top: 1px solid #e5e5e5;
+}
+
+.exam-analysis-section {
+  margin-bottom: 16px;
+}
+
+.exam-analysis-heading {
+  font-size: 15px;
+  font-weight: 700;
+  color: #1f2a55;
+  margin: 0 0 4px;
+}
+
+.exam-analysis-hint {
+  font-size: 12px;
+  color: #6c757d;
+  margin: 0 0 10px;
+}
+
+.exam-analysis-topic {
+  background: #fff5f5;
+  border: 1px solid #f3d0d0;
+  border-radius: 10px;
+  padding: 10px 12px;
+  margin-bottom: 8px;
+}
+
+.exam-analysis-topic-strong {
+  background: #f3f8f4;
+  border-color: #cfe8d6;
+}
+
+.exam-analysis-topic-meta {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  color: #222;
+}
+
+.exam-analysis-topic-name {
+  font-weight: 600;
+}
+
+.exam-analysis-practice-btn {
+  width: 100%;
+  margin-top: 8px;
+  background: #fff;
+  color: #1f2a55;
+  border: 1px solid #1f2a55;
+  border-radius: 8px;
+  padding: 7px 0;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.exam-analysis-practice-btn:hover {
+  background: #1f2a55;
+  color: #fff;
+}
+
+.exam-analysis-help {
+  margin-top: 8px;
+  text-align: center;
+}
+
+.exam-analysis-help-text {
+  font-size: 14px;
+  font-weight: 600;
+  color: #1f2a55;
+  margin-bottom: 8px;
+}
+
+.exam-analysis-help-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.exam-analysis-help .wa-cta {
+  width: 100%;
 }
 
 /* MOBILE FRIENDLY */

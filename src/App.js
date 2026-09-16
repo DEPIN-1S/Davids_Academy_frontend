@@ -12,6 +12,7 @@ import { FileProvider } from "./context/FileContext";
 import { ToastContainer } from "react-toastify";
 import ScrollToHashElement from "./ScrollToHashElement";
 import ScrollToTop from "./ScrollToTop";
+import WhatsAppChannelFloat from "./components/WhatsAppChannelFloat";
 const App = () => {
   const dispatch = useDispatch();
   useEffect(() => {
@@ -34,6 +35,7 @@ const App = () => {
       />
       <ScrollToHashElement/>
        <ScrollToTop />
+      <WhatsAppChannelFloat />
       <Routes>
         {HomeRoutes()}
         {StudentRoutes()}
