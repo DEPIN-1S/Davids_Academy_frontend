@@ -15,6 +15,7 @@ import RevealAnswerComponent from "./RevealAnswerComponent";
 import { submitMockTestQuestionResponseThunk } from "../../features/exam/examSlice";
 import { useDispatch } from "react-redux";
 import { useLocation } from "react-router-dom";
+import { sanitizeExamHtml } from "../../utils/examHtml";
 
 const buildImageUrl = (path) => {
   if (!path) return null;
@@ -184,16 +185,15 @@ const MCQQuestionComponent = ({ question, onSubmit, submittedResult }) => {
       {/* Question */}
       <Typography
         component="div"
+        className="q-stem q-html"
         fontWeight={700}
         sx={{
           textAlign: "left",
           alignItems: "center",
           wordBreak: "break-word",
-          color: "#2e3760",
-          fontSize: { xs: "1rem", md: "1.25rem" },
           mb: 1,
         }}
-       dangerouslySetInnerHTML={{ __html: questionText || "" }} />
+       dangerouslySetInnerHTML={{ __html: sanitizeExamHtml(questionText) }} />
 
       {/* Exhibit */}
       {exhibit && (
@@ -209,22 +209,21 @@ const MCQQuestionComponent = ({ question, onSubmit, submittedResult }) => {
         <>
           <Typography
             variant="h6"
+            className="q-instructions-label"
             align="left"
-            sx={{ mb: 1,mt:3, color: "text.primary", fontWeight: 600, fontSize: { xs: "0.9rem", md: "1rem" }, }}
+            sx={{ mb: 1, mt: 3, fontWeight: 600 }}
           >
-            Instructions :
+            Instructions
           </Typography>
           <Typography
             component="div"
+            className="q-instructions q-html"
             sx={{
-              color: "black",
               mb: 2,
-              fontSize: { xs: "0.9rem", md: "1rem" },
-              lineHeight: 1.6,
               wordBreak: "break-word",
               textAlign: "left"
             }}
-           dangerouslySetInnerHTML={{ __html: instructions || "" }} />
+           dangerouslySetInnerHTML={{ __html: sanitizeExamHtml(instructions) }} />
         </>
       )}
 
@@ -265,15 +264,15 @@ const MCQQuestionComponent = ({ question, onSubmit, submittedResult }) => {
             const active = tabsInfo.find((t) => t.tabKey === activeTab) || tabsInfo[0];
             return (
               <Box
+                className="q-tabs-panel"
                 sx={{
-                  backgroundColor: "#eff1ffff",
                   borderRadius: "10px",
                   py: 2,
                   px: 3,
                   textAlign: "left"
                 }}
               >
-                <Typography component="div" sx={{ color: "#333", fontSize: "0.95rem" , wordBreak: "break-word", overflowWrap: "anywhere"}} dangerouslySetInnerHTML={{ __html: active?.tabValue || "No content available" }} />
+                <Typography component="div" className="q-html" sx={{ fontSize: "0.95rem" , wordBreak: "break-word", overflowWrap: "anywhere"}} dangerouslySetInnerHTML={{ __html: sanitizeExamHtml(active?.tabValue || "No content available") }} />
                 {active?.tabImage && (
                   <Box sx={{ mt: 2, textAlign: "center" }}>
                     <img
@@ -371,13 +370,14 @@ const MCQQuestionComponent = ({ question, onSubmit, submittedResult }) => {
                   }}
                 >
                   <div
+                    className="q-html"
                     style={{
                       color: feedbackColor,
                       fontWeight: showFeedback && isCorrectAnswer ? 600 : "normal",
                       textAlign: "left",
-                      fontSize: "0.95rem",
+                      fontSize: "1.02rem",
                     }}
-                    dangerouslySetInnerHTML={{ __html: optionText || "" }}
+                    dangerouslySetInnerHTML={{ __html: sanitizeExamHtml(optionText) }}
                   />
                   {feedbackIcon}
                 </Box>
@@ -413,8 +413,8 @@ const MCQQuestionComponent = ({ question, onSubmit, submittedResult }) => {
           }}
         >
           <Box
+            className="sf-exam-modal"
             sx={{
-              backgroundColor: "#fff",
               padding: 3,
               borderRadius: "12px",
               width: "90%",
@@ -427,7 +427,7 @@ const MCQQuestionComponent = ({ question, onSubmit, submittedResult }) => {
                 mb: 3,
                 fontSize: "1rem",
                 fontWeight: 600,
-                color: "#2e3760",
+                color: "var(--sf-text)",
               }}
             >
               Please select at least one option before revealing the answer.
@@ -436,7 +436,7 @@ const MCQQuestionComponent = ({ question, onSubmit, submittedResult }) => {
             <Button
               variant="contained"
               onClick={() => setShowNotAnsweredModal(false)}
-              sx={{ backgroundColor: "#2e3760" }}
+              sx={{ background: "linear-gradient(90deg, #f0c94a, #fbbf24)", color: "#04121f", fontWeight: 800 }}
             >
               OK
             </Button>
@@ -448,43 +448,16 @@ const MCQQuestionComponent = ({ question, onSubmit, submittedResult }) => {
       {/* Reveal Results */}
       {showAnswer && (
         <Box sx={{ mt: 4 }}>
-
-          {/* Summary */}
-          <Typography
-            variant="subtitle1"
-            fontWeight={600}
-            mt={2}
-            mb={1}
-            color={isCorrect ? colors.correct : colors.incorrect}
-            display="flex"
-            alignItems="center"
-            gap={1}
-          >
-            {isCorrect ? (
-              <>
-                <FaCheckCircle color={colors.correct} size={20} /> Correct!
-              </>
-            ) : (
-              <>
-                <FaTimesCircle color={colors.incorrect} size={20} /> Incorrect
-              </>
-            )}
-          </Typography>
-
-          {/* Explanation */}
-          {explanation.length > 0 && (
-            <RevealAnswerComponent
-              questionText={questionText}
-              explanationHeading={explanation[0]?.heading || "Explanation"}
-              explanationParagraphs={explanation.map((exp) => exp.explanation)}
-              additionalInfoHeading="Additional Info"
-              additionalInfoParagraphs={additionalInfo.map((info) => info.info)}
-              additionalInfoImage={buildImageUrl(additionalInfo?.[0]?.image)}
-              isAnswerCorrect={isCorrect}
-              //for preventing result modal to display again if answered
-              submittedResult={submittedResult}
-            />
-          )}
+          <RevealAnswerComponent
+            questionText={questionText}
+            explanationHeading={explanation[0]?.heading || "Explanation"}
+            explanationParagraphs={explanation.map((exp) => exp.explanation)}
+            additionalInfoHeading="Additional Info"
+            additionalInfoParagraphs={additionalInfo.map((info) => info.info)}
+            additionalInfoImage={buildImageUrl(additionalInfo?.[0]?.image)}
+            isAnswerCorrect={isCorrect}
+            submittedResult={submittedResult}
+          />
         </Box>
       )}
     </Box>

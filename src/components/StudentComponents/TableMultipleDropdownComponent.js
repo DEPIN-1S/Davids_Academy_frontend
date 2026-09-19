@@ -22,6 +22,7 @@ import RevealAnswerComponent from "./RevealAnswerComponent";
 import { useDispatch } from "react-redux";
 import { useLocation } from "react-router-dom";
 import { submitMockTestQuestionResponseThunk } from "../../features/exam/examSlice";
+import { sanitizeExamHtml } from "../../utils/examHtml";
 
 
 const TableMultipleDropdownComponent = ({ question, onSubmit, submittedResult }) => {
@@ -257,13 +258,12 @@ const TableMultipleDropdownComponent = ({ question, onSubmit, submittedResult })
         component="div"
         variant="h6"
         fontWeight={700}
+        className="q-stem q-html"
         sx={{
-          color: "#2e3760",
-          fontSize: { xs: "1rem", md: "1.25rem" },
           textAlign: "left",
           alignItems: "center",
         }}
-       dangerouslySetInnerHTML={{ __html: questionText || "" }} />
+       dangerouslySetInnerHTML={{ __html: sanitizeExamHtml(questionText) }} />
 
       {/* Instructions */}
       {instructions && (
@@ -271,21 +271,20 @@ const TableMultipleDropdownComponent = ({ question, onSubmit, submittedResult })
           <Typography
             variant="h6"
             component="h2"
+            className="q-instructions-label"
             align="left"
-            sx={{ mb: 1, color: "text.primary", fontWeight: 600,fontSize: { xs: "0.9rem", md: "1rem" }, }}
+            sx={{ mb: 1, fontWeight: 600 }}
           >
-            Instructions :
+            Instructions
           </Typography>
           <Typography
             component="div"
             variant="body1"
+            className="q-instructions q-html"
             sx={{
               textAlign: "left",
-              color: "black",
-              fontSize: { xs: "0.9rem", md: "1rem" },
-              lineHeight: 1.6,
             }}
-           dangerouslySetInnerHTML={{ __html: instructions || "" }} />
+           dangerouslySetInnerHTML={{ __html: sanitizeExamHtml(instructions) }} />
         </Box>
       )}
 
@@ -350,7 +349,7 @@ const TableMultipleDropdownComponent = ({ question, onSubmit, submittedResult })
           </Box>
           <Box
             sx={{
-              backgroundColor: "#eff1ffff",
+              backgroundColor: "rgba(34, 211, 238, 0.08)",
               borderRadius: "10px",
               py: { xs: 2 },
               px: { xs: 3 },
@@ -361,15 +360,15 @@ const TableMultipleDropdownComponent = ({ question, onSubmit, submittedResult })
             <Typography
               component="div"
               variant="body1"
+              className="q-html"
               sx={{
-                color: "#333",
-                // Prevent <p> tags from Quill from having unwanted margins
+                color: "var(--sf-text-soft)",
                 '& p': { margin: 0, marginBottom: '0.5em' },
                 '& p:last-child': { marginBottom: 0 },
                 '& *': { lineHeight: 1.6 , wordBreak: "break-word", overflowWrap: "anywhere" },
               }}
               dangerouslySetInnerHTML={{
-                __html: tabsInfo[Math.min(activeTab, tabsInfo.length - 1)]?.tabValue || ""
+                __html: sanitizeExamHtml(tabsInfo[Math.min(activeTab, tabsInfo.length - 1)]?.tabValue || "")
               }}
             />
             {tabsInfo[Math.min(activeTab, tabsInfo.length - 1)]?.tabImage && (
@@ -674,16 +673,6 @@ const TableMultipleDropdownComponent = ({ question, onSubmit, submittedResult })
               </React.Fragment>
             ))}
           </List>
-
-          <Typography
-            variant="subtitle1"
-            fontWeight={600}
-            mt={2}
-            mb={1}
-            color={isCorrect ? "green" : "red"}
-          >
-            {isCorrect ? "✅ Correct!" : "❌ Incorrect"}
-          </Typography>
 
           <RevealAnswerComponent
             questionText={questionText}

@@ -13,6 +13,7 @@ import RevealAnswerComponent from "./RevealAnswerComponent";
 import { useDispatch } from "react-redux";
 import { useLocation } from "react-router-dom";
 import { submitMockTestQuestionResponseThunk } from "../../features/exam/examSlice";
+import { sanitizeExamHtml } from "../../utils/examHtml";
 
 const buildImageUrl = (path) => {
   if (!path) return null;
@@ -197,13 +198,12 @@ const SentenceQuestionComponent = ({ question, onSubmit, submittedResult }) => {
     >
       {/* Title */}
       <Typography variant="h6"
+        className="q-stem q-html"
         sx={{
-          color: "#2e3760",
-          fontSize: { xs: "1rem", md: "1.25rem" },
           textAlign: "left",
           alignItems: "center",
           wordBreak: "break-word",
-        }} component="div" fontWeight={700} mb={5} dangerouslySetInnerHTML={{ __html: questionText || "" }} />
+        }} component="div" fontWeight={700} mb={5} dangerouslySetInnerHTML={{ __html: sanitizeExamHtml(questionText) }} />
 
       {/* Instructions */}
       {!!instructions && (
@@ -212,16 +212,18 @@ const SentenceQuestionComponent = ({ question, onSubmit, submittedResult }) => {
           <Typography
             variant="h6"
             component="h2"
+            className="q-instructions-label"
             align="left"
-            sx={{ mb: 1, color: "text.primary", fontWeight: 600,fontSize: { xs: "0.9rem", md: "1rem" }, }}
+            sx={{ mb: 1, fontWeight: 600 }}
           >
-            Instructions :
+            Instructions
           </Typography>
           <Typography
             component="div"
             variant="body1"
-            sx={{ textAlign: "left", color: "#111827", lineHeight: 1.6 }}
-           dangerouslySetInnerHTML={{ __html: instructions || "" }} />
+            className="q-instructions q-html"
+            sx={{ textAlign: "left", lineHeight: 1.6 }}
+           dangerouslySetInnerHTML={{ __html: sanitizeExamHtml(instructions) }} />
         </Box>
       )}
 
@@ -264,8 +266,8 @@ const SentenceQuestionComponent = ({ question, onSubmit, submittedResult }) => {
           </Box>
 
           <Box
+            className="q-tabs-panel"
             sx={{
-              backgroundColor: "#eff1ffff",
               borderRadius: "10px",
               p: 2,
               mb: 4,
@@ -275,17 +277,18 @@ const SentenceQuestionComponent = ({ question, onSubmit, submittedResult }) => {
             <Typography
               component="div"
               variant="body1"
+              className="q-html"
               sx={{
-                color: "#333",
                 textAlign: "left",
                 "& p": { margin: 0, mb: "0.5em" },
                 "& p:last-child": { mb: 0 },
                 "& *": { lineHeight: 1.6 , wordBreak: "break-word", overflowWrap: "anywhere" },
               }}
               dangerouslySetInnerHTML={{
-                __html:
+                __html: sanitizeExamHtml(
                   tabsInfo[Math.min(activeTab, tabsInfo.length - 1)]?.tabValue ||
-                  "No content available",
+                  "No content available"
+                ),
               }}
             />
             {tabsInfo[activeTab]?.tabImage && (
@@ -307,12 +310,11 @@ const SentenceQuestionComponent = ({ question, onSubmit, submittedResult }) => {
       </Typography>
 
       <Box
+        className="q-sentence-board"
         sx={{
           maxWidth: "950px",
           margin: "0 auto",
           mb: 4,
-          border: "1px solid #e0e0e0",
-          borderRadius: "8px",
           p: "1rem",
         }}
       >
@@ -511,16 +513,6 @@ const SentenceQuestionComponent = ({ question, onSubmit, submittedResult }) => {
               </ListItem>
             ))}
           </List>
-
-          <Typography
-            variant="subtitle1"
-            fontWeight={600}
-            mt={2}
-            mb={1}
-            color={isCorrect ? "green" : "red"}
-          >
-            {isCorrect ? "✅ Correct!" : "❌ Incorrect"}
-          </Typography>
 
           <RevealAnswerComponent
             questionText={questionText}

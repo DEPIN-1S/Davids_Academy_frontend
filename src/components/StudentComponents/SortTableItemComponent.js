@@ -1,6 +1,7 @@
 import React from 'react';
 import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
+import { sanitizeExamHtml } from '../../utils/examHtml';
 
 const SortableItemComponent = ({ id, text }) => {
   const {
@@ -21,7 +22,7 @@ const SortableItemComponent = ({ id, text }) => {
 
   return (
     <div ref={setNodeRef} style={style} className="sortable-item" {...attributes} {...listeners}>
-      <span className="drag-icon">≡</span> <div dangerouslySetInnerHTML={{ __html: text || "" }} />
+      <span className="drag-icon">≡</span> <div className="q-html" dangerouslySetInnerHTML={{ __html: sanitizeExamHtml(text) }} />
     </div>
   );
 };

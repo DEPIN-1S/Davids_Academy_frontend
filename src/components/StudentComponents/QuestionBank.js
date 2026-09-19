@@ -40,28 +40,26 @@ const QuestionBank = () => {
 
   return (
     <Box
+      className="sf-qbank-hero"
       sx={{
-        background:
-          "radial-gradient(circle at center, #fcebb3 10%, #f9f9fb 100%)",
         borderRadius: "32px",
         padding: { xs: "3rem 1.5rem", md: "4rem 2rem" },
         textAlign: "center",
         maxWidth: "1000px",
         margin: "auto",
-         border: "1px solid #2E3760",
       }}
     >
       <Typography
         variant="h4"
         fontWeight={700}
-        sx={{ fontSize: { xs: "1.5rem", md: "2rem" }, mb: 2 }}
+        sx={{ fontSize: { xs: "1.5rem", md: "2rem" }, mb: 2, fontFamily: '"Outfit", "Inter", sans-serif', letterSpacing: "-0.03em" }}
       >
         Practice & Master Your Exam Skills!
       </Typography>
 
       <Typography
         variant="body1"
-        sx={{ color: "#333", maxWidth: "600px", margin: "auto", mb: 3 }}
+        sx={{ color: "#c9d6ee", maxWidth: "600px", margin: "auto", mb: 3, fontFamily: '"Inter", sans-serif' }}
       >
         Access thousands of practice questions, track your performance, and
         build confidence for your healthcare exams.
@@ -80,20 +78,23 @@ const QuestionBank = () => {
           variant="contained"
           size="large"
           sx={{
-            backgroundColor: "#2E3760",
-            borderRadius: "23px",
+            background: "linear-gradient(90deg, #f0c94a, #fbbf24)",
+            color: "#04121f",
+            borderRadius: "999px",
             textTransform: "none",
-            fontWeight: 600,
+            fontWeight: 800,
+            fontFamily: '"Outfit", "Inter", sans-serif',
             px: 5,
             py: "9px",
-            boxShadow: "none !important",   // Remove MUI hover shadow
-            transform: "none !important",   // Remove hover transform
-            border: "2px solid transparent", // Prevent shift on hover
+            boxShadow: "0 0 16px rgba(240, 201, 74, 0.28) !important",
+            transform: "none !important",
+            border: "2px solid transparent",
             transition: "all 0.25s ease",
             "&:hover": {
-              backgroundColor: "transparent",
-              color: "#1e264c",
-              border: "2px solid #2E3760",
+              background: "transparent",
+              color: "#67e8f9",
+              border: "2px solid #22d3ee",
+              boxShadow: "none !important",
             },
           }}
           onClick={handleStartTest}
@@ -104,16 +105,18 @@ const QuestionBank = () => {
             onClick={viewProgress}
             size="large"
             sx={{
-              border: "2px solid #2E3760",
-              borderRadius: "23px",
+              border: "2px solid rgba(103, 232, 249, 0.45)",
+              borderRadius: "999px",
               textTransform: "none",
               backgroundColor: "transparent",
-              fontWeight: 600,
-              color: "#2E3760",
+              fontWeight: 700,
+              fontFamily: '"Outfit", "Inter", sans-serif',
+              color: "#67e8f9",
               px: 4,
               "&:hover": {
-                backgroundColor: "#2E3760",
-                color: "#fff",
+                backgroundColor: "rgba(34, 211, 238, 0.12)",
+                color: "#e8eefc",
+                borderColor: "#22d3ee",
               },
             }}
 

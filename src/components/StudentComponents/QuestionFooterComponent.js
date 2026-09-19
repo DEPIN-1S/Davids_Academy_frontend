@@ -223,8 +223,8 @@ const QuestionFooterComponent = ({
           }}
         >
           <Box
+            className="sf-exam-modal"
             sx={{
-              backgroundColor: "#fff",
               padding: 3,
               borderRadius: "12px",
               width: "90%",
@@ -237,7 +237,7 @@ const QuestionFooterComponent = ({
                 mb: 3,
                 fontSize: "1rem",
                 fontWeight: 600,
-                color: "#2e3760",
+                color: "var(--sf-text)",
               }}
             >
               Please answer the question and reveal the answer before moving to the
@@ -247,7 +247,7 @@ const QuestionFooterComponent = ({
             <Button
               variant="contained"
               onClick={() => setShowNotAnsweredModal(false)}
-              sx={{ backgroundColor: "#2e3760" }}
+              sx={{ background: "linear-gradient(90deg, #f0c94a, #fbbf24)", color: "#04121f", fontWeight: 800 }}
             >
               OK
             </Button>

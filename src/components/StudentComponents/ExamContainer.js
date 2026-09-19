@@ -29,6 +29,7 @@ import {
   fetchSampleQuestionnaireIds,
   fetchSampleQuestionData,
 } from "../../features/exam/examAPI";
+import "../../styles/DashboardStyles/StudentFuturistic.css";
 
 const questionTypeToComponent = {
   "MCQ": MCQ,
@@ -341,22 +342,24 @@ const ExamContainer = ({ user }) => {
 
   if (error && !loading) {
     return (
-      <Box sx={{ p: { xs: 2, md: 4 }, textAlign: 'center', mt: { xs: 5, md: 10 } }}>
-        <Typography variant="h5" color="error" gutterBottom sx={{ fontWeight: 600 }}>
+      <Box className="student-exam-session student-futuristic" sx={{ p: { xs: 2, md: 4 }, textAlign: 'center', mt: { xs: 5, md: 10 } }}>
+        <Typography variant="h5" gutterBottom sx={{ fontWeight: 700, color: 'var(--sf-text)', fontFamily: '"Outfit", "Inter", sans-serif' }}>
           Notice
         </Typography>
-        <Typography variant="body1" sx={{ mb: 4, maxWidth: '600px', mx: 'auto', color: '#555' }}>
+        <Typography variant="body1" sx={{ mb: 4, maxWidth: '600px', mx: 'auto', color: 'var(--sf-text-soft)', fontFamily: '"Inter", sans-serif' }}>
           {error}
         </Typography>
         <Button 
           variant="contained" 
           onClick={() => navigate("/student/question-bank")}
           sx={{ 
-            backgroundColor: '#2e3760', 
-            borderRadius: '20px',
+            background: 'linear-gradient(90deg, #f0c94a, #fbbf24)',
+            color: '#04121f',
+            borderRadius: '999px',
             px: 4,
+            fontWeight: 800,
             textTransform: 'none',
-            '&:hover': { backgroundColor: '#1a2038' } 
+            '&:hover': { background: 'linear-gradient(90deg, #fbbf24, #f0c94a)' } 
           }}
         >
           Back to Question Bank
@@ -381,7 +384,7 @@ const ExamContainer = ({ user }) => {
     : qbankSubmittedResult;
 
   return (
-    <Box sx={{
+    <Box className="student-exam-session student-futuristic" sx={{
       display: 'flex',
       flexDirection: 'column',
       height: { xs: '100dvh', sm: '100dvh', md: 'auto' },
@@ -402,29 +405,31 @@ const ExamContainer = ({ user }) => {
       </Box>
 
       {/* Main Content Area */}
-      <Box sx={{ 
+      <Box className="student-exam-body" sx={{ 
         flexGrow: 1, 
         overflowY: { xs: 'auto', sm: 'auto', md: 'visible' },
         display: 'flex',
         flexDirection: 'column',
       }}>
         {(isTestMode ? loading : qBankQuestionDataLoading) ? (
-          <p>Loading question...</p>
+          <p className="q-instructions">Loading question...</p>
         ) : QuestionComponent ? (
-          <QuestionComponent
-            key={`${currentQuestion?.id || currentIndex}-${refreshKey}`}
-            question={currentQuestion}
-            submittedResult={submittedResultForCurrent}
-            onSubmit={handleAnswerSubmit}
-            testId={testId}
-          />
+          <Box className="q-attempt-area" sx={{ flex: 1 }}>
+            <QuestionComponent
+              key={`${currentQuestion?.id || currentIndex}-${refreshKey}`}
+              question={currentQuestion}
+              submittedResult={submittedResultForCurrent}
+              onSubmit={handleAnswerSubmit}
+              testId={testId}
+            />
+          </Box>
         ) : currentQuestion ? (
           <div>
             <p>Unsupported question type: {currentQuestion.question_type}</p>
             <pre>{JSON.stringify(currentQuestion, null, 2)}</pre>
           </div>
         ) : (
-          <p>No question data available</p>
+          <p className="q-instructions">No question data available</p>
         )}
       </Box>
 

@@ -217,17 +217,19 @@ const CreateTestComponent = ({ handleClose }) => {
     const canStart = selectedTopics.length > 0;
 
     /* ─── Colour tokens ──────────────────────────────────────────────── */
-    const blue = '#1A73E8';
-    const bluePale = '#E8F0FE';
-    const gold = '#F9AB00';
-    const goldDark = '#E09200';
+    const blue = '#67e8f9';
+    const bluePale = 'rgba(34, 211, 238, 0.14)';
+    const gold = '#f0c94a';
+    const goldDark = '#fbbf24';
 
     return (
         <Box sx={{
             p: { xs: 2, sm: 3 },
             width: '100%',
             position: 'relative',
-            bgcolor: '#FFFFFF',
+            bgcolor: 'transparent',
+            color: '#e8eefc',
+            fontFamily: '"Outfit", "Inter", sans-serif',
             display: 'flex',
             flexDirection: 'column',
             maxHeight: { xs: '92vh', sm: '88vh' },

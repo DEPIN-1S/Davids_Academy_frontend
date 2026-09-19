@@ -5,9 +5,9 @@ import {
   useTheme,
   useMediaQuery,
 } from '@mui/material';
-import ResultModal from './ResultModal';
 import { useContext, useEffect } from "react";
 import { SampleQuestionnaireResultContext } from '../../context/ResultProvider';
+import { sanitizeExamHtml } from '../../utils/examHtml';
 
 
 
@@ -21,10 +21,8 @@ const RevealAnswerComponent = ({
   isAnswerCorrect, // ← Destructure here
   submittedResult
 }) => {
-  // true or false
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('md'));
-  const [openModal, setOpenModal] = React.useState(true);  // or false initially
   sessionStorage.setItem("isRevealed", "true");
 
   // for sample questionare result calculation
@@ -59,36 +57,41 @@ const RevealAnswerComponent = ({
       }}
     >
 
-      {/* ✅ Only show modal for NEW answers, not previous submissions */}
-      {openModal && !submittedResult?.result && (
-        <ResultModal
-          open={openModal}
-          handleClose={() => setOpenModal(false)}
-          isAnswerCorrect={isAnswerCorrect}
-        />
-      )}
-
-
       {/* Left - Question & Explanation */}
       <Box
+        className="q-attention-section"
         sx={{
           flex: 2,
-          
         }}
       >
+
+        <div
+          className={`q-verdict ${isAnswerCorrect ? "q-verdict-ok" : "q-verdict-bad"}`}
+          role="status"
+          aria-live="polite"
+        >
+          <span className="q-verdict-mark">{isAnswerCorrect ? "✓" : "✕"}</span>
+          <span className="q-verdict-title">
+            {isAnswerCorrect ? "Correct" : "Incorrect"}
+          </span>
+          <span className="q-verdict-sep">·</span>
+          <span className="q-verdict-note">
+            {isAnswerCorrect ? "locked" : "review below"}
+          </span>
+        </div>
 
         {/* Explanation heading (supports custom HTML) */}
         {explanationHeading && (
           <Typography
+            className="q-attention-heading q-html"
             sx={{
               '& p': { margin: 0, marginBottom: '0.5em' },
               '& p:last-child': { marginBottom: 0 },
-              textAlign: "center", fontSize: "20px"
             }}
-            fontWeight={600}
-            mb={1}
-            color="#2E3760"
-            style={{ wordBreak: "break-word", overflowWrap: "anywhere" }} dangerouslySetInnerHTML={{ __html: explanationHeading }}
+            fontWeight={800}
+            mb={1.5}
+            style={{ wordBreak: "break-word", overflowWrap: "anywhere" }}
+            dangerouslySetInnerHTML={{ __html: sanitizeExamHtml(explanationHeading) }}
           />
         )}
 
@@ -96,15 +99,16 @@ const RevealAnswerComponent = ({
         {explanationParagraphs.map((para, idx) => (
           <Typography
             key={`exp-${idx}`}
+            className="q-attention-body q-html"
             variant="body2"
-            color="black"
             align="left"
             paragraph
             sx={{
               '& p': { margin: 0, marginBottom: '0.5em' },
               '& p:last-child': { marginBottom: 0 },
             }}
-            style={{ wordBreak: "break-word", overflowWrap: "anywhere" }} dangerouslySetInnerHTML={{ __html: para }}
+            style={{ wordBreak: "break-word", overflowWrap: "anywhere" }}
+            dangerouslySetInnerHTML={{ __html: sanitizeExamHtml(para) }}
           />
         ))}
 
@@ -112,15 +116,12 @@ const RevealAnswerComponent = ({
         {/* Show heading only if there is real additional info */}
         {(additionalInfoParagraphs?.some(p => p.trim() !== "") || additionalInfoImage) && (
           <Typography
-            sx={{
-              fontSize: "17px",
-              textAlign:"center"
-            }}
-            fontWeight={600}
+            className="q-attention-heading q-html"
+            fontWeight={800}
             mt={3}
-            mb={1}
-            color="#2E3760"
-            style={{ wordBreak: "break-word", overflowWrap: "anywhere" }} dangerouslySetInnerHTML={{ __html: additionalInfoHeading }}
+            mb={1.5}
+            style={{ wordBreak: "break-word", overflowWrap: "anywhere" }}
+            dangerouslySetInnerHTML={{ __html: sanitizeExamHtml(additionalInfoHeading) }}
           />
         )}
 
@@ -128,6 +129,7 @@ const RevealAnswerComponent = ({
         {additionalInfoParagraphs.map((para, idx) => (
           <Typography
             key={`info-${idx}`}
+            className="q-attention-body q-html"
             variant="body2"
             align="left"
             paragraph
@@ -135,7 +137,8 @@ const RevealAnswerComponent = ({
               '& p': { margin: 0, marginBottom: '0.5em' },
               '& p:last-child': { marginBottom: 0 },
             }}
-            style={{ wordBreak: "break-word", overflowWrap: "anywhere" }} dangerouslySetInnerHTML={{ __html: para }}
+            style={{ wordBreak: "break-word", overflowWrap: "anywhere" }}
+            dangerouslySetInnerHTML={{ __html: sanitizeExamHtml(para) }}
           />
         ))}
 

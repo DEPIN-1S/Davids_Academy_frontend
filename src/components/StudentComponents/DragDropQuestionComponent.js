@@ -14,6 +14,7 @@ import RevealAnswerComponent from "./RevealAnswerComponent";
 import { useDispatch } from "react-redux";
 import { useLocation } from "react-router-dom";
 import { submitMockTestQuestionResponseThunk } from "../../features/exam/examSlice";
+import { sanitizeExamHtml } from "../../utils/examHtml";
 
 
 const DragDropQuestionComponent = ({ question, onSubmit, submittedResult }) => {
@@ -190,16 +191,15 @@ const DragDropQuestionComponent = ({ question, onSubmit, submittedResult }) => {
       <Typography
         component="div"
         variant="h6"
+        className="q-stem q-html"
         sx={{
-          color: "#2F3B6C",
           fontWeight: 600,
           mb: 3,
            textAlign: "left",
           alignItems: "center",
           wordBreak: "break-word",
-          fontSize: { xs: "1rem", md: "1.25rem" },
         }}
-       dangerouslySetInnerHTML={{ __html: questionText || "" }} />
+       dangerouslySetInnerHTML={{ __html: sanitizeExamHtml(questionText) }} />
 
       {/* Instructions */}
       {instructions && (
@@ -207,22 +207,21 @@ const DragDropQuestionComponent = ({ question, onSubmit, submittedResult }) => {
           <Typography
             variant="h6"
             component="h2"
+            className="q-instructions-label"
             align="left"
-            sx={{ mb: 1, color: "text.primary", fontWeight: 600,fontSize: { xs: "0.9rem", md: "1rem" } }}
+            sx={{ mb: 1, fontWeight: 600 }}
           >
-            Instructions :
+            Instructions
           </Typography>
           <Typography
             component="div"
             variant="body1"
+            className="q-instructions q-html"
             sx={{
               textAlign: "left",
-              color: "black",
-              fontSize: { xs: "0.9rem", md: "1rem" },
-              lineHeight: 1.6,
               wordBreak: "break-word",
             }}
-           dangerouslySetInnerHTML={{ __html: instructions || "" }} />
+           dangerouslySetInnerHTML={{ __html: sanitizeExamHtml(instructions) }} />
         </Box>
       )}
 
@@ -280,7 +279,7 @@ const DragDropQuestionComponent = ({ question, onSubmit, submittedResult }) => {
           {/* Tab Content */}
           <Box
             sx={{
-              backgroundColor: "#eff1ffff",
+              backgroundColor: "rgba(34, 211, 238, 0.08)",
               borderRadius: 2,
               p: { xs: 2, md: 2.5 },
               minHeight: { xs: "auto", md: 56 },
@@ -288,8 +287,9 @@ const DragDropQuestionComponent = ({ question, onSubmit, submittedResult }) => {
           >
             <Typography
               component="div"
+              className="q-html"
               sx={{
-                color: "#374151",
+                color: "var(--sf-text-soft)",
                 textAlign: "left",
                 fontSize: { xs: "0.9rem", md: "1rem" },
                 lineHeight: 1.6,
@@ -299,7 +299,7 @@ const DragDropQuestionComponent = ({ question, onSubmit, submittedResult }) => {
                  '& *': { lineHeight: 'inherit' , wordBreak: "break-word", overflowWrap: "anywhere" },
               }}
               dangerouslySetInnerHTML={{
-                __html: tabsInfo[activeTab]?.tabValue || ''
+                __html: sanitizeExamHtml(tabsInfo[activeTab]?.tabValue || '')
               }}
             />
             {tabsInfo[activeTab]?.tabImage && (
@@ -747,17 +747,6 @@ const DragDropQuestionComponent = ({ question, onSubmit, submittedResult }) => {
               </Box>
             ))}
           </Box>
-
-          <Typography
-            variant="subtitle1"
-            component="h3"
-            fontWeight={600}
-            mb={2}
-            color={isCorrect ? "green" : "red"}
-            sx={{ fontSize: { xs: "1rem", md: "1.1rem" } }}
-          >
-            {isCorrect ? "✅ Correct!" : "❌ Incorrect"}
-          </Typography>
 
           <RevealAnswerComponent
             questionText={questionText}

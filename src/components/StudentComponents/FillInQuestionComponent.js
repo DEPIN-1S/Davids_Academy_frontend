@@ -3,6 +3,7 @@ import {
   Box, Typography, Button, Select, MenuItem, Tabs, Tab, Card, CardContent
 } from '@mui/material';
 import RevealAnswerComponent from './RevealAnswerComponent';
+import { sanitizeExamHtml } from '../../utils/examHtml';
 const isTruthyBlank = (value) =>
   value === true || value === "true" || value === 1 || value === "1";
 
@@ -75,7 +76,7 @@ const FillInQuestionComponent = ({ question, onSubmit }) => {
   };
 
   return (
-    <Box sx={{ padding: '2rem', maxWidth: '900px', margin: '2rem auto', background: '#fcfcff', borderRadius: 3 }}>
+    <Box className="q-fillin-shell" sx={{ padding: '2rem', maxWidth: '900px', margin: '2rem auto', background: 'transparent', borderRadius: 3 }}>
       {/* Tabs at top */}
       {tabs.length > 0 && (
         <>
@@ -84,15 +85,15 @@ const FillInQuestionComponent = ({ question, onSubmit }) => {
               <Tab key={tab.tabKey} label={tab.tabKey} />
             ))}
           </Tabs>
-          <Box sx={{ background: '#fff', borderRadius: 2, my: 2, p: 2 }}>
-            <Typography component="div" variant="body2" dangerouslySetInnerHTML={{ __html: tabs[tabIndex]?.tabValue || "" }} />
+          <Box className="q-tabs-panel" sx={{ borderRadius: 2, my: 2, p: 2 }}>
+            <Typography component="div" variant="body2" className="q-html" dangerouslySetInnerHTML={{ __html: sanitizeExamHtml(tabs[tabIndex]?.tabValue) }} />
 
           </Box>
         </>
       )}
 
       {/* Question Heading */}
-      <Typography component="div" variant="h6" fontWeight={600} my={2} textAlign="center" dangerouslySetInnerHTML={{ __html: questionHeading || "" }} />
+      <Typography component="div" className="q-stem q-html" variant="h6" fontWeight={600} my={2} textAlign="center" dangerouslySetInnerHTML={{ __html: sanitizeExamHtml(questionHeading) }} />
 
       {/* Fill-in-the-blank composed sentence */}
       <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', flexWrap: 'wrap', gap: 2 }}>
@@ -104,7 +105,7 @@ const FillInQuestionComponent = ({ question, onSubmit }) => {
               onChange={handleBlankChange(`blank${blankKeys.indexOf(`blank${idx}`)}`)}
               displayEmpty
               disabled={showReveal}
-              sx={{ minWidth: 150, mx: 1, bgcolor: 'white' }}
+              sx={{ minWidth: 150, mx: 1 }}
             >
               <MenuItem value="">Select</MenuItem>
               {allOptions.map((optVal, optIdx) => (
@@ -114,7 +115,7 @@ const FillInQuestionComponent = ({ question, onSubmit }) => {
               ))}
             </Select>
           ) : (
-            <Typography sx={{ mx: 0.5 }} key={idx} component="div" dangerouslySetInnerHTML={{ __html: part.question_text || "" }} />
+            <Typography sx={{ mx: 0.5, color: 'var(--sf-text)' }} key={idx} component="div" className="q-html" dangerouslySetInnerHTML={{ __html: sanitizeExamHtml(part.question_text) }} />
           )
         )}
       </Box>
@@ -129,8 +130,8 @@ const FillInQuestionComponent = ({ question, onSubmit }) => {
               key={a.label || idx}
               sx={{
                 mb: 1,
-                background: selectedAction === (a.value || a.label) ? '#ffebbd' : '#fff',
-                border: selectedAction === (a.value || a.label) ? '2px solid #ffd700' : '1px solid #eee',
+                background: selectedAction === (a.value || a.label) ? 'rgba(240, 201, 74, 0.22)' : 'rgba(8, 16, 36, 0.45)',
+                border: selectedAction === (a.value || a.label) ? '2px solid #f0c94a' : '1px solid rgba(94, 234, 212, 0.22)',
                 boxShadow: 0,
                 cursor: 'pointer'
               }}
@@ -149,7 +150,7 @@ const FillInQuestionComponent = ({ question, onSubmit }) => {
       <Box textAlign="center" mt={4}>
         <Button
           variant="contained"
-          sx={{ backgroundColor: '#f4c300', color: '#000', '&:hover': { backgroundColor: '#e0b000' } }}
+          sx={{ background: 'linear-gradient(90deg, #f0c94a, #fbbf24)', color: '#04121f', fontWeight: 800, borderRadius: '999px', '&:hover': { background: 'linear-gradient(90deg, #fbbf24, #f0c94a)' } }}
           onClick={handleReveal}
           disabled={showReveal}
         >
@@ -160,7 +161,7 @@ const FillInQuestionComponent = ({ question, onSubmit }) => {
       {/* Reveal section */}
       {showReveal && (
         <Box sx={{ mt: 4 }}>
-          <Typography variant="subtitle1" fontWeight={600} mb={1} color="#2E3760">
+          <Typography variant="subtitle1" fontWeight={600} mb={1} color="var(--sf-cyan)">
             Your Answers:
           </Typography>
           <ul>
@@ -170,7 +171,7 @@ const FillInQuestionComponent = ({ question, onSubmit }) => {
               </li>
             ))}
           </ul>
-          <Typography variant="subtitle1" fontWeight={600} mt={2} mb={1} color="#2E3760">
+          <Typography variant="subtitle1" fontWeight={600} mt={2} mb={1} color="var(--sf-cyan)">
             Correct Answers:
           </Typography>
           <ul>
@@ -180,10 +181,6 @@ const FillInQuestionComponent = ({ question, onSubmit }) => {
               </li>
             ))}
           </ul>
-          <Typography variant="subtitle1" fontWeight={600} mt={2} mb={1} color={isCorrect ? 'green' : 'red'}>
-            {isCorrect ? '✅ Correct!' : '❌ Incorrect'}
-          </Typography>
-          {/* Optional: Reveal explanation and additional info */}
           <RevealAnswerComponent
             questionText={questionHeading}
             explanationHeading={explanation[0]?.heading || 'Explanation'}
@@ -195,7 +192,7 @@ const FillInQuestionComponent = ({ question, onSubmit }) => {
                 ? `${process.env.REACT_APP_API_URL.replace('/davidsacademy', '')}/${question.additionalInfo[0].image}`
                 : null
             }
-
+            isAnswerCorrect={isCorrect}
           />
         </Box>
       )}

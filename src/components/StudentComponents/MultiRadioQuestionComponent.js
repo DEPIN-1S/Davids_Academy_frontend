@@ -19,6 +19,7 @@ import RevealAnswerComponent from "./RevealAnswerComponent";
 import { useDispatch } from "react-redux";
 import { useLocation } from "react-router-dom";
 import { submitMockTestQuestionResponseThunk } from "../../features/exam/examSlice";
+import { sanitizeExamHtml } from "../../utils/examHtml";
 
 
 
@@ -219,15 +220,14 @@ const MultiRadioQuestionComponent = ({ question, onSubmit, submittedResult }) =>
 
       <Typography
         component="div"
+        className="q-stem q-html"
         fontWeight={700}
         sx={{
           textAlign: "left",
           alignItems: "center",
-          color: "#2e3760",
-          fontSize: { xs: "1rem", md: "1.25rem" },
           mb: 5,
         }}
-        dangerouslySetInnerHTML={{ __html: questionText || "" }}
+        dangerouslySetInnerHTML={{ __html: sanitizeExamHtml(questionText) }}
       />
 
       {/* Tabs for Contextual Information */}
@@ -292,7 +292,7 @@ const MultiRadioQuestionComponent = ({ question, onSubmit, submittedResult }) =>
           </Box>
           <Box
             sx={{
-              backgroundColor: "#eff1ffff",
+              backgroundColor: "rgba(34, 211, 238, 0.08)",
               borderRadius: "10px",
               py: { xs: 2 },
               px: { xs: 3 },
@@ -303,17 +303,18 @@ const MultiRadioQuestionComponent = ({ question, onSubmit, submittedResult }) =>
             <Typography
               component="div"
               variant="body1"
+              className="q-html"
               sx={{
-                color: "#333",
-                // Clean spacing for Quill-generated <p> tags
+                color: "var(--sf-text-soft)",
                 '& p': { margin: 0, marginBottom: '0.5em' },
                 '& p:last-child': { marginBottom: 0 },
                 '& *': { lineHeight: 1.6 },
               }}
               dangerouslySetInnerHTML={{
-                __html:
+                __html: sanitizeExamHtml(
                   tabsInfo.find((tab) => tab.tabKey === activeTab)?.tabValue ||
                   "No content available"
+                )
               }}
             />
             {(() => {
@@ -343,10 +344,10 @@ const MultiRadioQuestionComponent = ({ question, onSubmit, submittedResult }) =>
       {/* Instructions */}
       {!!instructions && (
         <Box sx={{ pb: 2, py: 3 }}>
-          <Typography variant="h6" component="h2" align="left" sx={{ mb: 1, color: "text.primary", fontWeight: 600 }}>
-            Instructions :
+          <Typography variant="h6" component="h2" className="q-instructions-label" align="left" sx={{ mb: 1, fontWeight: 600 }}>
+            Instructions
           </Typography>
-          <Typography component="div" variant="body1" sx={{ textAlign: "left", color: "black" }} dangerouslySetInnerHTML={{ __html: instructions || "" }} />
+          <Typography component="div" variant="body1" className="q-instructions q-html" sx={{ textAlign: "left" }} dangerouslySetInnerHTML={{ __html: sanitizeExamHtml(instructions) }} />
         </Box>
       )}
 
@@ -550,16 +551,6 @@ const MultiRadioQuestionComponent = ({ question, onSubmit, submittedResult }) =>
       {/* Reveal Explanation */}
       {showAnswer && (
         <Box sx={{ mt: 4 }}>
-          <Typography
-            variant="subtitle1"
-            fontWeight={600}
-            mt={2}
-            mb={1}
-            color={isCorrect ? "green" : "red"}
-          >
-            {isCorrect ? "✅ Correct!" : "❌ Incorrect"}
-          </Typography>
-
           <RevealAnswerComponent
             questionText={questionText}
             explanationHeading={explanation[0]?.heading || "Explanation"}

@@ -16,8 +16,9 @@ const StudentNavbar = () => {
   const navigate = useNavigate();
   return (
     <Box
+      className="student-nav-futuristic"
       sx={{
-        backgroundColor: "#2E3760",
+        backgroundColor: "transparent",
         borderRadius: { xs: "0 0 10px 10px", sm: "0 0 20px 20px" },
         padding: { xs: "0.5rem", sm: "0.75rem 1rem" },
         display: "flex",
@@ -47,16 +48,17 @@ const StudentNavbar = () => {
               disableRipple
               sx={{
                 textTransform: "none",
-                backgroundColor: isActive ? "#ffffff" : "transparent",
-                color: isActive ? "#2E3760" : "#fff",
+                backgroundColor: isActive ? "#67e8f9" : "transparent",
+                color: isActive ? "#04121f" : "#c9d6ee",
                 borderRadius: "12px",
-                fontWeight: isActive ? 600 : 400,
+                fontWeight: isActive ? 700 : 500,
+                fontFamily: '"Outfit", "Inter", sans-serif',
                 padding: { xs: "6px 10px", sm: "8px 16px" },
                 fontSize: { xs: "0.75rem", sm: "0.875rem" },
                 justifyContent: "center",
                 whiteSpace: "nowrap",
                 "&:hover": {
-                  backgroundColor: isActive ? "#ffffff" : "#3b4470",
+                  backgroundColor: isActive ? "#67e8f9" : "rgba(34, 211, 238, 0.12)",
                 },
               }}
             >

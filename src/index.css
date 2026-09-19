@@ -2,7 +2,7 @@ body {
   margin: 0;
   padding: 0;
   background-color: #f9f9fc; /* Matches the UI background */
-  font-family: 'Inter', 'Segoe UI', 'Roboto', 'Helvetica Neue', sans-serif;
+  font-family: 'Outfit', 'Inter', 'Segoe UI', 'Roboto', 'Helvetica Neue', sans-serif;
   color: #111827; /* Deep grey for readability */
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;

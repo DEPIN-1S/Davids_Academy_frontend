@@ -26,6 +26,7 @@ import RevealAnswerComponent from "./RevealAnswerComponent";
 import { useDispatch } from "react-redux";
 import { useLocation } from "react-router-dom";
 import { submitMockTestQuestionResponseThunk } from "../../features/exam/examSlice";
+import { sanitizeExamHtml } from "../../utils/examHtml";
 
 const SortQuestionComponent = ({ question, onSubmit, submittedResult }) => {
   const {
@@ -223,13 +224,13 @@ const SortQuestionComponent = ({ question, onSubmit, submittedResult }) => {
       px: { xs: 3, md: 5 },
       py: { xs: 3, md: 5 }
     }} >
-      <Typography sx={{
-        color: "#2e3760",
-        fontSize: { xs: "1rem", md: "1.25rem" },
-        textAlign: "left",
-        alignItems: "center",
+      <Typography
+        className="q-stem q-html"
+        sx={{
+          textAlign: "left",
+          alignItems: "center",
           wordBreak: "break-word",
-      }} variant="h6" fontWeight={700} mb={3} dangerouslySetInnerHTML={{ __html: questionText || "" }} />
+      }} variant="h6" fontWeight={700} mb={3} dangerouslySetInnerHTML={{ __html: sanitizeExamHtml(questionText) }} />
 
 
       <Typography variant="body1" textAlign="center" mb={4}>
@@ -289,7 +290,7 @@ const SortQuestionComponent = ({ question, onSubmit, submittedResult }) => {
           </Box>
           <Box
             sx={{
-              backgroundColor: "#eff1ffff",
+              backgroundColor: "rgba(34, 211, 238, 0.08)",
               borderRadius: "10px",
               padding: "1rem",
               mb: 4,
@@ -298,16 +299,18 @@ const SortQuestionComponent = ({ question, onSubmit, submittedResult }) => {
           >
             <Typography
               variant="body1"
+              className="q-html"
               sx={{
-                color: "#333",
+                color: "var(--sf-text-soft)",
                 "& p": { margin: 0, marginBottom: "0.5em" },
                 "& p:last-child": { marginBottom: 0 },
                 "& *": { lineHeight: 1.6 , wordBreak: "break-word", overflowWrap: "anywhere" },
               }}
               dangerouslySetInnerHTML={{
-                __html:
+                __html: sanitizeExamHtml(
                   tabsInfo.find((tab) => tab.tabKey === activeTab)?.tabValue ||
-                  "No content available",
+                  "No content available"
+                ),
               }}
             />
           </Box>
@@ -321,9 +324,8 @@ const SortQuestionComponent = ({ question, onSubmit, submittedResult }) => {
           margin: "0 auto",
           mb: 4,
           p: 2,
-          border: "1px solid #ccc",
-          borderRadius: "10px",
-          backgroundColor: "#fafafa",
+          backgroundColor: "rgba(8, 16, 36, 0.35)",
+          border: "1px solid rgba(94, 234, 212, 0.16)",
         }}
       >
         {!showReveal ? (
@@ -344,8 +346,8 @@ const SortQuestionComponent = ({ question, onSubmit, submittedResult }) => {
                     borderRadius: "8px",
                     p: 1.5,
                     mb: 1.5,
-                    backgroundColor: "white",
-                    boxShadow: "0 2px 4px rgba(0,0,0,0.05)",
+                    backgroundColor: "rgba(8, 16, 36, 0.45)",
+                    boxShadow: "none",
                     cursor: "grab",
                   }}
                 >
@@ -488,15 +490,6 @@ const SortQuestionComponent = ({ question, onSubmit, submittedResult }) => {
               </Box>
             ))}
           </Box>
-          <Typography
-            variant="subtitle1"
-            fontWeight={600}
-            mt={1}
-            mb={2}
-            color={isCorrect ? "green" : "red"}
-          >
-            {isCorrect ? "✅ Correct!" : "❌ Incorrect"}
-          </Typography>
           <RevealAnswerComponent
             questionText={questionText}
             explanationHeading={explanation[0]?.heading || "Explanation"}
