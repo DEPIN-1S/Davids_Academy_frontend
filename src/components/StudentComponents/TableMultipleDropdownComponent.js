@@ -437,7 +437,7 @@ const TableMultipleDropdownComponent = ({ question, onSubmit, submittedResult })
                 >
                   <TableCell
                     sx={{ 
-                       color: "#1f2937", 
+                       color: "#f8fbff", 
                        borderBottom: "1px solid #e2e8f0",
                        wordBreak: "break-word",
                        minWidth: { xs: "140px", md: "auto" },

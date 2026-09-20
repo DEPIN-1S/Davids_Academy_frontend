@@ -223,12 +223,12 @@ const CreateTestComponent = ({ handleClose }) => {
     const goldDark = '#fbbf24';
 
     return (
-        <Box sx={{
+        <Box className="sf-topic-picker" sx={{
             p: { xs: 2, sm: 3 },
             width: '100%',
             position: 'relative',
             bgcolor: 'transparent',
-            color: '#e8eefc',
+            color: '#ffffff',
             fontFamily: '"Outfit", "Inter", sans-serif',
             display: 'flex',
             flexDirection: 'column',
@@ -253,25 +253,25 @@ const CreateTestComponent = ({ handleClose }) => {
                     <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
                         <Box sx={{
                             width: 40, height: 40, borderRadius: '12px',
-                            background: `linear-gradient(135deg, ${bluePale}, #C5D9FA)`,
+                            background: `linear-gradient(135deg, ${bluePale}, rgba(12, 24, 52, 0.9))`,
                             display: 'flex', alignItems: 'center', justifyContent: 'center',
                             boxShadow: '0 2px 8px rgba(26,115,232,0.15)'
                         }}>
                             <FormatListBulletedIcon sx={{ color: blue, fontSize: '20px' }} />
                         </Box>
                         <Box>
-                            <Typography variant="h6" fontWeight={800} color="text.primary" sx={{ lineHeight: 1.2, letterSpacing: '-0.3px' }}>
+                            <Typography variant="h6" fontWeight={800} sx={{ lineHeight: 1.2, letterSpacing: '-0.3px', color: '#ffffff', fontSize: '1.35rem' }}>
                                 Select topics
                             </Typography>
-                            <Typography variant="caption" color="text.secondary" sx={{ fontSize: '11px' }}>
+                            <Typography variant="caption" sx={{ fontSize: '13px', color: '#ffffff', fontWeight: 600 }}>
                                 Choose topics for your question bank session
                             </Typography>
                         </Box>
                     </Box>
 
                     {/* Close */}
-                    <IconButton onClick={handleClose} size="small" sx={{
-                        bgcolor: '#F5F5F5', color: 'text.secondary', width: 32, height: 32,
+                    <IconButton onClick={handleClose} size="small" className="sf-close-btn" sx={{
+                        bgcolor: 'rgba(8, 16, 36, 0.78)', color: '#ffffff', width: 32, height: 32,
                         transition: 'all 0.25s',
                         '&:hover': { bgcolor: '#FFEBEE', color: '#D32F2F', transform: 'rotate(90deg)' }
                     }}>
@@ -292,21 +292,22 @@ const CreateTestComponent = ({ handleClose }) => {
                             flex: 1,
                             '& .MuiOutlinedInput-root': {
                                 borderRadius: '14px',
-                                bgcolor: '#F8F9FA',
+                                bgcolor: 'rgba(8, 16, 36, 0.78)',
+                                color: '#ffffff',
                                 transition: 'all 0.2s',
-                                '& fieldset': { borderColor: '#EBEBEB' },
-                                '&:hover fieldset': { borderColor: '#DADCE0' },
+                                '& fieldset': { borderColor: 'rgba(148, 197, 253, 0.32)' },
+                                '&:hover fieldset': { borderColor: 'rgba(103, 232, 249, 0.55)' },
                                 '&.Mui-focused': {
-                                    bgcolor: '#FFFFFF',
+                                    bgcolor: 'rgba(12, 24, 52, 0.95)',
                                     '& fieldset': { borderColor: blue, borderWidth: '2px' }
                                 },
                             },
-                            '& input': { fontSize: '14px', py: 1.1, '&::placeholder': { color: '#9AA0A6' } }
+                            '& input': { fontSize: '15px', fontWeight: 600, py: 1.1, color: '#ffffff', WebkitTextFillColor: '#ffffff', '&::placeholder': { color: '#ffffff', opacity: 0.92 } }
                         }}
                         InputProps={{
                             startAdornment: (
                                 <InputAdornment position="start">
-                                    <SearchIcon sx={{ color: '#9AA0A6', fontSize: '19px' }} />
+                                    <SearchIcon sx={{ color: '#ffffff', fontSize: '19px' }} />
                                 </InputAdornment>
                             ),
                         }}
@@ -318,6 +319,7 @@ const CreateTestComponent = ({ handleClose }) => {
                             onClick={handleSortMenuOpen}
                             variant="outlined"
                             size="small"
+                            className="sf-sort-btn"
                             startIcon={<SortByAlphaIcon sx={{ fontSize: '18px', color: blue }} />}
                             sx={{
                                 borderRadius: '14px',
@@ -325,9 +327,9 @@ const CreateTestComponent = ({ handleClose }) => {
                                 px: 1.8,
                                 minWidth: 'auto',
                                 whiteSpace: 'nowrap',
-                                borderColor: '#EBEBEB',
-                                color: '#3C4043',
-                                bgcolor: '#F8F9FA',
+                                borderColor: 'rgba(148, 197, 253, 0.32)',
+                                color: '#ffffff',
+                                bgcolor: 'rgba(8, 16, 36, 0.78)',
                                 textTransform: 'none',
                                 fontWeight: 600,
                                 fontSize: '13px',
@@ -335,7 +337,7 @@ const CreateTestComponent = ({ handleClose }) => {
                                 '&:hover': {
                                     borderColor: blue,
                                     bgcolor: bluePale,
-                                    color: blue,
+                                    color: '#ffffff',
                                 }
                             }}
                         >
@@ -360,7 +362,7 @@ const CreateTestComponent = ({ handleClose }) => {
                                     borderRadius: '8px',
                                     py: 1,
                                     px: 1.5,
-                                    color: '#3C4043',
+                                    color: '#ffffff',
                                     '&.Mui-selected': {
                                         bgcolor: bluePale,
                                         color: blue,
@@ -389,7 +391,7 @@ const CreateTestComponent = ({ handleClose }) => {
                 {/* Category chips + scroll */}
                 <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5, mb: 1 }}>
                     <IconButton size="small" onClick={() => handleScroll('left')}
-                        sx={{ p: 0.5, color: 'grey.500', '&:hover': { color: blue, bgcolor: bluePale } }}>
+                        sx={{ p: 0.5, color: '#ffffff', '&:hover': { color: blue, bgcolor: bluePale } }}>
                         <ChevronLeft sx={{ fontSize: '18px' }} />
                     </IconButton>
 
@@ -410,6 +412,7 @@ const CreateTestComponent = ({ handleClose }) => {
                                     key={cat}
                                     onClick={() => { setActiveCategory(cat); setPage(1); setPageKey(k => k + 1); }}
                                     disableElevation
+                                    className={active ? 'sf-cat-chip sf-cat-chip--active' : 'sf-cat-chip'}
                                     sx={{
                                         borderRadius: '20px',
                                         textTransform: 'none',
@@ -417,18 +420,19 @@ const CreateTestComponent = ({ handleClose }) => {
                                         px: 2,
                                         py: 0.4,
                                         minWidth: 'auto',
-                                        fontSize: '13px',
-                                        fontWeight: active ? 700 : 500,
-                                        bgcolor: active ? blue : '#F1F3F4',
-                                        color: active ? '#FFFFFF' : '#3C4043',
-                                        border: 'none',
+                                        fontSize: '14px',
+                                        fontWeight: 700,
+                                        bgcolor: active ? blue : 'rgba(8, 16, 36, 0.78)',
+                                        color: active ? '#04121f' : '#ffffff',
+                                        border: active ? `1px solid ${blue}` : '1px solid rgba(148, 197, 253, 0.32)',
                                         transition: 'all 0.2s cubic-bezier(.22,.68,0,1.2)',
                                         transform: active ? 'scale(1.06)' : 'scale(1)',
-                                        boxShadow: active ? `0 4px 12px rgba(26,115,232,0.3)` : 'none',
+                                        boxShadow: active ? `0 4px 12px rgba(103,232,249,0.35)` : 'none',
                                         '&:hover': {
-                                            bgcolor: active ? '#1557B0' : '#E8EAED',
+                                            bgcolor: active ? '#8ef3ff' : 'rgba(12, 24, 52, 0.95)',
+                                            color: active ? '#04121f' : '#ffffff',
                                             transform: 'scale(1.05)',
-                                            boxShadow: active ? `0 4px 14px rgba(26,115,232,0.35)` : '0 2px 8px rgba(0,0,0,0.08)'
+                                            boxShadow: active ? `0 4px 14px rgba(103,232,249,0.4)` : '0 2px 8px rgba(0,0,0,0.2)'
                                         }
                                     }}
                                 >
@@ -439,13 +443,13 @@ const CreateTestComponent = ({ handleClose }) => {
                     </Box>
 
                     <IconButton size="small" onClick={() => handleScroll('right')}
-                        sx={{ p: 0.5, color: 'grey.500', '&:hover': { color: blue, bgcolor: bluePale } }}>
+                        sx={{ p: 0.5, color: '#ffffff', '&:hover': { color: blue, bgcolor: bluePale } }}>
                         <ChevronRight sx={{ fontSize: '18px' }} />
                     </IconButton>
                 </Box>
 
                 {/* Scroll progress bar */}
-                <Box sx={{ height: '3px', bgcolor: '#EBEBEB', borderRadius: '2px', mb: 2, mx: 3, overflow: 'hidden' }}>
+                <Box sx={{ height: '3px', bgcolor: 'rgba(148, 197, 253, 0.2)', borderRadius: '2px', mb: 2, mx: 3, overflow: 'hidden' }}>
                     <Box sx={{
                         height: '100%',
                         width: '30%',
@@ -463,7 +467,7 @@ const CreateTestComponent = ({ handleClose }) => {
                         sx={{ display: 'flex', alignItems: 'center', gap: 1, cursor: 'pointer', userSelect: 'none',
                             borderRadius: '8px', px: 1, py: 0.5,
                             transition: 'all 0.15s',
-                            '&:hover': { bgcolor: '#F5F5F5' }
+                            '&:hover': { bgcolor: 'rgba(103, 232, 249, 0.12)' }
                         }}
                     >
                         <Checkbox
@@ -476,7 +480,7 @@ const CreateTestComponent = ({ handleClose }) => {
                                 '& .MuiSvgIcon-root': { fontSize: '20px' }
                             }}
                         />
-                        <Typography variant="body2" sx={{ fontWeight: 500, color: '#5F6368', fontSize: '13px' }}>
+                        <Typography variant="body2" sx={{ fontWeight: 700, color: '#ffffff', fontSize: '15px' }}>
                             Select all on this page
                         </Typography>
                     </Box>
@@ -502,22 +506,22 @@ const CreateTestComponent = ({ handleClose }) => {
                 '&::-webkit-scrollbar': { width: '5px' },
                 '&::-webkit-scrollbar-track': { bgcolor: 'transparent' },
                 '&::-webkit-scrollbar-thumb': {
-                    bgcolor: '#E0E0E0', borderRadius: '4px',
-                    '&:hover': { bgcolor: '#BDBDBD' }
+                    bgcolor: 'rgba(148, 197, 253, 0.35)', borderRadius: '4px',
+                    '&:hover': { bgcolor: 'rgba(103, 232, 249, 0.55)' }
                 }
             }}>
                 {loadingTopics ? (
                     <Box display="flex" flexDirection="column" alignItems="center" justifyContent="center" py={6} gap={2}>
                         <CircularProgress size={32} thickness={4} sx={{ color: blue }} />
-                        <Typography variant="body2" color="text.secondary">Loading topics...</Typography>
+                        <Typography variant="body2" sx={{ color: '#d7e2f8' }}>Loading topics...</Typography>
                     </Box>
                 ) : filteredTopics.length === 0 ? (
                     <Box textAlign="center" py={5}>
                         <SearchIcon sx={{ fontSize: '48px', color: '#DADCE0', mb: 1 }} />
-                        <Typography variant="body1" color="text.secondary" fontWeight={500}>
+                        <Typography variant="body1" fontWeight={500} sx={{ color: '#eef3ff' }}>
                             {liveTopics.length === 0 ? 'No topics available.' : 'No topics match your search.'}
                         </Typography>
-                        <Typography variant="caption" color="text.disabled">
+                        <Typography variant="caption" sx={{ color: '#c5d0e8' }}>
                             Try a different search or category
                         </Typography>
                     </Box>
@@ -541,11 +545,11 @@ const CreateTestComponent = ({ handleClose }) => {
                                         cursor: isCompleted ? 'default' : 'pointer',
                                         border: '1.5px solid',
                                         borderColor: isCompleted
-                                            ? '#66BB6A'
-                                            : isSelected ? blue : '#EBEBEB',
+                                            ? '#34d399'
+                                            : isSelected ? blue : 'rgba(148, 197, 253, 0.32)',
                                         bgcolor: isCompleted
-                                            ? '#F1F8F1'
-                                            : isSelected ? bluePale : '#FAFAFA',
+                                            ? 'rgba(52, 211, 153, 0.14)'
+                                            : isSelected ? bluePale : 'rgba(8, 16, 36, 0.78)',
                                         borderRadius: '14px',
                                         position: 'relative',
                                         overflow: 'hidden',
@@ -555,8 +559,8 @@ const CreateTestComponent = ({ handleClose }) => {
                                             ? `0 4px 16px rgba(26,115,232,0.15)`
                                             : '0 1px 3px rgba(0,0,0,0.04)',
                                         '&:hover': !isCompleted ? {
-                                            borderColor: isSelected ? blue : '#BDBDBD',
-                                            bgcolor: isSelected ? '#DAE9FD' : '#F3F4F6',
+                                            borderColor: isSelected ? blue : 'rgba(103, 232, 249, 0.45)',
+                                            bgcolor: isSelected ? 'rgba(34, 211, 238, 0.22)' : 'rgba(12, 24, 52, 0.95)',
                                             transform: 'translateX(4px)',
                                             boxShadow: isSelected
                                                 ? '0 6px 20px rgba(26,115,232,0.2)'
@@ -586,21 +590,21 @@ const CreateTestComponent = ({ handleClose }) => {
                                                 animation: 'checkBounce 0.3s cubic-bezier(.22,.68,0,1.2)'
                                             }} />
                                         ) : (
-                                            <RadioButtonUncheckedIcon sx={{ color: '#DADCE0', fontSize: '22px' }} />
+                                            <RadioButtonUncheckedIcon sx={{ color: '#ffffff', fontSize: '22px' }} />
                                         )}
                                     </Box>
 
                                     {/* Topic name */}
                                     <Typography
                                         variant="body2"
-                                        fontWeight={isSelected || isCompleted ? 600 : 500}
-                                        color={isSelected ? blue : isCompleted ? '#388E3C' : 'text.primary'}
+                                        fontWeight={800}
                                         sx={{
                                             flex: 1,
-                                            fontSize: { xs: '13px', sm: '14px' },
+                                            fontSize: { xs: '15px', sm: '16px' },
                                             wordBreak: 'break-word',
                                             lineHeight: 1.45,
-                                            transition: 'color 0.2s'
+                                            transition: 'color 0.2s',
+                                            color: '#ffffff'
                                         }}
                                     >
                                         {topicDisplay}
@@ -610,11 +614,11 @@ const CreateTestComponent = ({ handleClose }) => {
                                     {isCompleted && (
                                         <Box sx={{
                                             flexShrink: 0,
-                                            bgcolor: '#E8F5E9', color: '#2E7D32',
+                                            bgcolor: 'rgba(52, 211, 153, 0.18)', color: '#6ee7b7',
                                             px: 1.2, py: 0.3,
                                             borderRadius: '10px',
                                             fontSize: '11px', fontWeight: 700,
-                                            border: '1px solid #C8E6C9'
+                                            border: '1px solid rgba(52, 211, 153, 0.45)'
                                         }}>
                                             Done ✓
                                         </Box>
@@ -641,18 +645,19 @@ const CreateTestComponent = ({ handleClose }) => {
                             boundaryCount={isMobile ? 1 : 2}
                             sx={{
                                 '& .MuiPaginationItem-root': {
-                                    fontWeight: 600,
-                                    fontSize: '13px',
+                                    fontWeight: 800,
+                                    fontSize: '14px',
                                     borderRadius: '10px',
-                                    border: '1.5px solid #EBEBEB',
-                                    bgcolor: '#FAFAFA',
+                                    border: '1.5px solid rgba(148, 197, 253, 0.32)',
+                                    bgcolor: 'rgba(8, 16, 36, 0.78)',
+                                    color: '#ffffff',
                                     transition: 'all 0.18s',
-                                    '&:hover': { bgcolor: bluePale, borderColor: `${blue}55`, color: blue },
+                                    '&:hover': { bgcolor: bluePale, borderColor: `${blue}55`, color: '#ffffff' },
                                     '&.Mui-selected': {
-                                        background: `linear-gradient(135deg, ${blue}, #4285F4) !important`,
-                                        color: '#FFFFFF !important',
+                                        background: `linear-gradient(135deg, ${blue}, #22d3ee) !important`,
+                                        color: '#04121f !important',
                                         borderColor: `${blue} !important`,
-                                        boxShadow: `0 4px 12px rgba(26,115,232,0.35)`,
+                                        boxShadow: `0 4px 12px rgba(103,232,249,0.35)`,
                                     }
                                 }
                             }}
@@ -661,19 +666,20 @@ const CreateTestComponent = ({ handleClose }) => {
                 )}
 
                 {/* Divider */}
-                <Box sx={{ height: '1px', bgcolor: '#F0F0F0', mb: 2 }} />
+                <Box sx={{ height: '1px', bgcolor: 'rgba(148, 197, 253, 0.2)', mb: 2 }} />
 
                 {/* Action buttons */}
                 <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                     <Button
                         onClick={handleClose}
+                        className="sf-cancel-btn"
                         sx={{
-                            color: '#5F6368', fontWeight: 600,
-                            textTransform: 'none', fontSize: '14px',
+                            color: '#ffffff', fontWeight: 700,
+                            textTransform: 'none', fontSize: '15px',
                             borderRadius: '10px', px: 2.5, py: 1,
                             transition: 'all 0.18s',
                             '&:hover': {
-                                bgcolor: '#F5F5F5', color: '#202124',
+                                bgcolor: 'rgba(103, 232, 249, 0.12)', color: '#ffffff',
                                 transform: 'translateX(-2px)'
                             }
                         }}
@@ -692,15 +698,16 @@ const CreateTestComponent = ({ handleClose }) => {
                                 onClick={handleCreateTest}
                                 disabled={!canStart}
                                 disableElevation
+                                className="sf-start-btn"
                                 sx={{
                                     background: canStart
                                         ? `linear-gradient(135deg, ${gold} 0%, ${goldDark} 100%)`
-                                        : '#EEEEEE',
-                                    color: canStart ? '#1A1A1A' : '#BDBDBD',
-                                    fontWeight: 700,
+                                        : '#3d4f73',
+                                    color: canStart ? '#04121f' : '#ffffff',
+                                    fontWeight: 800,
                                     borderRadius: '12px',
                                     textTransform: 'none',
-                                    fontSize: '14px',
+                                    fontSize: '15px',
                                     px: 3.5, py: 1.1,
                                     letterSpacing: '0.2px',
                                     transition: 'all 0.25s cubic-bezier(.22,.68,0,1.2)',
@@ -712,8 +719,8 @@ const CreateTestComponent = ({ handleClose }) => {
                                         boxShadow: `0 8px 24px rgba(249,171,0,0.45)`
                                     } : {},
                                     '&.Mui-disabled': {
-                                        background: '#EEEEEE',
-                                        color: '#BDBDBD'
+                                        background: '#3d4f73',
+                                        color: '#ffffff'
                                     }
                                 }}
                             >

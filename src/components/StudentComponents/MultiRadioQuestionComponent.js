@@ -364,7 +364,7 @@ const MultiRadioQuestionComponent = ({ question, onSubmit, submittedResult }) =>
                   fontSize: "16px",
                 }}
               >
-                <div dangerouslySetInnerHTML={{ __html: multiradioHeading || "" }} />
+                <div className="q-html" dangerouslySetInnerHTML={{ __html: sanitizeExamHtml(multiradioHeading) }} />
               </TableCell>
               {uniqueAnswers.map((answer, colIdx) => (
                 <TableCell
@@ -377,7 +377,7 @@ const MultiRadioQuestionComponent = ({ question, onSubmit, submittedResult }) =>
                     fontSize: "16px",
                   }}
                 >
-                  <div dangerouslySetInnerHTML={{ __html: answer || "" }} />
+                  <div className="q-html" dangerouslySetInnerHTML={{ __html: sanitizeExamHtml(answer) }} />
                 </TableCell>
               ))}
             </TableRow>
@@ -386,8 +386,8 @@ const MultiRadioQuestionComponent = ({ question, onSubmit, submittedResult }) =>
           <TableBody>
             {questionContent.map((finding, rowIdx) => (
               <TableRow key={rowIdx}>
-                <TableCell sx={{ fontSize: "15px", color: "#333" }} >
-                  <div dangerouslySetInnerHTML={{ __html: finding.client_findings || "" }} />
+                <TableCell sx={{ fontSize: "15px", color: "#f8fbff" }} >
+                  <div className="q-html" dangerouslySetInnerHTML={{ __html: sanitizeExamHtml(finding.client_findings) }} />
                 </TableCell>
                 {uniqueAnswers.map((answer, colIdx) => {
                   const expected = finding.answer;

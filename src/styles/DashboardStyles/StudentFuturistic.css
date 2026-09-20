@@ -5,9 +5,9 @@ body.student-theme {
   --sf-bg: #081224;
   --sf-card: linear-gradient(180deg, rgba(20, 32, 64, 0.96), rgba(12, 20, 42, 0.96));
   --sf-panel: rgba(8, 16, 36, 0.45);
-  --sf-text: #e8eefc;
-  --sf-text-soft: #c9d6ee;
-  --sf-muted: #93a4c7;
+  --sf-text: #f8fbff;
+  --sf-text-soft: #eef3ff;
+  --sf-muted: #c5d0e8;
   --sf-cyan: #67e8f9;
   --sf-cyan-strong: #22d3ee;
   --sf-gold: #f0c94a;
@@ -94,6 +94,147 @@ body.student-theme .MuiMenuItem-root:hover,
 body.student-theme .MuiMenuItem-root.Mui-selected {
   background: rgba(34, 211, 238, 0.12) !important;
   color: var(--sf-cyan) !important;
+}
+
+/* Select-topics picker: bright white ink on every label */
+.sf-topic-picker,
+.sf-topic-picker *:not(svg):not(path),
+body.student-theme .sf-topic-picker,
+body.student-theme .sf-topic-picker *:not(svg):not(path) {
+  color: #ffffff !important;
+  -webkit-text-fill-color: #ffffff !important;
+  font-family: var(--sf-font) !important;
+}
+
+.sf-topic-picker .MuiTypography-root,
+body.student-theme .sf-topic-picker .MuiTypography-root,
+.sf-topic-picker .MuiTypography-caption,
+.sf-topic-picker .MuiTypography-colorTextSecondary,
+.sf-topic-picker .MuiTypography-colorTextDisabled {
+  color: #ffffff !important;
+  -webkit-text-fill-color: #ffffff !important;
+  font-weight: 700 !important;
+}
+
+.sf-topic-picker .topic-card,
+body.student-theme .sf-topic-picker .topic-card {
+  background: #243356 !important;
+  border-color: rgba(255, 255, 255, 0.28) !important;
+  color: #ffffff !important;
+}
+
+.sf-topic-picker .topic-card:hover,
+body.student-theme .sf-topic-picker .topic-card:hover {
+  background: #2e4268 !important;
+  border-color: #7dd3fc !important;
+}
+
+.sf-topic-picker .topic-card .MuiTypography-root,
+body.student-theme .sf-topic-picker .topic-card .MuiTypography-root {
+  color: #ffffff !important;
+  -webkit-text-fill-color: #ffffff !important;
+  font-size: 16px !important;
+  font-weight: 700 !important;
+  letter-spacing: 0.01em;
+}
+
+.sf-topic-picker .MuiOutlinedInput-root,
+body.student-theme .sf-topic-picker .MuiOutlinedInput-root {
+  background: #243356 !important;
+  color: #ffffff !important;
+}
+
+.sf-topic-picker .MuiOutlinedInput-root fieldset,
+body.student-theme .sf-topic-picker .MuiOutlinedInput-root fieldset {
+  border-color: rgba(255, 255, 255, 0.28) !important;
+}
+
+.sf-topic-picker .MuiOutlinedInput-input,
+.sf-topic-picker input,
+body.student-theme .sf-topic-picker input {
+  color: #ffffff !important;
+  -webkit-text-fill-color: #ffffff !important;
+  font-weight: 600 !important;
+}
+
+.sf-topic-picker input::placeholder,
+body.student-theme .sf-topic-picker input::placeholder {
+  color: #ffffff !important;
+  -webkit-text-fill-color: #ffffff !important;
+  opacity: 0.92 !important;
+}
+
+.sf-topic-picker .MuiInputAdornment-root,
+.sf-topic-picker .MuiInputAdornment-root .MuiSvgIcon-root,
+.sf-topic-picker .MuiSvgIcon-root {
+  color: #ffffff !important;
+}
+
+.sf-topic-picker .sf-cat-chip,
+body.student-theme .sf-topic-picker .sf-cat-chip {
+  background: #243356 !important;
+  color: #ffffff !important;
+  -webkit-text-fill-color: #ffffff !important;
+  border: 1px solid rgba(255, 255, 255, 0.28) !important;
+  font-weight: 700 !important;
+}
+
+.sf-topic-picker .sf-cat-chip.sf-cat-chip--active,
+.sf-topic-picker .sf-cat-chip.sf-cat-chip--active *,
+body.student-theme .sf-topic-picker .sf-cat-chip.sf-cat-chip--active,
+body.student-theme .sf-topic-picker .sf-cat-chip.sf-cat-chip--active * {
+  background: #67e8f9 !important;
+  color: #04121f !important;
+  -webkit-text-fill-color: #04121f !important;
+  border-color: #67e8f9 !important;
+  font-weight: 800 !important;
+}
+
+.sf-topic-picker .sf-sort-btn,
+body.student-theme .sf-topic-picker .sf-sort-btn {
+  background: #243356 !important;
+  color: #ffffff !important;
+  -webkit-text-fill-color: #ffffff !important;
+  border-color: rgba(255, 255, 255, 0.28) !important;
+  font-weight: 700 !important;
+}
+
+.sf-topic-picker .MuiPaginationItem-root,
+body.student-theme .sf-topic-picker .MuiPaginationItem-root {
+  background: #243356 !important;
+  color: #ffffff !important;
+  -webkit-text-fill-color: #ffffff !important;
+  border-color: rgba(255, 255, 255, 0.28) !important;
+  font-weight: 800 !important;
+}
+
+.sf-topic-picker .MuiPaginationItem-root.Mui-selected,
+body.student-theme .sf-topic-picker .MuiPaginationItem-root.Mui-selected {
+  background: #67e8f9 !important;
+  color: #04121f !important;
+  -webkit-text-fill-color: #04121f !important;
+  border-color: #67e8f9 !important;
+}
+
+.sf-topic-picker .sf-cancel-btn,
+body.student-theme .sf-topic-picker .sf-cancel-btn {
+  color: #ffffff !important;
+  -webkit-text-fill-color: #ffffff !important;
+  font-weight: 700 !important;
+}
+
+.sf-topic-picker .sf-close-btn,
+body.student-theme .sf-topic-picker .sf-close-btn {
+  background: #243356 !important;
+  color: #ffffff !important;
+}
+
+.sf-topic-picker .sf-start-btn:not(.Mui-disabled),
+.sf-topic-picker .sf-start-btn:not(.Mui-disabled) *,
+body.student-theme .sf-topic-picker .sf-start-btn:not(.Mui-disabled),
+body.student-theme .sf-topic-picker .sf-start-btn:not(.Mui-disabled) * {
+  color: #04121f !important;
+  -webkit-text-fill-color: #04121f !important;
 }
 
 /* Student tab bar */
@@ -206,7 +347,7 @@ body.student-theme .MuiMenuItem-root.Mui-selected {
   border-radius: 18px;
   margin: 12px 12px 0;
   box-shadow: 0 16px 36px rgba(8, 16, 36, 0.14);
-  color: var(--sf-text);
+  color: #f8fbff;
   font-family: var(--sf-font-body);
 }
 
@@ -233,29 +374,40 @@ body.student-theme .MuiMenuItem-root.Mui-selected {
   font-family: var(--sf-font-body) !important;
 }
 
-/* Remap editor black/navy so text stays readable on the dark card */
-.student-exam-body .q-html [style*="color: rgb(0, 0, 0)"],
-.student-exam-body .q-html [style*="color:rgb(0, 0, 0)"],
-.student-exam-body .q-html [style*="color: rgb(0,0,0)"],
-.student-exam-body .q-html [style*="color:rgb(0,0,0)"],
-.student-exam-body .q-html [style*="color:#000"],
-.student-exam-body .q-html [style*="color: #000"],
-.student-exam-body .q-html [style*="color: black"],
-.student-exam-body .q-html [style*="color:black"],
-.student-exam-body .q-html [style*="color:#2e3760"],
-.student-exam-body .q-html [style*="color: #2e3760"],
-.student-exam-body .q-html [style*="color:#2E3760"],
-.student-exam-body .q-html [style*="color: #2E3760"],
-.student-exam-body .q-html font[color="#000000"],
-.student-exam-body .q-html font[color="black"] {
-  color: inherit !important;
+/* Bright reading text — editor ink is stripped, then forced here */
+.student-exam-body .q-stem,
+.student-exam-body .q-stem *:not(sub):not(sup),
+.student-exam-body .question-text,
+.student-exam-body .q-instructions,
+.student-exam-body .q-instructions *,
+.student-exam-body .q-tabs-panel,
+.student-exam-body .q-tabs-panel *,
+.student-exam-body .q-attempt-area p,
+.student-exam-body .q-attempt-area li,
+.student-exam-body .q-attempt-area td,
+.student-exam-body .q-attempt-area th,
+.student-exam-body .sortable-item,
+.student-exam-body .sortable-item *,
+.student-exam-body .MuiListItemText-primary,
+.student-exam-body .MuiListItemText-primary * {
+  color: #f8fbff !important;
+}
+
+.student-exam-body .q-html {
+  color: #f8fbff;
+}
+
+.student-exam-body .q-stem [style*="background-color"],
+.student-exam-body .q-tabs-panel [style*="background-color"],
+.student-exam-body .q-attention-body [style*="background-color"] {
+  color: #04121f !important;
 }
 
 .student-exam-body .q-stem,
 .student-exam-body .question-text {
-  color: var(--sf-text) !important;
+  color: #ffffff !important;
   font-family: var(--sf-font-display) !important;
-  font-size: clamp(1.08rem, 2vw, 1.32rem) !important;
+  font-size: clamp(1.12rem, 2vw, 1.38rem) !important;
   font-weight: 650 !important;
   line-height: 1.7 !important;
   letter-spacing: -0.02em;
@@ -285,24 +437,23 @@ body.student-theme .MuiMenuItem-root.Mui-selected {
 
 .student-exam-body .q-instructions,
 .student-exam-body .q-instructions.MuiTypography-root {
-  color: var(--sf-text-soft) !important;
+  color: #f8fbff !important;
   font-family: var(--sf-font-body) !important;
-  font-size: 1.02rem !important;
+  font-size: 1.05rem !important;
   line-height: 1.7 !important;
 }
 
 .student-exam-body .q-attempt-area,
 .student-exam-body .q-attempt {
-  color: var(--sf-text-soft);
+  color: #f8fbff;
   font-family: var(--sf-font-body);
 }
 
 .student-exam-body .MuiFormControlLabel-root,
-.student-exam-body .MuiFormControlLabel-label,
-.student-exam-body .MuiFormControlLabel-label * {
-  color: var(--sf-text-soft);
+.student-exam-body .MuiFormControlLabel-label {
+  color: #f8fbff !important;
   font-family: var(--sf-font-body) !important;
-  font-size: 1.02rem;
+  font-size: 1.05rem;
   line-height: 1.55;
 }
 
@@ -330,7 +481,7 @@ body.student-theme .MuiMenuItem-root.Mui-selected {
 .student-exam-body .q-tabs-panel,
 .student-exam-body .q-tabs-panel .MuiTypography-root,
 .student-exam-body .note-box {
-  color: var(--sf-text-soft) !important;
+  color: #f8fbff !important;
   font-family: var(--sf-font-body) !important;
   line-height: 1.7;
 }
@@ -370,9 +521,11 @@ body.student-theme .MuiMenuItem-root.Mui-selected {
 
 .student-exam-body .radio-table,
 .student-exam-body .radio-table td,
-.student-exam-body .radio-table th {
+.student-exam-body .radio-table th,
+.student-exam-body .radio-table td *,
+.student-exam-body .radio-table th * {
   border-color: var(--sf-border) !important;
-  color: var(--sf-text-soft);
+  color: #f8fbff !important;
 }
 
 .student-exam-body .radio-table tbody tr:nth-child(even) {
@@ -381,17 +534,23 @@ body.student-theme .MuiMenuItem-root.Mui-selected {
 
 .student-exam-body .MuiTableBody-root .MuiTableCell-root {
   border-color: var(--sf-border) !important;
+  color: #f8fbff;
+}
+
+.student-exam-body .MuiTableBody-root .MuiTableCell-root .q-html,
+.student-exam-body .MuiTableBody-root .MuiTableCell-root div {
+  color: inherit;
 }
 
 .student-exam-body .MuiListItemText-root,
 .student-exam-body .MuiListItemText-primary,
 .student-exam-body .MuiListItemText-primary * {
-  color: var(--sf-text-soft);
+  color: #f8fbff !important;
   font-family: var(--sf-font-body) !important;
 }
 
 .student-exam-body .MuiTypography-caption {
-  color: var(--sf-muted) !important;
+  color: #eef3ff !important;
   font-family: var(--sf-font-body) !important;
 }
 
@@ -566,9 +725,9 @@ body.student-theme .MuiMenuItem-root.Mui-selected {
 .q-attention-section .q-attention-body,
 .q-attention-section .q-attention-body.MuiTypography-root,
 .q-attention-section .q-attention-body * {
-  color: var(--sf-text) !important;
+  color: #f8fbff !important;
   font-family: var(--sf-font-body) !important;
-  font-size: 1.02rem !important;
+  font-size: 1.05rem !important;
   line-height: 1.75 !important;
   text-align: left !important;
 }

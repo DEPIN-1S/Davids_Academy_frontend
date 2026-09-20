@@ -418,7 +418,7 @@ const TableHighlightSelectComponent = ({ question, onSubmit, submittedResult }) 
                         wordBreak: "break-word",
                       }}
                     >
-                      <div dangerouslySetInnerHTML={{ __html: field.leftColumn || "" }} />
+                      <div className="q-html" dangerouslySetInnerHTML={{ __html: sanitizeExamHtml(field.leftColumn) }} />
                     </TableCell>
                     <TableCell
                       onClick={() => handleRightColumnClick(field.rightColumn)}
@@ -461,7 +461,7 @@ const TableHighlightSelectComponent = ({ question, onSubmit, submittedResult }) 
                           },
                       }}
                     >
-                      <div dangerouslySetInnerHTML={{ __html: field.rightColumn || "" }} />
+                      <div className="q-html" dangerouslySetInnerHTML={{ __html: sanitizeExamHtml(field.rightColumn) }} />
                       {isSelected && !showReveal && (
                         <Typography
                           component="span"

@@ -135,13 +135,16 @@ const QuestionBank = () => {
         maxWidth="sm"
         fullWidth
         PaperProps={{
+          className: 'sf-topic-dialog',
           sx: {
             borderRadius: '20px',
-            boxShadow: '0 24px 60px rgba(0,0,0,0.15), 0 8px 24px rgba(26,115,232,0.1)',
+            boxShadow: '0 24px 60px rgba(0,0,0,0.35), 0 8px 24px rgba(8,16,36,0.4)',
             overflow: 'hidden',
             maxWidth: '640px',
             width: '100%',
             m: { xs: 1.5, sm: 2 },
+            bgcolor: 'rgba(12, 20, 42, 0.98)',
+            color: '#ffffff',
           }
         }}
       >

@@ -359,7 +359,7 @@ const DragDropQuestionComponent = ({ question, onSubmit, submittedResult }) => {
                       <Typography
                         component="div"
                         sx={{
-                          color: "#0f172a",
+                          color: "#f8fbff",
                           fontSize: { xs: "0.9rem", md: "1rem" },
                           fontWeight: 500,
                           mb: 1,
@@ -367,7 +367,7 @@ const DragDropQuestionComponent = ({ question, onSubmit, submittedResult }) => {
                           wordWrap: "break-word",
                           overflowWrap: "break-word",
                         }}
-                        dangerouslySetInnerHTML={{ __html: b.headings || "" }}
+                        className="q-html" dangerouslySetInnerHTML={{ __html: sanitizeExamHtml(b.headings) }}
                       />
                       <FormControl size="small" fullWidth>
                         <Select
@@ -398,7 +398,7 @@ const DragDropQuestionComponent = ({ question, onSubmit, submittedResult }) => {
                           </MenuItem>
                           {b.dragdropoption?.map((opt) => (
                             <MenuItem key={opt.id} value={opt.options_value} sx={{ whiteSpace: "normal", wordBreak: "break-word" }}>
-                              <div dangerouslySetInnerHTML={{ __html: opt.options_value || "" }} />
+                              <div className="q-html" dangerouslySetInnerHTML={{ __html: sanitizeExamHtml(opt.options_value) }} />
                             </MenuItem>
                           ))}
                         </Select>
@@ -426,7 +426,7 @@ const DragDropQuestionComponent = ({ question, onSubmit, submittedResult }) => {
                   <Typography
                     component="div"
                     sx={{
-                      color: "#0f172a",
+                      color: "#f8fbff",
                       fontSize: { xs: "0.9rem", md: "1rem" },
                       fontWeight: 500,
                       mb: 1,
@@ -435,7 +435,7 @@ const DragDropQuestionComponent = ({ question, onSubmit, submittedResult }) => {
                       wordWrap: "break-word",
                       overflowWrap: "break-word",
                     }}
-                    dangerouslySetInnerHTML={{ __html: branches[0].headings || "" }}
+                    className="q-html" dangerouslySetInnerHTML={{ __html: sanitizeExamHtml(branches[0].headings) }}
                   />
                   <FormControl size="small" fullWidth>
                     <Select
@@ -464,7 +464,7 @@ const DragDropQuestionComponent = ({ question, onSubmit, submittedResult }) => {
                       </MenuItem>
                       {branches[0].dragdropoption?.map((opt) => (
                         <MenuItem key={opt.id} value={opt.options_value} sx={{ whiteSpace: "normal", wordBreak: "break-word" }}>
-                          <div dangerouslySetInnerHTML={{ __html: opt.options_value || "" }} />
+                          <div className="q-html" dangerouslySetInnerHTML={{ __html: sanitizeExamHtml(opt.options_value) }} />
                         </MenuItem>
                       ))}
                     </Select>
@@ -498,7 +498,7 @@ const DragDropQuestionComponent = ({ question, onSubmit, submittedResult }) => {
                       <Typography
                         component="div"
                         sx={{
-                          color: "#0f172a",
+                          color: "#f8fbff",
                           fontSize: { xs: "0.9rem", md: "1rem" },
                           fontWeight: 500,
                           mb: 1,
@@ -506,7 +506,7 @@ const DragDropQuestionComponent = ({ question, onSubmit, submittedResult }) => {
                           wordWrap: "break-word",
                           overflowWrap: "break-word",
                         }}
-                        dangerouslySetInnerHTML={{ __html: b.headings || "" }}
+                        className="q-html" dangerouslySetInnerHTML={{ __html: sanitizeExamHtml(b.headings) }}
                       />
                       <FormControl size="small" fullWidth>
                         <Select
@@ -537,7 +537,7 @@ const DragDropQuestionComponent = ({ question, onSubmit, submittedResult }) => {
                           </MenuItem>
                           {b.dragdropoption?.map((opt) => (
                             <MenuItem key={opt.id} value={opt.options_value} sx={{ whiteSpace: "normal", wordBreak: "break-word" }}>
-                              <div dangerouslySetInnerHTML={{ __html: opt.options_value || "" }} />
+                              <div className="q-html" dangerouslySetInnerHTML={{ __html: sanitizeExamHtml(opt.options_value) }} />
                             </MenuItem>
                           ))}
                         </Select>
@@ -667,14 +667,14 @@ const DragDropQuestionComponent = ({ question, onSubmit, submittedResult }) => {
                   <Typography
                     component="div"
                     sx={{
-                      color: "#333",
+                      color: "#f8fbff",
                       fontWeight: 500,
                       wordBreak: "break-word",
                       flex: "0 0 auto",
                       minWidth: { xs: "120px", sm: "150px" },
                       fontSize: { xs: "0.9rem", md: "1rem" },
                     }}
-                    dangerouslySetInnerHTML={{ __html: (b.headings || "") + ":" }}
+                    className="q-html" dangerouslySetInnerHTML={{ __html: sanitizeExamHtml((b.headings || "") + ":") }}
                   />
                   <Typography
                     component="div"
@@ -725,14 +725,14 @@ const DragDropQuestionComponent = ({ question, onSubmit, submittedResult }) => {
                 <Typography
                   component="div"
                   sx={{
-                    color: "#333",
+                    color: "#f8fbff",
                     fontWeight: 500,
                       wordBreak: "break-word",
                     flex: "0 0 auto",
                     minWidth: { xs: "120px", sm: "150px" },
                     fontSize: { xs: "0.9rem", md: "1rem" },
                   }}
-                  dangerouslySetInnerHTML={{ __html: (b.headings || "") + ":" }}
+                  className="q-html" dangerouslySetInnerHTML={{ __html: sanitizeExamHtml((b.headings || "") + ":") }}
                 />
                 <Typography
                   component="div"

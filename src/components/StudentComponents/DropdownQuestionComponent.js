@@ -396,13 +396,13 @@ const DropdownQuestionComponent = ({ question, onSubmit, submittedResult }) => {
                 <Typography
                   component="div"
                   sx={{
-                    color: "#0f172a",
+                    color: "#f8fbff",
                     fontSize: { xs: "0.9rem", md: "1rem" },
                     fontWeight: 500,
                     lineHeight: 1.4,
                     maxWidth: { xs: "100%", sm: "250px", md: "300px" },
                   }}
-                  dangerouslySetInnerHTML={{ __html: label || "" }}
+                  className="q-html" dangerouslySetInnerHTML={{ __html: sanitizeExamHtml(label) }}
                 />
                 <FormControl
                   size="small"
@@ -444,7 +444,7 @@ const DropdownQuestionComponent = ({ question, onSubmit, submittedResult }) => {
                     </MenuItem>
                     {options.map((opt, oi) => (
                       <MenuItem key={opt.id || oi} value={opt.dropdownValue} sx={{ whiteSpace: "normal", wordBreak: "break-word" }}>
-                        <div dangerouslySetInnerHTML={{ __html: opt.dropdownValue || "" }} />
+                        <div className="q-html" dangerouslySetInnerHTML={{ __html: sanitizeExamHtml(opt.dropdownValue) }} />
                       </MenuItem>
                     ))}
                   </Select>

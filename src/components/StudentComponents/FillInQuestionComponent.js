@@ -110,7 +110,7 @@ const FillInQuestionComponent = ({ question, onSubmit }) => {
               <MenuItem value="">Select</MenuItem>
               {allOptions.map((optVal, optIdx) => (
                 <MenuItem key={optIdx} value={optVal}>
-                  <div dangerouslySetInnerHTML={{ __html: optVal || "" }} />
+                  <div className="q-html" dangerouslySetInnerHTML={{ __html: sanitizeExamHtml(optVal) }} />
                 </MenuItem>
               ))}
             </Select>
@@ -138,7 +138,7 @@ const FillInQuestionComponent = ({ question, onSubmit }) => {
               onClick={() => !showReveal && handleActionSelect(a.value || a.label)}
             >
               <CardContent sx={{ py: 1, px: 2 }}>
-                <Typography component="div" variant="body2" dangerouslySetInnerHTML={{ __html: (a.label || a.value) || "" }} />
+                <Typography component="div" variant="body2" className="q-html" dangerouslySetInnerHTML={{ __html: sanitizeExamHtml(a.label || a.value) }} />
               </CardContent>
             </Card>
           ))}
