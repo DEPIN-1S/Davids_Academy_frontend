@@ -278,6 +278,7 @@ const DragDropQuestionComponent = ({ question, onSubmit, submittedResult }) => {
 
           {/* Tab Content */}
           <Box
+            className="q-tabs-panel"
             sx={{
               backgroundColor: "rgba(34, 211, 238, 0.08)",
               borderRadius: 2,
@@ -377,13 +378,20 @@ const DragDropQuestionComponent = ({ question, onSubmit, submittedResult }) => {
                           }
                           displayEmpty
                           disabled={showReveal}
+                          className={
+                            showReveal
+                              ? String(dropdownValues[actualIndex]) === String(b.drag_drop_answer)
+                                ? "q-correct"
+                                : "q-wrong"
+                              : undefined
+                          }
                           sx={{
                             borderRadius: "12px",
                             backgroundColor: showReveal
                               ? String(dropdownValues[actualIndex]) === String(b.drag_drop_answer)
-                                ? "#dcfce7"  // ✅ GREEN
-                                : "#fee2e2"  // ❌ RED
-                              : "#fff",
+                                ? "rgba(34,197,94,0.22)"
+                                : "rgba(239,68,68,0.22)"
+                              : "rgba(8, 16, 36, 0.55)",
                             border: showReveal
                               ? String(dropdownValues[actualIndex]) === String(b.drag_drop_answer)
 
@@ -443,13 +451,20 @@ const DragDropQuestionComponent = ({ question, onSubmit, submittedResult }) => {
                       onChange={(e) => handleDropdownChange(0, e.target.value)}
                       displayEmpty
                       disabled={showReveal}
+                      className={
+                        showReveal
+                          ? String(dropdownValues[0]) === String(branches[0]?.drag_drop_answer)
+                            ? "q-correct"
+                            : "q-wrong"
+                          : undefined
+                      }
                       sx={{
                         borderRadius: "12px",
                         backgroundColor: showReveal
                           ? String(dropdownValues[0]) === String(branches[0]?.drag_drop_answer)
-                            ? "#dcfce7"  // ✅ GREEN
-                            : "#fee2e2"  // ❌ RED
-                          : "#fff",
+                            ? "rgba(34,197,94,0.22)"
+                            : "rgba(239,68,68,0.22)"
+                          : "rgba(8, 16, 36, 0.55)",
                         border: showReveal
                           ? String(dropdownValues[0]) === String(branches[0]?.drag_drop_answer)
 
@@ -516,13 +531,20 @@ const DragDropQuestionComponent = ({ question, onSubmit, submittedResult }) => {
                           }
                           displayEmpty
                           disabled={showReveal}
+                          className={
+                            showReveal
+                              ? String(dropdownValues[actualIndex]) === String(b.drag_drop_answer)
+                                ? "q-correct"
+                                : "q-wrong"
+                              : undefined
+                          }
                           sx={{
                             borderRadius: "12px",
                             backgroundColor: showReveal
                               ? String(dropdownValues[actualIndex]) === String(b.drag_drop_answer)
-                                ? "#dcfce7"  // ✅ GREEN
-                                : "#fee2e2"  // ❌ RED
-                              : "#fff",
+                                ? "rgba(34,197,94,0.22)"
+                                : "rgba(239,68,68,0.22)"
+                              : "rgba(8, 16, 36, 0.55)",
                             border: showReveal
                               ? String(dropdownValues[actualIndex]) === String(b.drag_drop_answer)
 
@@ -630,16 +652,17 @@ const DragDropQuestionComponent = ({ question, onSubmit, submittedResult }) => {
           <Typography
             variant="subtitle1"
             component="h3"
-            fontWeight={600}
+            fontWeight={800}
             mb={1.5}
-            color="#2E3760"
+            color="#ffffff"
             sx={{ fontSize: { xs: "1rem", md: "1.1rem" } }}
           >
             Your Answer:
           </Typography>
           <Box
+            className="q-prompt-board"
             sx={{
-              backgroundColor: "#f9fafb",
+              backgroundColor: "#1e2d4f",
               borderRadius: 2,
               p: 2,
               mb: 3,
@@ -679,11 +702,12 @@ const DragDropQuestionComponent = ({ question, onSubmit, submittedResult }) => {
                   <Typography
                     component="div"
                     sx={{
-                      color: isMatch ? "green" : "red",
-                      fontWeight: 600,
+                      color: isMatch ? "#4ade80" : "#fb7185",
+                      fontWeight: 800,
                       flex: 1,
                       fontSize: { xs: "0.9rem", md: "1rem" },
                     }}
+                    className={isMatch ? "q-correct" : "q-wrong"}
                     dangerouslySetInnerHTML={{ __html: selected || "" }}
                   />
                 </Box>
@@ -694,16 +718,17 @@ const DragDropQuestionComponent = ({ question, onSubmit, submittedResult }) => {
           <Typography
             variant="subtitle1"
             component="h3"
-            fontWeight={600}
+            fontWeight={800}
             mb={1.5}
-            color="#24a129"
+            color="#4ade80"
             sx={{ fontSize: { xs: "1rem", md: "1.1rem" } }}
           >
             Correct Answer:
           </Typography>
           <Box
+            className="q-prompt-board"
             sx={{
-              backgroundColor: "#f0fdf4",
+              backgroundColor: "#1e2d4f",
               borderRadius: 2,
               p: 2,
               mb: 3,
@@ -737,11 +762,12 @@ const DragDropQuestionComponent = ({ question, onSubmit, submittedResult }) => {
                 <Typography
                   component="div"
                   sx={{
-                    color: "#16a34a",
-                    fontWeight: 600,
+                    color: "#4ade80",
+                    fontWeight: 800,
                     flex: 1,
                     fontSize: { xs: "0.9rem", md: "1rem" },
                   }}
+                  className="q-correct"
                   dangerouslySetInnerHTML={{ __html: b.drag_drop_answer || "" }}
                 />
               </Box>

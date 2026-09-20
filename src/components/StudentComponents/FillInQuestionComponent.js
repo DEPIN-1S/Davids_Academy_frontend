@@ -105,7 +105,14 @@ const FillInQuestionComponent = ({ question, onSubmit }) => {
               onChange={handleBlankChange(`blank${blankKeys.indexOf(`blank${idx}`)}`)}
               displayEmpty
               disabled={showReveal}
-              sx={{ minWidth: 150, mx: 1 }}
+              className={
+                showReveal
+                  ? (userBlanks[`blank${blankKeys.indexOf(`blank${idx}`)}`] === correctAnswers[blankKeys.indexOf(`blank${idx}`)]
+                    ? "q-correct"
+                    : "q-wrong")
+                  : undefined
+              }
+              sx={{ minWidth: 150, mx: 1, fontWeight: 700, color: '#ffffff' }}
             >
               <MenuItem value="">Select</MenuItem>
               {allOptions.map((optVal, optIdx) => (
@@ -115,7 +122,7 @@ const FillInQuestionComponent = ({ question, onSubmit }) => {
               ))}
             </Select>
           ) : (
-            <Typography sx={{ mx: 0.5, color: 'var(--sf-text)' }} key={idx} component="div" className="q-html" dangerouslySetInnerHTML={{ __html: sanitizeExamHtml(part.question_text) }} />
+            <Typography sx={{ mx: 0.5, color: '#ffffff', fontWeight: 700, fontSize: '1.05rem' }} key={idx} component="div" className="q-html" dangerouslySetInnerHTML={{ __html: sanitizeExamHtml(part.question_text) }} />
           )
         )}
       </Box>
@@ -165,18 +172,22 @@ const FillInQuestionComponent = ({ question, onSubmit }) => {
             Your Answers:
           </Typography>
           <ul>
-            {blanks.map((b, idx) => (
-              <li key={idx}>
-                <div dangerouslySetInnerHTML={{ __html: (userBlanks[`blank${idx}`] || 'Not selected') }} />
+            {blanks.map((b, idx) => {
+              const userVal = userBlanks[`blank${idx}`] || 'Not selected';
+              const ok = userVal === correctAnswers[idx];
+              return (
+              <li key={idx} className={ok ? 'q-correct' : 'q-wrong'} style={{ fontWeight: 800 }}>
+                <div dangerouslySetInnerHTML={{ __html: userVal }} />
               </li>
-            ))}
+              );
+            })}
           </ul>
-          <Typography variant="subtitle1" fontWeight={600} mt={2} mb={1} color="var(--sf-cyan)">
+          <Typography variant="subtitle1" fontWeight={800} mt={2} mb={1} color="var(--sf-cyan)">
             Correct Answers:
           </Typography>
           <ul>
             {correctAnswers.map((a, idx) => (
-              <li key={idx}>
+              <li key={idx} className="q-correct" style={{ fontWeight: 800 }}>
                 <div dangerouslySetInnerHTML={{ __html: a || "" }} />
               </li>
             ))}

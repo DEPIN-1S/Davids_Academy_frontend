@@ -171,10 +171,10 @@ const MCQQuestionComponent = ({ question, onSubmit, submittedResult }) => {
 
   // 🎨 Color Theme
   const colors = {
-    correct: "#2E7D32",
-    incorrect: "#C62828",
+    correct: "#4ade80",
+    incorrect: "#fb7185",
     heading: "#2E3760",
-    neutral: "#475569",
+    neutral: "#ffffff",
   };
 
   return (
@@ -298,7 +298,7 @@ const MCQQuestionComponent = ({ question, onSubmit, submittedResult }) => {
         >
           {allSelected ? "Clear All" : "Select All"}
         </Button> */}
-        <Typography variant="caption" sx={{ color: "#6b7280", fontSize: "15px" }}>
+        <Typography variant="caption" sx={{ color: "#ffffff", fontSize: "15px", fontWeight: 700 }}>
           You can select any number of options.
         </Typography>
       </Box>
@@ -370,12 +370,12 @@ const MCQQuestionComponent = ({ question, onSubmit, submittedResult }) => {
                   }}
                 >
                   <div
-                    className="q-html"
+                    className={`q-html${showFeedback && isCorrectAnswer ? " q-correct" : ""}${showFeedback && isSelected && !isCorrectAnswer ? " q-wrong" : ""}`}
                     style={{
                       color: feedbackColor,
-                      fontWeight: showFeedback && isCorrectAnswer ? 600 : "normal",
+                      fontWeight: 700,
                       textAlign: "left",
-                      fontSize: "1.02rem",
+                      fontSize: "1.05rem",
                     }}
                     dangerouslySetInnerHTML={{ __html: sanitizeExamHtml(optionText) }}
                   />

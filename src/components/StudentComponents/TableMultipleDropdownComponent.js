@@ -348,6 +348,7 @@ const TableMultipleDropdownComponent = ({ question, onSubmit, submittedResult })
             </Tabs>
           </Box>
           <Box
+            className="q-tabs-panel"
             sx={{
               backgroundColor: "rgba(34, 211, 238, 0.08)",
               borderRadius: "10px",
@@ -409,16 +410,16 @@ const TableMultipleDropdownComponent = ({ question, onSubmit, submittedResult })
             <TableHead>
               <TableRow
                 sx={{
-                  backgroundColor: "#f1f5f9",
+                  backgroundColor: "#1e2d4f",
                 }}
               >
                 {headers.map((h, idx) => (
                   <TableCell
                     key={h + idx}
                     sx={{
-                      fontWeight: 600,
-                      color: "#475569",
-                      borderBottom: "1px solid #e2e8f0",
+                      fontWeight: 800,
+                      color: "#ffffff",
+                      borderBottom: "1px solid rgba(255,255,255,0.18)",
                       width: { xs: "auto", md: `${100 / headers.length}%` },
                       wordBreak: "break-word",
                       minWidth: { xs: "140px", sm: "auto" },
@@ -433,12 +434,13 @@ const TableMultipleDropdownComponent = ({ question, onSubmit, submittedResult })
               {rows.map((row, rIdx) => (
                 <TableRow
                   key={row.rowLabel + rIdx}
-                  sx={{ backgroundColor: "white" }}
+                  sx={{ backgroundColor: "rgba(12, 22, 48, 0.72)" }}
                 >
                   <TableCell
                     sx={{ 
-                       color: "#f8fbff", 
-                       borderBottom: "1px solid #e2e8f0",
+                       color: "#ffffff",
+                       fontWeight: 700,
+                       borderBottom: "1px solid rgba(255,255,255,0.12)",
                        wordBreak: "break-word",
                        minWidth: { xs: "140px", md: "auto" },
                     }}
@@ -461,7 +463,7 @@ const TableMultipleDropdownComponent = ({ question, onSubmit, submittedResult })
                     return (
                       <TableCell
                         key={key}
-                        sx={{ borderBottom: "1px solid #e2e8f0", minWidth: { xs: "160px", sm: "auto" } }}
+                        sx={{ borderBottom: "1px solid rgba(255,255,255,0.12)", minWidth: { xs: "160px", sm: "auto" } }}
                       >
                         <Select
                           value={userValue}
@@ -469,26 +471,36 @@ const TableMultipleDropdownComponent = ({ question, onSubmit, submittedResult })
                           disabled={showReveal}
                           displayEmpty
                           fullWidth
+                          className={
+                            showReveal
+                              ? isCorrectAnswer
+                                ? "q-correct"
+                                : isWrongAnswer
+                                  ? "q-wrong"
+                                  : undefined
+                              : undefined
+                          }
                           sx={{
                             fontSize: { xs: "0.9rem", md: "1rem" },
                             height: 44,
                             backgroundColor: showReveal
                               ? isCorrectAnswer
-                                ? "#e6f4ea"
+                                ? "rgba(34,197,94,0.22)"
                                 : isWrongAnswer
-                                  ? "#ffecec"
-                                  : "white"
-                              : "white",
+                                  ? "rgba(239,68,68,0.22)"
+                                  : "rgba(8, 16, 36, 0.55)"
+                              : "rgba(8, 16, 36, 0.55)",
                             borderRadius: "12px",
-                            border: "1px solid #e5e7eb",
+                            border: "1px solid rgba(255,255,255,0.22)",
                             ".MuiSelect-select": {
                               color: showReveal
                                 ? isCorrectAnswer
-                                  ? "#1b7a3b"
+                                  ? "#4ade80"
                                   : isWrongAnswer
-                                    ? "#c0392b"
-                                    : "#475569"
-                                : "#475569",
+                                    ? "#fb7185"
+                                    : "#ffffff"
+                                : "#ffffff",
+                              fontWeight: 700,
                               whiteSpace: "normal",
                               wordBreak: "break-word",
                             },

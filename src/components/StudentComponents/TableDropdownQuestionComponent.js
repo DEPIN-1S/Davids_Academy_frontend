@@ -310,6 +310,7 @@ const TableDropdownQuestionComponent = ({ question, onSubmit, submittedResult })
             </Tabs>
           </Box>
           <Box
+            className="q-tabs-panel"
             sx={{
               backgroundColor: "rgba(34, 211, 238, 0.08)",
               borderRadius: "10px",
@@ -374,15 +375,15 @@ const TableDropdownQuestionComponent = ({ question, onSubmit, submittedResult })
             <TableHead>
               <TableRow
                 sx={{
-                  backgroundColor: "#f1f5f9",
+                  backgroundColor: "#1e2d4f",
                 }}
               >
                 <TableCell
                   sx={{
-                    fontWeight: 600,
-                    color: "#475569",
+                    fontWeight: 800,
+                    color: "#ffffff",
                     fontSize: { xs: "0.9rem", md: "1rem" },
-                    borderBottom: "1px solid #e2e8f0",
+                    borderBottom: "1px solid rgba(255,255,255,0.18)",
                     width: { xs: "auto", md: "60%" },
                     wordBreak: "break-word",
                       minWidth: { xs: "140px", sm: "auto" },
@@ -392,10 +393,10 @@ const TableDropdownQuestionComponent = ({ question, onSubmit, submittedResult })
                 </TableCell>
                 <TableCell
                   sx={{
-                    fontWeight: 600,
-                    color: "#475569",
+                    fontWeight: 800,
+                    color: "#ffffff",
                     fontSize: { xs: "0.9rem", md: "1rem" },
-                    borderBottom: "1px solid #e2e8f0",
+                    borderBottom: "1px solid rgba(255,255,255,0.18)",
                     width: { xs: "auto", md: "40%" },
                     wordBreak: "break-word",
                       minWidth: { xs: "140px", sm: "auto" },
@@ -421,14 +422,15 @@ const TableDropdownQuestionComponent = ({ question, onSubmit, submittedResult })
                     key={field.id || index}
                     sx={{
                       "&:last-child td": { borderBottom: 0 },
-                      backgroundColor: "white",
+                      backgroundColor: "rgba(12, 22, 48, 0.72)",
                     }}
                   >
                     <TableCell
                       sx={{
-                        color: "#f8fbff",
+                        color: "#ffffff",
+                        fontWeight: 700,
                         fontSize: { xs: "0.9rem", md: "1rem" },
-                        borderBottom: "1px solid #e2e8f0",
+                        borderBottom: "1px solid rgba(255,255,255,0.12)",
                         wordBreak: "break-word",
                        minWidth: { xs: "140px", sm: "auto" }
                     }}
@@ -437,7 +439,7 @@ const TableDropdownQuestionComponent = ({ question, onSubmit, submittedResult })
                     </TableCell>
                     <TableCell
                       sx={{
-                        borderBottom: "1px solid #e2e8f0",
+                        borderBottom: "1px solid rgba(255,255,255,0.12)",
                        minWidth: { xs: "140px", sm: "auto" }
                     }}
                     >
@@ -447,26 +449,36 @@ const TableDropdownQuestionComponent = ({ question, onSubmit, submittedResult })
                         disabled={showReveal}
                         displayEmpty
                         fullWidth
+                        className={
+                          showReveal
+                            ? isCorrectAnswer
+                              ? "q-correct"
+                              : isWrongAnswer
+                                ? "q-wrong"
+                                : undefined
+                            : undefined
+                        }
                         sx={{
                           fontSize: { xs: "0.9rem", md: "1rem" },
                           height: 40,
                           backgroundColor: showReveal
                             ? isCorrectAnswer
-                              ? "#e6f4ea"
+                              ? "rgba(34,197,94,0.22)"
                               : isWrongAnswer
-                                ? "#ffecec"
-                                : "white"
-                            : "white",
+                                ? "rgba(239,68,68,0.22)"
+                                : "rgba(8, 16, 36, 0.55)"
+                            : "rgba(8, 16, 36, 0.55)",
                           borderRadius: "12px",
-                          border: "1px solid #e5e7eb",
+                          border: "1px solid rgba(255,255,255,0.22)",
                           ".MuiSelect-select": {
                             color: showReveal
                               ? isCorrectAnswer
-                                ? "#1b7a3b"
+                                ? "#4ade80"
                                 : isWrongAnswer
-                                  ? "#c0392b"
-                                  : "#475569"
-                              : "#475569",
+                                  ? "#fb7185"
+                                  : "#ffffff"
+                              : "#ffffff",
+                            fontWeight: 700,
                             whiteSpace: "normal",
                             wordBreak: "break-word",
                           },
@@ -564,9 +576,9 @@ const TableDropdownQuestionComponent = ({ question, onSubmit, submittedResult })
         <Box sx={{ mt: 2, px: { xs: 2, md: 6 }, mb: 6 }}>
           <Typography
             variant="subtitle1"
-            fontWeight={600}
+            fontWeight={800}
             mb={1}
-            color="#2E3760"
+            color="#ffffff"
           >
             Your Answer:
           </Typography>
@@ -581,11 +593,13 @@ const TableDropdownQuestionComponent = ({ question, onSubmit, submittedResult })
               return (
                 <ListItem key={field.id || idx} disablePadding>
                   <ListItemText
+                    className={isCorrect ? "q-correct" : "q-wrong"}
                     primary={<div dangerouslySetInnerHTML={{ __html: `${field.fieldLabel}: ${userValue}` }} />}
                     primaryTypographyProps={{
+                      className: isCorrect ? "q-correct" : "q-wrong",
                       sx: {
-                        color: isCorrect ? "green" : "red",
-                        fontWeight: 500,
+                        color: isCorrect ? "#4ade80" : "#fb7185",
+                        fontWeight: 800,
                       },
                     }}
                   />
@@ -596,10 +610,10 @@ const TableDropdownQuestionComponent = ({ question, onSubmit, submittedResult })
 
           <Typography
             variant="subtitle1"
-            fontWeight={600}
+            fontWeight={800}
             mt={2}
             mb={1}
-            color="#35b564ff"
+            color="#4ade80"
           >
             Correct Answer:
           </Typography>
@@ -607,9 +621,11 @@ const TableDropdownQuestionComponent = ({ question, onSubmit, submittedResult })
             {tableDropdownAnswers.map((answer, idx) => (
               <ListItem key={idx} disablePadding>
                 <ListItemText
+                  className="q-correct"
                   primary={<div dangerouslySetInnerHTML={{ __html: `${answer.rowLabel}: ${answer.answer}` }} />}
                   primaryTypographyProps={{
-                    sx: { color: "green", fontWeight: 500 },
+                    className: "q-correct",
+                    sx: { color: "#4ade80", fontWeight: 800 },
                   }}
                 />
               </ListItem>

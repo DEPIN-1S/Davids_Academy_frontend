@@ -289,6 +289,7 @@ const SortQuestionComponent = ({ question, onSubmit, submittedResult }) => {
             </Tabs>
           </Box>
           <Box
+            className="q-tabs-panel"
             sx={{
               backgroundColor: "rgba(34, 211, 238, 0.08)",
               borderRadius: "10px",
@@ -364,20 +365,22 @@ const SortQuestionComponent = ({ question, onSubmit, submittedResult }) => {
           steps.map((step, idx) => {
             const correctText = correctAnswer[idx];
             const isMatch = correctText && step.text === correctText;
-            const bg = isMatch ? "#e6f4ea" : "#ffecec";
-            const color = isMatch ? "#1b7a3b" : "#c0392b";
             return (
               <Box
                 key={step.id}
+                className={isMatch ? "q-sort-ok" : "q-sort-bad"}
                 sx={{
-                  border: `1px solid ${isMatch ? "#d6eed8" : "#f6d6d6"}`,
-                  borderRadius: "8px",
+                  borderRadius: "10px",
                   p: 1.5,
                   mb: 1.5,
-                  backgroundColor: bg,
+                  backgroundColor: isMatch ? "#14532d" : "#7f1d1d",
+                  border: `1px solid ${isMatch ? "#4ade80" : "#fb7185"}`,
                 }}
               >
-                <Typography sx={{ color, fontWeight: 600 }} dangerouslySetInnerHTML={{ __html: step.text || "" }} />
+                <Typography
+                  sx={{ color: "#ffffff", fontWeight: 800, fontSize: "1rem" }}
+                  dangerouslySetInnerHTML={{ __html: sanitizeExamHtml(step.text || "") }}
+                />
               </Box>
             );
           })
@@ -454,10 +457,10 @@ const SortQuestionComponent = ({ question, onSubmit, submittedResult }) => {
         <Box sx={{ mt: 4 }}>
           <Typography
             variant="subtitle1"
-            fontWeight={600}
+            fontWeight={800}
             mt={2}
             mb={2}
-            color="#35b564ff"
+            color="#4ade80"
             sx={{
               textAlign:"center"
             }}
@@ -465,28 +468,32 @@ const SortQuestionComponent = ({ question, onSubmit, submittedResult }) => {
             Correct Order (Properly Sorted):
           </Typography>
           <Box
+            className="q-sort-list"
             sx={{
               maxWidth: "600px",
               margin: "0 auto",
               mb: 3,
               p: 2,
-              border: "1px solid #e0e0e0",
               borderRadius: "10px",
-              backgroundColor: "#f9fff9",
+              backgroundColor: "#0f1a33",
             }}
           >
             {correctAnswer.map((item, idx) => (
               <Box
                 key={idx}
+                className="q-sort-ok"
                 sx={{
-                  border: "1px solid #d6eed8",
-                  borderRadius: "8px",
+                  border: "1px solid #4ade80",
+                  borderRadius: "10px",
                   p: 1.5,
                   mb: 1.5,
-                  backgroundColor: "#e6f4ea",
+                  backgroundColor: "#14532d",
                 }}
               >
-                <Typography sx={{ color: "#1b7a3b", fontWeight: 600 }} dangerouslySetInnerHTML={{ __html: item || "" }} />
+                <Typography
+                  sx={{ color: "#ffffff", fontWeight: 800, fontSize: "1rem" }}
+                  dangerouslySetInnerHTML={{ __html: sanitizeExamHtml(item || "") }}
+                />
               </Box>
             ))}
           </Box>

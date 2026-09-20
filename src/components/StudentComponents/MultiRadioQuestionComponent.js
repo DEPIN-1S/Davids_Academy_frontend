@@ -19,7 +19,7 @@ import RevealAnswerComponent from "./RevealAnswerComponent";
 import { useDispatch } from "react-redux";
 import { useLocation } from "react-router-dom";
 import { submitMockTestQuestionResponseThunk } from "../../features/exam/examSlice";
-import { sanitizeExamHtml } from "../../utils/examHtml";
+import { sanitizeExamHtml, examHtmlSx } from "../../utils/examHtml";
 
 
 
@@ -47,6 +47,7 @@ const MultiRadioQuestionComponent = ({ question, onSubmit, submittedResult }) =>
   };
   const dispatch = useDispatch();
   const location = useLocation();
+
   const handleSelect = (findingIndex, selectedValue) => () => {
     if (showAnswer) return;
 
@@ -291,6 +292,7 @@ const MultiRadioQuestionComponent = ({ question, onSubmit, submittedResult }) =>
             </Tabs>
           </Box>
           <Box
+            className="q-tabs-panel"
             sx={{
               backgroundColor: "rgba(34, 211, 238, 0.08)",
               borderRadius: "10px",
@@ -305,10 +307,10 @@ const MultiRadioQuestionComponent = ({ question, onSubmit, submittedResult }) =>
               variant="body1"
               className="q-html"
               sx={{
-                color: "var(--sf-text-soft)",
+                ...examHtmlSx,
                 '& p': { margin: 0, marginBottom: '0.5em' },
                 '& p:last-child': { marginBottom: 0 },
-                '& *': { lineHeight: 1.6 },
+                '& *': { lineHeight: 1.6, color: '#ffffff !important', WebkitTextFillColor: '#ffffff !important', fontWeight: 700 },
               }}
               dangerouslySetInnerHTML={{
                 __html: sanitizeExamHtml(
@@ -386,7 +388,7 @@ const MultiRadioQuestionComponent = ({ question, onSubmit, submittedResult }) =>
           <TableBody>
             {questionContent.map((finding, rowIdx) => (
               <TableRow key={rowIdx}>
-                <TableCell sx={{ fontSize: "15px", color: "#f8fbff" }} >
+                <TableCell sx={{ fontSize: "15px", color: "#ffffff", fontWeight: 700 }} >
                   <div className="q-html" dangerouslySetInnerHTML={{ __html: sanitizeExamHtml(finding.client_findings) }} />
                 </TableCell>
                 {uniqueAnswers.map((answer, colIdx) => {
@@ -413,15 +415,24 @@ const MultiRadioQuestionComponent = ({ question, onSubmit, submittedResult }) =>
                     showAnswer && !isSelected && isCorrectAnswer;
 
                   const bgColor = showWrong
-                    ? "#ffecec"
+                    ? "#7f1d1d"
                     : showCorrect
-                      ? "#e9f9ee"
+                      ? "#14532d"
                       : showMissed
-                        ? "#e9f9ee"
+                        ? "#14532d"
                         : "transparent";
 
                   return (
                     <TableCell
+                      className={
+                        showAnswer
+                          ? showCorrect || showMissed
+                            ? "q-correct"
+                            : showWrong
+                              ? "q-wrong"
+                              : undefined
+                          : undefined
+                      }
                       key={colIdx}
                       sx={{
                         textAlign: "center",

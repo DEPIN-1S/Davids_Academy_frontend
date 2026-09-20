@@ -305,7 +305,7 @@ const SentenceQuestionComponent = ({ question, onSubmit, submittedResult }) => {
       )}
 
       {/* Clickable sentence */}
-      <Typography variant="body1" fontWeight={500} textAlign="center" mb={2}>
+      <Typography variant="body1" fontWeight={700} textAlign="center" mb={2} sx={{ color: "#ffffff" }}>
         Click words/phrases to highlight the findings that meet the prompt.
       </Typography>
 
@@ -318,7 +318,7 @@ const SentenceQuestionComponent = ({ question, onSubmit, submittedResult }) => {
           p: "1rem",
         }}
       >
-        <Typography variant="body1" sx={{ lineHeight: 1.8, textAlign: "left" }}>
+        <Typography variant="body1" sx={{ lineHeight: 1.8, textAlign: "left", color: "#ffffff", fontWeight: 700 }}>
           {(() => {
             const s = sentenceText || "";
             if (!optionList.length) return s;
@@ -373,21 +373,22 @@ const SentenceQuestionComponent = ({ question, onSubmit, submittedResult }) => {
 
                 if (showAnswer) {
                   if (isCorrect) {
-                    bg = "#e6f4ea";
-                    color = "#1b7a3b";
+                    bg = "rgba(34,197,94,0.22)";
+                    color = "#4ade80";
                   } else if (isSelected) {
-                    bg = "#ffecec";
-                    color = "#c0392b";
+                    bg = "rgba(239,68,68,0.22)";
+                    color = "#fb7185";
                   }
                 } else if (isSelected) {
-                  bg = "#e0f7fa";
-                  color = "#007b7f";
+                  bg = "rgba(34, 211, 238, 0.22)";
+                  color = "#67e8f9";
                 }
 
                 return (
                   <Box
                     component="span"
                     key={`match-${item.id}-${i}`}
+                    className={showAnswer ? (isCorrect ? "q-correct" : isSelected ? "q-wrong" : undefined) : undefined}
                     onClick={() => !showAnswer && handleToggle(item.id)}
                     sx={{
                       cursor: showAnswer ? "default" : "pointer",
@@ -398,9 +399,10 @@ const SentenceQuestionComponent = ({ question, onSubmit, submittedResult }) => {
                       py: 0.2,
                       mr: 0.25,
                       display: "inline-block",
+                      fontWeight: 800,
                       "&:hover": showAnswer
                         ? {}
-                        : { backgroundColor: isSelected ? "#d0eef0" : "#f0f0f0" },
+                        : { backgroundColor: isSelected ? "rgba(34, 211, 238, 0.32)" : "rgba(34, 211, 238, 0.12)" },
                     }}
                     role="button"
                     tabIndex={0}

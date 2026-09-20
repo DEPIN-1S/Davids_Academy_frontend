@@ -31,6 +31,39 @@ import {
 } from "../../features/exam/examAPI";
 import "../../styles/DashboardStyles/StudentFuturistic.css";
 
+const QBANK_SESSION_KEY = "qbank-session-v1";
+
+const readQbankSession = (topics, count) => {
+  try {
+    const raw = sessionStorage.getItem(QBANK_SESSION_KEY);
+    if (!raw) return null;
+    const parsed = JSON.parse(raw);
+    if (String(parsed.topics || "") !== String(topics || "")) return null;
+    if (String(parsed.count || "") !== String(count || "")) return null;
+    if (!Array.isArray(parsed.ids) || parsed.ids.length === 0) return null;
+    return parsed;
+  } catch {
+    return null;
+  }
+};
+
+const writeQbankSession = ({ topics, count, ids, index, skipCount }) => {
+  sessionStorage.setItem(
+    QBANK_SESSION_KEY,
+    JSON.stringify({
+      topics: topics || "",
+      count: count || "",
+      ids,
+      index: index || 0,
+      skipCount: skipCount || 0,
+    })
+  );
+};
+
+const clearQbankSession = () => {
+  sessionStorage.removeItem(QBANK_SESSION_KEY);
+};
+
 const questionTypeToComponent = {
   "MCQ": MCQ,
   "Dropdown": Dropdown,
@@ -75,8 +108,8 @@ const ExamContainer = ({ user }) => {
   const [refreshKey, setRefreshKey] = useState(0);
   const [skipCount, setSkipCount] = useState(0);
   const hasFetchedQBank = useRef(false);
+  const qbankRestored = useRef(false);
   const questionId = questionIds[currentIndex];
-
 
   // Load question IDs based on mode
   useEffect(() => {
@@ -105,8 +138,18 @@ const ExamContainer = ({ user }) => {
           setCurrentIndex(0);
           setLoading(false);
         } else {
-          // For Q-Bank mode, dispatch to Redux.
-          // The local loading state will be synced with qBankQuestionLoading below.
+          const saved = readQbankSession(topicsParam, countParam);
+          if (saved) {
+            hasFetchedQBank.current = true;
+            qbankRestored.current = true;
+            setQuestionIds(saved.ids);
+            setCurrentIndex(
+              Math.min(Math.max(0, saved.index || 0), saved.ids.length - 1)
+            );
+            setSkipCount(saved.skipCount || 0);
+            setLoading(false);
+            return;
+          }
           hasFetchedQBank.current = true;
           dispatch(getQBankQuestions({ topics: topicsParam, count: countParam }));
         }
@@ -126,11 +169,21 @@ const ExamContainer = ({ user }) => {
   // Sync QBank question IDs if not test or sample mode
   useEffect(() => {
     if (!isTestMode && !isSampleMode && hasFetchedQBank.current) {
+      if (qbankRestored.current) {
+        return;
+      }
       if (!qBankQuestionLoading) {
         if (qBankQuestionIds && qBankQuestionIds.length > 0) {
            setQuestionIds(qBankQuestionIds);
            setCurrentIndex(0);
            setError(null);
+           writeQbankSession({
+             topics: topicsParam,
+             count: countParam,
+             ids: qBankQuestionIds,
+             index: 0,
+             skipCount: 0,
+           });
         } else {
            setQuestionIds([]);
            setError("You have completed all available questions for the selected topics, or no questions matched your filter. Please reset your Q-Bank progress to practice again.");
@@ -141,7 +194,19 @@ const ExamContainer = ({ user }) => {
         setError(null);
       }
     }
-  }, [isTestMode, isSampleMode, qBankQuestionIds, qBankQuestionLoading]);
+  }, [isTestMode, isSampleMode, qBankQuestionIds, qBankQuestionLoading, topicsParam, countParam]);
+
+  useEffect(() => {
+    if (!isTestMode && !isSampleMode && questionIds.length > 0) {
+      writeQbankSession({
+        topics: topicsParam,
+        count: countParam,
+        ids: questionIds,
+        index: currentIndex,
+        skipCount,
+      });
+    }
+  }, [isTestMode, isSampleMode, questionIds, currentIndex, skipCount, topicsParam, countParam]);
 
   // Load current question data
   useEffect(() => {
@@ -276,6 +341,7 @@ const ExamContainer = ({ user }) => {
         console.log("QBank or logged-in sample: Navigating to student home");
       }
       navigate(homePath);
+      clearQbankSession();
     }
   };
 
@@ -390,6 +456,30 @@ const ExamContainer = ({ user }) => {
       height: { xs: '100dvh', sm: '100dvh', md: 'auto' },
       overflow: { xs: 'hidden', sm: 'hidden', md: 'visible' }
     }}>
+      <style>{`
+        .student-exam-body .q-tabs-panel,
+        .student-exam-body .q-tabs-panel *,
+        .student-exam-body .q-html,
+        .student-exam-body .q-html *,
+        .student-exam-body ol,
+        .student-exam-body ul,
+        .student-exam-body li,
+        .student-exam-body li::marker,
+        .student-exam-body .q-tabs-panel [style*="background-color"],
+        .student-exam-body .q-html [style*="background-color"] {
+          color: #ffffff !important;
+          -webkit-text-fill-color: #ffffff !important;
+          font-weight: 700 !important;
+        }
+        .student-exam-body .q-correct,
+        .student-exam-body .q-correct * { color: #4ade80 !important; -webkit-text-fill-color: #4ade80 !important; }
+        .student-exam-body .q-wrong,
+        .student-exam-body .q-wrong * { color: #fb7185 !important; -webkit-text-fill-color: #fb7185 !important; }
+        .student-exam-body .q-sort-ok,
+        .student-exam-body .q-sort-ok * { color: #ffffff !important; -webkit-text-fill-color: #ffffff !important; }
+        .student-exam-body .q-sort-bad,
+        .student-exam-body .q-sort-bad * { color: #ffffff !important; -webkit-text-fill-color: #ffffff !important; }
+      `}</style>
       {/* Header section (fixed on mobile implicitly by being flex header and content being scrollable) */}
       <Box sx={{ flexShrink: 0 }}>
         {/* Conditional Navbar - Hide for sample mode */}

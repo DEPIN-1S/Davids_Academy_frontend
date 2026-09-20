@@ -309,6 +309,7 @@ const TableHighlightSelectComponent = ({ question, onSubmit, submittedResult }) 
             </Tabs>
           </Box>
           <Box
+            className="q-tabs-panel"
             sx={{
               backgroundColor: "rgba(34, 211, 238, 0.08)",
               borderRadius: "10px",
@@ -370,14 +371,14 @@ const TableHighlightSelectComponent = ({ question, onSubmit, submittedResult }) 
             <TableHead>
               <TableRow
                 sx={{
-                  backgroundColor: "#f1f5f9",
+                  backgroundColor: "#1e2d4f",
                 }}
               >
                 <TableCell
                   sx={{
-                    fontWeight: 600,
-                    color: "#475569",
-                    borderBottom: "1px solid #e2e8f0",
+                    fontWeight: 800,
+                    color: "#ffffff",
+                    borderBottom: "1px solid rgba(255,255,255,0.18)",
                     width: { xs: "auto", md: "50%" },
                   }}
                 >
@@ -385,9 +386,9 @@ const TableHighlightSelectComponent = ({ question, onSubmit, submittedResult }) 
                 </TableCell>
                 <TableCell
                   sx={{
-                    fontWeight: 600,
-                    color: "#475569",
-                    borderBottom: "1px solid #e2e8f0",
+                    fontWeight: 800,
+                    color: "#ffffff",
+                    borderBottom: "1px solid rgba(255,255,255,0.18)",
                     width: { xs: "auto", md: "50%" },
                   }}
                 >
@@ -421,6 +422,15 @@ const TableHighlightSelectComponent = ({ question, onSubmit, submittedResult }) 
                       <div className="q-html" dangerouslySetInnerHTML={{ __html: sanitizeExamHtml(field.leftColumn) }} />
                     </TableCell>
                     <TableCell
+                      className={
+                        showReveal
+                          ? isCorrectAnswer
+                            ? "q-correct"
+                            : isWrongSelection
+                              ? "q-wrong"
+                              : undefined
+                          : undefined
+                      }
                       onClick={() => handleRightColumnClick(field.rightColumn)}
                       sx={{
                         borderBottom: "1px solid #e2e8f0",

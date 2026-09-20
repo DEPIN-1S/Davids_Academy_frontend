@@ -367,8 +367,9 @@ const DropdownQuestionComponent = ({ question, onSubmit, submittedResult }) => {
       {/* Dropdowns */}
       <Box sx={{ mb: 4 }}>
         <Box
+          className="q-prompt-board"
           sx={{
-            backgroundColor: "#f1f5f9",
+            backgroundColor: "#1e2d4f",
             borderRadius: 2,
             p: { xs: 2, md: 3 },
             display: "flex",
@@ -396,10 +397,10 @@ const DropdownQuestionComponent = ({ question, onSubmit, submittedResult }) => {
                 <Typography
                   component="div"
                   sx={{
-                    color: "#f8fbff",
-                    fontSize: { xs: "0.9rem", md: "1rem" },
-                    fontWeight: 500,
-                    lineHeight: 1.4,
+                    color: "#ffffff",
+                    fontSize: { xs: "0.95rem", md: "1.05rem" },
+                    fontWeight: 700,
+                    lineHeight: 1.5,
                     maxWidth: { xs: "100%", sm: "250px", md: "300px" },
                   }}
                   className="q-html" dangerouslySetInnerHTML={{ __html: sanitizeExamHtml(label) }}
@@ -415,6 +416,20 @@ const DropdownQuestionComponent = ({ question, onSubmit, submittedResult }) => {
                     onChange={handleDropdownChange(id)}
                     disabled={showReveal}
                     displayEmpty
+                    className={
+                      showReveal
+                        ? (() => {
+                          const backendAnswer = dt.dropdownanswer;
+                          const fallbackVal =
+                            dt.dropdownoption?.find((opt) => opt.is_correct)?.dropdownValue ||
+                            dt.dropdownoption?.[0]?.dropdownValue;
+                          const correctVal = backendAnswer ?? fallbackVal;
+                          return String(dropdownValues[id]) === String(correctVal)
+                            ? "q-correct"
+                            : "q-wrong";
+                        })()
+                        : undefined
+                    }
                     sx={{
                       height: 40,
                       borderRadius: "12px",
@@ -428,15 +443,17 @@ const DropdownQuestionComponent = ({ question, onSubmit, submittedResult }) => {
                           const isCorrectVal =
                             String(dropdownValues[id]) === String(correctVal);
                           return isCorrectVal
-                            ? "rgba(34,197,94,0.15)" // ✅ light green
-                            : "rgba(239,68,68,0.15)"; // ❌ light red
+                            ? "rgba(34,197,94,0.22)"
+                            : "rgba(239,68,68,0.22)";
                         })()
-                        : "#fff",
-                      border: "1px solid #e5e7eb",
+                        : "rgba(8, 16, 36, 0.55)",
+                      border: "1px solid rgba(255,255,255,0.22)",
+                      color: "#ffffff",
+                      fontWeight: 700,
                       "&.Mui-focused": {
                         boxShadow: "0 4px 12px rgba(47,59,108,0.08)",
                       },
-                      ".MuiSelect-select": { whiteSpace: "normal", wordBreak: "break-word" },
+                      ".MuiSelect-select": { whiteSpace: "normal", wordBreak: "break-word", fontWeight: 700 },
                     }}
                   >
                     <MenuItem value="" sx={{ whiteSpace: "normal", wordBreak: "break-word" }}>
@@ -514,9 +531,9 @@ const DropdownQuestionComponent = ({ question, onSubmit, submittedResult }) => {
         <Box sx={{ mt: 4, mb: 6 }}>
           <Typography
             variant="subtitle1"
-            fontWeight={600}
+            fontWeight={800}
             mb={2}
-            color="#2E3760"
+            color="#ffffff"
             sx={{ fontSize: { xs: "1rem", md: "1.1rem" } }}
           >
             Answer Review
@@ -533,12 +550,12 @@ const DropdownQuestionComponent = ({ question, onSubmit, submittedResult }) => {
             }}
           >
             <thead>
-              <tr style={{ backgroundColor: "#f1f5f9", textAlign: "left" }}>
+              <tr style={{ backgroundColor: "#1e2d4f", textAlign: "left" }}>
                 <th
                   style={{
                     padding: "10px 14px",
-                    fontWeight: 600,
-                    color: "#2E3760",
+                    fontWeight: 800,
+                    color: "#ffffff",
                     fontSize: "0.95rem",
                     width: "45%",
                   }}
@@ -548,8 +565,8 @@ const DropdownQuestionComponent = ({ question, onSubmit, submittedResult }) => {
                 <th
                   style={{
                     padding: "10px 14px",
-                    fontWeight: 600,
-                    color: "#2E3760",
+                    fontWeight: 800,
+                    color: "#ffffff",
                     fontSize: "0.95rem",
                     width: "45%",
                   }}
@@ -559,8 +576,8 @@ const DropdownQuestionComponent = ({ question, onSubmit, submittedResult }) => {
                 <th
                   style={{
                     padding: "10px 14px",
-                    fontWeight: 600,
-                    color: "#2E3760",
+                    fontWeight: 800,
+                    color: "#ffffff",
                     fontSize: "0.95rem",
                     textAlign: "center",
                     width: "10%",
@@ -586,24 +603,26 @@ const DropdownQuestionComponent = ({ question, onSubmit, submittedResult }) => {
                     key={dropdownId ?? idx}
                     style={{
                       backgroundColor: isCorrectVal
-                        ? "rgba(34,197,94,0.08)"
-                        : "rgba(239,68,68,0.08)",
+                        ? "rgba(34,197,94,0.16)"
+                        : "rgba(239,68,68,0.16)",
                     }}
                   >
                     <td
+                      className={isCorrectVal ? "q-correct" : "q-wrong"}
                       style={{
                         padding: "10px 14px",
-                        color: isCorrectVal ? "green" : "red",
-                        fontWeight: 500,
+                        color: isCorrectVal ? "#4ade80" : "#fb7185",
+                        fontWeight: 800,
                         fontSize: "0.95rem",
                       }}
                       dangerouslySetInnerHTML={{ __html: userVal || "" }}
                     />
                     <td
+                      className="q-correct"
                       style={{
                         padding: "10px 14px",
-                        color: "#16a34a",
-                        fontWeight: 500,
+                        color: "#4ade80",
+                        fontWeight: 800,
                         fontSize: "0.95rem",
                       }}
                       dangerouslySetInnerHTML={{ __html: correctVal || "" }}

@@ -152,6 +152,7 @@ const CreateTestComponent = ({ handleClose }) => {
         const topicsQuery = selectedTopics.join(',');
         let queryParams = `?mode=question-bank`;
         if (topicsQuery) queryParams += `&topics=${topicsQuery}`;
+        sessionStorage.removeItem("qbank-session-v1");
         navigate(`/student/exam${queryParams}`);
         if (handleClose) handleClose();
     };
