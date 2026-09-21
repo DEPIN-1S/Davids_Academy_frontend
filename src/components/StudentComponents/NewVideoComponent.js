@@ -17,7 +17,10 @@ import {
 import PlayArrowIcon from '@mui/icons-material/PlayArrow';
 import CloseIcon from '@mui/icons-material/Close';
 import SearchIcon from '@mui/icons-material/Search';
+import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
+import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 import { fetchStudentRecordedClasses } from '../../features/recorded classes/studentRecordedClassSlice';
+import '../../styles/DashboardStyles/StudentFuturistic.css';
 
 const modalStyle = {
   position: 'absolute',
@@ -61,35 +64,57 @@ const NewVideoGrid = () => {
     error,
     page,
     totalPages,
-    limit
+    totalItems,
   } = useSelector((state) => state.studentRecordings);
 
+  const PAGE_SIZE = 12;
   const [selectedVideo, setSelectedVideo] = useState(null);
   const [searchTerm, setSearchTerm] = useState("");
+  const pageSize = PAGE_SIZE;
+  const resolvedTotalPages = Math.max(
+    Number(totalPages) || 1,
+    Math.ceil((Number(totalItems) || 0) / pageSize) || 1
+  );
+  const currentPage = Math.min(Math.max(Number(page) || 1, 1), resolvedTotalPages);
+
+  const loadPage = (newPage) => {
+    const token = sessionStorage.getItem('accessToken');
+    if (!token) return;
+    dispatch(
+      fetchStudentRecordedClasses({
+        token,
+        page: newPage,
+        limit: pageSize,
+        searchQuery: searchTerm.trim(),
+      })
+    );
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
 
   // Initial load
   useEffect(() => {
     const token = sessionStorage.getItem('accessToken');
     if (token) {
-      dispatch(fetchStudentRecordedClasses({ token, page: 1, limit: 12, searchQuery: "" }));
+      dispatch(fetchStudentRecordedClasses({ token, page: 1, limit: PAGE_SIZE, searchQuery: "" }));
     }
-  }, [dispatch, limit]);
+  }, [dispatch]);
 
 
   // Pagination handler
   const handlePageChange = (event, newPage) => {
-    const token = sessionStorage.getItem('accessToken');
-    dispatch(
-      fetchStudentRecordedClasses({
-        token,
-        page: newPage,
-        limit,
-        searchQuery: searchTerm.trim(),
-      })
-    );
+    if (!newPage || newPage === currentPage) return;
+    loadPage(newPage);
   };
 
-  if (loading)
+  const handlePrevPage = () => {
+    if (currentPage > 1) loadPage(currentPage - 1);
+  };
+
+  const handleNextPage = () => {
+    if (currentPage < resolvedTotalPages) loadPage(currentPage + 1);
+  };
+
+  if (loading && (!recordings || recordings.length === 0))
     return <CircularProgress sx={{ display: 'block', margin: '40px auto' }} />;
 
   if (error) return <Alert severity="error">{error}</Alert>;
@@ -126,7 +151,7 @@ const NewVideoGrid = () => {
               fetchStudentRecordedClasses({
                 token,
                 page: 1,
-                limit: 12,
+                limit: PAGE_SIZE,
                 searchQuery: searchTerm.trim(),
               })
             );
@@ -232,17 +257,69 @@ const NewVideoGrid = () => {
             ))}
           </Grid>
 
-          {totalPages > 1 && (
-            <Pagination
-              count={totalPages}
-              page={page}
-              onChange={handlePageChange}
-              sx={{
-                mt: 3,
-                display: 'flex',
-                justifyContent: 'center',
-              }}
-            />
+          {resolvedTotalPages > 1 && (
+            <Box className="sf-recorded-pagination" sx={{ mt: 4, mb: 2 }}>
+              <button
+                type="button"
+                className="sf-recorded-page-btn"
+                onClick={handlePrevPage}
+                disabled={currentPage <= 1 || loading}
+              >
+                <ChevronLeftIcon />
+                Previous
+              </button>
+              <Pagination
+                count={resolvedTotalPages}
+                page={currentPage}
+                onChange={handlePageChange}
+                siblingCount={1}
+                boundaryCount={1}
+                showFirstButton
+                showLastButton
+                disabled={loading}
+                sx={{
+                  '& .MuiPaginationItem-root': {
+                    minWidth: 36,
+                    height: 36,
+                    fontWeight: 800,
+                    fontSize: '0.95rem',
+                    color: '#ffffff !important',
+                    WebkitTextFillColor: '#ffffff',
+                    background: '#243356',
+                    border: '1px solid rgba(255,255,255,0.28)',
+                    borderRadius: '10px',
+                    '&:hover': {
+                      background: 'rgba(103, 232, 249, 0.22)',
+                      color: '#ffffff !important',
+                    },
+                    '&.Mui-selected': {
+                      background: 'linear-gradient(90deg, #f0c94a, #fbbf24) !important',
+                      color: '#04121f !important',
+                      WebkitTextFillColor: '#04121f',
+                      borderColor: '#f0c94a',
+                    },
+                    '&.Mui-disabled': {
+                      opacity: 0.45,
+                      color: '#c9d6ee !important',
+                    },
+                  },
+                }}
+              />
+              <button
+                type="button"
+                className="sf-recorded-page-btn"
+                onClick={handleNextPage}
+                disabled={currentPage >= resolvedTotalPages || loading}
+              >
+                Next
+                <ChevronRightIcon />
+              </button>
+            </Box>
+          )}
+          {resolvedTotalPages > 1 && (
+            <Typography className="sf-recorded-page-meta" sx={{ textAlign: 'center', mb: 3 }}>
+              Page {currentPage} of {resolvedTotalPages}
+            </Typography>
           )}
         </>
       ) : (

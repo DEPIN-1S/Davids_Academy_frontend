@@ -1095,6 +1095,69 @@ body.student-theme .wrapper .pagination button:disabled {
   color: var(--sf-muted);
 }
 
+.sf-recorded-pagination {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 12px 16px;
+  padding: 8px 12px 4px;
+}
+
+.sf-recorded-page-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  min-height: 40px;
+  padding: 8px 16px;
+  border: 1px solid rgba(255, 255, 255, 0.28);
+  border-radius: 999px;
+  background: linear-gradient(90deg, var(--sf-gold), var(--sf-gold-2));
+  color: #04121f !important;
+  font-family: var(--sf-font-display);
+  font-weight: 800;
+  font-size: 0.92rem;
+  cursor: pointer;
+}
+
+.sf-recorded-page-btn:hover:not(:disabled) {
+  filter: brightness(1.06);
+}
+
+.sf-recorded-page-btn:disabled {
+  background: #243356;
+  color: #93a4c7 !important;
+  border-color: rgba(255, 255, 255, 0.16);
+  cursor: not-allowed;
+}
+
+.sf-recorded-page-meta {
+  color: #e8eefc !important;
+  font-weight: 700 !important;
+  font-family: var(--sf-font-body) !important;
+}
+
+body.student-theme .record-class-section .MuiPaginationItem-root {
+  color: #ffffff !important;
+  -webkit-text-fill-color: #ffffff !important;
+}
+
+body.student-theme .record-class-section .MuiPaginationItem-root.Mui-selected {
+  color: #04121f !important;
+  -webkit-text-fill-color: #04121f !important;
+}
+
+@media (max-width: 640px) {
+  .sf-recorded-pagination {
+    gap: 10px;
+  }
+
+  .sf-recorded-page-btn {
+    width: calc(50% - 8px);
+    justify-content: center;
+  }
+}
+
 @media (max-width: 768px) {
   .student-exam-body {
     margin: 8px 8px 0;

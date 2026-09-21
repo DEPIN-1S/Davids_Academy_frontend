@@ -4,7 +4,7 @@ import NewVideoComponent from '../../components/StudentComponents/NewVideoCompon
 
 const RecordClassesPage = () => {
   return (
-    <section className='record-class-section'>
+    <section className='record-class-section student-futuristic'>
       <DashboardNavbar />
       <NewVideoComponent  />
       {/* <ContinueWatchingComponent /> */}
