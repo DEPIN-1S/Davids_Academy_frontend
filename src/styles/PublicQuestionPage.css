@@ -18,9 +18,79 @@
   margin: 4px -8px 0;
   padding: 4px;
   border-radius: 16px;
-  background: #f8fafc;
-  color: #1f2937;
+  background: transparent;
+  color: #f8fbff;
   overflow-x: auto;
+}
+
+.public-q-card.student-exam-body {
+  flex: none;
+  margin: 0 auto;
+  box-shadow: 0 18px 40px rgba(8, 16, 36, 0.18);
+}
+
+.public-q-page .q-review-heading,
+.public-q-page .MuiTypography-subtitle1 {
+  color: #ffffff !important;
+  -webkit-text-fill-color: #ffffff !important;
+  font-weight: 800 !important;
+}
+
+.public-q-stem,
+.public-q-stem *:not(svg):not(path),
+.public-q-rationale,
+.public-q-rationale *:not(svg):not(path),
+.public-q-result,
+.public-q-result p,
+.public-q-page .q-html,
+.public-q-page .q-html *:not(svg):not(path):not(.q-correct):not(.q-wrong),
+.public-q-page .q-attention-body,
+.public-q-page .q-attention-body *:not(svg):not(path),
+.public-q-interactive,
+.public-q-interactive *:not(svg):not(path):not(button):not(.q-correct):not(.q-wrong):not(.q-verdict-mark) {
+  color: #f8fbff !important;
+  -webkit-text-fill-color: #f8fbff !important;
+}
+
+.public-q-page .q-correct,
+.public-q-page .q-correct *:not(svg):not(path) {
+  color: #4ade80 !important;
+  -webkit-text-fill-color: #4ade80 !important;
+}
+
+.public-q-page .q-wrong,
+.public-q-page .q-wrong *:not(svg):not(path) {
+  color: #fb7185 !important;
+  -webkit-text-fill-color: #fb7185 !important;
+}
+
+.public-q-page .q-verdict-ok,
+.public-q-page .q-verdict-ok .q-verdict-title,
+.public-q-page .q-verdict-ok .q-verdict-note,
+.public-q-page .q-verdict-ok .q-verdict-sep {
+  color: #34d399 !important;
+}
+
+.public-q-page .q-verdict-bad,
+.public-q-page .q-verdict-bad .q-verdict-title,
+.public-q-page .q-verdict-bad .q-verdict-note,
+.public-q-page .q-verdict-bad .q-verdict-sep {
+  color: #fb7185 !important;
+}
+
+.public-q-page .q-verdict-mark {
+  color: #04121f !important;
+  -webkit-text-fill-color: #04121f !important;
+}
+
+.public-q-option.is-right,
+.public-q-option.is-right * {
+  color: #4ade80 !important;
+}
+
+.public-q-option.is-wrong,
+.public-q-option.is-wrong * {
+  color: #fb7185 !important;
 }
 
 .public-q-interactive .MuiBox-root {

@@ -530,11 +530,11 @@ const DropdownQuestionComponent = ({ question, onSubmit, submittedResult }) => {
       {showReveal && (
         <Box sx={{ mt: 4, mb: 6 }}>
           <Typography
+            className="q-review-heading"
             variant="subtitle1"
             fontWeight={800}
             mb={2}
-            color="#ffffff"
-            sx={{ fontSize: { xs: "1rem", md: "1.1rem" } }}
+            sx={{ color: "#ffffff", fontSize: { xs: "1rem", md: "1.1rem" } }}
           >
             Answer Review
           </Typography>

@@ -578,7 +578,7 @@ const TableDropdownQuestionComponent = ({ question, onSubmit, submittedResult })
             variant="subtitle1"
             fontWeight={800}
             mb={1}
-            color="#ffffff"
+            sx={{ color: "#ffffff" }}
           >
             Your Answer:
           </Typography>

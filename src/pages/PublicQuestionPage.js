@@ -6,6 +6,7 @@ import {
   buildDmLink,
 } from "../config/whatsapp";
 import { stripHtml } from "../utils/htmlHelper";
+import { sanitizeExamHtml } from "../utils/examHtml";
 import Dropdown from "../components/StudentComponents/DropdownQuestionComponent";
 import Sorting from "../components/StudentComponents/SortQuestionComponent";
 import FillIn from "../components/StudentComponents/FillInQuestionComponent";
@@ -16,6 +17,7 @@ import TableDropdownQuestionComponent from "../components/StudentComponents/Tabl
 import TableMultipleDropdownComponent from "../components/StudentComponents/TableMultipleDropdownComponent";
 import TableHighlightSelectComponent from "../components/StudentComponents/TableHighlightSelectComponent";
 import "../styles/PublicQuestionPage.css";
+import "../styles/DashboardStyles/StudentFuturistic.css";
 
 const OPTION_LABELS = "ABCDEFGHIJ".split("");
 
@@ -187,8 +189,8 @@ const PublicQuestionPage = () => {
   const rationale = explanationHtml(normalizedQuestion);
 
   return (
-    <div className="public-q-page">
-      <article className="public-q-card">
+    <div className="public-q-page student-futuristic">
+      <article className="public-q-card student-exam-body">
         <p className="public-q-kicker">
           David&apos;s Academy · Practice Q{questionId ? ` · #${questionId}` : ""}
         </p>
@@ -205,9 +207,11 @@ const PublicQuestionPage = () => {
             {isMcq ? (
               <>
                 <div
-                  className="public-q-stem"
+                  className="public-q-stem q-html"
                   dangerouslySetInnerHTML={{
-                    __html: normalizedQuestion.question || normalizedQuestion.question_text || "",
+                    __html: sanitizeExamHtml(
+                      normalizedQuestion.question || normalizedQuestion.question_text || ""
+                    ),
                   }}
                 />
                 <form onSubmit={handleSubmit}>
@@ -254,9 +258,11 @@ const PublicQuestionPage = () => {
             ) : (
               <>
                 <div
-                  className="public-q-stem"
+                  className="public-q-stem q-html"
                   dangerouslySetInnerHTML={{
-                    __html: normalizedQuestion.question || normalizedQuestion.question_text || "",
+                    __html: sanitizeExamHtml(
+                      normalizedQuestion.question || normalizedQuestion.question_text || ""
+                    ),
                   }}
                 />
                 <button
@@ -282,8 +288,8 @@ const PublicQuestionPage = () => {
                 )}
                 {rationale && (
                   <div
-                    className="public-q-rationale"
-                    dangerouslySetInnerHTML={{ __html: rationale }}
+                    className="public-q-rationale q-html"
+                    dangerouslySetInnerHTML={{ __html: sanitizeExamHtml(rationale) }}
                   />
                 )}
                 <p className="public-q-disclaimer">
@@ -296,8 +302,8 @@ const PublicQuestionPage = () => {
               <div className="public-q-result">
                 {rationale && (
                   <div
-                    className="public-q-rationale"
-                    dangerouslySetInnerHTML={{ __html: rationale }}
+                    className="public-q-rationale q-html"
+                    dangerouslySetInnerHTML={{ __html: sanitizeExamHtml(rationale) }}
                   />
                 )}
                 <p className="public-q-disclaimer">
