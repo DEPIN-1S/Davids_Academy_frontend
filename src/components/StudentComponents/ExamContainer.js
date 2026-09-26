@@ -64,6 +64,22 @@ const clearQbankSession = () => {
   sessionStorage.removeItem(QBANK_SESSION_KEY);
 };
 
+const isEmptyDropdownQuestion = (question) => {
+  if (!question) return false;
+  const type = String(question.question_type || "").toLowerCase();
+  if (type === "dropdown") {
+    return !Array.isArray(question.dropdowns) || question.dropdowns.length === 0;
+  }
+  if (type === "table dropdown") {
+    return !Array.isArray(question.tableDropdownFields) || question.tableDropdownFields.length === 0;
+  }
+  if (type === "multidropdown") {
+    return !Array.isArray(question.rows) || question.rows.length === 0
+      || !Array.isArray(question.headers) || question.headers.length === 0;
+  }
+  return false;
+};
+
 const questionTypeToComponent = {
   "MCQ": MCQ,
   "Dropdown": Dropdown,
@@ -248,6 +264,26 @@ const ExamContainer = ({ user }) => {
       setCurrentQuestion(qBankCurrentQuestion);
     }
   }, [isTestMode, isSampleMode, qBankCurrentQuestion]);
+
+  // Drop dropdown questions that were saved without fields so the student
+  // never lands on the empty "No dropdown question data" screen.
+  useEffect(() => {
+    const questionStillLoading = isTestMode ? loading : qBankQuestionDataLoading;
+    if (questionStillLoading || !isEmptyDropdownQuestion(currentQuestion)) return;
+    const removedId = String(currentQuestion.id);
+    const remaining = questionIds.filter((id) => String(id) !== removedId);
+    if (remaining.length === questionIds.length) return;
+    if (remaining.length === 0) {
+      setError("This set has no dropdown questions with answer choices. Go back and start a new set.");
+    }
+    setQuestionIds(remaining);
+  }, [currentQuestion, questionIds, isTestMode, loading, qBankQuestionDataLoading]);
+
+  useEffect(() => {
+    if (questionIds.length > 0 && currentIndex >= questionIds.length) {
+      setCurrentIndex(questionIds.length - 1);
+    }
+  }, [questionIds, currentIndex]);
 
   // Fetch submitted result whenever current question changes
   useEffect(() => {
