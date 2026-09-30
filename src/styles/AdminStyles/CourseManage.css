@@ -1,0 +1,143 @@
+.course-manage-futuristic {
+  font-family: "Inter", "Segoe UI", sans-serif;
+  color: #e8eefc;
+}
+
+.course-manage-futuristic .course-manage-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 22px;
+  padding: 16px 18px;
+  background: linear-gradient(180deg, rgba(20, 32, 64, 0.96), rgba(12, 20, 42, 0.96));
+  border: 1px solid rgba(94, 234, 212, 0.16);
+  border-radius: 18px;
+  box-shadow: 0 16px 36px rgba(8, 16, 36, 0.12);
+}
+
+.course-manage-futuristic .course-manage-title {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  color: #e8eefc !important;
+}
+
+.course-manage-futuristic .course-count {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 32px;
+  height: 32px;
+  padding: 0 10px;
+  border-radius: 999px;
+  background: linear-gradient(90deg, #f0c94a, #fbbf24);
+  color: #04121f;
+  font-size: 0.9rem;
+  font-weight: 800;
+  animation: pulseGold 2.2s ease-in-out infinite;
+}
+
+.course-manage-futuristic .add-course-btn {
+  background: linear-gradient(90deg, #f0c94a, #fbbf24) !important;
+  color: #04121f !important;
+  font-weight: 700 !important;
+  border-radius: 999px !important;
+  padding: 8px 16px !important;
+  box-shadow: 0 0 16px rgba(240, 201, 74, 0.28) !important;
+  animation: pulseGold 2.2s ease-in-out infinite;
+}
+
+.course-manage-futuristic .course-card-wrap {
+  animation: rowIn 0.45s ease both;
+}
+
+.course-manage-futuristic .course-glass-card {
+  background: linear-gradient(180deg, rgba(20, 32, 64, 0.96), rgba(12, 20, 42, 0.96)) !important;
+  border: 1px solid rgba(94, 234, 212, 0.16) !important;
+  border-radius: 18px !important;
+  color: #e8eefc !important;
+  box-shadow: 0 16px 36px rgba(8, 16, 36, 0.12) !important;
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+
+.course-manage-futuristic .course-glass-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 0 24px rgba(34, 211, 238, 0.18) !important;
+}
+
+.course-manage-futuristic .course-glass-card .MuiTypography-root,
+.course-manage-futuristic .course-glass-card li {
+  color: #c9d6ee !important;
+}
+
+.course-manage-futuristic .course-glass-card h2,
+.course-manage-futuristic .course-glass-card .MuiTypography-h6,
+.course-manage-futuristic .course-glass-card .MuiTypography-subtitle2 {
+  color: #e8eefc !important;
+}
+
+.course-manage-futuristic .course-glass-card svg {
+  color: #67e8f9 !important;
+}
+
+.course-manage-futuristic .status-chip {
+  font-weight: 700 !important;
+  border-radius: 999px !important;
+}
+
+.course-manage-futuristic .status-chip.is-active {
+  background: rgba(52, 211, 153, 0.14) !important;
+  color: #6ee7b7 !important;
+  animation: statusPulse 2s ease-in-out infinite;
+}
+
+.course-manage-futuristic .status-chip.is-inactive {
+  background: rgba(251, 113, 133, 0.14) !important;
+  color: #fda4af !important;
+}
+
+.course-manage-futuristic .course-edit-btn {
+  border-color: rgba(103, 232, 249, 0.45) !important;
+  color: #67e8f9 !important;
+  font-weight: 700 !important;
+  border-radius: 999px !important;
+}
+
+.course-manage-futuristic .course-delete-btn {
+  border-color: rgba(253, 164, 175, 0.45) !important;
+  color: #fda4af !important;
+  font-weight: 700 !important;
+  border-radius: 999px !important;
+}
+
+@keyframes rowIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes pulseGold {
+  0%, 100% { box-shadow: 0 0 10px rgba(240, 201, 74, 0.2); }
+  50% { box-shadow: 0 0 20px rgba(240, 201, 74, 0.5); }
+}
+
+@keyframes statusPulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(52, 211, 153, 0.28); }
+  50% { box-shadow: 0 0 0 6px rgba(52, 211, 153, 0); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .course-manage-futuristic .course-count,
+  .course-manage-futuristic .add-course-btn,
+  .course-manage-futuristic .course-card-wrap,
+  .course-manage-futuristic .status-chip.is-active {
+    animation: none;
+  }
+}
+
+@media (max-width: 600px) {
+  .course-manage-futuristic .course-manage-header {
+    flex-direction: column;
+    align-items: stretch;
+  }
+}

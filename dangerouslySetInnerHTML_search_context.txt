@@ -1,0 +1,171 @@
+﻿
+> e:\Davidacdamey\davidAcademyFrontend\src\components\AdminComponents\SentenceHiglightContent.js:                      
+  dangerouslySetInnerHTML={{ __html: createHighlightPreview() }}
+> e:\Davidacdamey\davidAcademyFrontend\src\components\StudentComponents\DragDropQuestionComponent.js:       
+dangerouslySetInnerHTML={{ __html: questionText || "" }} />
+> e:\Davidacdamey\davidAcademyFrontend\src\components\StudentComponents\DragDropQuestionComponent.js:           
+dangerouslySetInnerHTML={{ __html: instructions || "" }} />
+> e:\Davidacdamey\davidAcademyFrontend\src\components\StudentComponents\DragDropQuestionComponent.js:              
+dangerouslySetInnerHTML={{
+> e:\Davidacdamey\davidAcademyFrontend\src\components\StudentComponents\DragDropQuestionComponent.js:                  
+      dangerouslySetInnerHTML={{ __html: b.headings || "" }}
+> e:\Davidacdamey\davidAcademyFrontend\src\components\StudentComponents\DragDropQuestionComponent.js:                  
+          <MenuItem key={opt.id} value={opt.options_value} sx={{ whiteSpace: "normal", wordBreak: "break-word" }} 
+dangerouslySetInnerHTML={{ __html: opt.options_value || "" }} />
+> e:\Davidacdamey\davidAcademyFrontend\src\components\StudentComponents\DragDropQuestionComponent.js:                  
+  dangerouslySetInnerHTML={{ __html: branches[0].headings || "" }}
+> e:\Davidacdamey\davidAcademyFrontend\src\components\StudentComponents\DragDropQuestionComponent.js:                  
+      <MenuItem key={opt.id} value={opt.options_value} sx={{ whiteSpace: "normal", wordBreak: "break-word" }} 
+dangerouslySetInnerHTML={{ __html: opt.options_value || "" }} />
+> e:\Davidacdamey\davidAcademyFrontend\src\components\StudentComponents\DragDropQuestionComponent.js:                  
+      dangerouslySetInnerHTML={{ __html: b.headings || "" }}
+> e:\Davidacdamey\davidAcademyFrontend\src\components\StudentComponents\DragDropQuestionComponent.js:                  
+          <MenuItem key={opt.id} value={opt.options_value} sx={{ whiteSpace: "normal", wordBreak: "break-word" }} 
+dangerouslySetInnerHTML={{ __html: opt.options_value || "" }} />
+> e:\Davidacdamey\davidAcademyFrontend\src\components\StudentComponents\DragDropQuestionComponent.js:                  
+  dangerouslySetInnerHTML={{ __html: (b.headings || "") + ":" }}
+> e:\Davidacdamey\davidAcademyFrontend\src\components\StudentComponents\DragDropQuestionComponent.js:                  
+  dangerouslySetInnerHTML={{ __html: selected || "" }}
+> e:\Davidacdamey\davidAcademyFrontend\src\components\StudentComponents\DragDropQuestionComponent.js:                  
+dangerouslySetInnerHTML={{ __html: (b.headings || "") + ":" }}
+> e:\Davidacdamey\davidAcademyFrontend\src\components\StudentComponents\DragDropQuestionComponent.js:                  
+dangerouslySetInnerHTML={{ __html: b.drag_drop_answer || "" }}
+> e:\Davidacdamey\davidAcademyFrontend\src\components\StudentComponents\DropdownQuestionComponent.js:       
+dangerouslySetInnerHTML={{ __html: questionText || "" }} />
+> e:\Davidacdamey\davidAcademyFrontend\src\components\StudentComponents\DropdownQuestionComponent.js:           
+dangerouslySetInnerHTML={{ __html: instructions || "" }} />
+> e:\Davidacdamey\davidAcademyFrontend\src\components\StudentComponents\DropdownQuestionComponent.js:            
+dangerouslySetInnerHTML={{
+> e:\Davidacdamey\davidAcademyFrontend\src\components\StudentComponents\DropdownQuestionComponent.js:                  
+dangerouslySetInnerHTML={{ __html: label || "" }}
+> e:\Davidacdamey\davidAcademyFrontend\src\components\StudentComponents\DropdownQuestionComponent.js:                  
+    <MenuItem key={opt.id || oi} value={opt.dropdownValue} sx={{ whiteSpace: "normal", wordBreak: "break-word" }} 
+dangerouslySetInnerHTML={{ __html: opt.dropdownValue || "" }} />
+> e:\Davidacdamey\davidAcademyFrontend\src\components\StudentComponents\DropdownQuestionComponent.js:                  
+    dangerouslySetInnerHTML={{ __html: userVal || "" }}
+> e:\Davidacdamey\davidAcademyFrontend\src\components\StudentComponents\DropdownQuestionComponent.js:                  
+    dangerouslySetInnerHTML={{ __html: correctVal || "" }}
+> e:\Davidacdamey\davidAcademyFrontend\src\components\StudentComponents\FillInQuestionComponent.js:            
+<Typography variant="body2" dangerouslySetInnerHTML={{ __html: tabs[tabIndex]?.tabValue || "" }} />
+> e:\Davidacdamey\davidAcademyFrontend\src\components\StudentComponents\FillInQuestionComponent.js:      <Typography 
+variant="h6" fontWeight={600} my={2} textAlign="center" dangerouslySetInnerHTML={{ __html: questionHeading || "" }} />
+> e:\Davidacdamey\davidAcademyFrontend\src\components\StudentComponents\FillInQuestionComponent.js:                
+<MenuItem key={optIdx} value={optVal} dangerouslySetInnerHTML={{ __html: optVal || "" }} />
+> e:\Davidacdamey\davidAcademyFrontend\src\components\StudentComponents\FillInQuestionComponent.js:            
+<Typography sx={{ mx: 0.5 }} key={idx} component="span" dangerouslySetInnerHTML={{ __html: part.question_text || "" }} 
+/>
+> e:\Davidacdamey\davidAcademyFrontend\src\components\StudentComponents\FillInQuestionComponent.js:                
+<Typography variant="body2" dangerouslySetInnerHTML={{ __html: (a.label || a.value) || "" }} />
+> e:\Davidacdamey\davidAcademyFrontend\src\components\StudentComponents\FillInQuestionComponent.js:              <li 
+key={idx} dangerouslySetInnerHTML={{ __html: (userBlanks[`blank${idx}`] || 'Not selected') }} />
+> e:\Davidacdamey\davidAcademyFrontend\src\components\StudentComponents\FillInQuestionComponent.js:              <li 
+key={idx} dangerouslySetInnerHTML={{ __html: a || "" }} />
+> e:\Davidacdamey\davidAcademyFrontend\src\components\StudentComponents\MCQQuestionComponent.js:       
+dangerouslySetInnerHTML={{ __html: questionText || "" }} />
+> e:\Davidacdamey\davidAcademyFrontend\src\components\StudentComponents\MCQQuestionComponent.js:           
+dangerouslySetInnerHTML={{ __html: instructions || "" }} />
+> e:\Davidacdamey\davidAcademyFrontend\src\components\StudentComponents\MCQQuestionComponent.js:                
+<Typography sx={{ color: "#333", fontSize: "0.95rem" , wordBreak: "break-word", overflowWrap: "anywhere"}} 
+dangerouslySetInnerHTML={{ __html: active?.tabValue || "No content available" }} />
+> e:\Davidacdamey\davidAcademyFrontend\src\components\StudentComponents\MCQQuestionComponent.js:                    
+dangerouslySetInnerHTML={{ __html: optionText || "" }}
+> e:\Davidacdamey\davidAcademyFrontend\src\components\StudentComponents\MultiRadioQuestionComponent.js:        
+dangerouslySetInnerHTML={{ __html: questionText || "" }}
+> e:\Davidacdamey\davidAcademyFrontend\src\components\StudentComponents\MultiRadioQuestionComponent.js:              
+dangerouslySetInnerHTML={{
+> e:\Davidacdamey\davidAcademyFrontend\src\components\StudentComponents\MultiRadioQuestionComponent.js:          
+<Typography variant="body1" sx={{ textAlign: "left", color: "black" }} dangerouslySetInnerHTML={{ __html: instructions 
+|| "" }} />
+> e:\Davidacdamey\davidAcademyFrontend\src\components\StudentComponents\MultiRadioQuestionComponent.js:                
+dangerouslySetInnerHTML={{ __html: multiradioHeading || "" }}
+> e:\Davidacdamey\davidAcademyFrontend\src\components\StudentComponents\MultiRadioQuestionComponent.js:                
+  dangerouslySetInnerHTML={{ __html: answer || "" }}
+> e:\Davidacdamey\davidAcademyFrontend\src\components\StudentComponents\MultiRadioQuestionComponent.js:                
+<TableCell sx={{ fontSize: "15px", color: "#333" }} dangerouslySetInnerHTML={{ __html: finding.client_findings || "" 
+}} />
+> e:\Davidacdamey\davidAcademyFrontend\src\components\StudentComponents\RevealAnswerComponent.js:            style={{ 
+wordBreak: "break-word", overflowWrap: "anywhere" }} dangerouslySetInnerHTML={{ __html: explanationHeading }}
+> e:\Davidacdamey\davidAcademyFrontend\src\components\StudentComponents\RevealAnswerComponent.js:            style={{ 
+wordBreak: "break-word", overflowWrap: "anywhere" }} dangerouslySetInnerHTML={{ __html: para }}
+> e:\Davidacdamey\davidAcademyFrontend\src\components\StudentComponents\RevealAnswerComponent.js:            style={{ 
+wordBreak: "break-word", overflowWrap: "anywhere" }} dangerouslySetInnerHTML={{ __html: additionalInfoHeading }}
+> e:\Davidacdamey\davidAcademyFrontend\src\components\StudentComponents\RevealAnswerComponent.js:            style={{ 
+wordBreak: "break-word", overflowWrap: "anywhere" }} dangerouslySetInnerHTML={{ __html: para }}
+> e:\Davidacdamey\davidAcademyFrontend\src\components\StudentComponents\SentenceQuestionComponent.js:        }} 
+component="h1" fontWeight={700} mb={5} dangerouslySetInnerHTML={{ __html: questionText || "" }} />
+> e:\Davidacdamey\davidAcademyFrontend\src\components\StudentComponents\SentenceQuestionComponent.js:           
+dangerouslySetInnerHTML={{ __html: instructions || "" }} />
+> e:\Davidacdamey\davidAcademyFrontend\src\components\StudentComponents\SentenceQuestionComponent.js:              
+dangerouslySetInnerHTML={{
+> e:\Davidacdamey\davidAcademyFrontend\src\components\StudentComponents\SentenceQuestionComponent.js:                  
+<ListItemText primary={<span dangerouslySetInnerHTML={{ __html: txt || "" }} />} />
+> e:\Davidacdamey\davidAcademyFrontend\src\components\StudentComponents\SentenceQuestionComponent.js:                
+<ListItemText primary={<span dangerouslySetInnerHTML={{ __html: item || "" }} />} />
+> e:\Davidacdamey\davidAcademyFrontend\src\components\StudentComponents\SortQuestionComponent.js:      }} variant="h6" 
+fontWeight={700} mb={3} dangerouslySetInnerHTML={{ __html: questionText || "" }} />
+> e:\Davidacdamey\davidAcademyFrontend\src\components\StudentComponents\SortQuestionComponent.js:              
+dangerouslySetInnerHTML={{
+> e:\Davidacdamey\davidAcademyFrontend\src\components\StudentComponents\SortQuestionComponent.js:                
+<Typography sx={{ color, fontWeight: 600 }} dangerouslySetInnerHTML={{ __html: step.text || "" }} />
+> e:\Davidacdamey\davidAcademyFrontend\src\components\StudentComponents\SortQuestionComponent.js:                
+<Typography sx={{ color: "#1b7a3b", fontWeight: 600 }} dangerouslySetInnerHTML={{ __html: item || "" }} />
+> e:\Davidacdamey\davidAcademyFrontend\src\components\StudentComponents\SortTableItemComponent.js:      <span 
+className="drag-icon">Γëí</span> <span dangerouslySetInnerHTML={{ __html: text || "" }} />
+> e:\Davidacdamey\davidAcademyFrontend\src\components\StudentComponents\TableDropdownQuestionComponent.js:       
+dangerouslySetInnerHTML={{ __html: questionText || "" }} />
+> e:\Davidacdamey\davidAcademyFrontend\src\components\StudentComponents\TableDropdownQuestionComponent.js:           
+dangerouslySetInnerHTML={{ __html: instructions || "" }} />
+> e:\Davidacdamey\davidAcademyFrontend\src\components\StudentComponents\TableDropdownQuestionComponent.js:             
+ dangerouslySetInnerHTML={{
+> e:\Davidacdamey\davidAcademyFrontend\src\components\StudentComponents\TableDropdownQuestionComponent.js:             
+     dangerouslySetInnerHTML={{ __html: tableHeaders.leftHeader || "Category" }}
+> e:\Davidacdamey\davidAcademyFrontend\src\components\StudentComponents\TableDropdownQuestionComponent.js:             
+     dangerouslySetInnerHTML={{ __html: tableHeaders.rightHeader || "Anticipated Order" }}
+> e:\Davidacdamey\davidAcademyFrontend\src\components\StudentComponents\TableDropdownQuestionComponent.js:             
+       dangerouslySetInnerHTML={{ __html: field.fieldLabel || "" }}
+> e:\Davidacdamey\davidAcademyFrontend\src\components\StudentComponents\TableDropdownQuestionComponent.js:             
+               dangerouslySetInnerHTML={{ __html: option || "" }}
+> e:\Davidacdamey\davidAcademyFrontend\src\components\StudentComponents\TableDropdownQuestionComponent.js:             
+       primary={<span dangerouslySetInnerHTML={{ __html: `${field.fieldLabel}: ${userValue}` }} />}
+> e:\Davidacdamey\davidAcademyFrontend\src\components\StudentComponents\TableDropdownQuestionComponent.js:             
+     primary={<span dangerouslySetInnerHTML={{ __html: `${answer.rowLabel}: ${answer.answer}` }} />}
+> e:\Davidacdamey\davidAcademyFrontend\src\components\StudentComponents\TableHighlightSelectComponent.js:       
+dangerouslySetInnerHTML={{ __html: questionText || "" }} />
+> e:\Davidacdamey\davidAcademyFrontend\src\components\StudentComponents\TableHighlightSelectComponent.js:           
+dangerouslySetInnerHTML={{ __html: instructions || "" }} />
+> e:\Davidacdamey\davidAcademyFrontend\src\components\StudentComponents\TableHighlightSelectComponent.js:              
+dangerouslySetInnerHTML={{
+> e:\Davidacdamey\davidAcademyFrontend\src\components\StudentComponents\TableHighlightSelectComponent.js:              
+    dangerouslySetInnerHTML={{ __html: tableHeaders.leftHeader || "Category" }}
+> e:\Davidacdamey\davidAcademyFrontend\src\components\StudentComponents\TableHighlightSelectComponent.js:              
+    dangerouslySetInnerHTML={{ __html: tableHeaders.rightHeader || "Options" }}
+> e:\Davidacdamey\davidAcademyFrontend\src\components\StudentComponents\TableHighlightSelectComponent.js:              
+        dangerouslySetInnerHTML={{ __html: field.leftColumn || "" }}
+> e:\Davidacdamey\davidAcademyFrontend\src\components\StudentComponents\TableHighlightSelectComponent.js:              
+        <span dangerouslySetInnerHTML={{ __html: field.rightColumn || "" }} />
+> e:\Davidacdamey\davidAcademyFrontend\src\components\StudentComponents\TableHighlightSelectComponent.js:              
+      primary={<span dangerouslySetInnerHTML={{ __html: correctItem || "" }} />}
+> e:\Davidacdamey\davidAcademyFrontend\src\components\StudentComponents\TableMultipleDropdownComponent.js:       
+dangerouslySetInnerHTML={{ __html: questionText || "" }} />
+> e:\Davidacdamey\davidAcademyFrontend\src\components\StudentComponents\TableMultipleDropdownComponent.js:           
+dangerouslySetInnerHTML={{ __html: instructions || "" }} />
+> e:\Davidacdamey\davidAcademyFrontend\src\components\StudentComponents\TableMultipleDropdownComponent.js:             
+ dangerouslySetInnerHTML={{
+> e:\Davidacdamey\davidAcademyFrontend\src\components\StudentComponents\TableMultipleDropdownComponent.js:             
+       dangerouslySetInnerHTML={{ __html: h || "" }}
+> e:\Davidacdamey\davidAcademyFrontend\src\components\StudentComponents\TableMultipleDropdownComponent.js:             
+       dangerouslySetInnerHTML={{ __html: row.rowLabel || "" }}
+> e:\Davidacdamey\davidAcademyFrontend\src\components\StudentComponents\TableMultipleDropdownComponent.js:             
+                   dangerouslySetInnerHTML={{ __html: opt || "" }}
+> e:\Davidacdamey\davidAcademyFrontend\src\components\StudentComponents\TableMultipleDropdownComponent.js:             
+       primary={<span dangerouslySetInnerHTML={{ __html: row.rowLabel || "" }} />}
+> e:\Davidacdamey\davidAcademyFrontend\src\components\StudentComponents\TableMultipleDropdownComponent.js:             
+           primary={<span dangerouslySetInnerHTML={{ __html: `${headers[col.colIndex] || `Col ${col.colIndex}`}: 
+${userVal}` }} />}
+> e:\Davidacdamey\davidAcademyFrontend\src\components\StudentComponents\TableMultipleDropdownComponent.js:             
+       primary={<span dangerouslySetInnerHTML={{ __html: row.rowLabel || "" }} />}
+> e:\Davidacdamey\davidAcademyFrontend\src\components\StudentComponents\TableMultipleDropdownComponent.js:             
+         primary={<span dangerouslySetInnerHTML={{ __html: `${headers[col.colIndex] || `Col ${col.colIndex}`}: 
+${col.answer || "-"}` }} />}
+
+

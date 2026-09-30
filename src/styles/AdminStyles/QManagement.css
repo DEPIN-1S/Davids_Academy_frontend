@@ -1,0 +1,327 @@
+.q-management-futuristic {
+  min-height: calc(100vh - 120px);
+  background: transparent;
+  padding: 0;
+  font-family: "Inter", "Segoe UI", sans-serif;
+  color: #e8eefc;
+}
+
+.q-management-futuristic .content-area {
+  max-width: none;
+  margin: 0;
+  padding: 0;
+}
+
+.q-management-futuristic .controls-section {
+  background: linear-gradient(180deg, rgba(20, 32, 64, 0.96), rgba(12, 20, 42, 0.96));
+  border: 1px solid rgba(94, 234, 212, 0.16);
+  border-radius: 18px;
+  box-shadow: 0 16px 36px rgba(8, 16, 36, 0.12);
+  margin-bottom: 1.25rem;
+  overflow: hidden;
+}
+
+.q-management-futuristic .tabs-container {
+  border-bottom: 1px solid rgba(157, 176, 208, 0.14);
+}
+
+.q-management-futuristic .examtype-tabs {
+  display: flex;
+  padding: 0.75rem 1rem 0;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.q-management-futuristic .tab-btn {
+  background: none;
+  border: none;
+  padding: 0.85rem 1.1rem;
+  font-size: 0.92rem;
+  font-weight: 700;
+  color: #93a4c7;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  border-bottom: 2px solid transparent;
+}
+
+.q-management-futuristic .tab-btn.active {
+  color: #67e8f9;
+  border-bottom-color: #22d3ee;
+}
+
+.q-management-futuristic .tab-count {
+  background: linear-gradient(90deg, #f0c94a, #fbbf24);
+  color: #04121f;
+  font-size: 0.72rem;
+  font-weight: 800;
+  min-width: 28px;
+  height: 28px;
+  padding: 0 8px;
+  border-radius: 999px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  animation: countPulse 2.2s ease-in-out infinite;
+}
+
+.q-management-futuristic .action-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1.1rem 1.25rem;
+  gap: 1rem;
+}
+
+.q-management-futuristic .search-filter-section {
+  display: flex;
+  flex: 1;
+  max-width: 460px;
+}
+
+.q-management-futuristic .search-box {
+  position: relative;
+  display: flex;
+  align-items: center;
+  flex: 1;
+}
+
+.q-management-futuristic .search-icon {
+  position: absolute;
+  left: 0.875rem;
+  color: #67e8f9;
+  z-index: 2;
+}
+
+.q-management-futuristic .search-input {
+  width: 100%;
+  padding: 0.75rem 0.875rem 0.75rem 2.5rem !important;
+  border: 1px solid rgba(94, 234, 212, 0.22);
+  border-radius: 12px;
+  background: rgba(8, 16, 36, 0.45);
+  color: #e8eefc;
+  font-size: 0.875rem;
+}
+
+.q-management-futuristic .search-input::placeholder {
+  color: #93a4c7;
+}
+
+.q-management-futuristic .add-btn.primary {
+  background: linear-gradient(90deg, #f0c94a, #fbbf24);
+  color: #04121f;
+  border: none;
+  padding: 0.7rem 1.2rem;
+  border-radius: 999px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.875rem;
+  font-weight: 700;
+  box-shadow: 0 0 16px rgba(240, 201, 74, 0.28);
+  animation: pulseGold 2.2s ease-in-out infinite;
+}
+
+.q-management-futuristic .table-section {
+  background: linear-gradient(180deg, rgba(20, 32, 64, 0.96), rgba(12, 20, 42, 0.96));
+  border: 1px solid rgba(94, 234, 212, 0.16);
+  border-radius: 18px;
+  overflow: hidden;
+}
+
+.q-management-futuristic .table-container {
+  overflow-x: auto;
+}
+
+.q-management-futuristic .exam-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+  min-width: 1100px;
+  color: #e8eefc;
+}
+
+.q-management-futuristic .exam-table thead {
+  background: rgba(34, 211, 238, 0.12);
+}
+
+.q-management-futuristic .exam-table th {
+  padding: 12px 16px;
+  text-align: left;
+  font-weight: 700;
+  color: #d7e3f7;
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.q-management-futuristic .exam-table td {
+  padding: 14px 16px;
+  vertical-align: middle;
+  border-bottom: 1px solid rgba(157, 176, 208, 0.1);
+}
+
+.q-management-futuristic .exam-table tbody tr {
+  animation: rowIn 0.4s ease both;
+}
+
+.q-management-futuristic .exam-table .row-odd {
+  background: transparent;
+}
+
+.q-management-futuristic .exam-table .row-even {
+  background: rgba(255, 255, 255, 0.03);
+}
+
+.q-management-futuristic .exam-table tr:hover {
+  background: rgba(34, 211, 238, 0.1) !important;
+}
+
+.q-management-futuristic .difficulty-pill {
+  display: inline-flex;
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-weight: 700;
+  font-size: 0.72rem;
+}
+
+.q-management-futuristic .difficulty-pill.easy,
+.q-management-futuristic .difficulty-pill.Easy {
+  color: #6ee7b7;
+  background: rgba(52, 211, 153, 0.14);
+}
+
+.q-management-futuristic .difficulty-pill.medium {
+  color: #fde68a;
+  background: rgba(240, 201, 74, 0.14);
+}
+
+.q-management-futuristic .difficulty-pill.hard {
+  color: #fda4af;
+  background: rgba(251, 113, 133, 0.16);
+}
+
+.q-management-futuristic .question-management-action-btn {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+}
+
+.q-management-futuristic .btn-icon-action {
+  background: rgba(8, 16, 36, 0.4);
+  border: 1px solid rgba(94, 234, 212, 0.22);
+  padding: 6px;
+  border-radius: 8px;
+  cursor: pointer;
+  width: 30px;
+  height: 30px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.q-management-futuristic .btn-edit {
+  color: #f0c94a;
+}
+
+.q-management-futuristic .btn-delete {
+  color: #fb7185;
+}
+
+.q-management-futuristic .view-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  border: none;
+  border-radius: 999px;
+  padding: 6px 12px;
+  background: linear-gradient(90deg, #22d3ee, #38bdf8);
+  color: #04121f;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.q-management-futuristic .copy-channel-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-left: 6px;
+  border: none;
+  border-radius: 999px;
+  padding: 6px 12px;
+  background: #25d366;
+  color: #fff;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.q-management-futuristic .pagination-controls {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 12px;
+  margin-top: 22px;
+}
+
+.q-management-futuristic .pagination-controls button {
+  padding: 8px 16px;
+  border: none;
+  border-radius: 999px;
+  background: linear-gradient(90deg, #22d3ee, #38bdf8);
+  color: #04121f;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.q-management-futuristic .pagination-controls button:disabled {
+  background: #334155;
+  color: #94a3b8;
+  cursor: not-allowed;
+}
+
+.q-management-futuristic .pagination-controls span {
+  color: #0f1b36;
+  font-weight: 600;
+}
+
+@keyframes rowIn {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes countPulse {
+  0%, 100% { box-shadow: 0 0 0 rgba(240, 201, 74, 0.15); }
+  50% { box-shadow: 0 0 12px rgba(240, 201, 74, 0.45); }
+}
+
+@keyframes pulseGold {
+  0%, 100% { box-shadow: 0 0 10px rgba(240, 201, 74, 0.2); }
+  50% { box-shadow: 0 0 20px rgba(240, 201, 74, 0.5); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .q-management-futuristic .tab-count,
+  .q-management-futuristic .add-btn.primary,
+  .q-management-futuristic .exam-table tbody tr {
+    animation: none;
+  }
+}
+
+@media (max-width: 991px) {
+  .q-management-futuristic .action-bar {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .q-management-futuristic .search-filter-section {
+    max-width: none;
+  }
+}

@@ -1,0 +1,105 @@
+.question-header-container {
+  background: #fff;
+  border-radius: 0 0 20px 20px;
+  box-shadow: 0px 2px 8px rgba(0, 0, 0, 0.05);
+  padding: 1rem;
+  position: relative;
+}
+
+.header-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.logo {
+  height: 50px;
+}
+
+.question-info {
+  text-align: center;
+}
+
+.user {
+  font-weight: 500;
+  color: #555;
+}
+
+.header-progress {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 12px;
+}
+
+.progress-bar {
+  flex: 1;
+  height: 6px;
+  background: #e0e0e0;
+  border-radius: 4px;
+  margin: 0 12px;
+  position: relative;
+}
+
+.progress-fill {
+  height: 100%;
+  background: #ffc107;
+  border-radius: 4px;
+  transition: width 0.3s ease;
+}
+
+.time-elapsed {
+  font-weight: 500;
+  color: #333;
+}
+
+.header-actions {
+  display: flex;
+  justify-content: space-around;
+  margin-top: 1rem;
+}
+
+.header-actions .MuiIconButton-root {
+  background-color: #2e3760;
+  margin: 0 6px;
+  padding: 10px;
+  border-radius: 50%;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+}
+.subtitle2 {
+margin-left: 20px;
+}
+
+@media (max-width: 600px) {
+  .question-header-container {
+    padding: 0.5rem 1rem;
+    border-radius: 0 0 12px 12px;
+  }
+
+  .header-top {
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .logo {
+    height: 35px;
+  }
+
+  .question-info {
+    text-align: right;
+  }
+
+  .header-progress {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    margin-top: 8px;
+  }
+
+  .progress-bar {
+    margin: 0 0 0 12px;
+    height: 5px;
+  }
+}

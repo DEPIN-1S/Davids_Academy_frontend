@@ -1,0 +1,222 @@
+.question-editor-futuristic {
+  font-family: "Inter", "Segoe UI", sans-serif !important;
+  color: #e8eefc !important;
+  background: linear-gradient(180deg, rgba(20, 32, 64, 0.96), rgba(12, 20, 42, 0.96));
+  border: 1px solid rgba(94, 234, 212, 0.16);
+  border-radius: 18px;
+  box-shadow: 0 16px 36px rgba(8, 16, 36, 0.12);
+  max-width: 980px !important;
+}
+
+.question-editor-futuristic.question-editor-wide {
+  max-width: 1400px !important;
+}
+
+.question-editor-futuristic .MuiTypography-root,
+.question-editor-futuristic p,
+.question-editor-futuristic span,
+.question-editor-futuristic label,
+.question-editor-futuristic li,
+.question-editor-futuristic strong {
+  color: #c9d6ee !important;
+}
+
+.question-editor-futuristic .MuiTypography-h5,
+.question-editor-futuristic .MuiTypography-h6,
+.question-editor-futuristic h4,
+.question-editor-futuristic h3 {
+  color: #e8eefc !important;
+  font-weight: 700 !important;
+}
+
+.question-editor-futuristic .MuiTypography-caption,
+.question-editor-futuristic .MuiTypography-subtitle2 {
+  color: #67e8f9 !important;
+}
+
+.question-editor-futuristic .MuiOutlinedInput-root,
+.question-editor-futuristic .MuiInputBase-root {
+  background: rgba(8, 16, 36, 0.45) !important;
+  color: #e8eefc !important;
+  border-radius: 12px !important;
+}
+
+.question-editor-futuristic .MuiOutlinedInput-notchedOutline {
+  border-color: rgba(94, 234, 212, 0.22) !important;
+}
+
+.question-editor-futuristic .MuiInputLabel-root,
+.question-editor-futuristic .MuiFormLabel-root {
+  color: #93a4c7 !important;
+}
+
+.question-editor-futuristic .MuiSelect-icon {
+  color: #67e8f9 !important;
+}
+
+.question-editor-futuristic .MuiButton-contained:not(.MuiButton-containedError) {
+  background: linear-gradient(90deg, #f0c94a, #fbbf24) !important;
+  color: #04121f !important;
+  font-weight: 700 !important;
+  border-radius: 999px !important;
+  box-shadow: 0 0 16px rgba(240, 201, 74, 0.28) !important;
+  text-transform: none !important;
+}
+
+.question-editor-futuristic .MuiButton-outlined {
+  border-color: rgba(103, 232, 249, 0.45) !important;
+  color: #67e8f9 !important;
+  font-weight: 700 !important;
+  border-radius: 999px !important;
+  text-transform: none !important;
+}
+
+.question-editor-futuristic .MuiButton-text {
+  color: #67e8f9 !important;
+  text-transform: none !important;
+}
+
+.question-editor-futuristic .MuiButton-text.MuiButton-colorError,
+.question-editor-futuristic .MuiIconButton-colorError,
+.question-editor-futuristic .MuiButton-containedError {
+  color: #fda4af !important;
+}
+
+.question-editor-futuristic .MuiCard-root,
+.question-editor-futuristic .MuiPaper-root,
+.question-editor-futuristic .MuiAccordion-root,
+.question-editor-futuristic .MuiAlert-root {
+  background: rgba(8, 16, 36, 0.45) !important;
+  color: #e8eefc !important;
+  border: 1px solid rgba(94, 234, 212, 0.16) !important;
+  box-shadow: none !important;
+}
+
+.question-editor-futuristic .editor-info-card {
+  background: rgba(34, 211, 238, 0.08) !important;
+  border: 1px solid rgba(94, 234, 212, 0.18) !important;
+}
+
+.question-editor-futuristic .editor-info-card.is-selected {
+  background: rgba(52, 211, 153, 0.12) !important;
+  border-color: rgba(110, 231, 183, 0.35) !important;
+}
+
+.question-editor-futuristic .MuiChip-root {
+  background: rgba(34, 211, 238, 0.14) !important;
+  color: #67e8f9 !important;
+}
+
+.question-editor-futuristic .MuiRadio-root,
+.question-editor-futuristic .MuiCheckbox-root {
+  color: #67e8f9 !important;
+}
+
+.question-editor-futuristic .ql-toolbar.ql-snow,
+.question-editor-futuristic .ql-container.ql-snow {
+  border-color: rgba(94, 234, 212, 0.22) !important;
+  background: rgba(8, 16, 36, 0.45);
+}
+
+.question-editor-futuristic .ql-editor {
+  color: #e8eefc;
+  min-height: 120px;
+}
+
+.question-editor-futuristic .ql-snow .ql-stroke {
+  stroke: #93a4c7;
+}
+
+.question-editor-futuristic .ql-snow .ql-fill,
+.question-editor-futuristic .ql-snow .ql-picker {
+  color: #93a4c7;
+  fill: #93a4c7;
+}
+
+.question-editor-futuristic .ql-snow .ql-picker-options {
+  background: #142040;
+  color: #e8eefc;
+}
+
+.question-editor-futuristic table,
+.question-editor-futuristic .MuiTableCell-root {
+  color: #e8eefc !important;
+  border-color: rgba(157, 176, 208, 0.12) !important;
+}
+
+.question-editor-futuristic .MuiTableCell-head,
+.question-editor-futuristic .MuiTableCell-stickyHeader {
+  background: rgba(34, 211, 238, 0.12) !important;
+  color: #d7e3f7 !important;
+}
+
+.question-editor-futuristic .MuiTableRow-root:hover {
+  background: rgba(34, 211, 238, 0.08) !important;
+}
+
+.question-editor-futuristic .MuiTableRow-root.Mui-selected {
+  background: rgba(34, 211, 238, 0.16) !important;
+}
+
+.question-editor-futuristic input[type="date"] {
+  color-scheme: dark;
+}
+
+body.admin-theme .MuiMenu-paper,
+body.admin-theme .MuiPopover-paper,
+body.admin-theme .MuiDialog-paper {
+  background: #142040 !important;
+  color: #e8eefc !important;
+  border: 1px solid rgba(94, 234, 212, 0.2) !important;
+}
+
+body.admin-theme .MuiMenuItem-root,
+body.admin-theme .MuiDialogTitle-root,
+body.admin-theme .MuiDialogContentText-root {
+  color: #e8eefc !important;
+}
+
+body.admin-theme .MuiMenuItem-root:hover,
+body.admin-theme .MuiMenuItem-root.Mui-selected {
+  background: rgba(34, 211, 238, 0.12) !important;
+}
+
+body.admin-theme .MuiDialog-paper .MuiButton-contained:not(.MuiButton-containedError) {
+  background: linear-gradient(90deg, #f0c94a, #fbbf24) !important;
+  color: #04121f !important;
+}
+
+.test-create-futuristic.test-create-container {
+  background: linear-gradient(180deg, rgba(20, 32, 64, 0.96), rgba(12, 20, 42, 0.96));
+  border: 1px solid rgba(94, 234, 212, 0.16);
+  border-radius: 18px;
+  color: #e8eefc;
+}
+
+.test-create-futuristic .breadcrumb,
+.test-create-futuristic .subtitle,
+.test-create-futuristic h2 {
+  color: #e8eefc;
+}
+
+.test-create-futuristic .radio-box {
+  background: rgba(8, 16, 36, 0.45);
+  border: 1px solid rgba(94, 234, 212, 0.22);
+  color: #e8eefc;
+}
+
+.test-create-futuristic .radio-box.selected {
+  background: rgba(240, 201, 74, 0.16);
+  border-color: #f0c94a;
+}
+
+.test-create-futuristic .next-btn {
+  background: linear-gradient(90deg, #f0c94a, #fbbf24);
+  color: #04121f;
+  border-radius: 999px;
+  font-weight: 700;
+}
+
+.test-create-futuristic .back-btn {
+  color: #67e8f9;
+}

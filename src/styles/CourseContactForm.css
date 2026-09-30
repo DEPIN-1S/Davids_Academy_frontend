@@ -1,0 +1,62 @@
+.course-contact-section {
+  background-color: #1c274c;
+  padding: 3rem 1rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+}
+
+.course-contact-card {
+  background-color: rgba(255, 255, 255, 0.1);
+  padding: 2rem;
+  max-width: 500px;
+  border-radius: 16px;
+  backdrop-filter: blur(12px);
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.2);
+  color: white;
+  text-align: center;
+  width: 100%;
+}
+
+.course-contact-card h3 {
+  font-size: 1.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.course-contact-card p {
+  font-size: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.course-contact-form input,
+.course-contact-form textarea {
+  width: 100%;
+  padding: 0.75rem;
+  margin-bottom: 1rem;
+  border-radius: 8px;
+  border: none;
+  font-size: 1rem;
+  background-color: #fff;
+  color: #000;
+}
+
+.course-contact-form textarea {
+  resize: none;
+}
+
+.course-contact-form button {
+  width: 100%;
+  padding: 0.75rem;
+  background-color: #00b8d9;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.course-contact-form button:hover {
+  background-color: #0092b2;
+}

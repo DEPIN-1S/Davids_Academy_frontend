@@ -1,0 +1,19 @@
+.page-layout {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 2rem;
+  padding-top: 80px; /* space for fixed navbar */
+  padding-left: 1rem;
+  padding-right: 1rem;
+  max-width: 1200px;
+  width: 100%;
+  margin: 0 auto;
+  box-sizing: border-box;
+}
+
+/* Optional: Add responsive 2-column layout for large screens */
+@media screen and (min-width: 1024px) {
+  .page-layout.two-column {
+    grid-template-columns: 1fr 1fr;
+  }
+}

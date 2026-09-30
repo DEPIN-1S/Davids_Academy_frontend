@@ -1,0 +1,110 @@
+.classes-section {
+  position: relative;
+  padding: 5rem 2rem;
+  background-color: #f9f9fc;
+  text-align: center;
+  overflow: hidden;
+}
+
+.classes-title {
+  font-size: 2rem;
+  font-weight: 700;
+  color: #213866;
+  margin-bottom: 1rem;
+}
+
+.classes-subtitle {
+  font-size: 1.1rem;
+  color: #555;
+  max-width: 600px;
+  margin: 0 auto 2rem auto;
+}
+
+.join-link {
+  font-size: 1.3rem;
+  font-weight: 500;
+  color: #000;
+  text-decoration: none;
+  display: inline-block;
+  transition: all 0.2s ease;
+}
+
+.join-link:hover {
+  transform: translateX(4px);
+}
+
+/* Decorative circles */
+.circle {
+  position: absolute;
+  border-radius: 50%;
+  background-color: #f4c721;
+  opacity: 0.9;
+}
+
+.circle.yellow {
+  width: 80px;
+  height: 80px;
+}
+
+.top-left {
+  top: 30px;
+  left: 40px;
+}
+
+.mid-left {
+  top: 200px;
+  left: 100px;
+  width: 100px;
+  height: 100px;
+}
+
+.bottom-right {
+  bottom: 30px;
+  right: 80px;
+  width: 80px;
+  height: 80px;
+}
+
+/* Floating profile images */
+.circle-img {
+  position: absolute;
+  border-radius: 50%;
+  width: 120px;
+  height: 120px;
+  object-fit: cover;
+}
+
+.top-right {
+  top: 40px;
+  right: 150px;
+}
+
+.bottom-left {
+  bottom: 40px;
+  left: 120px;
+}
+
+.bottom-mid {
+  bottom: 30px;
+  right: 300px;
+}
+
+/* Responsive */
+@media screen and (max-width: 768px) {
+  .circle-img {
+    width: 80px;
+    height: 80px;
+  }
+
+  .top-left, .mid-left, .bottom-right, .top-right, .bottom-left, .bottom-mid {
+    display: none;
+  }
+
+  .classes-title {
+    font-size: 1.5rem;
+  }
+
+  .join-link {
+    font-size: 1.1rem;
+  }
+}

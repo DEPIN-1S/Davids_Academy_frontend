@@ -1,0 +1,883 @@
+import React, { useState } from "react";
+import {
+    Box,
+    Button,
+    Typography,
+    TextField,
+    IconButton,
+    Card,
+    CardContent,
+    Chip,
+
+    Accordion,
+    AccordionSummary,
+    AccordionDetails,
+    Paper,
+
+    Select,
+    MenuItem,
+    Checkbox,
+    ListItemText
+} from "@mui/material";
+import AddIcon from "@mui/icons-material/Add";
+import ArrowBackIcon from "@mui/icons-material/ArrowBack";
+import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
+import { CloudUpload, Delete, Image, PictureAsPdf, Description, ExpandMore, Highlight } from '@mui/icons-material';
+import { useNavigate, useLocation } from 'react-router-dom';
+/* import { FormControl } from "react-bootstrap"; */
+import { FormControl } from "@mui/material";
+import { deleteTabImage, uploadTabImage, getQuestionData } from "../../features/exam/examSlice";
+import { useDispatch, useSelector } from "react-redux";
+import ReactQuill from 'react-quill-new';
+import 'react-quill-new/dist/quill.snow.css';
+
+const SentenceHighlightContent = () => {
+    const navigate = useNavigate();
+    const location = useLocation();
+
+    // Get any existing data from previous steps
+    const existingData = location.state?.questionData || {};
+    const questionType = location.state?.questionType || existingData.questionType || "Sentence Highlight";
+    const cs_id = location.state?.cs_id || existingData.cs_id || "";
+    const exam_type = location.state?.exam_type || existingData.exam_type || "";
+    const question_type_id = location.state?.question_type_id || existingData.question_type_id || "";
+    const topic_id = location.state?.topic_id || existingData.topic_id || "";
+    const [instruction, setInstruction] = useState(existingData.instruction || "")
+    // Form state
+    const [question, setQuestion] = useState(existingData.question || "");
+    const [tabs, setTabs] = useState(existingData.tabs || [
+        { tabKey: "", tabValue: "" }
+    ]);
+    const [passage, setPassage] = useState(existingData.passage || "");
+    const [correctHighlights, setCorrectHighlights] = useState(existingData.correctHighlights || [""]);
+    const [selectedFile, setSelectedFile] = useState(existingData.exhibit || null);
+    const [errors, setErrors] = useState({});
+    const [answer, setAnswer] = useState(existingData?.answer || []);
+
+    const dispatch = useDispatch();
+    const { questionData: fetchedQuestionData } = useSelector((state) => state.exam);
+    const editQuestionId = location.state?.questionId || existingData.id;
+
+    // ✅ Fetch full question details when editing
+    React.useEffect(() => {
+        if (editQuestionId) {
+            dispatch(getQuestionData(editQuestionId));
+        }
+    }, [dispatch, editQuestionId]);
+
+    // ✅ Populate form state when fetchedQuestionData arrives
+    React.useEffect(() => {
+        if (editQuestionId && fetchedQuestionData?.data) {
+            const q = fetchedQuestionData.data;
+            if (q.question) setQuestion(q.question);
+            if (q.instructions) setInstruction(q.instructions);
+            if (q.passage) setPassage(q.passage);
+
+            const rawOptions = q.highlightoptions || q.highlightOptions || q.correctHighlights || q.highlight_options;
+            if (rawOptions && rawOptions.length > 0) {
+                const parsedOpts = rawOptions.map(o => typeof o === "string" ? o : (o.options || o.option || o.option_value || o.highlightOption || "")).filter(str => str.trim() !== "");
+                if (parsedOpts.length > 0) {
+                    setCorrectHighlights(parsedOpts);
+                }
+            }
+
+            const rawAnswers = q.answers || q.answer || q.sentenceHighlightAnswers || q.submittedAnswer || q.highlightAnswers;
+            if (rawAnswers && rawAnswers.length > 0) {
+                const parsedAns = rawAnswers.map(a => typeof a === "string" ? a : (a.answer || a.highlightAnswer || "")).filter(str => str.trim() !== "");
+                if (parsedAns.length > 0) {
+                    setAnswer(parsedAns);
+                }
+            }
+
+            if (q.tabsInfo && q.tabsInfo.length > 0) {
+                setTabs(q.tabsInfo.map((t) => ({ tabKey: t.tabKey || "", tabValue: t.tabValue || "" })));
+            }
+        }
+    }, [editQuestionId, fetchedQuestionData]);
+
+    // here tab image is added to backend when user selects image from their local machine at that moment api call is triggered
+    // File upload handler for tab image
+    const handleTabFileUpload = async (index, event) => {
+        const file = event.target.files[0];
+        if (!file) return;
+
+        const allowedTypes = ["image/jpeg", "image/png", "image/gif"];
+        if (!allowedTypes.includes(file.type)) {
+            setErrors((prev) => ({
+                ...prev,
+                [`tabFile_${index}`]: "Only images are allowed",
+            }));
+            return;
+        }
+
+        // Local preview
+        const previewUrl = URL.createObjectURL(file);
+        const newTabs = [...tabs];
+        newTabs[index].previewUrl = previewUrl;
+        setTabs(newTabs);
+
+        try {
+            // Upload immediately
+            const result = await dispatch(uploadTabImage(file)).unwrap();
+            console.log("Upload result:", result);
+
+            // ✅ Store uploaded image URL in `tabImage` key
+            newTabs[index].tabImage = result?.data?.imageUrl || null;
+            setTabs(newTabs);
+        } catch (err) {
+            console.error("Upload failed:", err);
+            setErrors((prev) => ({
+                ...prev,
+                [`tabFile_${index}`]: "Upload failed. Try again.",
+            }));
+            newTabs[index].previewUrl = null;
+            setTabs(newTabs);
+        }
+    };
+
+
+    // Add this definition near your other constants/modules
+    const tabModules = {
+        toolbar: [
+            ['bold', 'italic', 'underline'], // Basic formatting
+            [{ 'list': 'bullet' }], // Bullet points
+            [{ 'color': [] },],
+        ],
+        clipboard: {
+            matchVisual: false, // Important!
+        },
+    };
+
+    const tabFormats = [
+        'bold', 'italic', 'underline',
+        'list', 'bullet',
+        'link',
+        'color',
+    ];
+
+
+    // Delete handler
+    const handleDeleteTabImage = async (index) => {
+        const tab = tabs[index];
+        console.log("Inside delete img::");
+
+        if (!tab.tabImage) {
+            // No uploaded image, just remove preview
+            const newTabs = [...tabs];
+            newTabs[index].previewUrl = null;
+            setTabs(newTabs);
+            return;
+        }
+
+        try {
+            console.log("Inside try :::");
+
+            // Extract only filename
+            const fileName = tab.tabImage.split("/").pop();
+            console.log("Sending filename to delete API:", fileName);
+
+            // Call delete API
+            await dispatch(deleteTabImage(fileName)).unwrap();
+
+            const newTabs = [...tabs];
+            newTabs[index].previewUrl = null;
+            newTabs[index].tabImage = null; // ✅ Clear tabImage
+            setTabs(newTabs);
+
+            console.log("Tab image deleted successfully");
+        } catch (error) {
+            console.error("Failed to delete tab image:", error);
+        }
+    };
+
+
+    const handleRemoveFile = () => {
+        if (selectedFile) {
+            URL.revokeObjectURL(selectedFile.url);
+            setSelectedFile(null);
+            setErrors(prev => ({ ...prev, file: null }));
+        }
+    };
+
+    // Tab handlers
+    const handleTabChange = (index, field, value) => {
+        const newTabs = [...tabs];
+        newTabs[index][field] = value;
+        setTabs(newTabs);
+        setErrors(prev => ({ ...prev, tabs: null }));
+    };
+
+    const handleAddTab = () => {
+        setTabs([...tabs, { tabKey: "", tabValue: "" }]);
+    };
+
+    const handleRemoveTab = (index) => {
+        if (tabs.length > 1) {
+            const newTabs = tabs.filter((_, i) => i !== index);
+            setTabs(newTabs);
+        }
+    };
+
+    // Highlight handlers
+    const handleCorrectHighlightChange = (index, value) => {
+        const oldText = correctHighlights[index];
+        const newHighlights = [...correctHighlights];
+        newHighlights[index] = value;
+        setCorrectHighlights(newHighlights);
+
+        // Keep answer array in sync if old text was selected as answer
+        if (oldText && answer.includes(oldText)) {
+            setAnswer(prev => prev.map(a => a === oldText ? value : a));
+        }
+        setErrors(prev => ({ ...prev, correctHighlights: null, answer: null }));
+    };
+
+    const toggleHighlightAnswer = (highlightText) => {
+        if (!highlightText || !highlightText.trim()) return;
+        const text = highlightText.trim();
+        setAnswer(prev => {
+            if (prev.includes(text)) {
+                return prev.filter(a => a !== text);
+            } else {
+                return [...prev, text];
+            }
+        });
+        setErrors(prev => ({ ...prev, answer: null }));
+    };
+
+    const handleAddCorrectHighlight = () => {
+        setCorrectHighlights(prev => [...prev, ""]);
+    };
+
+    const handleRemoveCorrectHighlight = (index) => {
+        const textToRemove = correctHighlights[index];
+        if (correctHighlights.length > 1) {
+            const newHighlights = correctHighlights.filter((_, i) => i !== index);
+            setCorrectHighlights(newHighlights);
+            if (textToRemove && answer.includes(textToRemove)) {
+                setAnswer(prev => prev.filter(a => a !== textToRemove));
+            }
+        }
+    };
+
+    const handleAddSelectionFromPassage = () => {
+        const selectedText = window.getSelection()?.toString()?.trim();
+        if (selectedText) {
+            // Replace if only one blank item, else append
+            if (correctHighlights.length === 1 && !correctHighlights[0].trim()) {
+                setCorrectHighlights([selectedText]);
+            } else if (!correctHighlights.includes(selectedText)) {
+                setCorrectHighlights(prev => [...prev, selectedText]);
+            }
+            if (!answer.includes(selectedText)) {
+                setAnswer(prev => [...prev, selectedText]);
+            }
+            setErrors(prev => ({ ...prev, correctHighlights: null, answer: null }));
+        }
+    };
+
+    // Validation
+    const validateForm = () => {
+        const newErrors = {};
+
+        if (!question.trim()) {
+            newErrors.question = 'Question is required';
+        }  
+
+        if (!passage.trim()) {
+            newErrors.passage = 'Passage text is required';
+        }
+
+        const validHighlights = correctHighlights.filter(highlight => highlight.trim());
+        if (validHighlights.length === 0) {
+            newErrors.correctHighlights = 'At least one correct highlight text is required';
+        }
+
+        const validAnswers = answer.filter(a => a.trim());
+        if (validAnswers.length === 0) {
+            newErrors.answer = "Select at least one correct highlight answer";
+        }
+
+        setErrors(newErrors);
+        return Object.keys(newErrors).length === 0;
+    };
+
+    // Navigation handlers
+    const handleNext = () => {
+        if (!validateForm()) {
+            return;
+        }
+        const realQuestionId = location.state?.questionId || location.state?.id || location.state?.questionData?.id || location.state?.questionData?.questionId || fetchedQuestionData?.data?.id || null;
+        const isEditMode = location.state?.isEdit || Boolean(realQuestionId);
+
+        const questionData = {
+            cs_id: cs_id, topic_id: topic_id,
+            exam_type: exam_type,
+            question_type_id: question_type_id,
+            questionType: questionType,
+            question: question.trim(),
+            tabs: tabs.filter(tab => tab.tabKey.trim() && tab.tabValue.trim()),
+            passage: passage.trim(),
+            answer: answer,
+            instruction: instruction.trim(),
+            correctHighlights: correctHighlights.filter(highlight => highlight.trim()),
+            exhibit: selectedFile,
+            explanationHeading: fetchedQuestionData?.data?.explanationHeading || (Array.isArray(fetchedQuestionData?.data?.explanation) ? fetchedQuestionData?.data?.explanation[0]?.heading : "") || existingData?.explanationHeading || "",
+            explanationText: fetchedQuestionData?.data?.explanationText || (Array.isArray(fetchedQuestionData?.data?.explanation) ? fetchedQuestionData?.data?.explanation[0]?.explanation : "") || existingData?.explanationText || "",
+            additionalInfo: fetchedQuestionData?.data?.additionalInfo || (Array.isArray(fetchedQuestionData?.data?.additionalInfo) ? fetchedQuestionData?.data?.additionalInfo[0]?.info : "") || existingData?.additionalInfo || "",
+            difficulty: fetchedQuestionData?.data?.difficulty || existingData?.difficulty || "Medium",
+            marks: fetchedQuestionData?.data?.marks || existingData?.marks || 1,
+            createdAt: existingData.createdAt || new Date().toISOString(),
+            updatedAt: new Date().toISOString(),
+            questionId: realQuestionId,
+            id: realQuestionId,
+            isEdit: isEditMode,
+            currentStep: 'content',
+            completedSteps: ['type', 'content']
+        };
+
+        console.log('Sending sentence highlight question data:', questionData);
+        navigate('/admin/answer-explain', {
+            state: {
+                isEdit: isEditMode,
+                questionId: realQuestionId,
+                questionData: questionData,
+                fromStep: 'content'
+            }
+        });
+    };
+
+    const handleBack = () => {
+        if (location.state?.isEdit) {
+            navigate('/admin/question-management');
+            return;
+        }
+        const currentData = {
+            question: question.trim(),
+            tabs: tabs,
+            passage: passage.trim(),
+            correctHighlights: correctHighlights,
+            exhibit: selectedFile
+        };
+
+        navigate('/admin/question-type', {
+            state: {
+                questionData: currentData,
+                fromStep: 'content',
+                cs_id: cs_id, topic_id: topic_id, exam_type: exam_type, question_type_id: question_type_id
+            }
+        });
+    };
+
+    // Helper functions
+    const getFileIcon = (fileType) => {
+        if (fileType?.startsWith('image/')) return <Image />;
+        if (fileType === 'application/pdf') return <PictureAsPdf />;
+        return <Description />;
+    };
+
+    const formatFileSize = (bytes) => {
+        if (bytes === 0) return '0 Bytes';
+        const k = 1024;
+        const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+        const i = Math.floor(Math.log(bytes) / Math.log(k));
+        return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+    };
+
+    const isFormValid = () => {
+        if (location.state?.isEdit && question && question.trim()) return true;
+        const hasValidQuestion = question.trim() !== "";
+        return hasValidQuestion;
+    };
+
+    // Helper function to create highlighted preview
+    const createHighlightPreview = () => {
+        if (!passage.trim()) return "Passage text will appear here...";
+
+        let previewText = passage;
+        correctHighlights.filter(h => h.trim()).forEach((highlight, index) => {
+            if (highlight.trim() && previewText.includes(highlight.trim())) {
+                previewText = previewText.replace(
+                    new RegExp(highlight.trim(), 'gi'),
+                    `<mark style="background-color: #ffeb3b; color: #000;">${highlight.trim()}</mark>`
+                );
+            }
+        });
+
+        return previewText;
+    };
+
+    // Cleanup on unmount
+    React.useEffect(() => {
+        return () => {
+            if (selectedFile && selectedFile.url) {
+                URL.revokeObjectURL(selectedFile.url);
+            }
+        };
+    }, [selectedFile]);
+
+    return (
+        <Box className="question-editor-futuristic" p={3} maxWidth="900px" mx="auto">
+            {/* Breadcrumb */}
+            <Typography variant="caption" color="textSecondary" mb={2} display="block">
+                Test type &gt; Question Type &gt; <strong>Question Content</strong>
+            </Typography>
+
+            {/* Title + Back Button Header */}
+            <Box display="flex" justifyContent="space-between" alignItems="center" mt={2} mb={3}>
+                <Box>
+                    <Typography variant="h5" mb={0.5}>
+                        {location.state?.isEdit ? "Edit Sentence Highlight Question" : "Enter Sentence Highlight Question Content"}
+                    </Typography>
+                    <Typography variant="body2" color="textSecondary">
+                        Create or edit a sentence highlighting question where students identify specific text.
+                    </Typography>
+                </Box>
+                <Button
+                    variant="outlined"
+                    startIcon={<ArrowBackIcon />}
+                    onClick={() => navigate("/admin/question-management")}
+                    sx={{
+                        borderRadius: "8px",
+                        textTransform: "none",
+                        fontWeight: 600,
+                        color: "#1976d2",
+                        borderColor: "#1976d2",
+                        "&:hover": { borderColor: "#115293", backgroundColor: "#e3f2fd" },
+                    }}
+                >
+                    Back to Question Management
+                </Button>
+            </Box>
+
+            {/* Question Input */}
+            <Box sx={{ minHeight: '170px', mb: 3 }}>
+                <Typography variant="h6" mb={1} color="primary">
+                    Question Text *
+                </Typography>
+                <ReactQuill
+                    theme="snow"
+                    value={question}
+                    onChange={(content) => {
+                        setQuestion(content);
+                        setErrors(prev => ({ ...prev, question: null }));
+                    }}
+                    modules={tabModules}
+                    formats={tabFormats}
+                    placeholder="Type your sentence highlighting question here..."
+                    style={{ height: '120px', borderBottomLeftRadius: 4, borderBottomRightRadius: 4 }}
+                />
+                {errors.question && (
+                    <Typography color="error" variant="caption" sx={{ display: 'block', mt: 5 }}>
+                        {errors.question}
+                    </Typography>
+                )}
+            </Box>
+
+            {/* Display Uploaded File */}
+            {selectedFile && (
+                <Card sx={{ mb: 3 }}>
+                    <CardContent sx={{ p: 2, '&:last-child': { pb: 2 } }}>
+                        <Box display="flex" alignItems="center" gap={2}>
+                            {getFileIcon(selectedFile.type)}
+                            <Box flex={1}>
+                                <Typography variant="body2" fontWeight={500}>
+                                    {selectedFile.name}
+                                </Typography>
+                                <Chip
+                                    label={formatFileSize(selectedFile.size)}
+                                    size="small"
+                                    variant="outlined"
+                                />
+                            </Box>
+                            {selectedFile.type.startsWith('image/') && (
+                                <Box
+                                    component="img"
+                                    src={selectedFile.url}
+                                    alt={selectedFile.name}
+                                    sx={{ width: 60, height: 60, objectFit: 'cover', borderRadius: 1 }}
+                                />
+                            )}
+                            <IconButton onClick={handleRemoveFile} color="error" size="small">
+                                <Delete />
+                            </IconButton>
+                        </Box>
+                    </CardContent>
+                </Card>
+            )}
+
+            {/* Tabs Section */}
+            <Accordion defaultExpanded sx={{ mb: 3 }}>
+                <AccordionSummary expandIcon={<ExpandMore />}>
+                    <Typography variant="h6" color="primary">
+                        Question Tabs ({tabs.length})
+                    </Typography>
+                </AccordionSummary>
+                <AccordionDetails>
+                    {tabs.map((tab, index) => (
+                        <Card key={index} sx={{ mb: 2, p: 2 }}>
+                            <Box display="flex" justifyContent="space-between" alignItems="center" mb={2}>
+                                <Typography variant="subtitle1">Tab {index + 1}</Typography>
+                                {tabs.length > 1 && (
+                                    <IconButton
+                                        onClick={() => handleRemoveTab(index)}
+                                        color="error"
+                                        size="small"
+                                    >
+                                        <Delete />
+                                    </IconButton>
+                                )}
+                            </Box>
+
+                            <TextField
+                                fullWidth
+                                label="Tab Key/Title"
+                                value={tab.tabKey}
+                                onChange={(e) => handleTabChange(index, 'tabKey', e.target.value)}
+                                placeholder="e.g., Patient Chart, Nurse Notes"
+                                sx={{ mb: 2 }}
+                                size="small"
+                            />
+
+                            <Box sx={{ minHeight: '170px', mb: 2 }}> {/* Added marginBottom for spacing */}
+                                <Typography variant="caption" sx={{ display: 'block', mb: 0.5 }}>Tab Content</Typography>
+                                <ReactQuill
+                                    theme="snow"
+                                    value={tab.tabValue} // Bind to tab.tabValue
+                                    onChange={(content) =>
+                                        // Crucial: React-Quill returns the HTML string directly
+                                        handleTabChange(index, "tabValue", content)
+                                    }
+                                    modules={tabModules} // Use the specific modules for tabs
+                                    formats={tabFormats}
+                                    placeholder="Enter the content that will be displayed in this tab..."
+                                    // Setting a fixed height helps prevent layout shifts
+                                    style={{ height: '120px', borderBottomLeftRadius: 4, borderBottomRightRadius: 4 }}
+                                />
+                            </Box>
+
+                            <Box
+                                display="flex"
+                                flexDirection="column"
+                                alignItems="flex-start"
+                                mt={5}
+                            >
+                                <input
+                                    type="file"
+                                    accept="image/*"
+                                    style={{ display: "none" }}
+                                    id={`tab-file-input-${index}`}
+                                    onChange={(e) => handleTabFileUpload(index, e)}
+                                />
+                                <Button
+                                    variant="outlined"
+                                    component="span"
+                                    onClick={() =>
+                                        document.getElementById(`tab-file-input-${index}`).click()
+                                    }
+                                    startIcon={<CloudUpload />}
+                                    size="small"
+                                >
+                                    {tab.previewUrl ? "Change Image" : "Add Image"}
+                                </Button>
+
+
+                                {tab.previewUrl && (
+                                    <Box mt={1} display="flex" alignItems="center" gap={1}>
+                                        <img
+                                            src={tab.previewUrl}
+                                            alt={`Tab ${index} preview`}
+                                            style={{
+                                                maxWidth: "200px",
+                                                maxHeight: "150px",
+                                                objectFit: "cover",
+                                                borderRadius: "4px",
+                                            }}
+                                        />
+                                        <IconButton
+                                            onClick={() => handleDeleteTabImage(index)}
+                                            color="error"
+                                            size="small"
+                                        >
+                                            <Delete />
+                                        </IconButton>
+                                    </Box>
+                                )}
+
+                                {errors[`tabFile_${index}`] && (
+                                    <Typography variant="caption" color="error">
+                                        {errors[`tabFile_${index}`]}
+                                    </Typography>
+                                )}
+                            </Box>
+                        </Card>
+                    ))}
+
+                    <Button
+                        startIcon={<AddIcon />}
+                        onClick={handleAddTab}
+                        variant="outlined"
+                        size="small"
+                    >
+                        Add Tab
+                    </Button>
+
+                    {errors.tabs && (
+                        <Typography color="error" variant="caption" sx={{ display: 'block', mt: 1 }}>
+                            {errors.tabs}
+                        </Typography>
+                    )}
+                </AccordionDetails>
+            </Accordion>
+
+            <Box sx={{ minHeight: '170px', mb: 3 }}>
+                <Typography variant="h6" mb={1} color="primary">
+                    Instruction
+                </Typography>
+                <ReactQuill
+                    theme="snow"
+                    value={instruction}
+                    onChange={(content) => {
+                        setInstruction(content);
+                        setErrors(prev => ({ ...prev, instruction: null }));
+                    }}
+                    modules={tabModules}
+                    formats={tabFormats}
+                    placeholder="Type your drag drop question instruction here..."
+                    style={{ height: '120px', borderBottomLeftRadius: 4, borderBottomRightRadius: 4 }}
+                />
+                {errors.instruction && (
+                    <Typography color="error" variant="caption" sx={{ display: 'block', mt: 5 }}>
+                        {errors.instruction}
+                    </Typography>
+                )}
+            </Box>
+
+
+            {/* Passage Section */}
+            <Box display="flex" justifyContent="space-between" alignItems="center" mb={1}>
+                <Typography variant="h6" color="primary">
+                    Passage Text *
+                </Typography>
+                <Button
+                    variant="outlined"
+                    size="small"
+                    color="secondary"
+                    onClick={handleAddSelectionFromPassage}
+                >
+                    ➕ Add Highlight from Selected Text
+                </Button>
+            </Box>
+            <Typography variant="body2" color="textSecondary" mb={2}>
+                Enter the passage that students will read. Tip: Highlight any sentence in the passage and click "Add Highlight from Selected Text" above!
+            </Typography>
+            <TextField
+                fullWidth
+                label="Enter passage text"
+                multiline
+                minRows={6}
+                maxRows={12}
+                value={passage}
+                onChange={(e) => {
+                    setPassage(e.target.value);
+                    setErrors(prev => ({ ...prev, passage: null }));
+                }}
+                variant="outlined"
+                placeholder="Enter the passage text that students will read and highlight specific sentences or phrases from..."
+                error={!!errors.passage}
+                helperText={errors.passage || `${passage.length} characters`}
+                sx={{ mb: 3 }}
+            />
+
+
+            {/* Correct Highlights Section */}
+            <Typography variant="h6" mb={1} color="primary">
+                Highlight Options *
+            </Typography>
+            <Typography variant="body2" color="textSecondary" mb={2}>
+                Enter the exact text phrases that will be selectable highlights. Mark which ones are the **correct answers**.
+            </Typography>
+
+            {correctHighlights.map((highlight, index) => {
+                const isCorrect = answer.includes(highlight.trim()) && highlight.trim() !== "";
+                return (
+                    <Paper
+                        key={index}
+                        sx={{
+                            mb: 2,
+                            p: 2,
+                            border: '1.5px solid',
+                            borderColor: isCorrect ? 'success.main' : 'grey.300',
+                            bgcolor: isCorrect ? '#f0fff4' : 'white',
+                            transition: 'all 0.2s ease'
+                        }}
+                    >
+                        <Box display="flex" alignItems="center" gap={2}>
+                            <Highlight color={isCorrect ? "success" : "action"} />
+                            <Typography variant="body2" sx={{ minWidth: 80, fontWeight: 'bold' }}>
+                                Option {index + 1}:
+                            </Typography>
+                            <TextField
+                                fullWidth
+                                label={`Highlight Option ${index + 1}`}
+                                multiline
+                                minRows={2}
+                                value={highlight}
+                                onChange={(e) => handleCorrectHighlightChange(index, e.target.value)}
+                                placeholder="Enter the exact text phrase..."
+                            />
+                            <Button
+                                variant={isCorrect ? "contained" : "outlined"}
+                                color={isCorrect ? "success" : "inherit"}
+                                size="small"
+                                onClick={() => toggleHighlightAnswer(highlight)}
+                                disabled={!highlight.trim()}
+                                sx={{ whiteSpace: 'nowrap', minWidth: 140 }}
+                            >
+                                {isCorrect ? "✓ Correct Answer" : "Mark as Correct"}
+                            </Button>
+                            {correctHighlights.length > 1 && (
+                                <IconButton
+                                    onClick={() => handleRemoveCorrectHighlight(index)}
+                                    color="error"
+                                    size="small"
+                                >
+                                    <Delete />
+                                </IconButton>
+                            )}
+                        </Box>
+                    </Paper>
+                );
+            })}
+
+            <Button
+                startIcon={<AddIcon />}
+                onClick={handleAddCorrectHighlight}
+                variant="outlined"
+                sx={{ mb: 3 }}
+                color="primary"
+            >
+                Add Highlight Option
+            </Button>
+
+            {errors.correctHighlights && (
+                <Typography color="error" variant="caption" sx={{ display: 'block', mb: 2 }}>
+                    {errors.correctHighlights}
+                </Typography>
+            )}
+
+            <Typography variant="h6" mb={1} color="primary">
+                Select Correct Highlight Answers *
+            </Typography>
+
+            <FormControl fullWidth margin="normal" className="pb-4" error={!!errors.answer}>
+                <Select
+                    multiple
+                    displayEmpty
+                    value={answer}
+                    onChange={(e) => {
+                        setAnswer(e.target.value);
+                        setErrors(prev => ({ ...prev, answer: null }));
+                    }}
+                    renderValue={(selected) => {
+                        if (selected.length === 0) {
+                            return <span style={{ color: "#999" }}>Select correct highlights from the options</span>;
+                        }
+                        return selected.join(", ");
+                    }}
+                >
+                    {correctHighlights
+                        .filter(h => h.trim() !== "")
+                        .map((highlight, idx) => (
+                            <MenuItem key={idx} value={highlight}>
+                                <Checkbox checked={answer.indexOf(highlight) > -1} />
+                                <ListItemText
+                                    primary={`Option ${idx + 1}: ${highlight.length > 50 ? highlight.slice(0, 50) + "..." : highlight}`}
+                                />
+                            </MenuItem>
+                        ))}
+                </Select>
+
+                {errors.answer && (
+                    <Typography color="error" variant="caption" sx={{ mt: 0.5 }}>
+                        {errors.answer}
+                    </Typography>
+                )}
+            </FormControl>
+
+
+
+            {/* Preview Section */}
+            <Card sx={{ mb: 3, bgcolor: 'grey.50' }}>
+                <CardContent>
+                    <Typography variant="h6" gutterBottom color="primary">
+                        🔍 Highlight Preview
+                    </Typography>
+                    <Typography variant="body2" color="textSecondary" mb={2}>
+                        This is how the passage will look with correct highlights:
+                    </Typography>
+                    <Box
+                        sx={{
+                            p: 2,
+                            border: '1px solid',
+                            borderColor: 'divider',
+                            borderRadius: 1,
+                            bgcolor: 'white',
+                            maxHeight: 200,
+                            overflow: 'auto'
+                        }}
+                        dangerouslySetInnerHTML={{ __html: createHighlightPreview() }}
+                    />
+                    <Typography variant="caption" color="textSecondary" sx={{ mt: 1, display: 'block' }}>
+                        Yellow highlights show the correct answers students should select.
+                    </Typography>
+                </CardContent>
+            </Card>
+
+            {/* Form Summary */}
+            <Card sx={{ mb: 3, bgcolor: 'info.light', color: 'info.contrastText' }}>
+                <CardContent>
+                    <Typography variant="subtitle2" gutterBottom>
+                        Sentence Highlight Question Summary:
+                    </Typography>
+                    <Typography variant="body2">
+                        • Question: {question ? '✅ Complete' : '❌ Required'}
+                    </Typography>
+                    <Typography variant="body2">
+                        • Tabs: {tabs.filter(tab => tab.tabKey.trim() && tab.tabValue.trim()).length} valid tabs
+                    </Typography>
+                    <Typography variant="body2">
+                        • Passage: {passage ? `✅ ${passage.length} characters` : '❌ Required'}
+                    </Typography>
+                    <Typography variant="body2">
+                        • Instructions: {instruction ? '✅ Complete' : '❌ Required'}
+                    </Typography>
+                    <Typography variant="body2">
+                        • Correct Highlights: {correctHighlights.filter(h => h.trim()).length} options defined ({answer.filter(a => a.trim()).length} marked correct)
+                    </Typography>
+                </CardContent>
+            </Card>
+
+            {/* Navigation Buttons */}
+            <Box mt={4} display="flex" justifyContent="space-between">
+                <Button
+                    variant="outlined"
+                    startIcon={<ArrowBackIcon />}
+                    onClick={handleBack}
+                >
+                    Back
+                </Button>
+                <Button
+                    variant="contained"
+                    endIcon={<ArrowForwardIcon />}
+                    onClick={handleNext}
+                    disabled={!isFormValid()}
+                >
+                    Next: Add Explanation
+                </Button>
+            </Box>
+        </Box>
+    );
+};
+
+export default SentenceHighlightContent;

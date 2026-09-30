@@ -1,0 +1,184 @@
+import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
+import { createRecording, listRecordedClasses, base64ToFile, DeleteRecordedClass, UpdateRecordedClass } from "./recordedClassApi";
+
+
+export const fetchRecordedClasses = createAsyncThunk(
+    "recordings/fetchRecordedClasses",
+    async ({ token, page = 1, limit = 10, searchQuery = "" }, { rejectWithValue }) => {
+        try {
+            const response = await listRecordedClasses(token, page, limit, searchQuery);
+            return response;
+        } catch (error) {
+            return rejectWithValue(error.message);
+        }
+    }
+);
+
+
+
+
+export const deleteRecordedClass = createAsyncThunk(
+    "recordings/deleteRecordedClass",
+    async (recording_id, { rejectWithValue }) => {
+        try {
+            const data = await DeleteRecordedClass(recording_id);
+
+            if (!data || data.result === false) {
+                return rejectWithValue(data?.message || "Failed to delete recorded class");
+            }
+
+            return recording_id; // reducer uses this to remove item
+        } catch (error) {
+            return rejectWithValue(error.message || "Something went wrong");
+        }
+    }
+);
+
+
+
+// Add new recording
+export const addRecording = createAsyncThunk(
+    "recordings/addRecording",
+    async (recordingData, { rejectWithValue }) => {
+        console.log("Inside add recording thunk");
+
+        try {
+            const token = sessionStorage.getItem("accessToken");
+            const screenshotBase64 = localStorage.getItem("screenshot");
+
+            let fileScreenshot = null;
+            if (screenshotBase64) {
+                fileScreenshot = base64ToFile(screenshotBase64, "screenshot.png");
+            }
+
+
+            const payload = {
+                title: recordingData.classTitle,
+                course: recordingData.courseId, 
+                subject: "rec",
+                duration: recordingData.classDuration,
+                tutor_name: recordingData.tutorName,
+                video_url: recordingData.videoUrl,
+                recordimage: fileScreenshot,
+                recordDate: recordingData.recordDate
+            };
+
+            console.log("Mapped Payload being sent:", payload);
+            return await createRecording(token, payload);
+        } catch (error) {
+            return rejectWithValue(error.message);
+        }
+    }
+);
+
+// Update recording
+export const updateRecording = createAsyncThunk(
+    "recordings/updateRecording",
+    async (recordingData, { rejectWithValue }) => {
+        try {
+            const token = sessionStorage.getItem("accessToken");
+            
+            const payload = {
+                recording_id: recordingData.recording_id,
+                title: recordingData.classTitle,
+                course: recordingData.courseId,
+                duration: recordingData.classDuration,
+                tutor_name: recordingData.tutorName,
+                video_url: recordingData.videoUrl,
+                recordDate: recordingData.recordDate
+            };
+            
+            if (recordingData.recordimage) {
+                payload.recordimage = recordingData.recordimage;
+            }
+
+            const response = await UpdateRecordedClass(token, payload);
+            
+            if (!response || response.result === false) {
+                return rejectWithValue(response?.message || "Failed to update recorded class");
+            }
+            
+            return { id: recordingData.recording_id, payload };
+        } catch (error) {
+            return rejectWithValue(error.message);
+        }
+    }
+);
+
+const recordingSlice = createSlice({
+    name: "recordings",
+    /* initialState: { list: [], loading: false, error: null }, */
+    initialState: {
+        list: [],
+        loading: false,
+        error: null,
+        page: 1,
+        limit: 10,
+        totalPages: 1,
+        totalItems: 0,
+    },
+
+    reducers: {},
+    extraReducers: (builder) => {
+        builder
+
+            //for fetching recorded class
+            .addCase(fetchRecordedClasses.pending, (state) => {
+                state.loading = true;
+            })
+
+            .addCase(fetchRecordedClasses.fulfilled, (state, action) => {
+                state.loading = false;
+                state.list = action.payload.data || [];
+
+                if (action.payload.pagination) {
+                    state.page = action.payload.pagination.page;
+                    state.limit = action.payload.pagination.limit;
+                    state.totalPages = action.payload.pagination.totalPages;
+                    state.total = action.payload.pagination.total;
+                }
+            })
+
+            .addCase(fetchRecordedClasses.rejected, (state, action) => {
+                state.loading = false;
+                state.error = action.payload;
+            })
+
+            .addCase(addRecording.pending, (state) => {
+                state.loading = true;
+            })
+            .addCase(addRecording.fulfilled, (state, action) => {
+                state.loading = false;
+                state.list.push(action.payload);
+            })
+            .addCase(addRecording.rejected, (state, action) => {
+                state.loading = false;
+                state.error = action.payload;
+            })
+
+            .addCase(updateRecording.pending, (state) => {
+                state.loading = true;
+            })
+            .addCase(updateRecording.fulfilled, (state, action) => {
+                state.loading = false;
+                // Just let fetchRecordedClasses handle the list update on next load
+                // or optionally update the item in the list here
+            })
+            .addCase(updateRecording.rejected, (state, action) => {
+                state.loading = false;
+                state.error = action.payload;
+            })
+
+
+
+            .addCase(deleteRecordedClass.fulfilled, (state, action) => {
+                state.list = state.list.filter((rec) => rec.id !== action.payload);
+            })
+            .addCase(deleteRecordedClass.rejected, (state, action) => {
+                state.error = action.payload;
+            });
+
+    }
+});
+
+export default recordingSlice.reducer;

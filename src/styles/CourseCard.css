@@ -1,0 +1,71 @@
+.course-card {
+  display: flex;
+  justify-content: space-between;
+  gap: 2rem;
+  padding: 2rem;
+  background: linear-gradient(145deg, #fff, #fefefe);
+  border-radius: 16px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+  margin-bottom: 2rem;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.course-card.reverse {
+  flex-direction: row-reverse;
+}
+
+.course-image img {
+  width: 100%;
+  max-width: 320px;
+  border-radius: 12px;
+  object-fit: cover;
+}
+
+.course-text {
+  flex: 1;
+  min-width: 280px;
+}
+
+.course-text h3 {
+  font-size: 1.6rem;
+  color: #1b2a49;
+  margin-bottom: 0.5rem;
+}
+
+.course-description {
+  color: #555;
+  font-size: 0.95rem;
+  margin-bottom: 1rem;
+}
+
+.highlights {
+  list-style: none;
+  padding-left: 0;
+  margin-bottom: 1.5rem;
+}
+
+.highlights li {
+  margin-bottom: 0.5rem;
+  font-size: 0.9rem;
+  color: #333;
+}
+
+.buy-btn {
+  background-color: #f0c200;
+  color: #1b2a49;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: bold;
+  transition: background-color 0.3s;
+}
+
+.buy-btn .arrow {
+  margin-left: 8px;
+}
+
+.buy-btn:hover {
+  background-color: #ddb000;
+}

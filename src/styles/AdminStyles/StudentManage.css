@@ -1,0 +1,350 @@
+.student-manage-futuristic {
+  font-family: "Inter", "Segoe UI", sans-serif;
+  color: #e8eefc;
+}
+
+.student-manage-futuristic .table-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 16px;
+  padding: 16px 18px;
+  background: linear-gradient(180deg, rgba(20, 32, 64, 0.96), rgba(12, 20, 42, 0.96));
+  border: 1px solid rgba(94, 234, 212, 0.16);
+  border-radius: 18px;
+  box-shadow: 0 16px 36px rgba(8, 16, 36, 0.12);
+}
+
+.student-manage-futuristic .total-chip span {
+  display: block;
+  font-size: 0.78rem;
+  color: #93a4c7;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.student-manage-futuristic .total-chip h3 {
+  margin: 4px 0 0;
+  font-size: 1.8rem;
+  color: #67e8f9;
+  animation: countGlow 2.4s ease-in-out infinite;
+}
+
+.student-manage-futuristic .controls {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.student-manage-futuristic .search-input,
+.student-manage-futuristic .status-dropdown {
+  padding: 9px 12px;
+  border-radius: 10px;
+  border: 1px solid rgba(94, 234, 212, 0.22);
+  background: rgba(8, 16, 36, 0.45);
+  color: #e8eefc;
+  font-size: 14px;
+  outline: none;
+}
+
+.student-manage-futuristic .search-input {
+  flex: 0 0 240px;
+}
+
+.student-manage-futuristic .search-input::placeholder {
+  color: #93a4c7;
+}
+
+.student-manage-futuristic .status-dropdown option {
+  color: #0f1b36;
+}
+
+.student-manage-futuristic .add-student {
+  background: linear-gradient(90deg, #f0c94a, #fbbf24);
+  color: #04121f;
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 999px;
+  font-weight: 700;
+  cursor: pointer;
+  height: 38px;
+  box-shadow: 0 0 16px rgba(240, 201, 74, 0.28);
+  animation: pulseGold 2.2s ease-in-out infinite;
+}
+
+.student-manage-futuristic .table-container {
+  width: 100%;
+  overflow-x: auto;
+}
+
+.student-manage-futuristic .student-table {
+  border-collapse: collapse;
+  text-align: center;
+  width: max-content;
+  min-width: 100%;
+  background: linear-gradient(180deg, rgba(20, 32, 64, 0.96), rgba(12, 20, 42, 0.96));
+  border: 1px solid rgba(94, 234, 212, 0.16);
+  border-radius: 16px;
+  overflow: hidden;
+}
+
+.student-manage-futuristic .student-table th {
+  background: rgba(34, 211, 238, 0.12);
+  color: #d7e3f7;
+  padding: 12px;
+  white-space: nowrap;
+}
+
+.student-manage-futuristic .student-table td {
+  padding: 12px;
+  white-space: nowrap;
+  color: #e8eefc;
+}
+
+.student-manage-futuristic .student-table tbody tr {
+  animation: rowIn 0.45s ease both;
+  transition: background 0.2s ease, transform 0.2s ease;
+}
+
+.student-manage-futuristic .student-table tbody tr:hover {
+  background: rgba(34, 211, 238, 0.1);
+}
+
+.student-manage-futuristic .striped {
+  background-color: rgba(255, 255, 255, 0.03);
+}
+
+.student-manage-futuristic .status-pill {
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: capitalize;
+}
+
+.student-manage-futuristic .status-pill.is-active {
+  color: #6ee7b7;
+  background: rgba(52, 211, 153, 0.14);
+  box-shadow: 0 0 0 0 rgba(52, 211, 153, 0.35);
+  animation: statusPulse 2s ease-in-out infinite;
+}
+
+.student-manage-futuristic .status-pill.is-inactive {
+  color: #fda4af;
+  background: rgba(251, 113, 133, 0.14);
+}
+
+.student-manage-futuristic .action-buttons {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+}
+
+.student-manage-futuristic .progress-btn {
+  background: linear-gradient(90deg, #22d3ee, #38bdf8);
+  color: #04121f;
+  border: none;
+  padding: 6px 12px;
+  border-radius: 999px;
+  cursor: pointer;
+  font-weight: 700;
+}
+
+.student-manage-futuristic .inactive-btn,
+.student-manage-futuristic .active-btn,
+.student-manage-futuristic .edit-btn,
+.student-manage-futuristic .key-btn {
+  background: rgba(8, 16, 36, 0.4);
+  border-radius: 8px;
+  cursor: pointer;
+  padding: 6px 8px;
+}
+
+.student-manage-futuristic .active-btn {
+  color: #86efac;
+  border: 1px solid rgba(134, 239, 172, 0.45);
+}
+
+.student-manage-futuristic .inactive-btn {
+  color: #fda4af;
+  border: 1px solid rgba(253, 164, 175, 0.45);
+}
+
+.student-manage-futuristic .edit-btn {
+  color: #67e8f9;
+  border: 1px solid rgba(103, 232, 249, 0.4);
+}
+
+.student-manage-futuristic .key-btn {
+  color: #f0c94a;
+  border: 1px solid rgba(240, 201, 74, 0.4);
+}
+
+.student-manage-futuristic .pagination-controls {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 12px;
+  margin-top: 24px;
+}
+
+.student-manage-futuristic .pagination-controls button {
+  padding: 8px 16px;
+  border: none;
+  border-radius: 999px;
+  background: linear-gradient(90deg, #22d3ee, #38bdf8);
+  color: #04121f;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.student-manage-futuristic .pagination-controls button:disabled {
+  background: #334155;
+  color: #94a3b8;
+  cursor: not-allowed;
+}
+
+.student-manage-futuristic .pagination-controls span {
+  font-size: 14px;
+  font-weight: 600;
+  color: #0f1b36;
+}
+
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  backdrop-filter: blur(8px);
+  background: rgba(0, 0, 0, 0.45);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  animation: fadeIn 0.3s ease;
+  z-index: 1000;
+}
+
+.modal-box {
+  background: linear-gradient(180deg, rgba(20, 32, 64, 0.98), rgba(12, 20, 42, 0.98));
+  padding: 30px 25px;
+  width: 360px;
+  border-radius: 18px;
+  border: 1px solid rgba(94, 234, 212, 0.2);
+  animation: slideUp 0.35s ease;
+  color: #e8eefc;
+}
+
+.modal-box h2 {
+  text-align: center;
+  font-size: 22px;
+  font-weight: 600;
+  margin-bottom: 20px;
+  color: #e8eefc;
+}
+
+.modal-box input {
+  width: 100%;
+  padding: 12px;
+  margin-bottom: 14px;
+  border: 1px solid rgba(94, 234, 212, 0.22);
+  border-radius: 10px;
+  font-size: 14px;
+  background: rgba(8, 16, 36, 0.45);
+  color: #e8eefc;
+}
+
+.modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+}
+
+.cancel-btn,
+.save-btn {
+  padding: 10px 18px;
+  border: none;
+  border-radius: 8px;
+  font-size: 14px;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.cancel-btn {
+  background: #334155;
+  color: #e8eefc;
+}
+
+.save-btn {
+  background: linear-gradient(90deg, #22d3ee, #38bdf8);
+  color: #04121f;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes slideUp {
+  from {
+    transform: translateY(40px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+@keyframes rowIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes countGlow {
+  0%, 100% { text-shadow: 0 0 0 rgba(103, 232, 249, 0.2); }
+  50% { text-shadow: 0 0 16px rgba(103, 232, 249, 0.7); }
+}
+
+@keyframes pulseGold {
+  0%, 100% { box-shadow: 0 0 10px rgba(240, 201, 74, 0.2); }
+  50% { box-shadow: 0 0 20px rgba(240, 201, 74, 0.5); }
+}
+
+@keyframes statusPulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(52, 211, 153, 0.28); }
+  50% { box-shadow: 0 0 0 6px rgba(52, 211, 153, 0); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .student-manage-futuristic .total-chip h3,
+  .student-manage-futuristic .add-student,
+  .student-manage-futuristic .status-pill.is-active,
+  .student-manage-futuristic .student-table tbody tr {
+    animation: none;
+  }
+}
+
+@media (max-width: 900px) {
+  .student-manage-futuristic .table-header {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .student-manage-futuristic .search-input {
+    flex: 1;
+  }
+}
