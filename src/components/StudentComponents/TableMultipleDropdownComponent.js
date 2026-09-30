@@ -328,11 +328,11 @@ const TableMultipleDropdownComponent = ({ question, onSubmit, submittedResult })
                     borderColor: "#e6eaef",
                   },
                   "&.Mui-selected": {
-                    color: "#fff",
-                    fontWeight: 600,
-                    backgroundColor: "#2e3760",
-                    border: "1px solid #2e3760",
-                    boxShadow: "0 6px 18px rgba(15,23,42,0.12)",
+                    color: "#04121f",
+                    fontWeight: 700,
+                    backgroundColor: "#f0c94a",
+                    border: "1px solid #f0c94a",
+                    boxShadow: "0 6px 18px rgba(15,23,42,0.08)",
                   },
                 },
               }}
@@ -410,7 +410,7 @@ const TableMultipleDropdownComponent = ({ question, onSubmit, submittedResult })
             <TableHead>
               <TableRow
                 sx={{
-                  backgroundColor: "#1e2d4f",
+                  backgroundColor: "var(--sf-panel)",
                 }}
               >
                 {headers.map((h, idx) => (
@@ -418,7 +418,7 @@ const TableMultipleDropdownComponent = ({ question, onSubmit, submittedResult })
                     key={h + idx}
                     sx={{
                       fontWeight: 800,
-                      color: "#ffffff",
+                      color: "var(--sf-text)",
                       borderBottom: "1px solid rgba(255,255,255,0.18)",
                       width: { xs: "auto", md: `${100 / headers.length}%` },
                       wordBreak: "break-word",
@@ -438,7 +438,7 @@ const TableMultipleDropdownComponent = ({ question, onSubmit, submittedResult })
                 >
                   <TableCell
                     sx={{ 
-                       color: "#ffffff",
+                       color: "var(--sf-text)",
                        fontWeight: 700,
                        borderBottom: "1px solid rgba(255,255,255,0.12)",
                        wordBreak: "break-word",
@@ -485,21 +485,21 @@ const TableMultipleDropdownComponent = ({ question, onSubmit, submittedResult })
                             height: 44,
                             backgroundColor: showReveal
                               ? isCorrectAnswer
-                                ? "rgba(34,197,94,0.22)"
+                                ? "#dcfce7"
                                 : isWrongAnswer
-                                  ? "rgba(239,68,68,0.22)"
-                                  : "rgba(8, 16, 36, 0.55)"
-                              : "rgba(8, 16, 36, 0.55)",
+                                  ? "#fee2e2"
+                                  : "var(--sf-panel)"
+                              : "var(--sf-panel)",
                             borderRadius: "12px",
-                            border: "1px solid rgba(255,255,255,0.22)",
+                            border: "1px solid var(--sf-border)",
                             ".MuiSelect-select": {
                               color: showReveal
                                 ? isCorrectAnswer
-                                  ? "#4ade80"
+                                  ? "#15803d"
                                   : isWrongAnswer
-                                    ? "#fb7185"
-                                    : "#ffffff"
-                                : "#ffffff",
+                                    ? "#b91c1c"
+                                    : "var(--sf-text)"
+                                : "var(--sf-text)",
                               fontWeight: 700,
                               whiteSpace: "normal",
                               wordBreak: "break-word",
@@ -605,7 +605,7 @@ const TableMultipleDropdownComponent = ({ question, onSubmit, submittedResult })
             variant="subtitle1"
             fontWeight={600}
             mb={1}
-            color="#2E3760"
+            color="var(--sf-text)"
           >
             Your Answers
           </Typography>

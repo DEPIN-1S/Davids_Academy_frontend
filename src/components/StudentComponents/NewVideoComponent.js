@@ -283,14 +283,14 @@ const NewVideoGrid = () => {
                     height: 36,
                     fontWeight: 800,
                     fontSize: '0.95rem',
-                    color: '#ffffff !important',
-                    WebkitTextFillColor: '#ffffff',
-                    background: '#243356',
-                    border: '1px solid rgba(255,255,255,0.28)',
+                    color: 'var(--sf-text) !important',
+                    WebkitTextFillColor: 'var(--sf-text)',
+                    background: '#ffffff',
+                    border: '1px solid var(--sf-border-strong)',
                     borderRadius: '10px',
                     '&:hover': {
-                      background: 'rgba(103, 232, 249, 0.22)',
-                      color: '#ffffff !important',
+                      background: 'rgba(29, 78, 216, 0.08)',
+                      color: 'var(--sf-text) !important',
                     },
                     '&.Mui-selected': {
                       background: 'linear-gradient(90deg, #f0c94a, #fbbf24) !important',
@@ -300,7 +300,7 @@ const NewVideoGrid = () => {
                     },
                     '&.Mui-disabled': {
                       opacity: 0.45,
-                      color: '#c9d6ee !important',
+                      color: 'var(--sf-muted) !important',
                     },
                   },
                 }}

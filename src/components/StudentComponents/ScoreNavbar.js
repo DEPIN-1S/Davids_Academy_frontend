@@ -18,7 +18,7 @@ const ScoreNavbar = () => {
   return (
     <Box
       sx={{
-        backgroundColor: '#2E3760',
+        backgroundColor: '#ffffff',
         borderRadius: '0 0 20px 20px',
         padding: '0.75rem 1rem',
         display: 'flex',
@@ -26,6 +26,8 @@ const ScoreNavbar = () => {
         alignItems: 'center',
         flexDirection: isMobile ? 'column' : 'row',
         gap: isMobile ? 2 : 0,
+        border: '1px solid #e2e8f0',
+        boxShadow: '0 8px 20px rgba(15, 23, 42, 0.05)',
       }}
     >
       <Box sx={{ flexGrow: 1, display: 'flex', justifyContent: isMobile ? 'center' : 'flex-start' }}>
@@ -39,13 +41,13 @@ const ScoreNavbar = () => {
               disableRipple
               sx={{
                 textTransform: 'none',
-                backgroundColor: isActive ? '#ffffff' : 'transparent',
-                color: isActive ? '#2E3760' : '#fff',
+                backgroundColor: isActive ? '#f0c94a' : 'transparent',
+                color: isActive ? '#04121f' : '#374151',
                 borderRadius: '12px',
-                fontWeight: isActive ? 600 : 400,
+                fontWeight: isActive ? 700 : 500,
                 padding: '8px 16px',
                 '&:hover': {
-                  backgroundColor: isActive ? '#ffffff' : '#3b4470',
+                  backgroundColor: isActive ? '#fbbf24' : 'rgba(29, 78, 216, 0.08)',
                 },
               }}
             >
@@ -65,13 +67,13 @@ const ScoreNavbar = () => {
               disableRipple
               sx={{
                 textTransform: 'none',
-                backgroundColor: isActive ? '#ffffff' : 'transparent',
-                color: isActive ? '#2E3760' : '#fff',
+                backgroundColor: isActive ? '#f0c94a' : 'transparent',
+                color: isActive ? '#04121f' : '#374151',
                 borderRadius: '12px',
-                fontWeight: isActive ? 600 : 400,
+                fontWeight: isActive ? 700 : 500,
                 padding: '8px 16px',
                 '&:hover': {
-                  backgroundColor: isActive ? '#ffffff' : '#3b4470',
+                  backgroundColor: isActive ? '#fbbf24' : 'rgba(29, 78, 216, 0.08)',
                 },
               }}
             >

@@ -251,10 +251,10 @@ const SentenceQuestionComponent = ({ question, onSubmit, submittedResult }) => {
                   border: "1px solid #e6eaef",
                   padding: { xs: "7px 18px", md: "8px 24px" },
                   "&.Mui-selected": {
-                    color: "#fff",
-                    fontWeight: 600,
-                    backgroundColor: "#2e3760",
-                    border: "1px solid #2e3760",
+                    color: "#04121f",
+                    fontWeight: 700,
+                    backgroundColor: "#f0c94a",
+                    border: "1px solid #f0c94a",
                   },
                 },
               }}
@@ -305,7 +305,7 @@ const SentenceQuestionComponent = ({ question, onSubmit, submittedResult }) => {
       )}
 
       {/* Clickable sentence */}
-      <Typography variant="body1" fontWeight={700} textAlign="center" mb={2} sx={{ color: "#ffffff" }}>
+      <Typography variant="body1" fontWeight={600} textAlign="center" mb={2} sx={{ color: "var(--sf-text)" }}>
         Click words/phrases to highlight the findings that meet the prompt.
       </Typography>
 
@@ -318,7 +318,7 @@ const SentenceQuestionComponent = ({ question, onSubmit, submittedResult }) => {
           p: "1rem",
         }}
       >
-        <Typography variant="body1" sx={{ lineHeight: 1.8, textAlign: "left", color: "#ffffff", fontWeight: 700 }}>
+        <Typography variant="body1" sx={{ lineHeight: 1.8, textAlign: "left", color: "var(--sf-text)", fontWeight: 500 }}>
           {(() => {
             const s = sentenceText || "";
             if (!optionList.length) return s;
@@ -374,14 +374,14 @@ const SentenceQuestionComponent = ({ question, onSubmit, submittedResult }) => {
                 if (showAnswer) {
                   if (isCorrect) {
                     bg = "rgba(34,197,94,0.22)";
-                    color = "#4ade80";
+                    color = "#15803d";
                   } else if (isSelected) {
                     bg = "rgba(239,68,68,0.22)";
-                    color = "#fb7185";
+                    color = "#b91c1c";
                   }
                 } else if (isSelected) {
-                  bg = "rgba(34, 211, 238, 0.22)";
-                  color = "#67e8f9";
+                  bg = "rgba(29, 78, 216, 0.12)";
+                  color = "#1d4ed8";
                 }
 
                 return (
@@ -505,7 +505,7 @@ const SentenceQuestionComponent = ({ question, onSubmit, submittedResult }) => {
               ))}
           </List>
 
-          <Typography variant="subtitle1" fontWeight={600} mt={2} mb={1} color="#2E3760">
+          <Typography variant="subtitle1" fontWeight={600} mt={2} mb={1} color="var(--sf-text)">
             Your Answer:
           </Typography>
           <List dense>

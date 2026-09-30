@@ -72,11 +72,11 @@ const ScoreTableComponent = ({ data = [] }) => {
       {/* Table */}
       <TableContainer component={Paper}>
         <Table size="small">
-          <TableHead sx={{ backgroundColor: '#2e3760' }}>
+          <TableHead sx={{ backgroundColor: '#eef2f8' }}>
             <TableRow>
-              <TableCell sx={{ color: 'white' }}>Pos.</TableCell>
-              <TableCell sx={{ color: 'white' }}>Test ID</TableCell>
-              <TableCell sx={{ color: 'white' }}>
+              <TableCell sx={{ color: '#1f2937', fontWeight: 700 }}>Pos.</TableCell>
+              <TableCell sx={{ color: '#1f2937', fontWeight: 700 }}>Test ID</TableCell>
+              <TableCell sx={{ color: '#1f2937', fontWeight: 700 }}>
                 <ToggleButtonGroup
                   value={needType}
                   exclusive
@@ -85,13 +85,13 @@ const ScoreTableComponent = ({ data = [] }) => {
                   color="primary"
                 >
                   <ToggleButton value="Client Need">Client Need</ToggleButton>
-                  <Box display="flex" alignItems="center" px={1} sx={{ color: 'white' }}>
+                  <Box display="flex" alignItems="center" px={1} sx={{ color: '#1f2937' }}>
                     <SyncAltIcon fontSize="small" />
                   </Box>
                   <ToggleButton value="Subject">Subject</ToggleButton>
                 </ToggleButtonGroup>
               </TableCell>
-              <TableCell sx={{ color: 'white' }}>
+              <TableCell sx={{ color: '#1f2937', fontWeight: 700 }}>
                 <ToggleButtonGroup
                   value={topicType}
                   exclusive
@@ -100,14 +100,14 @@ const ScoreTableComponent = ({ data = [] }) => {
                   color="primary"
                 >
                   <ToggleButton value="Topic">Topic</ToggleButton>
-                  <Box display="flex" alignItems="center" px={1} sx={{ color: 'white' }}>
+                  <Box display="flex" alignItems="center" px={1} sx={{ color: '#1f2937' }}>
                     <SyncAltIcon fontSize="small" />
                   </Box>
                   <ToggleButton value="Lesson">Lesson</ToggleButton>
                 </ToggleButtonGroup>
               </TableCell>
-              <TableCell sx={{ color: 'white' }}>Avg. Peer Score</TableCell>
-              <TableCell sx={{ color: 'white' }}>Time</TableCell>
+              <TableCell sx={{ color: '#1f2937', fontWeight: 700 }}>Avg. Peer Score</TableCell>
+              <TableCell sx={{ color: '#1f2937', fontWeight: 700 }}>Time</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
@@ -117,7 +117,7 @@ const ScoreTableComponent = ({ data = [] }) => {
                   <Chip icon={<DoneIcon />} label={row.position} size="small" color="success" />
                 </TableCell>
                 <TableCell>
-                  <Typography variant="body2" sx={{ color: '#00BFFF', cursor: 'pointer', textDecoration: 'underline' }}>
+                  <Typography variant="body2" sx={{ color: '#1d4ed8', cursor: 'pointer', textDecoration: 'underline' }}>
                     {row.id}
                   </Typography>
                 </TableCell>

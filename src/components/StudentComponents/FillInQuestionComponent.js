@@ -112,7 +112,7 @@ const FillInQuestionComponent = ({ question, onSubmit }) => {
                     : "q-wrong")
                   : undefined
               }
-              sx={{ minWidth: 150, mx: 1, fontWeight: 700, color: '#ffffff' }}
+              sx={{ minWidth: 150, mx: 1, fontWeight: 500, color: 'var(--sf-text)' }}
             >
               <MenuItem value="">Select</MenuItem>
               {allOptions.map((optVal, optIdx) => (
@@ -122,7 +122,7 @@ const FillInQuestionComponent = ({ question, onSubmit }) => {
               ))}
             </Select>
           ) : (
-            <Typography sx={{ mx: 0.5, color: '#ffffff', fontWeight: 700, fontSize: '1.05rem' }} key={idx} component="div" className="q-html" dangerouslySetInnerHTML={{ __html: sanitizeExamHtml(part.question_text) }} />
+            <Typography sx={{ mx: 0.5, color: 'var(--sf-text)', fontWeight: 500, fontSize: '1.05rem' }} key={idx} component="div" className="q-html" dangerouslySetInnerHTML={{ __html: sanitizeExamHtml(part.question_text) }} />
           )
         )}
       </Box>

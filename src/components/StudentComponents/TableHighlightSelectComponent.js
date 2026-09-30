@@ -289,11 +289,11 @@ const TableHighlightSelectComponent = ({ question, onSubmit, submittedResult }) 
                     borderColor: "#e6eaef",
                   },
                   "&.Mui-selected": {
-                    color: "#fff",
-                    fontWeight: 600,
-                    backgroundColor: "#2e3760",
-                    border: "1px solid #2e3760",
-                    boxShadow: "0 6px 18px rgba(15,23,42,0.12)",
+                    color: "#04121f",
+                    fontWeight: 700,
+                    backgroundColor: "#f0c94a",
+                    border: "1px solid #f0c94a",
+                    boxShadow: "0 6px 18px rgba(15,23,42,0.08)",
                   },
                 },
               }}
@@ -371,13 +371,13 @@ const TableHighlightSelectComponent = ({ question, onSubmit, submittedResult }) 
             <TableHead>
               <TableRow
                 sx={{
-                  backgroundColor: "#1e2d4f",
+                  backgroundColor: "var(--sf-panel)",
                 }}
               >
                 <TableCell
                   sx={{
                     fontWeight: 800,
-                    color: "#ffffff",
+                    color: "var(--sf-text)",
                     borderBottom: "1px solid rgba(255,255,255,0.18)",
                     width: { xs: "auto", md: "50%" },
                   }}
@@ -387,7 +387,7 @@ const TableHighlightSelectComponent = ({ question, onSubmit, submittedResult }) 
                 <TableCell
                   sx={{
                     fontWeight: 800,
-                    color: "#ffffff",
+                    color: "var(--sf-text)",
                     borderBottom: "1px solid rgba(255,255,255,0.18)",
                     width: { xs: "auto", md: "50%" },
                   }}
@@ -443,21 +443,21 @@ const TableHighlightSelectComponent = ({ question, onSubmit, submittedResult }) 
                               ? "rgba(251, 113, 133, 0.18)"
                               : "transparent"
                           : isSelected
-                            ? "rgba(34, 211, 238, 0.18)"
+                            ? "rgba(29, 78, 216, 0.10)"
                             : "transparent",
                         color: showReveal
                           ? isCorrectAnswer
-                            ? "#34d399"
+                            ? "#15803d"
                             : isWrongSelection
-                              ? "#fb7185"
+                              ? "#b91c1c"
                               : "var(--sf-text-soft)"
                           : isSelected
-                            ? "#67e8f9"
+                            ? "#1d4ed8"
                             : "var(--sf-text-soft)",
                         fontWeight: isSelected ? 600 : 400,
                         border:
                           isSelected && !showReveal
-                            ? "2px solid #22d3ee"
+                            ? "2px solid #1d4ed8"
                             : "none",
                         borderRadius: isSelected && !showReveal ? "8px" : "0",
                         transition: "all 0.2s ease-in-out",
@@ -465,8 +465,8 @@ const TableHighlightSelectComponent = ({ question, onSubmit, submittedResult }) 
                           ? {}
                           : {
                             backgroundColor: isSelected
-                              ? "rgba(34, 211, 238, 0.28)"
-                              : "rgba(34, 211, 238, 0.08)",
+                              ? "rgba(29, 78, 216, 0.12)"
+                              : "rgba(29, 78, 216, 0.06)",
                             transform: "translateY(-1px)",
                           },
                       }}
@@ -478,7 +478,7 @@ const TableHighlightSelectComponent = ({ question, onSubmit, submittedResult }) 
                           sx={{
                             ml: 1,
                             fontSize: "0.8rem",
-                            color: "#67e8f9",
+                            color: "#1d4ed8",
                             fontWeight: 500,
                           }}
                         >

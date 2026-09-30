@@ -171,10 +171,10 @@ const MCQQuestionComponent = ({ question, onSubmit, submittedResult }) => {
 
   // 🎨 Color Theme
   const colors = {
-    correct: "#4ade80",
-    incorrect: "#fb7185",
-    heading: "#2E3760",
-    neutral: "#ffffff",
+    correct: "#15803d",
+    incorrect: "#b91c1c",
+    heading: "#1f2937",
+    neutral: "#1f2937",
   };
 
   return (
@@ -248,8 +248,8 @@ const MCQQuestionComponent = ({ question, onSubmit, submittedResult }) => {
                   color: colors.neutral,
                   border: "1px solid #e6eaef",
                   "&.Mui-selected": {
-                    color: "#fff",
-                    backgroundColor: colors.heading,
+                    color: "#04121f",
+                    backgroundColor: "#f0c94a",
                   },
                 },
               }}
@@ -298,7 +298,7 @@ const MCQQuestionComponent = ({ question, onSubmit, submittedResult }) => {
         >
           {allSelected ? "Clear All" : "Select All"}
         </Button> */}
-        <Typography variant="caption" sx={{ color: "#ffffff", fontSize: "15px", fontWeight: 700 }}>
+        <Typography variant="caption" sx={{ color: "var(--sf-text)", fontSize: "15px", fontWeight: 600 }}>
           You can select any number of options.
         </Typography>
       </Box>

@@ -75,12 +75,12 @@ function shouldStripInk(value) {
 }
 
 export const examHtmlSx = {
-  color: "#ffffff !important",
-  fontWeight: 700,
+  color: "var(--sf-text) !important",
+  fontWeight: 500,
   "&, & *": {
-    color: "#ffffff !important",
-    WebkitTextFillColor: "#ffffff !important",
-    fontWeight: 700,
+    color: "var(--sf-text) !important",
+    WebkitTextFillColor: "var(--sf-text) !important",
+    fontWeight: 500,
   },
 };
 

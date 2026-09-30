@@ -1,7 +1,7 @@
 .public-q-page {
   min-height: 70vh;
   padding: 28px 16px 48px;
-  background: #f4f6fb;
+  background: #f4f6fa;
 }
 
 .public-q-card {
@@ -9,9 +9,10 @@
   margin: 0 auto;
   padding: 28px 24px 24px;
   border-radius: 18px;
-  background: linear-gradient(180deg, #141e36, #0c142a);
-  color: #e8eefc;
-  box-shadow: 0 18px 40px rgba(8, 16, 36, 0.18);
+  background: #ffffff;
+  color: #1f2937;
+  box-shadow: 0 12px 28px rgba(15, 23, 42, 0.06);
+  border: 1px solid #e2e8f0;
 }
 
 .public-q-interactive {
@@ -19,20 +20,20 @@
   padding: 4px;
   border-radius: 16px;
   background: transparent;
-  color: #f8fbff;
+  color: #1f2937;
   overflow-x: auto;
 }
 
 .public-q-card.student-exam-body {
   flex: none;
   margin: 0 auto;
-  box-shadow: 0 18px 40px rgba(8, 16, 36, 0.18);
+  box-shadow: 0 12px 28px rgba(15, 23, 42, 0.06);
 }
 
 .public-q-page .q-review-heading,
 .public-q-page .MuiTypography-subtitle1 {
-  color: #ffffff !important;
-  -webkit-text-fill-color: #ffffff !important;
+  color: #1f2937 !important;
+  -webkit-text-fill-color: #1f2937 !important;
   font-weight: 800 !important;
 }
 
@@ -48,49 +49,49 @@
 .public-q-page .q-attention-body *:not(svg):not(path),
 .public-q-interactive,
 .public-q-interactive *:not(svg):not(path):not(button):not(.q-correct):not(.q-wrong):not(.q-verdict-mark) {
-  color: #f8fbff !important;
-  -webkit-text-fill-color: #f8fbff !important;
+  color: #1f2937 !important;
+  -webkit-text-fill-color: #1f2937 !important;
 }
 
 .public-q-page .q-correct,
 .public-q-page .q-correct *:not(svg):not(path) {
-  color: #4ade80 !important;
-  -webkit-text-fill-color: #4ade80 !important;
+  color: #15803d !important;
+  -webkit-text-fill-color: #15803d !important;
 }
 
 .public-q-page .q-wrong,
 .public-q-page .q-wrong *:not(svg):not(path) {
-  color: #fb7185 !important;
-  -webkit-text-fill-color: #fb7185 !important;
+  color: #b91c1c !important;
+  -webkit-text-fill-color: #b91c1c !important;
 }
 
 .public-q-page .q-verdict-ok,
 .public-q-page .q-verdict-ok .q-verdict-title,
 .public-q-page .q-verdict-ok .q-verdict-note,
 .public-q-page .q-verdict-ok .q-verdict-sep {
-  color: #34d399 !important;
+  color: #15803d !important;
 }
 
 .public-q-page .q-verdict-bad,
 .public-q-page .q-verdict-bad .q-verdict-title,
 .public-q-page .q-verdict-bad .q-verdict-note,
 .public-q-page .q-verdict-bad .q-verdict-sep {
-  color: #fb7185 !important;
+  color: #b91c1c !important;
 }
 
 .public-q-page .q-verdict-mark {
-  color: #04121f !important;
-  -webkit-text-fill-color: #04121f !important;
+  color: #ffffff !important;
+  -webkit-text-fill-color: #ffffff !important;
 }
 
 .public-q-option.is-right,
 .public-q-option.is-right * {
-  color: #4ade80 !important;
+  color: #15803d !important;
 }
 
 .public-q-option.is-wrong,
 .public-q-option.is-wrong * {
-  color: #fb7185 !important;
+  color: #b91c1c !important;
 }
 
 .public-q-interactive .MuiBox-root {
@@ -103,7 +104,7 @@
   font-size: 0.78rem;
   letter-spacing: 0.08em;
   text-transform: uppercase;
-  color: #67e8f9;
+  color: #1d4ed8;
   font-weight: 700;
 }
 
@@ -112,7 +113,7 @@
   margin-bottom: 12px;
   padding: 4px 10px;
   border-radius: 999px;
-  background: #fb7185;
+  background: #b91c1c;
   color: #fff;
   font-size: 0.72rem;
   font-weight: 800;
@@ -123,9 +124,9 @@
 .public-q-stem {
   font-size: 1.15rem;
   line-height: 1.5;
-  font-weight: 700;
+  font-weight: 650;
   margin-bottom: 18px;
-  color: #e8eefc;
+  color: #1f2937;
 }
 
 .public-q-stem *,
@@ -153,25 +154,25 @@
   text-align: left;
   padding: 12px 14px;
   border-radius: 12px;
-  border: 1px solid rgba(148, 163, 184, 0.35);
-  background: rgba(8, 16, 36, 0.35);
-  color: #e8eefc;
+  border: 1px solid #cbd5e1;
+  background: #eef2f8;
+  color: #1f2937;
   cursor: pointer;
 }
 
 .public-q-option.is-chosen {
-  border-color: #22d3ee;
-  box-shadow: 0 0 0 1px #22d3ee;
+  border-color: #1d4ed8;
+  box-shadow: 0 0 0 1px #1d4ed8;
 }
 
 .public-q-option.is-right {
-  border-color: #34d399;
-  background: rgba(52, 211, 153, 0.12);
+  border-color: #15803d;
+  background: #ecfdf5;
 }
 
 .public-q-option.is-wrong {
-  border-color: #fb7185;
-  background: rgba(251, 113, 133, 0.12);
+  border-color: #b91c1c;
+  background: #fef2f2;
 }
 
 .public-q-letter {
@@ -182,7 +183,7 @@
   align-items: center;
   justify-content: center;
   font-weight: 800;
-  background: #fb7185;
+  background: #1d4ed8;
   color: #fff;
   font-size: 0.85rem;
 }
@@ -207,15 +208,15 @@
   margin-top: 18px;
   padding: 14px 16px;
   border-radius: 12px;
-  background: rgba(255, 255, 255, 0.06);
+  background: #eef2f8;
 }
 
 .public-q-result.ok {
-  border: 1px solid rgba(52, 211, 153, 0.4);
+  border: 1px solid #86efac;
 }
 
 .public-q-result.no {
-  border: 1px solid rgba(251, 113, 133, 0.4);
+  border: 1px solid #fca5a5;
 }
 
 .public-q-result-title {
@@ -225,22 +226,22 @@
 
 .public-q-rationale {
   margin-top: 8px;
-  color: #c9d6ee;
+  color: #374151;
   line-height: 1.5;
 }
 
 .public-q-disclaimer {
   margin: 12px 0 0;
   font-size: 0.78rem;
-  color: #93a4c7;
+  color: #6b7280;
 }
 
 .public-q-status {
-  color: #93a4c7;
+  color: #6b7280;
 }
 
 .public-q-status.is-error {
-  color: #fda4af;
+  color: #b91c1c;
 }
 
 .public-q-cta {
@@ -267,13 +268,13 @@
 }
 
 .public-q-cta-btn.chat {
-  background: #213866;
+  background: #1d4ed8;
   color: #fff;
 }
 
 .public-q-cta-btn.ghost {
-  border: 1px solid rgba(103, 232, 249, 0.45);
-  color: #67e8f9;
+  border: 1px solid #1d4ed8;
+  color: #1d4ed8;
 }
 
 .public-q-cta-btn:hover {

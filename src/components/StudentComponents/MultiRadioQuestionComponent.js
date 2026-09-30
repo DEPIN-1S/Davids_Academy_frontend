@@ -272,11 +272,11 @@ const MultiRadioQuestionComponent = ({ question, onSubmit, submittedResult }) =>
                     borderColor: "#e6eaef",
                   },
                   "&.Mui-selected": {
-                    color: "#fff",
-                    fontWeight: 600,
-                    backgroundColor: "#2e3760",
-                    border: "1px solid #2e3760",
-                    boxShadow: "0 6px 18px rgba(15,23,42,0.12)",
+                    color: "#04121f",
+                    fontWeight: 700,
+                    backgroundColor: "#f0c94a",
+                    border: "1px solid #f0c94a",
+                    boxShadow: "0 6px 18px rgba(15,23,42,0.08)",
                   },
                 },
               }}
@@ -310,7 +310,7 @@ const MultiRadioQuestionComponent = ({ question, onSubmit, submittedResult }) =>
                 ...examHtmlSx,
                 '& p': { margin: 0, marginBottom: '0.5em' },
                 '& p:last-child': { marginBottom: 0 },
-                '& *': { lineHeight: 1.6, color: '#ffffff !important', WebkitTextFillColor: '#ffffff !important', fontWeight: 700 },
+                '& *': { lineHeight: 1.6, color: 'var(--sf-text) !important', WebkitTextFillColor: 'var(--sf-text) !important', fontWeight: 500 },
               }}
               dangerouslySetInnerHTML={{
                 __html: sanitizeExamHtml(
@@ -388,7 +388,7 @@ const MultiRadioQuestionComponent = ({ question, onSubmit, submittedResult }) =>
           <TableBody>
             {questionContent.map((finding, rowIdx) => (
               <TableRow key={rowIdx}>
-                <TableCell sx={{ fontSize: "15px", color: "#ffffff", fontWeight: 700 }} >
+                <TableCell sx={{ fontSize: "15px", color: "var(--sf-text)", fontWeight: 500 }} >
                   <div className="q-html" dangerouslySetInnerHTML={{ __html: sanitizeExamHtml(finding.client_findings) }} />
                 </TableCell>
                 {uniqueAnswers.map((answer, colIdx) => {
@@ -415,11 +415,11 @@ const MultiRadioQuestionComponent = ({ question, onSubmit, submittedResult }) =>
                     showAnswer && !isSelected && isCorrectAnswer;
 
                   const bgColor = showWrong
-                    ? "#7f1d1d"
+                    ? "#fee2e2"
                     : showCorrect
-                      ? "#14532d"
+                      ? "#dcfce7"
                       : showMissed
-                        ? "#14532d"
+                        ? "#dcfce7"
                         : "transparent";
 
                   return (

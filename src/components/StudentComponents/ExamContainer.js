@@ -503,18 +503,18 @@ const ExamContainer = ({ user }) => {
         .student-exam-body li::marker,
         .student-exam-body .q-tabs-panel [style*="background-color"],
         .student-exam-body .q-html [style*="background-color"] {
-          color: #ffffff !important;
-          -webkit-text-fill-color: #ffffff !important;
-          font-weight: 700 !important;
+          color: var(--sf-text) !important;
+          -webkit-text-fill-color: var(--sf-text) !important;
+          font-weight: 500 !important;
         }
         .student-exam-body .q-correct,
-        .student-exam-body .q-correct * { color: #4ade80 !important; -webkit-text-fill-color: #4ade80 !important; }
+        .student-exam-body .q-correct * { color: var(--sf-ok) !important; -webkit-text-fill-color: var(--sf-ok) !important; }
         .student-exam-body .q-wrong,
-        .student-exam-body .q-wrong * { color: #fb7185 !important; -webkit-text-fill-color: #fb7185 !important; }
+        .student-exam-body .q-wrong * { color: var(--sf-bad) !important; -webkit-text-fill-color: var(--sf-bad) !important; }
         .student-exam-body .q-sort-ok,
-        .student-exam-body .q-sort-ok * { color: #ffffff !important; -webkit-text-fill-color: #ffffff !important; }
+        .student-exam-body .q-sort-ok * { color: #14532d !important; -webkit-text-fill-color: #14532d !important; }
         .student-exam-body .q-sort-bad,
-        .student-exam-body .q-sort-bad * { color: #ffffff !important; -webkit-text-fill-color: #ffffff !important; }
+        .student-exam-body .q-sort-bad * { color: #7f1d1d !important; -webkit-text-fill-color: #7f1d1d !important; }
       `}</style>
       {/* Header section (fixed on mobile implicitly by being flex header and content being scrollable) */}
       <Box sx={{ flexShrink: 0 }}>

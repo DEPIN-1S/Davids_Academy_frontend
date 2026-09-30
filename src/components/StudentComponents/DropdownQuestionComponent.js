@@ -306,11 +306,11 @@ const DropdownQuestionComponent = ({ question, onSubmit, submittedResult }) => {
                   borderColor: "#e6eaef",
                 },
                 "&.Mui-selected": {
-                  color: "#fff",
-                  fontWeight: 600,
-                  backgroundColor: "#2e3760",
-                  border: "1px solid #2e3760",
-                  boxShadow: "0 6px 18px rgba(15,23,42,0.12)",
+                  color: "#04121f",
+                  fontWeight: 700,
+                  backgroundColor: "#f0c94a",
+                  border: "1px solid #f0c94a",
+                  boxShadow: "0 6px 18px rgba(15,23,42,0.08)",
                 },
               },
             }}
@@ -369,7 +369,7 @@ const DropdownQuestionComponent = ({ question, onSubmit, submittedResult }) => {
         <Box
           className="q-prompt-board"
           sx={{
-            backgroundColor: "#1e2d4f",
+            backgroundColor: "var(--sf-panel)",
             borderRadius: 2,
             p: { xs: 2, md: 3 },
             display: "flex",
@@ -397,7 +397,7 @@ const DropdownQuestionComponent = ({ question, onSubmit, submittedResult }) => {
                 <Typography
                   component="div"
                   sx={{
-                    color: "#ffffff",
+                    color: "var(--sf-text)",
                     fontSize: { xs: "0.95rem", md: "1.05rem" },
                     fontWeight: 700,
                     lineHeight: 1.5,
@@ -448,7 +448,7 @@ const DropdownQuestionComponent = ({ question, onSubmit, submittedResult }) => {
                         })()
                         : "rgba(8, 16, 36, 0.55)",
                       border: "1px solid rgba(255,255,255,0.22)",
-                      color: "#ffffff",
+                      color: "var(--sf-text)",
                       fontWeight: 700,
                       "&.Mui-focused": {
                         boxShadow: "0 4px 12px rgba(47,59,108,0.08)",
@@ -534,7 +534,7 @@ const DropdownQuestionComponent = ({ question, onSubmit, submittedResult }) => {
             variant="subtitle1"
             fontWeight={800}
             mb={2}
-            sx={{ color: "#ffffff", fontSize: { xs: "1rem", md: "1.1rem" } }}
+            sx={{ color: "var(--sf-text)", fontSize: { xs: "1rem", md: "1.1rem" } }}
           >
             Answer Review
           </Typography>
@@ -550,12 +550,12 @@ const DropdownQuestionComponent = ({ question, onSubmit, submittedResult }) => {
             }}
           >
             <thead>
-              <tr style={{ backgroundColor: "#1e2d4f", textAlign: "left" }}>
+              <tr style={{ backgroundColor: "var(--sf-panel)", textAlign: "left" }}>
                 <th
                   style={{
                     padding: "10px 14px",
                     fontWeight: 800,
-                    color: "#ffffff",
+                    color: "var(--sf-text)",
                     fontSize: "0.95rem",
                     width: "45%",
                   }}
@@ -566,7 +566,7 @@ const DropdownQuestionComponent = ({ question, onSubmit, submittedResult }) => {
                   style={{
                     padding: "10px 14px",
                     fontWeight: 800,
-                    color: "#ffffff",
+                    color: "var(--sf-text)",
                     fontSize: "0.95rem",
                     width: "45%",
                   }}
@@ -577,7 +577,7 @@ const DropdownQuestionComponent = ({ question, onSubmit, submittedResult }) => {
                   style={{
                     padding: "10px 14px",
                     fontWeight: 800,
-                    color: "#ffffff",
+                    color: "var(--sf-text)",
                     fontSize: "0.95rem",
                     textAlign: "center",
                     width: "10%",
@@ -611,7 +611,7 @@ const DropdownQuestionComponent = ({ question, onSubmit, submittedResult }) => {
                       className={isCorrectVal ? "q-correct" : "q-wrong"}
                       style={{
                         padding: "10px 14px",
-                        color: isCorrectVal ? "#4ade80" : "#fb7185",
+                        color: isCorrectVal ? "#15803d" : "#b91c1c",
                         fontWeight: 800,
                         fontSize: "0.95rem",
                       }}
@@ -621,7 +621,7 @@ const DropdownQuestionComponent = ({ question, onSubmit, submittedResult }) => {
                       className="q-correct"
                       style={{
                         padding: "10px 14px",
-                        color: "#4ade80",
+                        color: "#15803d",
                         fontWeight: 800,
                         fontSize: "0.95rem",
                       }}

@@ -92,8 +92,8 @@ const QuestionBank = () => {
             transition: "all 0.25s ease",
             "&:hover": {
               background: "transparent",
-              color: "#67e8f9",
-              border: "2px solid #22d3ee",
+              color: "#1d4ed8",
+              border: "2px solid #1d4ed8",
               boxShadow: "none !important",
             },
           }}
@@ -105,18 +105,18 @@ const QuestionBank = () => {
             onClick={viewProgress}
             size="large"
             sx={{
-              border: "2px solid rgba(103, 232, 249, 0.45)",
+              border: "2px solid rgba(29, 78, 216, 0.45)",
               borderRadius: "999px",
               textTransform: "none",
               backgroundColor: "transparent",
               fontWeight: 700,
               fontFamily: '"Outfit", "Inter", sans-serif',
-              color: "#67e8f9",
+              color: "#1d4ed8",
               px: 4,
               "&:hover": {
-                backgroundColor: "rgba(34, 211, 238, 0.12)",
-                color: "#e8eefc",
-                borderColor: "#22d3ee",
+                backgroundColor: "rgba(29, 78, 216, 0.08)",
+                color: "#1e40af",
+                borderColor: "#1d4ed8",
               },
             }}
 
@@ -143,8 +143,8 @@ const QuestionBank = () => {
             maxWidth: '640px',
             width: '100%',
             m: { xs: 1.5, sm: 2 },
-            bgcolor: 'rgba(12, 20, 42, 0.98)',
-            color: '#ffffff',
+            bgcolor: '#ffffff',
+            color: '#1f2937',
           }
         }}
       >

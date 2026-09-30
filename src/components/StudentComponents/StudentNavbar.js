@@ -48,8 +48,8 @@ const StudentNavbar = () => {
               disableRipple
               sx={{
                 textTransform: "none",
-                backgroundColor: isActive ? "#67e8f9" : "transparent",
-                color: isActive ? "#04121f" : "#c9d6ee",
+                backgroundColor: isActive ? "#f0c94a" : "transparent",
+                color: isActive ? "#04121f" : "#374151",
                 borderRadius: "12px",
                 fontWeight: isActive ? 700 : 500,
                 fontFamily: '"Outfit", "Inter", sans-serif',
@@ -58,7 +58,7 @@ const StudentNavbar = () => {
                 justifyContent: "center",
                 whiteSpace: "nowrap",
                 "&:hover": {
-                  backgroundColor: isActive ? "#67e8f9" : "rgba(34, 211, 238, 0.12)",
+                  backgroundColor: isActive ? "#f0c94a" : "rgba(29, 78, 216, 0.08)",
                 },
               }}
             >

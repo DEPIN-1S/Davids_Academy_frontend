@@ -256,11 +256,11 @@ const DragDropQuestionComponent = ({ question, onSubmit, submittedResult }) => {
                     borderColor: "#e6eaef",
                   },
                   "&.Mui-selected": {
-                    color: "#fff",
-                    fontWeight: 600,
-                    backgroundColor: "#2e3760",
-                    border: "1px solid #2e3760",
-                    boxShadow: "0 6px 18px rgba(15,23,42,0.12)",
+                    color: "#04121f",
+                    fontWeight: 700,
+                    backgroundColor: "#f0c94a",
+                    border: "1px solid #f0c94a",
+                    boxShadow: "0 6px 18px rgba(15,23,42,0.08)",
                   },
                 },
               }}
@@ -360,7 +360,7 @@ const DragDropQuestionComponent = ({ question, onSubmit, submittedResult }) => {
                       <Typography
                         component="div"
                         sx={{
-                          color: "#f8fbff",
+                          color: "var(--sf-text)",
                           fontSize: { xs: "0.9rem", md: "1rem" },
                           fontWeight: 500,
                           mb: 1,
@@ -434,7 +434,7 @@ const DragDropQuestionComponent = ({ question, onSubmit, submittedResult }) => {
                   <Typography
                     component="div"
                     sx={{
-                      color: "#f8fbff",
+                      color: "var(--sf-text)",
                       fontSize: { xs: "0.9rem", md: "1rem" },
                       fontWeight: 500,
                       mb: 1,
@@ -513,7 +513,7 @@ const DragDropQuestionComponent = ({ question, onSubmit, submittedResult }) => {
                       <Typography
                         component="div"
                         sx={{
-                          color: "#f8fbff",
+                          color: "var(--sf-text)",
                           fontSize: { xs: "0.9rem", md: "1rem" },
                           fontWeight: 500,
                           mb: 1,
@@ -654,7 +654,7 @@ const DragDropQuestionComponent = ({ question, onSubmit, submittedResult }) => {
             component="h3"
             fontWeight={800}
             mb={1.5}
-            color="#ffffff"
+            color="var(--sf-text)"
             sx={{ fontSize: { xs: "1rem", md: "1.1rem" } }}
           >
             Your Answer:
@@ -662,7 +662,7 @@ const DragDropQuestionComponent = ({ question, onSubmit, submittedResult }) => {
           <Box
             className="q-prompt-board"
             sx={{
-              backgroundColor: "#1e2d4f",
+              backgroundColor: "var(--sf-panel)",
               borderRadius: 2,
               p: 2,
               mb: 3,
@@ -690,7 +690,7 @@ const DragDropQuestionComponent = ({ question, onSubmit, submittedResult }) => {
                   <Typography
                     component="div"
                     sx={{
-                      color: "#f8fbff",
+                      color: "var(--sf-text)",
                       fontWeight: 500,
                       wordBreak: "break-word",
                       flex: "0 0 auto",
@@ -702,7 +702,7 @@ const DragDropQuestionComponent = ({ question, onSubmit, submittedResult }) => {
                   <Typography
                     component="div"
                     sx={{
-                      color: isMatch ? "#4ade80" : "#fb7185",
+                      color: isMatch ? "#15803d" : "#b91c1c",
                       fontWeight: 800,
                       flex: 1,
                       fontSize: { xs: "0.9rem", md: "1rem" },
@@ -720,7 +720,7 @@ const DragDropQuestionComponent = ({ question, onSubmit, submittedResult }) => {
             component="h3"
             fontWeight={800}
             mb={1.5}
-            color="#4ade80"
+            color="#15803d"
             sx={{ fontSize: { xs: "1rem", md: "1.1rem" } }}
           >
             Correct Answer:
@@ -728,7 +728,7 @@ const DragDropQuestionComponent = ({ question, onSubmit, submittedResult }) => {
           <Box
             className="q-prompt-board"
             sx={{
-              backgroundColor: "#1e2d4f",
+              backgroundColor: "var(--sf-panel)",
               borderRadius: 2,
               p: 2,
               mb: 3,
@@ -750,7 +750,7 @@ const DragDropQuestionComponent = ({ question, onSubmit, submittedResult }) => {
                 <Typography
                   component="div"
                   sx={{
-                    color: "#f8fbff",
+                    color: "var(--sf-text)",
                     fontWeight: 500,
                       wordBreak: "break-word",
                     flex: "0 0 auto",
@@ -762,7 +762,7 @@ const DragDropQuestionComponent = ({ question, onSubmit, submittedResult }) => {
                 <Typography
                   component="div"
                   sx={{
-                    color: "#4ade80",
+                    color: "#15803d",
                     fontWeight: 800,
                     flex: 1,
                     fontSize: { xs: "0.9rem", md: "1rem" },

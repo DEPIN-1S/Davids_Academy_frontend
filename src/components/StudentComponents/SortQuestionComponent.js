@@ -271,10 +271,10 @@ const SortQuestionComponent = ({ question, onSubmit, submittedResult }) => {
                   border: "1px solid #e6eaef",
                   padding: { xs: "7px 18px", md: "8px 24px" },
                   "&.Mui-selected": {
-                    color: "#fff",
-                    fontWeight: 600,
-                    backgroundColor: "#2e3760",
-                    border: "1px solid #2e3760",
+                    color: "#04121f",
+                    fontWeight: 700,
+                    backgroundColor: "#f0c94a",
+                    border: "1px solid #f0c94a",
                   },
                 },
               }}
@@ -373,12 +373,12 @@ const SortQuestionComponent = ({ question, onSubmit, submittedResult }) => {
                   borderRadius: "10px",
                   p: 1.5,
                   mb: 1.5,
-                  backgroundColor: isMatch ? "#14532d" : "#7f1d1d",
-                  border: `1px solid ${isMatch ? "#4ade80" : "#fb7185"}`,
+                  backgroundColor: isMatch ? "#dcfce7" : "#fee2e2",
+                  border: `1px solid ${isMatch ? "#86efac" : "#fecaca"}`,
                 }}
               >
                 <Typography
-                  sx={{ color: "#ffffff", fontWeight: 800, fontSize: "1rem" }}
+                  sx={{ color: isMatch ? "#14532d" : "#7f1d1d", fontWeight: 700, fontSize: "1rem" }}
                   dangerouslySetInnerHTML={{ __html: sanitizeExamHtml(step.text || "") }}
                 />
               </Box>
@@ -460,7 +460,7 @@ const SortQuestionComponent = ({ question, onSubmit, submittedResult }) => {
             fontWeight={800}
             mt={2}
             mb={2}
-            color="#4ade80"
+            color="#15803d"
             sx={{
               textAlign:"center"
             }}
@@ -475,7 +475,7 @@ const SortQuestionComponent = ({ question, onSubmit, submittedResult }) => {
               mb: 3,
               p: 2,
               borderRadius: "10px",
-              backgroundColor: "#0f1a33",
+              backgroundColor: "var(--sf-panel)",
             }}
           >
             {correctAnswer.map((item, idx) => (
@@ -483,15 +483,15 @@ const SortQuestionComponent = ({ question, onSubmit, submittedResult }) => {
                 key={idx}
                 className="q-sort-ok"
                 sx={{
-                  border: "1px solid #4ade80",
+                  border: "1px solid #86efac",
                   borderRadius: "10px",
                   p: 1.5,
                   mb: 1.5,
-                  backgroundColor: "#14532d",
+                  backgroundColor: "#dcfce7",
                 }}
               >
                 <Typography
-                  sx={{ color: "#ffffff", fontWeight: 800, fontSize: "1rem" }}
+                  sx={{ color: "#14532d", fontWeight: 700, fontSize: "1rem" }}
                   dangerouslySetInnerHTML={{ __html: sanitizeExamHtml(item || "") }}
                 />
               </Box>
