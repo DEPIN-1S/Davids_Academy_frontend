@@ -124,7 +124,7 @@ const ExamContainer = ({ user }) => {
   const [refreshKey, setRefreshKey] = useState(0);
   const [skipCount, setSkipCount] = useState(0);
   const hasFetchedQBank = useRef(false);
-  const qbankRestored = useRef(false);
+  const savedQbankSession = useRef(null);
   const questionId = questionIds[currentIndex];
 
   // Load question IDs based on mode
@@ -155,17 +155,10 @@ const ExamContainer = ({ user }) => {
           setLoading(false);
         } else {
           const saved = readQbankSession(topicsParam, countParam);
-          if (saved) {
-            hasFetchedQBank.current = true;
-            qbankRestored.current = true;
-            setQuestionIds(saved.ids);
-            setCurrentIndex(
-              Math.min(Math.max(0, saved.index || 0), saved.ids.length - 1)
-            );
-            setSkipCount(saved.skipCount || 0);
-            setLoading(false);
-            return;
-          }
+          // Keep only navigation state from the previous session. Question IDs
+          // must always come from the server because an admin may have reset
+          // this student's Q-Bank progress since the session was cached.
+          savedQbankSession.current = saved;
           hasFetchedQBank.current = true;
           dispatch(getQBankQuestions({ topics: topicsParam, count: countParam }));
         }
@@ -185,21 +178,29 @@ const ExamContainer = ({ user }) => {
   // Sync QBank question IDs if not test or sample mode
   useEffect(() => {
     if (!isTestMode && !isSampleMode && hasFetchedQBank.current) {
-      if (qbankRestored.current) {
-        return;
-      }
       if (!qBankQuestionLoading) {
         if (qBankQuestionIds && qBankQuestionIds.length > 0) {
+           const saved = savedQbankSession.current;
+           const savedCurrentId = saved?.ids?.[saved.index || 0];
+           const restoredIndex = savedCurrentId == null
+             ? 0
+             : qBankQuestionIds.findIndex(
+                 (id) => String(id) === String(savedCurrentId)
+               );
+           const nextIndex = restoredIndex >= 0 ? restoredIndex : 0;
+
            setQuestionIds(qBankQuestionIds);
-           setCurrentIndex(0);
+           setCurrentIndex(nextIndex);
+           setSkipCount(saved?.skipCount || 0);
            setError(null);
            writeQbankSession({
              topics: topicsParam,
              count: countParam,
              ids: qBankQuestionIds,
-             index: 0,
-             skipCount: 0,
+             index: nextIndex,
+             skipCount: saved?.skipCount || 0,
            });
+           savedQbankSession.current = null;
         } else {
            setQuestionIds([]);
            setError("You have completed all available questions for the selected topics, or no questions matched your filter. Please reset your Q-Bank progress to practice again.");

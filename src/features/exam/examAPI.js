@@ -721,6 +721,9 @@ export const resetQbankApi = async (student_id, topic_id = null) => {
     }
 
     const result = await response.json();
+    if (!result?.result) {
+      throw new Error(result?.message || "Failed to reset Q-Bank");
+    }
     console.log("✅ QBank Reset API Result:", result);
     return result; // structure: { result: true, message: "...", ... }
   } catch (error) {

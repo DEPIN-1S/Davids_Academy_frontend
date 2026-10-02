@@ -16,8 +16,8 @@ import MultiRadio from "../components/StudentComponents/MultiRadioQuestionCompon
 import TableDropdownQuestionComponent from "../components/StudentComponents/TableDropdownQuestionComponent";
 import TableMultipleDropdownComponent from "../components/StudentComponents/TableMultipleDropdownComponent";
 import TableHighlightSelectComponent from "../components/StudentComponents/TableHighlightSelectComponent";
-import "../styles/PublicQuestionPage.css";
 import "../styles/DashboardStyles/StudentFuturistic.css";
+import "../styles/PublicQuestionPage.css";
 
 const OPTION_LABELS = "ABCDEFGHIJ".split("");
 
@@ -125,6 +125,11 @@ const PublicQuestionPage = () => {
   const [error, setError] = useState("");
   const [selected, setSelected] = useState([]);
   const [submitted, setSubmitted] = useState(false);
+
+  useEffect(() => {
+    document.body.classList.add("student-theme");
+    return () => document.body.classList.remove("student-theme");
+  }, []);
 
   useEffect(() => {
     let cancelled = false;

@@ -1,18 +1,20 @@
 .public-q-page {
   min-height: 70vh;
   padding: 28px 16px 48px;
-  background: #f4f6fa;
+  background: #f4f6fa !important;
+  color: #1f2937 !important;
 }
 
-.public-q-card {
+.public-q-page .public-q-card,
+.public-q-page .public-q-card.student-exam-body {
   max-width: 960px;
   margin: 0 auto;
   padding: 28px 24px 24px;
   border-radius: 18px;
-  background: #ffffff;
-  color: #1f2937;
-  box-shadow: 0 12px 28px rgba(15, 23, 42, 0.06);
-  border: 1px solid #e2e8f0;
+  background: #ffffff !important;
+  color: #1f2937 !important;
+  box-shadow: 0 12px 28px rgba(15, 23, 42, 0.06) !important;
+  border: 1px solid #e2e8f0 !important;
 }
 
 .public-q-interactive {
@@ -113,8 +115,9 @@
   margin-bottom: 12px;
   padding: 4px 10px;
   border-radius: 999px;
-  background: #b91c1c;
-  color: #fff;
+  background: #f0c94a !important;
+  color: #04121f !important;
+  -webkit-text-fill-color: #04121f !important;
   font-size: 0.72rem;
   font-weight: 800;
   letter-spacing: 0.04em;
@@ -154,9 +157,10 @@
   text-align: left;
   padding: 12px 14px;
   border-radius: 12px;
-  border: 1px solid #cbd5e1;
-  background: #eef2f8;
-  color: #1f2937;
+  border: 1px solid #cbd5e1 !important;
+  background: #eef2f8 !important;
+  color: #1f2937 !important;
+  -webkit-text-fill-color: #1f2937 !important;
   cursor: pointer;
 }
 
@@ -175,7 +179,8 @@
   background: #fef2f2;
 }
 
-.public-q-letter {
+.public-q-page .public-q-letter,
+.student-exam-body .public-q-letter {
   flex: 0 0 28px;
   height: 28px;
   border-radius: 50%;
@@ -183,8 +188,9 @@
   align-items: center;
   justify-content: center;
   font-weight: 800;
-  background: #1d4ed8;
-  color: #fff;
+  background: #1d4ed8 !important;
+  color: #ffffff !important;
+  -webkit-text-fill-color: #ffffff !important;
   font-size: 0.85rem;
 }
 
